@@ -1,0 +1,322 @@
+html,
+body {
+  margin: 0;
+  font-family: sans-serif;
+  background-color: #e1dfeb; /* Light Cyan */
+}
+
+/* présentation des 3 boutons calulate show et clear*/
+.prez-3-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+/* définit la couleur des textes*/
+
+.Zone-fond-blanc {
+  display: flex;
+  height: 100%;
+  color: rgb(1, 1, 1); 
+}
+
+/*définit la bannière bleue*/
+body::before {
+  content: 'INCINERATION TOOL'; /* Ajoutez votre texte ici */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 60px; /* Augmentez cette valeur pour un header plus grand */
+  background: linear-gradient(to bottom, #003d7a 0%, #0066cc 50%, #3399ff 100%);
+  color: white; /* Couleur du texte en blanc */
+  font-size: 22px; /* Taille de la police */
+  font-weight: bold; /* Gras */
+  position: fixed; /* Fixe le header en haut de la page */
+  top: 0;
+  left: 0;
+  z-index: 1000; /* Assure que le header est au-dessus des autres éléments */
+}
+
+/*Bordure cadre rouge entourant la zone de travail*/
+#app {
+  width: 100vw;
+  height: 100vh;
+  border: 5px solid #8B0000; /* Rouge foncé */
+  margin-top: 40px; /* Pour laisser de l'espace pour l'image */
+}
+
+{/*container box définit la couleur des fenetres de paramètres du retro bilan  background: rgb(149, 152, 179);*/}
+.container-box {
+  width: 400px;
+  background: linear-gradient(135deg, #969697 0%, #e9ecef 50%, #dee2e6 100%);
+  padding: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,1);
+  position: relative;
+}
+
+
+.cadre_pour_onglet_principal {
+  background: rgba(187, 182, 182, 0.788);
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+
+background: linear-gradient(135deg, #969697 0%, #e9ecef 50%, #dee2e6 100%);
+
+{/*container box définit la couleur des cadres paramètres du bilan*/}
+.cadre_param_bilan {
+  background: LightGrey;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  margin-bottom: 20px;
+ 
+}
+
+.cadre_pour_onglet {
+  background: white;
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+
+
+
+/*BOUTON POUR SELECTIONNER TF OU BIEN QEAU DANS QUENCH*/
+.toggle-button2 {
+  display: inline-flex;
+  margin-left: auto;
+  width: 2000px;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  cursor: pointer;
+}
+
+.toggle-button {
+  display: block;
+  margin-left: auto;  /* Garde l'alignement à droite */
+  width: 160px;       /* Plus large mais pas excessif (2000px était trop) */
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 12px 20px;  /* Padding augmenté pour un bouton plus grand */
+  cursor: pointer;
+  font-size: 12px;     /* Texte plus grand */
+  font-weight: bold;   /* Texte en gras pour plus de visibilité */
+  text-align: center;  /* Centre le texte dans le bouton */
+  transition: all 0.2s ease; /* Animation douce */
+
+  transform: scale(0.9); /* Léger effet d'agrandissement au survol */
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2); /* Ombre au survol */
+}
+
+
+.toggle-button--option1 {background: #007bff;}
+.toggle-button--option2 {background: #ff8800;}
+
+
+
+
+.toggle-button--option1 {
+  background: linear-gradient(135deg, #007bff 0%, #0056b3 50%, #004085 100%);
+}
+
+.toggle-button--option2 {
+  background: linear-gradient(135deg, #ff8800 0%, #e67300 50%, #cc5500 100%);
+}
+
+
+
+
+
+
+
+.toggle-button--tf {background: #007bff;}
+.toggle-button--qeau {background: #ff8800;}
+
+
+
+
+
+
+BOUTON POUR SELECTIONNER LE TYPE DE VAPEUR
+.toggle-button-vapeur {
+  display: block;
+  margin-left: auto;
+  width: 200px;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.toggle-button-vapeur--saturee {background-color: #007bff;}
+.toggle-button-vapeur--surchauffee {background-color: #ff8800;}
+
+
+
+BOUTON POUR LES AIRS PARASITES
+.toggle-button-air {
+  display: block;
+  margin-left: auto;
+  width: 200px;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.toggle-button-air--parasite {background-color: #007bff;}
+.toggle-button-air--mesure {background-color: #ff8800;}
+
+
+
+
+
+.toggle-container-plus-moins {
+  padding-right: 0px; /* Ajuste la valeur selon l'espace souhaité */
+  margin-bottom: -10px; /* Ajuste la valeur selon l'espace souhaité */
+  margin-top: -10px; /* Ajuste la valeur selon l'espace souhaité */
+}
+
+
+
+
+.toggle-container {
+  padding: 15px;
+}
+
+.toggle-item {
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.toggle-label {
+  font-size: 14px;
+  color: #333;
+  margin-right: 10px;
+}
+
+.toggle-button-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  transition: all 0.3s ease;
+}
+
+.toggle-button-thumb:hover {
+  background-color: #f0f0f0;
+  box-shadow: 0 0 6px rgba(0,0,0,0.16), 0 5px 12px rgba(0,0,0,0.32);
+}
+
+.toggle-track {
+  background-color: #e0e0e0;
+  border-radius: 15px;
+  width: 40px;
+  height: 24px;
+  padding: 2px;
+  transition: background-color 0.3s ease;
+}
+
+.toggle-track.active {
+  background-color: #4CAF50;
+}
+
+
+
+
+
+.cadre_double {
+  padding: 20px;
+  max-width: 1000px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+}
+
+.cadre1_pour_image {
+  flex: 1;
+  margin-right: 20px;
+}
+
+/*
+.cadre_style_image {
+    height: auto;
+    border-radius: 2px;
+    object-fit: contain;
+  }*/
+  .cadre_style_image {
+    height: auto;
+    border-radius: 2px;
+    object-fit: contain;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+/*
+  .cadre_style_image {
+    height: auto;
+    border-radius: 2px;
+    object-fit: contain;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    position: relative;
+    top: 50%;
+    transform: translateY(10%);
+  }*/
+
+
+
+
+
+
+
+
+  .cadre2_pour_parametres {
+    flex: 2;
+  }
+
+  .cadre_style_parametres {
+      background: LightGrey;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+
+
+
+
+    .relative-flex-container {
+      display: flex;
+      flex: 1;
+      position: relative;
+    }
+
+
+
+    .btn-position {
+      position: absolute;
+      left: -180px;
+      z-index: 1000;
+    }
+
+    .rouge {
+      background: rgb(238, 7, 7);
+    }
+

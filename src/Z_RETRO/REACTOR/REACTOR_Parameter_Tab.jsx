@@ -1,0 +1,428 @@
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { performCalculation_REACTOR } from './REACTOR_calculations';
+
+import ClearButton from '../../C_Components/Clear_Button';
+import ShowResultButton from '../../C_Components/Show_result_retro';
+import CloseButton from '../../C_Components/OnCloseButton_retro';
+import CalculationResults from '../../C_Components/ShowCalculationResult_retro';
+import InputField from '../../C_Components/input_retro';
+import '../../index.css';
+
+import { getTranslatedParameter, getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
+import { translations } from './REACTOR_traduction';
+
+// Constantes pour les types de réactifs
+const REAGENT_TYPES = {
+  CAP: 'CAP',
+  LIME: 'LIME'
+};
+
+// Constantes pour localStorage
+const STORAGE_KEYS = {
+  T_AMONT_REACTOR: 'T_amont_REACTOR',
+  T_AIR: 'T_air',
+  PDC_AERO: 'PDC_aero',
+  REAGENT_TYPE: 'reagentType',
+  BESOIN_AIR_LIME: 'Besoin_air_pulverisation_lime_Nm3_kg',
+  CONCENTRATION_LIME: 'Concentration_Lime_kg_lime_Nm3_FG',
+  BESOIN_AIR_CAP: 'Besoin_air_pulverisation_cap_Nm3_kg',
+  CONCENTRATION_CAP: 'Concentration_cap_mg_cap_Nm3_FG',
+  CALCULATION_RESULT: 'calculationResult_REACTOR'
+};
+
+// Valeurs par défaut
+const DEFAULT_VALUES = {
+  T_amont_REACTOR: '10',
+  T_air: '20',
+  PDC_aero: '20',
+  reagentType: REAGENT_TYPES.CAP,
+  Besoin_air_pulverisation_lime_Nm3_kg: '0.5',
+  Concentration_Lime_kg_lime_Nm3_FG: '0.1',
+  Besoin_air_pulverisation_cap_Nm3_kg: '0.5',
+  Concentration_cap_mg_cap_Nm3_FG: '0.1'
+};
+
+const REACTOR_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage }) => {
+  // États principaux
+  const [T_amont_REACTOR, setT_amont_REACTOR] = useState(() => 
+    localStorage.getItem(STORAGE_KEYS.T_AMONT_REACTOR) || 
+    nodeData?.result?.dataFlow?.T?.toString() || 
+    DEFAULT_VALUES.T_amont_REACTOR
+  );
+  const [T_air, setT_air] = useState(() => 
+    localStorage.getItem(STORAGE_KEYS.T_AIR) || DEFAULT_VALUES.T_air
+  );
+  const [PDC_aero, setPDC_aero] = useState(() => 
+    localStorage.getItem(STORAGE_KEYS.PDC_AERO) || DEFAULT_VALUES.PDC_aero
+  );
+
+  // Paramètres spécifiques aux réactifs
+  const [Besoin_air_pulverisation_lime_Nm3_kg, setBesoin_air_pulverisation_lime_Nm3_kg] = useState(() => 
+    localStorage.getItem(STORAGE_KEYS.BESOIN_AIR_LIME) || DEFAULT_VALUES.Besoin_air_pulverisation_lime_Nm3_kg
+  );
+  const [Concentration_Lime_kg_lime_Nm3_FG, setConcentration_Lime_kg_lime_Nm3_FG] = useState(() => 
+    localStorage.getItem(STORAGE_KEYS.CONCENTRATION_LIME) || DEFAULT_VALUES.Concentration_Lime_kg_lime_Nm3_FG
+  );
+  const [Besoin_air_pulverisation_cap_Nm3_kg, setBesoin_air_pulverisation_cap_Nm3_kg] = useState(() => 
+    localStorage.getItem(STORAGE_KEYS.BESOIN_AIR_CAP) || DEFAULT_VALUES.Besoin_air_pulverisation_cap_Nm3_kg
+  );
+  const [Concentration_cap_mg_cap_Nm3_FG, setConcentration_cap_mg_cap_Nm3_FG] = useState(() => 
+    localStorage.getItem(STORAGE_KEYS.CONCENTRATION_CAP) || DEFAULT_VALUES.Concentration_cap_mg_cap_Nm3_FG
+  );
+
+  // Type de réactif
+  const [reagentType, setReagentType] = useState(() => 
+    localStorage.getItem(STORAGE_KEYS.REAGENT_TYPE) || DEFAULT_VALUES.reagentType
+  );
+
+  // États pour l'interface
+  const [calculationResult_REACTOR, setCalculationResult_REACTOR] = useState(() => {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEYS.CALCULATION_RESULT);
+      return stored ? JSON.parse(stored) : null;
+    } catch (error) {
+      console.warn('Erreur lors du chargement des résultats:', error);
+      return null;
+    }
+  });
+  const [isSliderOpen, setIsSliderOpen] = useState(false);
+  const [isCalculating, setIsCalculating] = useState(false);
+
+  // Récupération des traductions avec mémorisation
+  const { languageCode, t } = useMemo(() => {
+    const code = getLanguageCode(currentLanguage);
+    const translationsObj = translations[code] || translations['en'];
+    return { languageCode: code, t: translationsObj };
+  }, [currentLanguage]);
+
+  // Mapping pour les traductions du toggle
+  const reagentTypeMapping = useMemo(() => ({
+    [REAGENT_TYPES.CAP]: t.CAP,
+    [REAGENT_TYPES.LIME]: t.LIME
+  }), [t]);
+
+  // Sauvegarde centralisée dans localStorage
+  useEffect(() => {
+    const saveToLocalStorage = () => {
+      try {
+        const dataToSave = {
+          [STORAGE_KEYS.T_AMONT_REACTOR]: T_amont_REACTOR,
+          [STORAGE_KEYS.T_AIR]: T_air,
+          [STORAGE_KEYS.PDC_AERO]: PDC_aero,
+          [STORAGE_KEYS.REAGENT_TYPE]: reagentType,
+          [STORAGE_KEYS.BESOIN_AIR_LIME]: Besoin_air_pulverisation_lime_Nm3_kg,
+          [STORAGE_KEYS.CONCENTRATION_LIME]: Concentration_Lime_kg_lime_Nm3_FG,
+          [STORAGE_KEYS.BESOIN_AIR_CAP]: Besoin_air_pulverisation_cap_Nm3_kg,
+          [STORAGE_KEYS.CONCENTRATION_CAP]: Concentration_cap_mg_cap_Nm3_FG
+        };
+
+        Object.entries(dataToSave).forEach(([key, value]) => {
+          localStorage.setItem(key, value);
+        });
+      } catch (error) {
+        console.warn('Erreur lors de la sauvegarde dans localStorage:', error);
+      }
+    };
+
+    saveToLocalStorage();
+  }, [
+    T_amont_REACTOR, T_air, PDC_aero, reagentType,
+    Besoin_air_pulverisation_lime_Nm3_kg, Concentration_Lime_kg_lime_Nm3_FG,
+    Besoin_air_pulverisation_cap_Nm3_kg, Concentration_cap_mg_cap_Nm3_FG
+  ]);
+
+  // Sauvegarde des résultats de calcul
+  useEffect(() => {
+    if (calculationResult_REACTOR) {
+      try {
+        localStorage.setItem(STORAGE_KEYS.CALCULATION_RESULT, JSON.stringify(calculationResult_REACTOR));
+      } catch (error) {
+        console.warn('Erreur lors de la sauvegarde des résultats:', error);
+      }
+    }
+  }, [calculationResult_REACTOR]);
+
+  // Validation des entrées
+  const validateInputs = useCallback(() => {
+    const inputs = {
+      T_amont_REACTOR: parseFloat(T_amont_REACTOR),
+      T_air: parseFloat(T_air),
+      PDC_aero: parseFloat(PDC_aero),
+      Besoin_air_pulverisation_lime_Nm3_kg: parseFloat(Besoin_air_pulverisation_lime_Nm3_kg),
+      Concentration_Lime_kg_lime_Nm3_FG: parseFloat(Concentration_Lime_kg_lime_Nm3_FG),
+      Besoin_air_pulverisation_cap_Nm3_kg: parseFloat(Besoin_air_pulverisation_cap_Nm3_kg),
+      Concentration_cap_mg_cap_Nm3_FG: parseFloat(Concentration_cap_mg_cap_Nm3_FG)
+    };
+
+    // Validation des valeurs numériques
+    for (const [key, value] of Object.entries(inputs)) {
+      if (isNaN(value)) {
+        throw new Error(`${t.InvalidInput}: ${key}`);
+      }
+    }
+
+    // Validations spécifiques aux contraintes physiques
+    if (inputs.T_amont_REACTOR < -273.15) {
+      throw new Error(`${t.InvalidInput}: Upstream temperature cannot be below absolute zero`);
+    }
+    if (inputs.T_air < -273.15) {
+      throw new Error(`${t.InvalidInput}: Air temperature cannot be below absolute zero`);
+    }
+    if (inputs.PDC_aero < 0) {
+      throw new Error(`${t.InvalidInput}: Pressure drop cannot be negative`);
+    }
+    if (inputs.Concentration_Lime_kg_lime_Nm3_FG < 0) {
+      throw new Error(`${t.InvalidInput}: Lime concentration cannot be negative`);
+    }
+    if (inputs.Concentration_cap_mg_cap_Nm3_FG < 0) {
+      throw new Error(`${t.InvalidInput}: CAP concentration cannot be negative`);
+    }
+    if (inputs.Besoin_air_pulverisation_lime_Nm3_kg < 0) {
+      throw new Error(`${t.InvalidInput}: Lime air requirement cannot be negative`);
+    }
+    if (inputs.Besoin_air_pulverisation_cap_Nm3_kg < 0) {
+      throw new Error(`${t.InvalidInput}: CAP air requirement cannot be negative`);
+    }
+
+    return inputs;
+  }, [
+    T_amont_REACTOR, T_air, PDC_aero,
+    Besoin_air_pulverisation_lime_Nm3_kg, Concentration_Lime_kg_lime_Nm3_FG,
+    Besoin_air_pulverisation_cap_Nm3_kg, Concentration_cap_mg_cap_Nm3_FG, t
+  ]);
+
+  // Gestion du calcul principal
+  const handleSendData = useCallback(async () => {
+    if (!nodeData?.result) {
+      alert(t.NoInputData);
+      return;
+    }
+
+    setIsCalculating(true);
+    
+    try {
+      const validatedInputs = validateInputs();
+
+      const result = performCalculation_REACTOR(
+        nodeData,
+        validatedInputs.T_amont_REACTOR,
+        validatedInputs.T_air,
+        validatedInputs.PDC_aero,
+        reagentType,
+        validatedInputs.Besoin_air_pulverisation_lime_Nm3_kg,
+        validatedInputs.Besoin_air_pulverisation_cap_Nm3_kg,
+        validatedInputs.Concentration_cap_mg_cap_Nm3_FG
+      );
+
+      setCalculationResult_REACTOR(result);
+      onSendData({ result });
+
+    } catch (error) {
+      console.error('Erreur lors du calcul:', error);
+      alert(`${t.CalculationError}: ${error.message}`);
+    } finally {
+      setIsCalculating(false);
+    }
+  }, [nodeData, validateInputs, reagentType, onSendData, t]);
+
+  // Toggle du type de réactif
+  const toggleReagentType = useCallback(() => {
+    setReagentType(prev => 
+      prev === REAGENT_TYPES.CAP ? REAGENT_TYPES.LIME : REAGENT_TYPES.CAP
+    );
+  }, []);
+
+  // Toggle du slider des résultats
+  const toggleSlider = useCallback(() => {
+    setIsSliderOpen(prev => !prev);
+  }, []);
+
+  // Effacement de la mémoire
+  const clearMemory = useCallback(() => {
+    try {
+      Object.values(STORAGE_KEYS).forEach(key => {
+        localStorage.removeItem(key);
+      });
+      
+      setCalculationResult_REACTOR(null);
+      
+      // Réinitialisation aux valeurs par défaut
+      setT_amont_REACTOR(nodeData?.result?.dataFlow?.T?.toString() || DEFAULT_VALUES.T_amont_REACTOR);
+      setT_air(DEFAULT_VALUES.T_air);
+      setPDC_aero(DEFAULT_VALUES.PDC_aero);
+      setBesoin_air_pulverisation_lime_Nm3_kg(DEFAULT_VALUES.Besoin_air_pulverisation_lime_Nm3_kg);
+      setConcentration_Lime_kg_lime_Nm3_FG(DEFAULT_VALUES.Concentration_Lime_kg_lime_Nm3_FG);
+      setBesoin_air_pulverisation_cap_Nm3_kg(DEFAULT_VALUES.Besoin_air_pulverisation_cap_Nm3_kg);
+      setConcentration_cap_mg_cap_Nm3_FG(DEFAULT_VALUES.Concentration_cap_mg_cap_Nm3_FG);
+      setReagentType(DEFAULT_VALUES.reagentType);
+      
+    } catch (error) {
+      console.warn('Erreur lors de l\'effacement:', error);
+    }
+  }, [nodeData]);
+
+  // Gestionnaires d'entrée optimisés
+  const createInputHandler = useCallback((setter, fallback = '0') => 
+    (e) => setter(e.target.value || fallback), []
+  );
+
+  const handleTAmontChange = createInputHandler(setT_amont_REACTOR, DEFAULT_VALUES.T_amont_REACTOR);
+  const handleTAirChange = createInputHandler(setT_air, DEFAULT_VALUES.T_air);
+  const handlePDCChange = createInputHandler(setPDC_aero, DEFAULT_VALUES.PDC_aero);
+  const handleBesoinAirLimeChange = createInputHandler(setBesoin_air_pulverisation_lime_Nm3_kg, DEFAULT_VALUES.Besoin_air_pulverisation_lime_Nm3_kg);
+  const handleConcentrationLimeChange = createInputHandler(setConcentration_Lime_kg_lime_Nm3_FG, DEFAULT_VALUES.Concentration_Lime_kg_lime_Nm3_FG);
+  const handleBesoinAirCapChange = createInputHandler(setBesoin_air_pulverisation_cap_Nm3_kg, DEFAULT_VALUES.Besoin_air_pulverisation_cap_Nm3_kg);
+  const handleConcentrationCapChange = createInputHandler(setConcentration_cap_mg_cap_Nm3_FG, DEFAULT_VALUES.Concentration_cap_mg_cap_Nm3_FG);
+
+  // Composant ToggleButton réutilisable
+  const ToggleButton = React.memo(({ label, value, mapping, onChange, testId }) => {
+    const displayValue = mapping[value] || value;
+    const isFirstOption = value === Object.keys(mapping)[0];
+    
+    return (
+      <div style={{ marginTop: '10px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <label>{label}:</label>
+        <button 
+          onClick={onChange}
+          data-testid={testId}
+          className={`toggle-button ${isFirstOption ? 'toggle-button--option1' : 'toggle-button--option2'}`}
+          disabled={isCalculating}
+          aria-label={`${label}: ${displayValue}`}
+        >
+          {displayValue}
+        </button>
+      </div>
+    );
+  });
+
+  return (
+    <div className="container-box">    
+      <CloseButton onClose={onClose} />
+      <h3>{t.Parametres} {title}</h3>
+
+      <div className="inputs-container" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+        {/* Champs communs */}
+        <InputField 
+          label={t.T_fumees_amont} 
+          unit={`[${t.celsius}]`} 
+          value={T_amont_REACTOR} 
+          onChange={handleTAmontChange}
+          disabled={isCalculating}
+          aria-label={`${t.T_fumees_amont} en ${t.celsius}`}
+        />
+        
+        <InputField 
+          label={t.T_air} 
+          unit={`[${t.celsius}]`} 
+          value={T_air} 
+          onChange={handleTAirChange}
+          disabled={isCalculating}
+          aria-label={`${t.T_air} en ${t.celsius}`}
+        />
+        
+        <InputField 
+          label={t.PDC_aero} 
+          unit={`[${t.mmCE}]`} 
+          value={PDC_aero} 
+          onChange={handlePDCChange}
+          disabled={isCalculating}
+          aria-label={`${t.PDC_aero} en ${t.mmCE}`}
+        />
+
+        {/* Toggle type de réactif */}
+        <ToggleButton 
+          label={t.ReagentType}
+          value={reagentType}
+          mapping={reagentTypeMapping}
+          onChange={toggleReagentType}
+          testId="reagent-type-toggle"
+        />
+
+        {/* Champs conditionnels selon le type de réactif */}
+        {reagentType === REAGENT_TYPES.LIME && (
+          <>
+            <InputField 
+              label={t.Besoin_air_pulverisation_lime} 
+              unit={`[${t.Nm3_kg}]`} 
+              value={Besoin_air_pulverisation_lime_Nm3_kg} 
+              onChange={handleBesoinAirLimeChange}
+              disabled={isCalculating}
+              aria-label={`${t.Besoin_air_pulverisation_lime} en ${t.Nm3_kg}`}
+            />
+            <InputField 
+              label={t.Concentration_lime} 
+              unit={`[${t.kg_Nm3_FG}]`} 
+              value={Concentration_Lime_kg_lime_Nm3_FG} 
+              onChange={handleConcentrationLimeChange}
+              disabled={isCalculating}
+              aria-label={`${t.Concentration_lime} en ${t.kg_Nm3_FG}`}
+            />
+          </>
+        )}
+        
+        {reagentType === REAGENT_TYPES.CAP && (
+          <>
+            <InputField 
+              label={t.Besoin_air_pulverisation_cap} 
+              unit={`[${t.Nm3_kg}]`} 
+              value={Besoin_air_pulverisation_cap_Nm3_kg} 
+              onChange={handleBesoinAirCapChange}
+              disabled={isCalculating}
+              aria-label={`${t.Besoin_air_pulverisation_cap} en ${t.Nm3_kg}`}
+            />
+            <InputField 
+              label={t.Concentration_cap} 
+              unit={`[${t.mg_Nm3_FG}]`} 
+              value={Concentration_cap_mg_cap_Nm3_FG} 
+              onChange={handleConcentrationCapChange}
+              disabled={isCalculating}
+              aria-label={`${t.Concentration_cap} en ${t.mg_Nm3_FG}`}
+            />
+          </>
+        )}
+      </div>
+
+      {/* Boutons d'action */}
+      <div className="prez-3-buttons">
+        <button 
+          onClick={handleSendData}
+          disabled={isCalculating || !nodeData?.result}
+          className={isCalculating ? 'button-loading' : ''}
+        >
+          {isCalculating ? t.Calculating : t.calculer_et_envoyer_data}
+        </button>
+        
+        <ShowResultButton 
+          isOpen={isSliderOpen} 
+          onToggle={toggleSlider}
+          currentLanguage={currentLanguage}
+          disabled={!calculationResult_REACTOR}
+        />
+        
+        <ClearButton 
+          onClick={clearMemory}
+          currentLanguage={currentLanguage}
+          disabled={isCalculating}
+        />
+      </div>
+
+      {/* Affichage conditionnel des résultats */}
+      {isSliderOpen && calculationResult_REACTOR && (
+        <CalculationResults 
+          isOpen={isSliderOpen} 
+          results={calculationResult_REACTOR}
+          currentLanguage={currentLanguage}
+        />
+      )}
+
+      {/* Message si pas de résultats */}
+      {isSliderOpen && !calculationResult_REACTOR && (
+        <div className="no-results-message">
+          <p>{t.NoResults}</p>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default React.memo(REACTOR_Parameter_Tab);

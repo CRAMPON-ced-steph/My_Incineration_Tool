@@ -1,0 +1,355 @@
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { performCalculation_RK } from './RK_calculations1';
+import { performCalculation_RK_with_WHB } from './RK_calculations2';
+import InputField from '../../C_Components/input_retro';
+import ClearButton from '../../C_Components/Clear_Button';
+import ShowResultButton from '../../C_Components/Show_result_retro';
+import CloseButton from '../../C_Components/OnCloseButton_retro';
+import CalculationResults from '../../C_Components/ShowCalculationResult_retro';
+import '../../index.css';
+
+import { getTranslatedParameter, getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
+import { translations } from './RK_traduction';
+
+// Constantes pour les valeurs logiques (ne changent pas avec la langue)
+const CALCULATION_MODES = {
+  WITH_WHB: 'WITH_WHB',
+  WITHOUT_WHB: 'WITHOUT_WHB'
+};
+
+const BALANCE_TYPES = {
+  NET_CALORIFIC_VALUE: 'NET_CALORIFIC_VALUE',
+  WASTE_FLOWRATE: 'WASTE_FLOWRATE'
+};
+
+// Valeurs par défaut
+const DEFAULT_VALUES = {
+  Tair_RK_C: '15',
+  Thermal_losses_MW: '2',
+  NCV_kcal_kg: '2200',
+  Masse_dechet_kg_h: '6000',
+  bilanType_NCV_Masse: BALANCE_TYPES.NET_CALORIFIC_VALUE,
+  bilanType_whb: CALCULATION_MODES.WITH_WHB
+};
+
+const RK_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage }) => {
+  // États principaux
+  const [Tair_RK_C, setTair_RK_C] = useState(() => 
+    localStorage.getItem('Tair_RK_C') || DEFAULT_VALUES.Tair_RK_C
+  );
+  const [Thermal_losses_MW, setThermal_losses_MW] = useState(() => 
+    localStorage.getItem('Thermal_losses_MW') || DEFAULT_VALUES.Thermal_losses_MW
+  );
+  const [NCV_kcal_kg, setNCV_kcal_kg] = useState(() => 
+    localStorage.getItem('NCV_kcal_kg') || DEFAULT_VALUES.NCV_kcal_kg
+  );
+  const [Masse_dechet_kg_h, setMasse_dechet_kg_h] = useState(() => 
+    localStorage.getItem('Masse_dechet_kg_h') || DEFAULT_VALUES.Masse_dechet_kg_h
+  );
+
+  // États pour les types de calcul (utilisation des constantes)
+  const [bilanType_NCV_Masse, setBilanType_NCV_Masse] = useState(() => 
+    localStorage.getItem('bilanType_NCV_Masse') || DEFAULT_VALUES.bilanType_NCV_Masse
+  );
+  const [bilanType_whb, setBilanType_whb] = useState(() => 
+    localStorage.getItem('bilanType_whb') || DEFAULT_VALUES.bilanType_whb
+  );
+
+  // États pour l'interface
+  const [calculationResult_RK, setCalculationResult_RK] = useState(null);
+  const [isSliderOpen, setIsSliderOpen] = useState(false);
+  const [isCalculating, setIsCalculating] = useState(false);
+
+  // Récupération des traductions avec mémorisation
+  const { languageCode, t } = useMemo(() => {
+    const code = getLanguageCode(currentLanguage);
+    const translationsObj = translations[code] || translations['en'];
+    return { languageCode: code, t: translationsObj };
+  }, [currentLanguage]);
+
+  // Sauvegarde automatique dans localStorage
+  useEffect(() => {
+    const saveToLocalStorage = () => {
+      try {
+        localStorage.setItem('Tair_RK_C', Tair_RK_C);
+        localStorage.setItem('Thermal_losses_MW', Thermal_losses_MW);
+        localStorage.setItem('NCV_kcal_kg', NCV_kcal_kg);
+        localStorage.setItem('Masse_dechet_kg_h', Masse_dechet_kg_h);
+        localStorage.setItem('bilanType_NCV_Masse', bilanType_NCV_Masse);
+        localStorage.setItem('bilanType_whb', bilanType_whb);
+      } catch (error) {
+        console.warn('Erreur lors de la sauvegarde dans localStorage:', error);
+      }
+    };
+    saveToLocalStorage();
+  }, [Tair_RK_C, Thermal_losses_MW, NCV_kcal_kg, Masse_dechet_kg_h, bilanType_NCV_Masse, bilanType_whb]);
+
+  // Sauvegarde des résultats de calcul
+  useEffect(() => {
+    if (calculationResult_RK) {
+      try {
+        localStorage.setItem('calculationResult_RK', JSON.stringify(calculationResult_RK));
+      } catch (error) {
+        console.warn('Erreur lors de la sauvegarde des résultats:', error);
+      }
+    }
+  }, [calculationResult_RK]);
+
+  // Validation des entrées
+  const validateInputs = useCallback(() => {
+    const numericValues = {
+      Tair_RK_C: parseFloat(Tair_RK_C),
+      Thermal_losses_MW: parseFloat(Thermal_losses_MW),
+      NCV_kcal_kg: parseFloat(NCV_kcal_kg),
+      Masse_dechet_kg_h: parseFloat(Masse_dechet_kg_h)
+    };
+
+    for (const [key, value] of Object.entries(numericValues)) {
+      if (isNaN(value) || value < 0) {
+        throw new Error(`${t.InvalidInput}: ${key}`);
+      }
+    }
+
+    return numericValues;
+  }, [Tair_RK_C, Thermal_losses_MW, NCV_kcal_kg, Masse_dechet_kg_h, t]);
+
+  // Gestion du calcul principal
+  const handleSendData = useCallback(async () => {
+    setIsCalculating(true);
+    try {
+      const validatedInputs = validateInputs();
+      
+      let result;
+      
+      if (bilanType_whb === CALCULATION_MODES.WITH_WHB) {
+        result = performCalculation_RK_with_WHB(
+          nodeData,
+          validatedInputs.Tair_RK_C,
+          validatedInputs.Thermal_losses_MW,
+          validatedInputs.NCV_kcal_kg,
+          validatedInputs.Masse_dechet_kg_h,
+          bilanType_NCV_Masse
+        );
+      } else {
+        result = performCalculation_RK(
+          nodeData,
+          validatedInputs.Tair_RK_C,
+          validatedInputs.Thermal_losses_MW,
+          validatedInputs.NCV_kcal_kg,
+          validatedInputs.Masse_dechet_kg_h,
+          bilanType_NCV_Masse
+        );
+      }
+      
+      setCalculationResult_RK(result);
+      onSendData({ result });
+      
+    } catch (error) {
+      console.error('Erreur lors du calcul:', error);
+      alert(`${t.CalculationError}: ${error.message}`);
+    } finally {
+      setIsCalculating(false);
+    }
+  }, [
+    nodeData, bilanType_whb, bilanType_NCV_Masse, validateInputs, onSendData, t
+  ]);
+
+  // Toggle pour le type de bilan WHB
+  const toggleBilanType_whb = useCallback(() => {
+    setBilanType_whb(prev => 
+      prev === CALCULATION_MODES.WITH_WHB 
+        ? CALCULATION_MODES.WITHOUT_WHB 
+        : CALCULATION_MODES.WITH_WHB
+    );
+  }, []);
+
+  // Toggle pour le type de bilan NCV/Masse
+  const toggleBilanType_NCV_Masse = useCallback(() => {
+    setBilanType_NCV_Masse(prev => 
+      prev === BALANCE_TYPES.NET_CALORIFIC_VALUE 
+        ? BALANCE_TYPES.WASTE_FLOWRATE 
+        : BALANCE_TYPES.NET_CALORIFIC_VALUE
+    );
+  }, []);
+
+  // Toggle du slider des résultats
+  const toggleSlider = useCallback(() => {
+    setIsSliderOpen(prev => !prev);
+  }, []);
+
+  // Effacement de la mémoire
+  const clearMemory = useCallback(() => {
+    try {
+      localStorage.clear();
+      setCalculationResult_RK(null);
+      
+      // Réinitialisation aux valeurs par défaut
+      setTair_RK_C(DEFAULT_VALUES.Tair_RK_C);
+      setThermal_losses_MW(DEFAULT_VALUES.Thermal_losses_MW);
+      setNCV_kcal_kg(DEFAULT_VALUES.NCV_kcal_kg);
+      setMasse_dechet_kg_h(DEFAULT_VALUES.Masse_dechet_kg_h);
+      setBilanType_NCV_Masse(DEFAULT_VALUES.bilanType_NCV_Masse);
+      setBilanType_whb(DEFAULT_VALUES.bilanType_whb);
+      
+    } catch (error) {
+      console.warn('Erreur lors de l\'effacement:', error);
+    }
+  }, []);
+
+  // Gestionnaires d'entrée avec validation
+  const handleInputChange = useCallback((setter, fallbackValue) => (e) => {
+    const value = e.target.value;
+    setter(value || fallbackValue);
+  }, []);
+
+  // Mappage des valeurs pour l'affichage traduit
+  const getDisplayValue = useCallback((internalValue, mapping) => {
+    return mapping[internalValue] || internalValue;
+  }, []);
+
+  const getDisplayOptions = useCallback((mapping) => {
+    return Object.values(mapping);
+  }, []);
+
+  // Mappings pour les traductions
+  const whbDisplayMapping = useMemo(() => ({
+    [CALCULATION_MODES.WITH_WHB]: t.WithWHB,
+    [CALCULATION_MODES.WITHOUT_WHB]: t.WithoutWHB
+  }), [t]);
+
+  const balanceDisplayMapping = useMemo(() => ({
+    [BALANCE_TYPES.NET_CALORIFIC_VALUE]: t.NetCalorificValue,
+    [BALANCE_TYPES.WASTE_FLOWRATE]: t.WasteFlowrate
+  }), [t]);
+
+  // Composant ToggleButton réutilisable et corrigé
+  const ToggleButton = React.memo(({ label, value, mapping, onChange, testId }) => {
+    const displayValue = getDisplayValue(value, mapping);
+    const isFirstOption = value === Object.keys(mapping)[0];
+    
+    return (
+      <div style={{ marginTop: '10px', display: 'flex', alignItems: 'center' }}>
+        <label style={{ marginRight: '10px' }}>{label}:</label>
+        <button 
+          onClick={onChange}
+          data-testid={testId}
+          className={`toggle-button ${isFirstOption ? 'toggle-button--option1' : 'toggle-button--option2'}`}
+          disabled={isCalculating}
+          aria-label={`${label}: ${displayValue}`}
+        >
+          {displayValue}
+        </button>
+      </div>
+    );
+  });
+
+  return (
+    <div className="container-box">
+      <CloseButton onClose={onClose} />
+      <h3>{t.Parametres} {title}</h3>
+
+      {/* Toggle pour le mode de calcul WHB */}
+      <div className="toggle-container">
+        <ToggleButton 
+          label={t.BilanTyp}
+          value={bilanType_whb}
+          mapping={whbDisplayMapping}
+          onChange={toggleBilanType_whb}
+          testId="whb-toggle"
+        />
+      </div>
+      
+      <div className="inputs-container">
+        {/* Champ température de l'air */}
+        <InputField 
+          label={t.Tair} 
+          unit={`[${t.celsius}]`} 
+          value={Tair_RK_C} 
+          onChange={handleInputChange(setTair_RK_C, '15')}
+          disabled={isCalculating}
+        />
+        
+        {/* Champ pertes thermiques */}
+        <InputField 
+          label={t.PertesThermiques} 
+          unit={`[${t.megawatt}]`} 
+          value={Thermal_losses_MW} 
+          onChange={handleInputChange(setThermal_losses_MW, '2')}
+          disabled={isCalculating}
+        />
+
+        {/* Toggle pour le type de bilan NCV/Masse */}
+        <div className="toggle-container">
+          <ToggleButton 
+            label={t.BilanTyp}
+            value={bilanType_NCV_Masse}
+            mapping={balanceDisplayMapping}
+            onChange={toggleBilanType_NCV_Masse}
+            testId="balance-type-toggle"
+          />
+        </div>
+
+        {/* Champ conditionnel selon le type de bilan */}
+        {bilanType_NCV_Masse === BALANCE_TYPES.NET_CALORIFIC_VALUE ? (
+          <InputField 
+            label={t.PCI}
+            unit={`[${t.kcalPerKg}]`} 
+            value={NCV_kcal_kg} 
+            onChange={handleInputChange(setNCV_kcal_kg, '0')}
+            disabled={isCalculating}
+          />
+        ) : (
+          <InputField 
+            label={t.DebitDechets}
+            unit={`[${t.kgPerHour}]`} 
+            value={Masse_dechet_kg_h} 
+            onChange={handleInputChange(setMasse_dechet_kg_h, '0')}
+            disabled={isCalculating}
+          />
+        )}
+      </div>
+
+      {/* Boutons d'action */}
+      <div className="prez-3-buttons">
+        <button 
+          onClick={handleSendData}
+          disabled={isCalculating}
+          className={isCalculating ? 'button-loading' : ''}
+        >
+          {isCalculating ? `${t.Calculate}...` : t.calculer_et_envoyer_data}
+        </button>
+        
+        <ShowResultButton 
+          isOpen={isSliderOpen} 
+          onToggle={toggleSlider}
+          currentLanguage={currentLanguage}
+          disabled={!calculationResult_RK}
+        />
+        
+        <ClearButton 
+          onClick={clearMemory}
+          currentLanguage={currentLanguage}
+          disabled={isCalculating}
+        />
+      </div>
+
+      {/* Affichage conditionnel des résultats */}
+      {isSliderOpen && calculationResult_RK && (
+        <CalculationResults 
+          isOpen={isSliderOpen} 
+          results={calculationResult_RK}
+          currentLanguage={currentLanguage}
+        />
+      )}
+
+      {/* Message si pas de résultats */}
+      {isSliderOpen && !calculationResult_RK && (
+        <div className="no-results-message">
+          <p>{t.NoResults}</p>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default React.memo(RK_Parameter_Tab);

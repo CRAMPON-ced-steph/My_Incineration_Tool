@@ -1,0 +1,86 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+
+/* Règles pour l'impression */
+@media print {
+  /* Forcer la visibilité de tous les onglets, y compris les inactifs */
+  .tab-content {
+    display: block !important; /* Rendre visible les onglets masqués */
+    visibility: visible !important;
+  }
+
+  /* Gestion spécifique des onglets inactifs (si marqués avec .inactive ou équivalent) */
+  .tab-content.inactive {
+    display: block !important; /* Forcer l'affichage des onglets inactifs */
+    visibility: visible !important;
+  }
+
+  /* Masquer les éléments non pertinents pour l'impression */
+  .no-print {
+    display: none !important; /* Masquer les éléments inutiles */
+  }
+
+  /* Ajuster les marges pour l'impression */
+  body {
+    margin: 0;
+    padding: 0;
+  }
+
+  #root {
+    max-width: 100%;
+    padding: 1rem; /* Réduire les marges pour optimiser l'impression */
+  }
+
+  /* Facultatif : améliorer le rendu des titres ou du contenu */
+  h1, h2, h3, h4, h5, h6 {
+    color: black !important; /* Garantir une bonne lisibilité des titres */
+  }
+
+  p {
+    font-size: 12pt; /* Ajuster la taille du texte pour l'impression */
+  }
+}
+
+
+
+

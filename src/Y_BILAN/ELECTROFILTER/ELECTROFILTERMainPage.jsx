@@ -1,0 +1,128 @@
+import React, { useState } from 'react';
+//import ELECTROFILTER_Parameters from './1_ELECTROFILTER_Parameters';
+import ELECTROFILTERFlueGasParameters from './1_ELECTROFILTER_Flue_gas_ML';
+import ELECTROFILTERFlueGasPollutantEmission  from './2_ELECTROFILTER_Pollutant_Emission_ML';
+import ELECTROFILTERDesign from './3_ELECTROFILTER_Design_ML';
+import ELECTROFILTEROpex from './4_ELECTROFILTER_Opex';
+import '../../index.css';
+
+import PrintButton from '../../C_Components/Windows_print';
+import Input_bilan from '../../C_Components/MiseEnFormeInputParamBilan';
+import '../../index.css';
+
+
+import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
+import { translations } from './ELECTROFILTER_traduction';
+
+const ELECTROFILTERMainPage = ({ nodeData, title, onSendData, onClose, onGoBack , currentLanguage = 'fr' }) => {
+
+  const languageCode = getLanguageCode(currentLanguage);
+  const t = (key) => {
+    return translations[languageCode]?.[key] || translations['fr']?.[key] || key;
+  };
+
+  const [innerData, setInnerData] = useState(nodeData.result);
+  const tabs = [
+  //{name: 'Steam Parameters',content: (<ELECTROFILTER_Parameters innerData={innerData} />),},
+  {name: t('Flue gases'), content: < ELECTROFILTERFlueGasParameters innerData={innerData}setInnerData={setInnerData}currentLanguage={currentLanguage}/> },
+  {name: t('Pollutant Emissions'), content: <ELECTROFILTERFlueGasPollutantEmission  innerData={innerData}setInnerData={setInnerData}currentLanguage={currentLanguage}/>,},
+  {name: t('Design'), content: < ELECTROFILTERDesign innerData={innerData}setInnerData={setInnerData}currentLanguage={currentLanguage}/> },
+  //{name: t('Opex'), content: < ELECTROFILTEROpex innerData={innerData}setInnerData={setInnerData} currentLanguage={currentLanguage}/> },
+  ];
+
+  const [activeTabIndex, setActiveTabIndex] = useState(0);
+
+  const renderTabContent = () => {
+    return tabs[activeTabIndex]?.content || null;
+  };
+
+  const sendAllData = () => {
+    onSendData({
+      result: {
+        FG_OUT_kg_h : innerData['FG_OUT_kg_h'],
+        PollutantInput : innerData['PInput'],
+        T_OUT : innerData['T_OUT'],
+        PollutantOutput :   innerData['Poutput'],
+        ResidusOutput : innerData['Residus'],
+        MasseDechet : innerData['masse'],
+        P_OUT: innerData['P_out_mmCE'],
+
+        activeNodes_Elec: innerData['activeNodes_Elec'],
+        activeNodes_Eau: innerData['activeNodes_Eau'],
+        activeNodes_Reactifs: innerData['activeNodes_Reactifs'],
+        activeNodes_Energie: innerData['activeNodes_Energie'],
+        activeNodes_CO2: innerData['activeNodes_CO2'],
+        activeNodes_cout: innerData['activeNodes_cout']
+      }
+    })
+};
+
+  return (
+    <div className="cadre_pour_onglet_principal">
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: '20px',
+        }}
+      >
+        <h1>{t('ELECTROFILTER Configuration')}</h1>
+        <button
+          onClick={() =>{onGoBack(null); sendAllData()}}
+          style={{
+            padding: '8px 16px',
+            background: '#4a90e2',
+            color: 'white',
+            border: 'none',
+            borderRadius: '4px',
+            cursor: 'pointer',
+            fontWeight: 'bold',
+          }}
+        >
+          {t('Back to Flow')}
+        </button>
+      </div>
+
+      <div
+        style={{
+          display: 'flex',
+          borderBottom: '2px solid #ddd',
+          marginBottom: '20px',
+          overflowX: 'auto',
+        }}
+      >
+        {tabs.map((tab, index) => (
+          <button
+            key={index}
+            onClick={() => setActiveTabIndex(index)}
+            style={{
+              padding: '10px 20px',
+              background: activeTabIndex === index ? '#4a90e2' : 'white',
+              color: activeTabIndex === index ? 'white' : '#333',
+              border: 'none',
+              borderBottom:
+                activeTabIndex === index
+                  ? '2px solid #4a90e2'
+                  : '2px solid transparent',
+              cursor: 'pointer',
+              fontWeight: activeTabIndex === index ? 'bold' : 'normal',
+              whiteSpace: 'nowrap',
+              minWidth: 'fit-content',
+            }}
+          >
+            {tab.name}
+          </button>
+        ))}
+      </div>
+
+      <div
+        style={{ padding: '20px', background: '#f9f9f9', borderRadius: '8px' }}
+      >
+        {renderTabContent()}
+      </div>
+    </div>
+  );
+};
+
+export default ELECTROFILTERMainPage;

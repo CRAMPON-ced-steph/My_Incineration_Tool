@@ -1,0 +1,137 @@
+import React, { useState, useEffect } from 'react';
+import SCRUBBERFlueGasParameters from './2_SCRUBBER_Flue_gas_ML';
+import SCRUBBERFlueGasPollutantEmission from './3_SCRUBBER_Pollutant_Emission_ML';
+import HClScrubberCalculator from './Laveur_acid';
+import SO2ScrubberCalculator from './Laveur_basique';
+import SCRUBBEROpex from './5_SCRUBBER_Opex';
+import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
+import { translations } from './SCRUBBER_traduction';
+import '../../index.css';
+
+const SCRUBBERMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLanguage = 'fr' }) => {
+  const languageCode = getLanguageCode(currentLanguage);
+  const t = (key) => {
+    return translations[languageCode]?.[key] || translations['fr']?.[key] || key;
+  };
+
+  const [innerData, setInnerData] = useState(nodeData.result);
+  const [activeTab, setActiveTab] = useState(0);
+
+  const tabs = [
+    {
+      name: t('Flue gases'),
+      content: <SCRUBBERFlueGasParameters innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} />
+    },
+    {
+      name: t('Pollutant Emissions'),
+      content: <SCRUBBERFlueGasPollutantEmission innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} />
+    },
+    {
+      name: t('Scrubber acide'),
+      content: <HClScrubberCalculator innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} />
+    },
+    {
+      name: t('Scrubber basique'),
+      content: <SO2ScrubberCalculator innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} />
+    },
+    {
+      name: t('Opex'),
+      content: <SCRUBBEROpex innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} />
+    },
+  ];
+
+  const renderTabContent = () => {
+    return tabs[activeTab]?.content || null;
+  };
+
+  const sendAllData = () => {
+    onSendData({
+      result: {
+        FG_OUT_kg_h: innerData['FG_OUT_kg_h'],
+        PollutantInput: innerData['PInput'],
+        T_OUT: innerData['T_OUT'],
+        PollutantOutput: innerData['Poutput'],
+        ResidusOutput: innerData['Residus'],
+        MasseDechet: innerData['masse'],
+        activeNodes_Elec: innerData['activeNodes_Elec'],
+        activeNodes_Eau: innerData['activeNodes_Eau'],
+        activeNodes_Reactifs: innerData['activeNodes_Reactifs'],
+        activeNodes_Energie: innerData['activeNodes_Energie'],
+        activeNodes_CO2: innerData['activeNodes_CO2'],
+        activeNodes_cout: innerData['activeNodes_cout']
+      }
+    });
+  };
+
+  return (
+    <div className="cadre_pour_onglet_principal">
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: '20px',
+        }}
+      >
+        <h1>{t('SCRUBBER Configuration')}</h1>
+        <button
+          onClick={() => {
+            onGoBack(null);
+            sendAllData();
+          }}
+          style={{
+            padding: '8px 16px',
+            background: '#4a90e2',
+            color: 'white',
+            border: 'none',
+            borderRadius: '4px',
+            cursor: 'pointer',
+            fontWeight: 'bold',
+          }}
+        >
+          {t('Back to Flow')}
+        </button>
+      </div>
+
+      <div
+        style={{
+          display: 'flex',
+          borderBottom: '2px solid #ddd',
+          marginBottom: '20px',
+          overflowX: 'auto',
+        }}
+      >
+        {tabs.map((tab, index) => (
+          <button
+            key={index}
+            onClick={() => setActiveTab(index)}
+            style={{
+              padding: '10px 20px',
+              background: activeTab === index ? '#4a90e2' : 'white',
+              color: activeTab === index ? 'white' : '#333',
+              border: 'none',
+              borderBottom:
+                activeTab === index
+                  ? '2px solid #4a90e2'
+                  : '2px solid transparent',
+              cursor: 'pointer',
+              fontWeight: activeTab === index ? 'bold' : 'normal',
+              whiteSpace: 'nowrap',
+              minWidth: 'fit-content',
+            }}
+          >
+            {tab.name}
+          </button>
+        ))}
+      </div>
+
+      <div
+        style={{ padding: '20px', background: '#f9f9f9', borderRadius: '8px' }}
+      >
+        {renderTabContent()}
+      </div>
+    </div>
+  );
+};
+
+export default SCRUBBERMainPage;

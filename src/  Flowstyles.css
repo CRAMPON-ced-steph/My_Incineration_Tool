@@ -1,0 +1,136 @@
+/* Styles pour le flux avec noeuds à connexions multiples */
+
+.react-flow__node {
+  transition: all 0.3s ease;
+}
+
+.react-flow__handle {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #555;
+  transition: background-color 0.2s;
+}
+
+.react-flow__handle:hover {
+  background-color: #0088cc;
+  cursor: crosshair;
+}
+
+/* Style différent pour les entrées et sorties */
+.react-flow__handle-left {
+  background-color: #6366f1; /* Couleur pour les entrées */
+}
+
+.react-flow__handle-right {
+  background-color: #10b981; /* Couleur pour les sorties */
+}
+
+/* Styles des connexions */
+.react-flow__edge-path {
+  stroke: #b1b1b7;
+  stroke-width: 2;
+  transition: stroke 0.3s, stroke-width 0.3s;
+}
+
+.react-flow__edge.selected .react-flow__edge-path,
+.react-flow__edge:focus .react-flow__edge-path,
+.react-flow__edge:focus-visible .react-flow__edge-path {
+  stroke: #1a73e8;
+  stroke-width: 3;
+}
+
+/* Styles d'étiquette de flux */
+.react-flow__edge-text {
+  font-size: 10px;
+  fill: #666;
+  paint-order: stroke;
+  stroke: #fff;
+  stroke-width: 2px;
+  pointer-events: none;
+}
+
+/* Style pour les noeuds actifs */
+.active-node {
+  box-shadow: 0 0 0 2px #10b981;
+}
+
+/* Style pour les noeuds sélectionnés */
+.selected-node {
+  box-shadow: 0 0 0 2px #2563eb;
+}
+
+/* Indications visuelles de connexion en cours */
+.react-flow__handle.connecting {
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 5px rgba(99, 102, 241, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(99, 102, 241, 0);
+  }
+}
+
+/* Style pour la zone du flux */
+.Zone-fond-blanc {
+  background: #f7f9fb;
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.relative-flex-container {
+  position: relative;
+  flex-grow: 1;
+}
+
+.btn-position {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 10;
+}
+
+/* Animations pour les connexions */
+@keyframes flowAnimation {
+  0% {
+    stroke-dashoffset: 24;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+.react-flow__edge-animated .react-flow__edge-path {
+  stroke-dasharray: 5, 5;
+  animation: flowAnimation 1s linear infinite;
+}
+
+/* Styles pour les indicateurs de connexion */
+.connection-indicator {
+  position: absolute;
+  font-size: 10px;
+  background: rgba(255, 255, 255, 0.8);
+  padding: 2px 4px;
+  border-radius: 4px;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.input-indicator {
+  left: -5px;
+  transform: translateX(-100%);
+}
+
+.output-indicator {
+  right: -5px;
+  transform: translateX(100%);
+}
