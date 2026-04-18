@@ -11,6 +11,7 @@ const COLORS = {
   CHARTREUSE: '#7FFF00',
   CHOCOLATE: '#D2691E',
   TEAL: '#008080', // Couleur pour le screenshot
+  DARKORANGE: '#FF8C00', // Couleur pour l'édition de rapport
 };
 
 function DropdownMenu({ 
@@ -30,6 +31,7 @@ function DropdownMenu({
   onLoadProject,
   onLogout,
   onScreenshot, // Nouvelle prop pour la capture d'écran
+  onEditRapport,
   currentLanguage = 'fr',
   onLanguageChange 
 }) {
@@ -53,7 +55,8 @@ function DropdownMenu({
         'Load Project': 'Charger Projet',
         'Logout': 'Déconnexion',
         'Language': 'Langue',
-        'Screenshot': 'Capture d\'écran'
+        'Screenshot': 'Capture d\'écran',
+        'Edit Rapport': 'Éditer Rapport'
       },
       'en': {
         'Bilan': 'Balance',
@@ -70,7 +73,8 @@ function DropdownMenu({
         'Load Project': 'Load Project',
         'Logout': 'Logout',
         'Language': 'Language',
-        'Screenshot': 'Screenshot'
+        'Screenshot': 'Screenshot',
+        'Edit Rapport': 'Edit Report'
       },
       'de': {
         'Bilan': 'Bilanz',
@@ -87,7 +91,8 @@ function DropdownMenu({
         'Load Project': 'Projekt laden',
         'Logout': 'Abmelden',
         'Language': 'Sprache',
-        'Screenshot': 'Bildschirmfoto'
+        'Screenshot': 'Bildschirmfoto',
+        'Edit Rapport': 'Bericht bearbeiten'
       },
       'es': {
         'Bilan': 'Balance',
@@ -104,7 +109,8 @@ function DropdownMenu({
         'Load Project': 'Cargar Proyecto',
         'Logout': 'Cerrar Sesión',
         'Language': 'Idioma',
-        'Screenshot': 'Captura de pantalla'
+        'Screenshot': 'Captura de pantalla',
+        'Edit Rapport': 'Editar Informe'
       },
       'it': {
         'Bilan': 'Bilancio',
@@ -121,7 +127,8 @@ function DropdownMenu({
         'Load Project': 'Carica Progetto',
         'Logout': 'Disconnetti',
         'Language': 'Lingua',
-        'Screenshot': 'Screenshot'
+        'Screenshot': 'Screenshot',
+        'Edit Rapport': 'Modifica Report'
       }
     };
     
@@ -186,6 +193,12 @@ function DropdownMenu({
       label: translate('Screenshot'),
       onClick: onScreenshot,
       backgroundColor: COLORS.TEAL,
+    },
+    {
+      id: 'editRapport',
+      label: translate('Edit Rapport'),
+      onClick: onEditRapport,
+      backgroundColor: COLORS.DARKORANGE,
     },
     {
       id: 'save',

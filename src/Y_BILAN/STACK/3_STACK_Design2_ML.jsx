@@ -194,6 +194,28 @@ const STACKdesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
   const conformite = concentration <= valeurLimite ? t('compliant') : t('nonCompliant');
   const pourcentageVLE = ((concentration / valeurLimite) * 100).toFixed(1);
 
+  // Write design results to innerData whenever computed values change
+  useEffect(() => {
+    if (!setInnerData) return;
+    setInnerData(prev => ({
+      ...prev,
+      stack_hp_min: hp,
+      stack_hp_multistack: hp2,
+      stack_hp_obstacles: hp3,
+      stack_concentration_mg_Nm3: concentration,
+      stack_emission_limit_mg_Nm3: valeurLimite,
+      stack_compliant_pct: parseFloat(pourcentageVLE),
+      stack_compliant: concentration <= valeurLimite,
+      stack_pollutant_type: polluantType,
+      stack_is_gaz: isGaz,
+      stack_zone: zone,
+      stack_Qv_Nm3_h: Qv_FG_Nm3_h,
+      stack_Qv_m3_h: Qv_FG_m3_h,
+      stack_Qm_kg_h: Qm_FG_kg_h,
+    }));
+  }, [hp, hp2, hp3, concentration, valeurLimite, pourcentageVLE, polluantType, isGaz, zone,
+      Qv_FG_Nm3_h, Qv_FG_m3_h, Qm_FG_kg_h, setInnerData]); // eslint-disable-line react-hooks/exhaustive-deps
+
   // Helper function to check for negative values
   const isNegative = (value) => {
     if (typeof value === 'number') return value < 0;

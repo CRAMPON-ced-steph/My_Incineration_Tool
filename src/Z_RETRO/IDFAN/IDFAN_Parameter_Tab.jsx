@@ -11,6 +11,7 @@ import CalculationResults from '../../C_Components/ShowCalculationResult_retro';
 import { getTranslatedParameter, getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './IDFAN_traduction';
 
+import IDFAN_Retro_Rapport from './IDFAN_Retro_Rapport';
 import '../../index.css';
 
 // Constantes pour les types de dissipation d'énergie
@@ -67,6 +68,7 @@ const IDFAN_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLang
   });
   const [isSliderOpen, setIsSliderOpen] = useState(false);
   const [isCalculating, setIsCalculating] = useState(false);
+  const [showReport, setShowReport] = useState(false);
 
   // Récupération des traductions avec mémorisation
   const { languageCode, t } = useMemo(() => {
@@ -163,7 +165,7 @@ const IDFAN_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLang
       }
 
       setCalculationResult_IDFAN(result);
-      onSendData({ result });
+      onSendData({ result, inputData: { P_amont, Rdt_elec, Type } });
 
     } catch (error) {
       console.error('Erreur lors du calcul:', error);
@@ -310,6 +312,24 @@ const IDFAN_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLang
         <div className="no-results-message">
           <p>{t.NoResults}</p>
         </div>
+      )}
+
+      <div style={{ marginTop: '12px' }}>
+        <button
+          onClick={() => setShowReport(true)}
+          disabled={!calculationResult_IDFAN || isCalculating}
+          style={{ width: '100%', padding: '8px 16px', background: calculationResult_IDFAN ? '#1a3a6b' : '#ccc', color: '#fff', border: 'none', borderRadius: '4px', cursor: calculationResult_IDFAN ? 'pointer' : 'not-allowed', fontWeight: 'bold', fontSize: '13px' }}
+        >
+          Editer Rapport
+        </button>
+      </div>
+
+      {showReport && calculationResult_IDFAN && (
+        <IDFAN_Retro_Rapport
+          calculationResult={calculationResult_IDFAN}
+          inputParams={{ P_amont, Rdt_elec, Type }}
+          onClose={() => setShowReport(false)}
+        />
       )}
     </div>
   );

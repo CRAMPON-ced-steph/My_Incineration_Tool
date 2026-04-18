@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Calculator, Flame, Wind, Thermometer } from 'lucide-react';
+import { Calculator } from 'lucide-react';
 
 // ============================================================================
 // FONCTION PURE DE CALCUL DE COMBUSTION - VERSION CORRIGÉE

@@ -8,6 +8,7 @@ import ClearButton from '../../C_Components/Clear_Button';
 
 import { getTranslatedParameter, getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './STACK_traduction';
+import STACK_Retro_Rapport from './STACK_Retro_Rapport';
 
 import '../../index.css';
 
@@ -73,6 +74,7 @@ const STACK_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLang
   });
   const [isSliderOpen, setIsSliderOpen] = useState(false);
   const [isCalculating, setIsCalculating] = useState(false);
+  const [showReport, setShowReport] = useState(false);
 
   // Récupération des traductions avec mémorisation
   const { languageCode, t } = useMemo(() => {
@@ -323,6 +325,43 @@ const STACK_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLang
         <div className="no-results-message">
           <p>{t.NoResults}</p>
         </div>
+      )}
+
+      {/* Bouton Editer Rapport */}
+      <div style={{ marginTop: '12px' }}>
+        <button
+          onClick={() => setShowReport(true)}
+          disabled={!calculationResult || isCalculating}
+          style={{
+            width: '100%',
+            padding: '8px 16px',
+            background: calculationResult ? '#1a3a6b' : '#ccc',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '4px',
+            cursor: calculationResult ? 'pointer' : 'not-allowed',
+            fontWeight: 'bold',
+            fontSize: '13px',
+          }}
+        >
+          Editer Rapport
+        </button>
+      </div>
+
+      {/* Modal rapport */}
+      {showReport && calculationResult && (
+        <STACK_Retro_Rapport
+          calculationResult={calculationResult}
+          inputParams={{
+            Tstack,
+            Qv_wet_Nm3_h,
+            O2_dry_pourcent,
+            H2O_pourcent,
+            CO2_dry_pourcent,
+            P_out_mmCE,
+          }}
+          onClose={() => setShowReport(false)}
+        />
       )}
     </div>
   );

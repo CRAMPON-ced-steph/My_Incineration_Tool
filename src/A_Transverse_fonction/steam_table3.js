@@ -1246,6 +1246,10 @@ const Kappa_ph = (P, H) => {
   return Cp / cv;
 };
 
+// Stubs — fonctions IAPWS-IF97 optionnelles non implémentées
+const Surface_Tension_T = () => NaN;
+const tc_ptrho = () => NaN;
+
 // 1.15 Surface tension
 const st_t = (T) => {
   T = toSIunit_T(T);

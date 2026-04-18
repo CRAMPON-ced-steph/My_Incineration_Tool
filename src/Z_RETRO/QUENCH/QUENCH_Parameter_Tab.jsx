@@ -11,6 +11,7 @@ import CalculationResults from '../../C_Components/ShowCalculationResult_retro';
 import { getTranslatedParameter, getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './QUENCH_traduction';
 
+import QUENCH_Retro_Rapport from './QUENCH_Retro_Rapport';
 import '../../index.css';
 
 // Constantes pour les types de bilan
@@ -72,6 +73,7 @@ const QUENCH_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLan
   });
   const [isSliderOpen, setIsSliderOpen] = useState(false);
   const [isCalculating, setIsCalculating] = useState(false);
+  const [showReport, setShowReport] = useState(false);
 
   // Récupération des traductions avec mémorisation
   const { languageCode, t } = useMemo(() => {
@@ -185,7 +187,7 @@ const QUENCH_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLan
       }
 
       setCalculationResult_QUENCH(result);
-      onSendData && onSendData({ result });
+      onSendData && onSendData({ result, inputData: { Teau, T_amont_QUENCH, Qeau, PDC_aero, bilanType } });
 
     } catch (error) {
       console.error('Erreur lors du calcul:', error);
@@ -356,6 +358,24 @@ const QUENCH_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLan
         <div className="no-results-message">
           <p>{t.NoResults}</p>
         </div>
+      )}
+
+      <div style={{ marginTop: '12px' }}>
+        <button
+          onClick={() => setShowReport(true)}
+          disabled={!calculationResult_QUENCH || isCalculating}
+          style={{ width: '100%', padding: '8px 16px', background: calculationResult_QUENCH ? '#1a3a6b' : '#ccc', color: '#fff', border: 'none', borderRadius: '4px', cursor: calculationResult_QUENCH ? 'pointer' : 'not-allowed', fontWeight: 'bold', fontSize: '13px' }}
+        >
+          Editer Rapport
+        </button>
+      </div>
+
+      {showReport && calculationResult_QUENCH && (
+        <QUENCH_Retro_Rapport
+          calculationResult={calculationResult_QUENCH}
+          inputParams={{ Teau, T_amont_QUENCH, Qeau, PDC_aero, bilanType }}
+          onClose={() => setShowReport(false)}
+        />
       )}
     </div>
   );

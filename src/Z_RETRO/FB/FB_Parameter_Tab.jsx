@@ -7,6 +7,7 @@ import ClearButton from '../../C_Components/Clear_Button';
 import ShowResultButton from '../../C_Components/Show_result_retro';
 import CloseButton from '../../C_Components/OnCloseButton_retro';
 import CalculationResults from '../../C_Components/ShowCalculationResult_retro';
+import FB_Retro_Rapport from './FB_Retro_Rapport';
 import '../../index.css';
 
 import { getTranslatedParameter, getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
@@ -80,6 +81,7 @@ const FB_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguag
   const [calculationResult_FB, setCalculationResult_FB] = useState(null);
   const [isSliderOpen, setIsSliderOpen] = useState(false);
   const [isCalculating, setIsCalculating] = useState(false);
+  const [showReport, setShowReport] = useState(false);
 
   // Récupération des traductions avec mémorisation
   const { languageCode, t } = useMemo(() => {
@@ -187,7 +189,7 @@ const FB_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguag
 
 
       setCalculationResult_FB(result);
-      onSendData({ result });
+      onSendData({ result, inputData: { Tair_FB_C, Thermal_losses_MW, bilanType, wasteType, Q_boue_kg_h, MS_percent, MV_percent, NCV_kcal_kg } });
       
     } catch (error) {
       console.error('Erreur lors du calcul:', error);
@@ -469,6 +471,24 @@ const FB_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguag
         <div className="no-results-message">
           <p>{t.NoResults}</p>
         </div>
+      )}
+
+      <div style={{ marginTop: '12px' }}>
+        <button
+          onClick={() => setShowReport(true)}
+          disabled={!calculationResult_FB || isCalculating}
+          style={{ width: '100%', padding: '8px 16px', background: calculationResult_FB ? '#1a3a6b' : '#ccc', color: '#fff', border: 'none', borderRadius: '4px', cursor: calculationResult_FB ? 'pointer' : 'not-allowed', fontWeight: 'bold', fontSize: '13px' }}
+        >
+          Editer Rapport
+        </button>
+      </div>
+
+      {showReport && calculationResult_FB && (
+        <FB_Retro_Rapport
+          calculationResult={calculationResult_FB}
+          inputParams={{ Tair_FB_C, Thermal_losses_MW, bilanType, wasteType, Q_boue_kg_h, MS_percent, MV_percent, NCV_kcal_kg }}
+          onClose={() => setShowReport(false)}
+        />
       )}
     </div>
   );

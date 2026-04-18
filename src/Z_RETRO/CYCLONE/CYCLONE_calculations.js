@@ -1,6 +1,6 @@
-import {fh_CO2,fh_H2O, fh_O2,fh_N2,fh_AIR} from '../../A_Transverse_fonction/enthalpy_gas';
+import {fh_CO2,fh_H2O, fh_O2,fh_N2} from '../../A_Transverse_fonction/enthalpy_gas';
 import {AIR_DILUTION_T } from '../../A_Transverse_fonction/enthalpy_mix_gas';
-import {CO2_kg_m3, O2_kg_m3,N2_kg_m3, H2O_kg_m3, O2_m3_kg, N2_m3_kg} from '../../A_Transverse_fonction/conv_calculation';
+import {CO2_kg_m3, O2_kg_m3,N2_kg_m3, H2O_kg_m3} from '../../A_Transverse_fonction/conv_calculation';
 
 import {coeff_Nm3_to_m3} from '../../A_Transverse_fonction/conv_calculation';
 import {O2_masse_volume, rho_air} from '../../A_Transverse_fonction/constantes';
@@ -74,12 +74,12 @@ const Qair_parasite = Qv_air_entrant_Nm3_h-Q_air_decolmatation;
   const Qv_wet_Nm3_h = Qv_sec_Nm3_h + Qv_H2O_Nm3_h;
 
   // ON CALCULE LA REPARTITION POURCENT VOLUMIQUE
-  const O2_dry_pourcent = Qv_O2_Nm3_h / Qv_sec_Nm3_h * 100;
-  const O2_humide_pourcent = Qv_O2_Nm3_h / Qv_wet_Nm3_h * 100;
-  const H2O_pourcent = Qv_H2O_Nm3_h / Qv_wet_Nm3_h * 100;
-  const N2_humide_pourcent = Qv_N2_Nm3_h / Qv_wet_Nm3_h * 100;
-  const CO2_dry_pourcent = Qv_CO2_Nm3_h / Qv_sec_Nm3_h * 100;
-  const CO2_humide_pourcent = Qv_CO2_Nm3_h / Qv_wet_Nm3_h * 100;
+  const O2_dry_pourcent = Qv_sec_Nm3_h > 0 ? (Qv_O2_Nm3_h / Qv_sec_Nm3_h) * 100 : 0;
+  const O2_humide_pourcent = Qv_wet_Nm3_h > 0 ? (Qv_O2_Nm3_h / Qv_wet_Nm3_h) * 100 : 0;
+  const H2O_pourcent = Qv_wet_Nm3_h > 0 ? (Qv_H2O_Nm3_h / Qv_wet_Nm3_h) * 100 : 0;
+  const N2_humide_pourcent = Qv_wet_Nm3_h > 0 ? (Qv_N2_Nm3_h / Qv_wet_Nm3_h) * 100 : 0;
+  const CO2_dry_pourcent = Qv_sec_Nm3_h > 0 ? (Qv_CO2_Nm3_h / Qv_sec_Nm3_h) * 100 : 0;
+  const CO2_humide_pourcent = Qv_wet_Nm3_h > 0 ? (Qv_CO2_Nm3_h / Qv_wet_Nm3_h) * 100 : 0;
 
   // Calculate enthalpies using the provided T
   const H_CO2_kj = fh_CO2(T_amont_CYCLONE) * Qm_CO2_kg_h;

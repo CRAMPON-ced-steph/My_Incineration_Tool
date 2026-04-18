@@ -96,14 +96,14 @@ const  Teau_alim = parseFloat(T_eau_alimentation_C) || 0;
   
   let Delta_h;
 
-  if (bilanTypeVapeur === 'Vapeur saturee') {
+  if (bilanTypeVapeur === 'SATURATED_STEAM') {
     Q_vapeur_calculee_kg_h = (H_tot_kj - H_tot_out_kj) * (1 - Pth_pourcent / 100) / (hV_p(Pvap_bar_abs) - hL_T(Teau_alim));
     H_vapeur = (hV_p(Pvap_bar_abs) - hL_T(Teau_alim)) * Q_vapeur_calculee_kg_h / 3600;
     Tvap_saturee = Tsat_p(Pvap_bar_abs);
   
     Delta_h = (hV_p(Pvap_bar_abs) - hL_T(T_eau_alimentation_C));
   
-  } else if (bilanTypeVapeur === 'Vapeur surchauffee') {
+  } else if (bilanTypeVapeur === 'SUPERHEATED_STEAM') {
     Q_vapeur_calculee_kg_h = (H_tot_kj - H_tot_out_kj) * (1 - Pth_pourcent / 100) / (h_pT(Pvap_bar_abs, Tvap_surchauffee) - hL_T(Teau_alim));
     H_vapeur = (h_pT(Pvap_bar_abs, Tvap_surchauffee) - hL_T(Teau_alim)) * Q_vapeur_calculee_kg_h / 3600;
   

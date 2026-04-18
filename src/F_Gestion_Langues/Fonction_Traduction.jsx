@@ -1,8 +1,5 @@
-export const getTranslatedParameter = (parameter, section) => {
-  if (section === 'influentWaterQuality' || section === 'outletWaterQuality') {
-    return t[parameter] || parameter;
-  }
-  return t[parameter] || parameter;
+export const getTranslatedParameter = (parameter) => {
+  return parameter;
 };
 
 export const getLanguageCode = (currentLang) => {

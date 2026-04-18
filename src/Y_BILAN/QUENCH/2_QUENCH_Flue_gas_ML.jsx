@@ -26,9 +26,6 @@ const QUENCHFlueGasParameters = ({ innerData, currentLanguage = 'fr' }) => {
     return translations[languageCode]?.[key] || translations['fr']?.[key] || key;
   };
 
-  console.log(currentLanguage)
-  console.log(languageCode)
-
   const [emissions_QUENCH, setEmissions_QUENCH] = useState(() => {
     const savedEmissions = localStorage.getItem('emissions_QUENCH');
     return savedEmissions ? JSON.parse(savedEmissions) : initialEmissions_QUENCH;

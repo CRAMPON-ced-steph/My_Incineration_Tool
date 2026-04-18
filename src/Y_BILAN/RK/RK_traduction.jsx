@@ -10,6 +10,7 @@ export const translations = {
     opex: 'Opex',
     backToFlow: 'Retour au flux',
     sendData: 'Envoyer les données',
+    rapport: 'Rapport',
     
     // Flue Gas Parameters (2_Flue_gas.jsx)
     calculationParameters: 'Paramètres de calcul',
@@ -119,6 +120,7 @@ export const translations = {
     opex: 'Opex',
     backToFlow: 'Back to Flow',
     sendData: 'Send Data',
+    rapport: 'Report',
     
     // Flue Gas Parameters
     calculationParameters: 'Calculation parameters',
@@ -228,6 +230,7 @@ export const translations = {
     opex: 'Opex',
     backToFlow: 'Volver al flujo',
     sendData: 'Enviar datos',
+    rapport: 'Informe',
     
     calculationParameters: 'Parámetros de cálculo',
     calculatedParameters: 'Parámetros calculados',
@@ -331,6 +334,7 @@ export const translations = {
     opex: 'Opex',
     backToFlow: 'Zurück zum Fluss',
     sendData: 'Daten senden',
+    rapport: 'Bericht',
     
     calculationParameters: 'Berechnungsparameter',
     calculatedParameters: 'Berechnete Parameter',
@@ -434,6 +438,7 @@ export const translations = {
     opex: 'Opex',
     backToFlow: 'Torna al flusso',
     sendData: 'Invia dati',
+    rapport: 'Rapporto',
     
     calculationParameters: 'Parametri di calcolo',
     calculatedParameters: 'Parametri calcolati',
@@ -537,6 +542,7 @@ export const translations = {
     opex: 'Opex',
     backToFlow: 'Voltar ao fluxo',
     sendData: 'Enviar dados',
+    rapport: 'Relatório',
     
     calculationParameters: 'Parâmetros de cálculo',
     calculatedParameters: 'Parâmetros calculados',
@@ -640,6 +646,7 @@ export const translations = {
     opex: 'Эксплуатационные расходы',
     backToFlow: 'Вернуться к потоку',
     sendData: 'Отправить данные',
+    rapport: 'Отчёт',
     
     calculationParameters: 'Параметры расчета',
     calculatedParameters: 'Расчетные параметры',
@@ -743,6 +750,7 @@ export const translations = {
     opex: '運営費',
     backToFlow: 'フローに戻る',
     sendData: 'データ送信',
+    rapport: 'レポート',
     
     calculationParameters: '計算パラメータ',
     calculatedParameters: '計算されたパラメータ',
@@ -846,6 +854,7 @@ export const translations = {
     opex: '运营费用',
     backToFlow: '返回流程',
     sendData: '发送数据',
+    rapport: '报告',
     
     calculationParameters: '计算参数',
     calculatedParameters: '计算得出的参数',
@@ -949,6 +958,7 @@ export const translations = {
     opex: 'نفقات التشغيل',
     backToFlow: 'العودة إلى التدفق',
     sendData: 'إرسال البيانات',
+    rapport: 'تقرير',
     
     calculationParameters: 'معاملات الحساب',
     calculatedParameters: 'المعاملات المحسوبة',

@@ -10,6 +10,7 @@ export const translations = {
     export: 'Exporter',
     backToFlow: 'Retour au flux',
     sendData: 'Envoyer les données',
+    rapport: 'Rapport',
     title: 'Configuration Chaudière de Récupération de Chaleur',
 
     stepMM: 'Pas de calcul',

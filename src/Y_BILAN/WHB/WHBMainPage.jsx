@@ -5,6 +5,7 @@ import WHBFlueGasPollutantEmission from './3_WHB_Pollutant_Emission_ML';
 import WHBDesign from './4_WHB_Design_ML';
 import TurbineCalculator from './6_WHB_ValoVapeur3_ML';
 import CalculateurChaudiere from './7_Various_boiler_calculations_ML';
+import WHB_Report from './WHB_Report';
 
 import '../../index.css';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
@@ -77,12 +78,17 @@ const WHBMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLa
       name: 'boilerDimensioning',
       label: t('boilerDimensioning'),
       content: (
-        <CalculateurChaudiere 
-          innerData={innerData} 
+        <CalculateurChaudiere
+          innerData={innerData}
           setInnerData={setInnerData}
           currentLanguage={currentLanguage}
         />
       ),
+    },
+    {
+      name: 'rapport',
+      label: 'Rapport',
+      content: <WHB_Report innerData={innerData} />,
     },
   ];
 
@@ -95,11 +101,9 @@ const WHBMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLa
   };
 
   const sendAllData = () => {
-    console.log('Sending data:', innerData);
-    console.log('P_out value:', innerData['P_out_mmCE']);
-    
     onSendData({
       result: {
+        ...innerData,
         FG_OUT_kg_h: innerData['FG_OUT_kg_h'],
         PollutantInput: innerData['PInput'],
         T_OUT: innerData['T_OUT'],

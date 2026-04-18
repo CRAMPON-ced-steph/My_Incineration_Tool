@@ -27,12 +27,12 @@ export const performCalculation_QUENCH_option_Qeau = (nodeData, Qeau, Teau, PDC_
   const Qv_wet_Nm3_h = Qv_sec_Nm3_h + Qv_H2O_Nm3_h;
 
   // CALCUL DES POURCENTAGES VOLUMIQUES
-  const O2_dry_pourcent = (Qv_O2_Nm3_h / Qv_sec_Nm3_h) * 100;
-  const O2_humide_pourcent = (Qv_O2_Nm3_h / Qv_wet_Nm3_h) * 100;
-  const H2O_pourcent = (Qv_H2O_Nm3_h / Qv_wet_Nm3_h) * 100;
-  const N2_humide_pourcent = (Qv_N2_Nm3_h / Qv_wet_Nm3_h) * 100;
-  const CO2_dry_pourcent = (Qv_CO2_Nm3_h / Qv_sec_Nm3_h) * 100;
-  const CO2_humide_pourcent = (Qv_CO2_Nm3_h / Qv_wet_Nm3_h) * 100;
+  const O2_dry_pourcent = Qv_sec_Nm3_h > 0 ? (Qv_O2_Nm3_h / Qv_sec_Nm3_h) * 100 : 0;
+  const O2_humide_pourcent = Qv_wet_Nm3_h > 0 ? (Qv_O2_Nm3_h / Qv_wet_Nm3_h) * 100 : 0;
+  const H2O_pourcent = Qv_wet_Nm3_h > 0 ? (Qv_H2O_Nm3_h / Qv_wet_Nm3_h) * 100 : 0;
+  const N2_humide_pourcent = Qv_wet_Nm3_h > 0 ? (Qv_N2_Nm3_h / Qv_wet_Nm3_h) * 100 : 0;
+  const CO2_dry_pourcent = Qv_sec_Nm3_h > 0 ? (Qv_CO2_Nm3_h / Qv_sec_Nm3_h) * 100 : 0;
+  const CO2_humide_pourcent = Qv_wet_Nm3_h > 0 ? (Qv_CO2_Nm3_h / Qv_wet_Nm3_h) * 100 : 0;
 
   // CALCUL DES ENTHALPIES
   const H_CO2_kj = fh_CO2(T) * Qm_CO2_kg_h;

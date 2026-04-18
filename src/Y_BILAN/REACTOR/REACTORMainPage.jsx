@@ -4,6 +4,7 @@ import REACTORFlueGasParameters from './1_REACTOR_Flue_gas_ML';
 import REACTORFlueGasPollutantEmission  from './2_REACTOR_Pollutant_Emission_ML';
 import REACTORDesign from './3_REACTOR_Design_ML';
 import REACTOROpex from './4_REACTOR_Opex_ML';
+import REACTOR_Report from './REACTOR_Report';
 
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './REACTOR_traduction';
@@ -43,6 +44,10 @@ const REACTORMainPage = ({ nodeData, title, onSendData, onClose, onGoBack,  curr
       name: t('opex'),
       content: <REACTOROpex innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} />
     },
+    {
+      name: 'Rapport',
+      content: <REACTOR_Report innerData={innerData} />
+    },
   ], [currentLanguage, innerData, t]);
 
   const [isActive, setIsActive] = useState(true);
@@ -54,6 +59,7 @@ const REACTORMainPage = ({ nodeData, title, onSendData, onClose, onGoBack,  curr
   const sendAllData = () => {
     onSendData({
       result: {
+        ...innerData,
         FG_OUT_kg_h : innerData['FG_OUT_kg_h'],
         PollutantInput : innerData['PInput'],
         T_OUT : innerData['T_OUT'],

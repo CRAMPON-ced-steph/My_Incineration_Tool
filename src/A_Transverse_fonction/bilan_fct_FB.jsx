@@ -177,7 +177,7 @@ export const Fact_U_Encrasse = (FactU, EncrasseEchg) => {
 
 export const Fact_UA = (QFumees, D_TLM) => {
   const F = 1;
-  return QFumees / (F * D_TLM);
+  return D_TLM !== 0 ? QFumees / (F * D_TLM) : 0;
 };
 
 // ============================================
@@ -287,10 +287,15 @@ export const MasseAir = (DebitCarbone, DebitHydrogene, DebitSoufre, DebitOxygene
          4.310055 * (1 + 40 / 100));
 };
 
-export const Mole_Excess_O2 = (Exces, MasseAir, MasseAirInstrum) => {
-  return ((MasseAir * (1 - 1 / (1 + Exces / 100)) * 1 / 4.310055) + 
-         (MasseAirInstrum * 1 / 4.310055)) * 1000 / 32;
+export const Mole_Excess_O2 = (Exces, MasseAir) => {
+  return ((MasseAir * (1 - 1 / (1 + Exces / 100)) * 1 / 4.310055) ) * 1000 / 32;
 };
+
+export const Mole_Excess_O2_air_varia = (MasseAir) => {
+  return ((MasseAir * 1 / 4.310055) ) * 1000 / 32;
+};
+
+
 
 export const MoleNOx = (tpMS, tpMV, tpPCI, Qboue, TempFreeBoard, MoleO2, MoleAzote) => {
   tpMS = tpMS / 100;

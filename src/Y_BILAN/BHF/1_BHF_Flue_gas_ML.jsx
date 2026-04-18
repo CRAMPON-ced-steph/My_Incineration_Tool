@@ -35,8 +35,6 @@ const BHFFlueGasParameters = ({ innerData, currentLanguage = 'fr' }) => {
   // Input data with fallback values
   const T_IN = innerData?.T_OUT || 200;
 
-console.log(T_IN);
-
   const P_IN = innerData?.P_OUT || 0;
   const FG_IN = innerData?.FG_OUT_kg_h || { CO2: 1, H2O: 1, O2: 1, N2: 1 };
 

@@ -36,14 +36,8 @@ let T = T_amont_SCRUBBER;
 
     // ON CALCULE LA MASSE D'EAU QU'IL A FALLU AJOUTER POUR ARRIVER A LA TEMPERATURE FINALE
     const H2O_pourcent =  psat_T(T_amont_SCRUBBER)*100;
-console.log(H2O_pourcent)
 
     const Qv_H2O_Nm3_h = ((Qv_N2_Nm3_h+Qv_O2_Nm3_h+Qv_CO2_Nm3_h)/(1-(H2O_pourcent/100)))*(H2O_pourcent/100);
-
-    console.log(Qv_N2_Nm3_h)
-    console.log(Qv_O2_Nm3_h )
-    console.log(Qv_CO2_Nm3_h )
-    console.log(Qv_N2_Nm3_h,Qv_O2_Nm3_h,Qv_CO2_Nm3_h )
 
     const Qm_H2O_kg_h = H2O_m3_kg(Qv_H2O_Nm3_h);
 
@@ -63,12 +57,11 @@ const Qeau = Qm_H2O_kg_h-Qm_H2O_out_kg_h;
 
 // ON CALCULE LA REPARTITION POURCENT VOLUMIQUE
 
-  const O2_dry_pourcent = Qv_O2_Nm3_h / Qv_sec_Nm3_h *100;
-  const O2_humide_pourcent =  Qv_O2_Nm3_h / Qv_wet_Nm3_h *100;
-  //const H2O_pourcent =  Qv_H2O_Nm3_h / Qv_wet_Nm3_h *100;
-  const N2_humide_pourcent =  Qv_N2_Nm3_h / Qv_wet_Nm3_h *100;
-  const CO2_dry_pourcent = Qv_CO2_Nm3_h / Qv_sec_Nm3_h *100;
-  const CO2_humide_pourcent =  Qv_CO2_Nm3_h / Qv_wet_Nm3_h *100;
+  const O2_dry_pourcent = Qv_sec_Nm3_h > 0 ? (Qv_O2_Nm3_h / Qv_sec_Nm3_h) * 100 : 0;
+  const O2_humide_pourcent = Qv_wet_Nm3_h > 0 ? (Qv_O2_Nm3_h / Qv_wet_Nm3_h) * 100 : 0;
+  const N2_humide_pourcent = Qv_wet_Nm3_h > 0 ? (Qv_N2_Nm3_h / Qv_wet_Nm3_h) * 100 : 0;
+  const CO2_dry_pourcent = Qv_sec_Nm3_h > 0 ? (Qv_CO2_Nm3_h / Qv_sec_Nm3_h) * 100 : 0;
+  const CO2_humide_pourcent = Qv_wet_Nm3_h > 0 ? (Qv_CO2_Nm3_h / Qv_wet_Nm3_h) * 100 : 0;
 
 
   // Calculate enthalpies using the provided T

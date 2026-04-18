@@ -4,6 +4,7 @@ import COOLINGTOWERFlueGasParameters from './2_COOLINGTOWER_Flue_gas_ML';
 import COOLINGTOWERFlueGasPollutantEmission  from './3_COOLINGTOWER_Pollutant_Emission_ML';
 import COOLINGTOWERDesign from './4_COOLINGTOWER_Design_ML';
 import COOLINGTOWEROpex from './5_COOLINGTOWER_Opex';
+import COOLINGTOWER_Report from './COOLINGTOWER_Report';
 
 import PrintButton from '../../C_Components/Windows_print';
 import Input_bilan from '../../C_Components/MiseEnFormeInputParamBilan';
@@ -27,6 +28,7 @@ const COOLINGTOWERMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, 
   {name: 'Pollutant Emissions', content: <COOLINGTOWERFlueGasPollutantEmission  innerData={innerData}setInnerData={setInnerData}currentLanguage={currentLanguage} />,},
   {name: 'Design', content: < COOLINGTOWERDesign innerData={innerData}setInnerData={setInnerData}currentLanguage={currentLanguage} /> },
   {name: 'Opex', content: < COOLINGTOWEROpex innerData={innerData}setInnerData={setInnerData}currentLanguage={currentLanguage}  /> },
+  {name: 'Rapport', content: <COOLINGTOWER_Report innerData={innerData} />},
   ];
 
   const [isActive, setIsActive] = useState(true);
@@ -43,6 +45,7 @@ const COOLINGTOWERMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, 
   const sendAllData = () => {
     onSendData({
       result: {
+        ...innerData,
         FG_OUT_kg_h : innerData['FG_OUT_kg_h'],
         PollutantInput : innerData['PInput'],
         T_OUT : innerData['T_OUT'],

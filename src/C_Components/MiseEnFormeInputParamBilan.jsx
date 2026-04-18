@@ -2,23 +2,10 @@
 import React from 'react';
 
 const Input_bilan = ({ input, handleChange, currentLanguage = 'fr', translations }) => {
-  // DEBUG - Ajoutez ces lignes
-  console.log('=== DEBUG Input_bilan ===');
-  console.log('currentLanguage:', currentLanguage);
-  console.log('translations:', translations);
-  console.log('translations[currentLanguage]:', translations?.[currentLanguage]);
-  console.log('Clés de input:', Object.keys(input));
-  
   // Fonction de traduction générique
   const t = (key) => {
-    if (!translations) {
-      console.log(`⚠️ Pas de translations pour la clé: ${key}`);
-      return key;
-    }
-    
-    const translated = translations[currentLanguage]?.[key] || translations['fr']?.[key] || key;
-    console.log(`Traduction de "${key}":`, translated);
-    return translated;
+    if (!translations) return key;
+    return translations[currentLanguage]?.[key] || translations['fr']?.[key] || key;
   };
 
   return (

@@ -52,9 +52,6 @@ const SEP21MainPage = ({ nodeData, title, onSendData, onClose, onGoBack, current
   };
 
   const sendAllData = () => {
-    console.log('=== SEP21 SENDING DATA ===');
-    console.log('innerData:', innerData);
-
     if (!onSendData || typeof onSendData !== 'function') {
       console.error('❌ ERROR: onSendData callback is not defined or is not a function!');
       alert('Error: Cannot send data. onSendData callback is missing.');
@@ -87,9 +84,7 @@ const SEP21MainPage = ({ nodeData, title, onSendData, onClose, onGoBack, current
         }
       };
 
-      console.log('✅ Data to send:', dataToSend);
       onSendData(dataToSend);
-      console.log('✅ Data sent successfully!');
     } catch (error) {
       console.error('❌ Error sending data:', error);
       alert('Error sending data: ' + error.message);
@@ -97,7 +92,6 @@ const SEP21MainPage = ({ nodeData, title, onSendData, onClose, onGoBack, current
   };
 
   const handleBackToFlow = () => {
-    console.log('Going back to flow...');
     sendAllData();
     if (onGoBack && typeof onGoBack === 'function') {
       onGoBack(null);

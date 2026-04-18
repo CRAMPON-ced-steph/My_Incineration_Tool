@@ -57,7 +57,6 @@ export const captureScreenshot = async (options = {}) => {
     });
     
     downloadImage(screenshot, filename);
-    console.log(`Screenshot downloaded as ${filename}`);
     return screenshot;
     
   } catch (html2canvasError) {
@@ -74,7 +73,6 @@ export const captureScreenshot = async (options = {}) => {
       });
       
       downloadImage(screenshot, filename);
-      console.log(`Screenshot downloaded as ${filename} (fallback method)`);
       return screenshot;
       
     } catch (fallbackError) {

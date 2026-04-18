@@ -97,8 +97,9 @@ function runIterativeCalc({
   Masse_air_secondaire_kg_h, Masse_air_tertiaire_kg_h,
   MS_pourcent, MV_pourcent, BoueBrute_kg_h,
   airComposition,
+  O2_pct_air_combustion = 21,
 }) {
-  const MAX_ITER = 20;
+  const MAX_ITER = 1; // boucle désactivée temporairement — 1 seule itération avec gaz = 0
   const TOLERANCE = 0.1;
   let Masse_gaz_kg_h = 0;
   let r = {};
@@ -136,7 +137,7 @@ function runIterativeCalc({
 
     const Maire_balayage = Masse_Air_Instrumentation(Mboue.C, Mboue.H, Mboue.S, Mboue.O) || 0;
     const Vair_balayage = Maire_balayage / 1.293;
-    const Maire_sec_comb_boue = MasseAir_e(Mboue.C, Mboue.H, Mboue.S, Mboue.O,Exces_air_lit,O2_pct_air_combustion)       || 0;
+    const Maire_sec_comb_boue = MasseAir_e(Mboue.C, Mboue.H, Mboue.S, Mboue.O,Exces_air_lit,O2_pct_air_combustion).MasseAir_e || 0;
     const Vair_sec_comb_boue = Vol_Air_e(Mboue.C, Mboue.H, Mboue.S, Mboue.O,Exces_air_lit,O2_pct_air_combustion) || 0;
     const Vair_sec_comb_gaz = Vol_Air_e(Mgaz.C, Mgaz.H, Mgaz.S, Mgaz.O,Exces_air_combustible,O2_pct_air_combustion) || 0;
     const Vair_sec_comb_tot = Vair_sec_comb_boue + Vair_sec_comb_gaz;
@@ -693,13 +694,13 @@ const CombustionTab = ({ innerData = {}, onInnerDataChange, onResultsChange, cur
         <div style={secTitle}>💨 {t('Paramètres de Combustion')}</div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '15px' }}>
           <div><label style={labelStyle}>{t("Excès d'air Lit Fluidisé")} (%)</label>
-            <input type="number" step="0.1" value={emissions.Exces_air_lit} onChange={(e) => handleEmission('Exces_air_lit', e.target.value)} style={inputStyle} /></div>
+            <input type="number" step="0.1" placeholder="78" value={emissions.Exces_air_lit} onChange={(e) => handleEmission('Exces_air_lit', e.target.value)} style={inputStyle} /></div>
           <div><label style={labelStyle}>{t("Excès d'air Combustible d'appoint")} (%)</label>
-            <input type="number" step="0.1" value={emissions.Exces_air_combustible} onChange={(e) => handleEmission('Exces_air_combustible', e.target.value)} style={inputStyle} /></div>
+            <input type="number" step="0.1" placeholder="78" value={emissions.Exces_air_combustible} onChange={(e) => handleEmission('Exces_air_combustible', e.target.value)} style={inputStyle} /></div>
           <div><label style={labelStyle}>{t('O₂% air de combustion lit')}</label>
-            <input type="number" step="0.1" value={emissions.O2_pct_air_combustion} onChange={(e) => handleEmission('O2_pct_air_combustion', e.target.value)} style={inputStyle} /></div>
+            <input type="number" step="0.1" placeholder="21" value={emissions.O2_pct_air_combustion} onChange={(e) => handleEmission('O2_pct_air_combustion', e.target.value)} style={inputStyle} /></div>
           <div><label style={labelStyle}>{t('Teneur en eau')} (kg H₂O/kg AS)</label>
-            <input type="number" step="0.0001" value={emissions.Teneur_en_eau_kgH2O_kgAS} onChange={(e) => handleEmission('Teneur_en_eau_kgH2O_kgAS', e.target.value)} style={inputStyle} /></div>
+            <input type="number" step="0.0001" placeholder="0.008" value={emissions.Teneur_en_eau_kgH2O_kgAS} onChange={(e) => handleEmission('Teneur_en_eau_kgH2O_kgAS', e.target.value)} style={inputStyle} /></div>
         </div>
       </div>
 

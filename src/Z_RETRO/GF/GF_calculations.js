@@ -178,7 +178,6 @@ let H_superheated_steam_kW=0;
 if ( Q_superheated_steam_kg_h!==0){
     H_superheated_steam_kJ = Q_superheated_steam_kg_h*h_pT(P_superheated_steam_bar+1,  super_heated_steam_temperature_C);
     H_superheated_steam_kW =  H_superheated_steam_kJ /3600;}
-console.log( Q_superheated_steam_kg_h)
 
 
 //EAU SURCHAUFEE

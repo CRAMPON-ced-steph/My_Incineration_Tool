@@ -82,6 +82,7 @@ export const translations = {
     pollutantEmissions: 'Émissions de polluants',
     design: 'Design',
     opex: 'Opex',
+    rapport: 'Rapport',
 
     // Design - Existing keys
     pressionAeraulique: 'Pression aéraulique [mmCE]',

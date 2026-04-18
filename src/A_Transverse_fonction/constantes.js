@@ -51,7 +51,6 @@ export const molarMasses = {
   Na2SO4: 142,
   H2SO3: 82,
   // Cl
-  HCl: 36.5,
   CaCl2: 111,
   NaCl: 58.5,
   // HF

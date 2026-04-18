@@ -58,11 +58,6 @@ const FlueGasParameters = ({ innerData, currentLanguage = 'fr' }) => {
   };
 
 
-  console.log('languageCode:', languageCode);
-
-  console.log('currentLanguage:', currentLanguage);
-  console.log('translations:', translations);
-  
   // Utilisation des clés internes simplifiées
   const T_out = emissions.flueGasTemperatureOutlet;
   const T_air = emissions.combustionAirTemperature;

@@ -10,6 +10,7 @@ export const translations = {
     pollutantEmissions: 'Émissions de polluants',
     design: 'Design',
     opex: 'Opex',
+    rapport: 'Rapport',
     calculationParameters: 'Paramètres de calcul',
     calculatedParameters: 'Paramètres calculés',
     resetValues: 'Réinitialiser les valeurs',

@@ -5,6 +5,7 @@ import FlueGasParameters from './2_Flue_gas1';
 import FlueGasPollutantEmission from './3_Pollutant_Emission1';
 import RKDesign from './4_RK_Design1';
 import RKopex from './5_RK_Opex';
+import RK_Report from './RK_Report';
 
 //OPEX sans le cout
 
@@ -16,7 +17,7 @@ import { getTranslatedParameter, getLanguageCode } from '../../F_Gestion_Langues
 import { translations } from './RK_traduction';
 
 const RKMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLanguage = 'fr' }) => {
-  const [innerData, setInnerData] = useState({});
+  const [innerData, setInnerData] = useState(nodeData.result || {});
   
   // Get current language code and translations
   const languageCode = getLanguageCode(currentLanguage);
@@ -71,9 +72,19 @@ const RKMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
       name: 'opex',
       label: t.opex || 'Opex',
       content: (
-        <RKopex 
-          innerData={innerData} 
+        <RKopex
+          innerData={innerData}
           setInnerData={setInnerData}
+          currentLanguage={currentLanguage}
+        />
+      )
+    },
+    {
+      name: 'rapport',
+      label: t.rapport || 'Rapport',
+      content: (
+        <RK_Report
+          innerData={innerData}
           currentLanguage={currentLanguage}
         />
       )
@@ -89,11 +100,6 @@ const RKMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
   };
 
   const sendAllData = () => {
-    console.log('=== SEND DATA DEBUG ===');
-    console.log('innerData:', innerData);
-    console.log('onSendData type:', typeof onSendData);
-    console.log('onSendData callback:', onSendData);
-    
     if (!onSendData || typeof onSendData !== 'function') {
       console.error('❌ ERROR: onSendData callback is not defined or is not a function!');
       alert('Error: Cannot send data. onSendData callback is missing.');
@@ -103,14 +109,13 @@ const RKMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
     try {
       const dataToSend = {
         result: {
-          FG_OUT_kg_h: innerData['FG_OUT_kg_h'] || { CO2: 0, H2O: 0, O2: 0, N2: 0 },
+          ...innerData,
+          // aliases for downstream nodes
           PollutantInput: innerData['PInput'] || {},
-          T_OUT: innerData['T_OUT'] || 0,
           PollutantOutput: innerData['Poutput'] || {},
           ResidusOutput: innerData['Residus'] || {},
           MasseDechet: innerData['masse'] || 0,
           P_OUT: innerData['P_out_mmCE'] || 0,
-
           activeNodes_Elec: innerData['activeNodes_Elec'] || [],
           activeNodes_Eau: innerData['activeNodes_Eau'] || [],
           activeNodes_Reactifs: innerData['activeNodes_Reactifs'] || [],
@@ -120,9 +125,7 @@ const RKMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
         }
       };
       
-      console.log('✅ Data to send:', dataToSend);
       onSendData(dataToSend);
-      console.log('✅ Data sent successfully!');
       
     } catch (error) {
       console.error('❌ Error sending data:', error);
@@ -131,7 +134,6 @@ const RKMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
   };
 
   const handleBackToFlow = () => {
-    console.log('Going back to flow...');
     sendAllData();
     if (onGoBack && typeof onGoBack === 'function') {
       onGoBack(null);

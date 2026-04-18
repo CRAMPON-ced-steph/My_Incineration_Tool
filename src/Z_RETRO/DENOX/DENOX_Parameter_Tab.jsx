@@ -9,6 +9,7 @@ import CalculationResults from '../../C_Components/ShowCalculationResult_retro';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './DENOX_traduction';
 
+import DENOX_Retro_Rapport from './DENOX_Retro_Rapport';
 import '../../index.css';
 
 // Constantes pour localStorage
@@ -70,6 +71,7 @@ const DENOX_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLang
   });
   const [isSliderOpen, setIsSliderOpen] = useState(false);
   const [isCalculating, setIsCalculating] = useState(false);
+  const [showReport, setShowReport] = useState(false);
 
   // Récupération des traductions avec mémorisation
   const { languageCode, t } = useMemo(() => {
@@ -202,7 +204,7 @@ const DENOX_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLang
 
       setCalculationResult_DENOX(result);
       if (onSendData) {
-        onSendData({ result });
+        onSendData({ result, inputData: { targetNOx, sprayWaterTemp, coeffStoech, solutionConc, solutionDensity, sprayFlowrate, pdc } });
       }
 
     } catch (error) {
@@ -342,6 +344,24 @@ const DENOX_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLang
         <div className="no-results-message">
           <p>{t.NoResults}</p>
         </div>
+      )}
+
+      <div style={{ marginTop: '12px' }}>
+        <button
+          onClick={() => setShowReport(true)}
+          disabled={!calculationResult_DENOX || isCalculating}
+          style={{ width: '100%', padding: '8px 16px', background: calculationResult_DENOX ? '#1a3a6b' : '#ccc', color: '#fff', border: 'none', borderRadius: '4px', cursor: calculationResult_DENOX ? 'pointer' : 'not-allowed', fontWeight: 'bold', fontSize: '13px' }}
+        >
+          Editer Rapport
+        </button>
+      </div>
+
+      {showReport && calculationResult_DENOX && (
+        <DENOX_Retro_Rapport
+          calculationResult={calculationResult_DENOX}
+          inputParams={{ targetNOx, sprayWaterTemp, coeffStoech, solutionConc, solutionDensity, sprayFlowrate, pdc }}
+          onClose={() => setShowReport(false)}
+        />
       )}
     </div>
   );

@@ -5,6 +5,7 @@ export const translations = {
     'Pollutant Emissions': 'Émissions polluantes',
     'Design':  'Dimensionnement',
     'Opex': 'Opex',
+    'Rapport': 'Rapport',
     'ELECTROFILTER Configuration': 'Configuration ELECTROFILTER',
     'Back to Flow': 'Retour au flux',
 

@@ -3,6 +3,7 @@ import STACKFlueGasParameters from './1_STACK_Flue_gas_ML';
 import STACKFlueGasPollutantEmission from './2_STACK_Pollutant_Emission_ML';
 import STACKDesign from './3_STACK_Design2_ML';
 import STACKOpex from './4_STACK_Opex_ML';
+import STACK_Report from './STACK_Report';
 
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './STACK_traduction';
@@ -69,6 +70,10 @@ const STACKMainPage = ({
           currentLanguage={currentLanguage}
         />
       )
+    },
+    {
+      name: 'Rapport',
+      content: <STACK_Report innerData={innerData} />
     }
   ];
 
@@ -81,6 +86,7 @@ const STACKMainPage = ({
   const sendAllData = () => {
     onSendData({
       result: {
+        ...innerData,
         FG_OUT_kg_h: innerData['FG_OUT_kg_h'],
         PollutantInput: innerData['PInput'],
         T_OUT: innerData['T_OUT'],

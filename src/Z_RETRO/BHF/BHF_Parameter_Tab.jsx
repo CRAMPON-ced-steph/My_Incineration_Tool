@@ -8,6 +8,7 @@ import ToggleButton from '../../C_Components/toggle_button_retro';
 import CloseButton from '../../C_Components/OnCloseButton_retro';
 import CalculationResults from '../../C_Components/ShowCalculationResult_retro';
 
+import BHF_Retro_Rapport from './BHF_Retro_Rapport';
 import '../../index.css';
 
 const BHF_Parameter_Tab = ({ nodeData, title, onSendData, onClose }) => {
@@ -18,6 +19,7 @@ const BHF_Parameter_Tab = ({ nodeData, title, onSendData, onClose }) => {
 
   const [CalculationResult_BHF, setCalculationResult] = useState(null);
   const [isSliderOpen, setIsSliderOpen] = useState(false);
+  const [showReport, setShowReport] = useState(false);
 
   useEffect(() => {localStorage.setItem('Qair_decolmatation', Qair_decolmatation);}, [Qair_decolmatation]);
   useEffect(() => {localStorage.setItem('T_air_decolmatation', T_air_decolmatation);}, [T_air_decolmatation]);
@@ -62,7 +64,10 @@ const BHF_Parameter_Tab = ({ nodeData, title, onSendData, onClose }) => {
         parseFloat(PDC_aero)
       );
       setCalculationResult(result);
-      onSendData({ result });
+      onSendData({
+        result,
+        inputData: { T_amont_BHF, T_air_decolmatation, Qair_decolmatation, PDC_aero },
+      });
     } catch (error) {
       console.error('Calculation error:', error);
       alert(`Error in calculation: ${error.message}`);
@@ -113,6 +118,24 @@ const BHF_Parameter_Tab = ({ nodeData, title, onSendData, onClose }) => {
 
       {isSliderOpen && CalculationResult_BHF && (
       <CalculationResults isOpen={isSliderOpen} results={CalculationResult_BHF} />)}
+
+      <div style={{ marginTop: '12px' }}>
+        <button
+          onClick={() => setShowReport(true)}
+          disabled={!CalculationResult_BHF}
+          style={{ width: '100%', padding: '8px 16px', background: CalculationResult_BHF ? '#1a3a6b' : '#ccc', color: '#fff', border: 'none', borderRadius: '4px', cursor: CalculationResult_BHF ? 'pointer' : 'not-allowed', fontWeight: 'bold', fontSize: '13px' }}
+        >
+          Editer Rapport
+        </button>
+      </div>
+
+      {showReport && CalculationResult_BHF && (
+        <BHF_Retro_Rapport
+          calculationResult={CalculationResult_BHF}
+          inputParams={{ T_amont_BHF, T_air_decolmatation, Qair_decolmatation, PDC_aero }}
+          onClose={() => setShowReport(false)}
+        />
+      )}
     </div>
   );
 };

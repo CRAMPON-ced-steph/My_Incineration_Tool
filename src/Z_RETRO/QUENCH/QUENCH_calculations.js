@@ -59,12 +59,12 @@ export const performCalculation_QUENCH_option_T = (nodeData, Tamont, Teau, PDC_a
 
 // ON CALCULE LA REPARTITION POURCENT VOLUMIQUE
 
-  const O2_dry_pourcent = Qv_O2_Nm3_h / Qv_sec_Nm3_h *100;
-  const O2_humide_pourcent =  Qv_O2_Nm3_h / Qv_wet_Nm3_h *100;
-  const H2O_pourcent =  Qv_H2O_Nm3_h / Qv_wet_Nm3_h *100;
-  const N2_humide_pourcent =  Qv_N2_Nm3_h / Qv_wet_Nm3_h *100;
-  const CO2_dry_pourcent = Qv_CO2_Nm3_h / Qv_sec_Nm3_h *100;
-  const CO2_humide_pourcent =  Qv_CO2_Nm3_h / Qv_wet_Nm3_h *100;
+  const O2_dry_pourcent = Qv_sec_Nm3_h > 0 ? (Qv_O2_Nm3_h / Qv_sec_Nm3_h) * 100 : 0;
+  const O2_humide_pourcent = Qv_wet_Nm3_h > 0 ? (Qv_O2_Nm3_h / Qv_wet_Nm3_h) * 100 : 0;
+  const H2O_pourcent = Qv_wet_Nm3_h > 0 ? (Qv_H2O_Nm3_h / Qv_wet_Nm3_h) * 100 : 0;
+  const N2_humide_pourcent = Qv_wet_Nm3_h > 0 ? (Qv_N2_Nm3_h / Qv_wet_Nm3_h) * 100 : 0;
+  const CO2_dry_pourcent = Qv_sec_Nm3_h > 0 ? (Qv_CO2_Nm3_h / Qv_sec_Nm3_h) * 100 : 0;
+  const CO2_humide_pourcent = Qv_wet_Nm3_h > 0 ? (Qv_CO2_Nm3_h / Qv_wet_Nm3_h) * 100 : 0;
 
 
   // Calculate enthalpies using the provided T

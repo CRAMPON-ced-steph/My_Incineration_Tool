@@ -3,6 +3,7 @@ import QUENCHFlueGasParameters from './2_QUENCH_Flue_gas_ML';
 import QUENCHFlueGasPollutantEmission from './3_QUENCH_Pollutant_Emission_ML';
 import QUENCHDesign from './4_QUENCH_Design1_ML';
 import QUENCHOpex from './5_QUENCH_Opex';
+import QUENCH_Report from './QUENCH_Report';
 
 import PrintButton from '../../C_Components/Windows_print';
 import Input_bilan from '../../C_Components/MiseEnFormeInputParamBilan';
@@ -60,6 +61,10 @@ const QUENCHMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, curren
       name: t('Opex'),
       content: <QUENCHOpex innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} />
     },
+    {
+      name: 'Rapport',
+      content: <QUENCH_Report innerData={innerData} />
+    },
   ];
 
   const [activeTab, setActiveTab] = useState(tabs[0].name);
@@ -72,19 +77,18 @@ const QUENCHMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, curren
   const sendAllData = () => {
     onSendData({
       result: {
-        FG_OUT_kg_h: innerData['FG_OUT_kg_h'],
-        PollutantInput: innerData['PInput'],
-        T_OUT: innerData['T_OUT'],
-        PollutantOutput: innerData['Poutput'],
-        ResidusOutput: innerData['Residus'],
-        MasseDechet: innerData['masse'],
-        P_OUT: innerData['P_out_mmCE'],
-        activeNodes_Elec: innerData['activeNodes_Elec'],
-        activeNodes_Eau: innerData['activeNodes_Eau'],
-        activeNodes_Reactifs: innerData['activeNodes_Reactifs'],
-        activeNodes_Energie: innerData['activeNodes_Energie'],
-        activeNodes_CO2: innerData['activeNodes_CO2'],
-        activeNodes_cout: innerData['activeNodes_cout']
+        ...innerData,
+        PollutantInput: innerData['PInput'] || {},
+        PollutantOutput: innerData['Poutput'] || {},
+        ResidusOutput: innerData['Residus'] || {},
+        MasseDechet: innerData['masse'] || 0,
+        P_OUT: innerData['P_out_mmCE'] || 0,
+        activeNodes_Elec: innerData['activeNodes_Elec'] || [],
+        activeNodes_Eau: innerData['activeNodes_Eau'] || [],
+        activeNodes_Reactifs: innerData['activeNodes_Reactifs'] || [],
+        activeNodes_Energie: innerData['activeNodes_Energie'] || [],
+        activeNodes_CO2: innerData['activeNodes_CO2'] || [],
+        activeNodes_cout: innerData['activeNodes_cout'] || []
       }
     });
   };

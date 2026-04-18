@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import InputField from './C_Components/input_retro';
 import DropdownField from './C_Components/input_retro_deroulant';
 import CountryDropdown from './C_Components/input_retro_double_deroulant';
-import { updateOpexData } from './A_Transverse_fonction/opexDataService';
+import { updateOpexData, DEFAULT_OPEX_DATA } from './A_Transverse_fonction/opexDataService';
 import { getOPEXTranslations } from './OPEX_traduction';
 import { getLanguageCode } from './F_Gestion_Langues/Fonction_Traduction';
 
@@ -34,109 +34,7 @@ const OPEX_form = ({ onClose, currentLanguage = 'fr' }) => {
     { value: 'SK', label: 'Slovakia', ratio: 180 },
     { value: 'SI', label: 'Slovenia', ratio: 270 }
   ];
-  const defaultValues = {
-    // Section 1: Général
-    activeTab: 1,
-    selectedCountryCode: 'FR',
-    selectedRatio: 83,
-    ratioElec: 83,
-    currency: '€',
-    availability: 8760,
-
-    // Section 2: Transportation Type
-    truck15TCO2: 0.238,
-    truck15TPrice: 0.25,
-    truck20TCO2: 0.223,
-    truck20TPrice: 0.24,
-    truck25TCO2: 0.119,
-    truck25TPrice: 0.23,
-
-    // Section 3: Compressed Air
-    airPressure: 7,
-    compressorType: 'à vis',
-    powerRatio: 0.11,
-    airConsumptionPrice: 0.1,
-
-    // Section 4: Electricité
-    purchaseElectricityPrice: 200,
-    sellingElectricityPrice: 120,
-
-    // Section 5: Gas
-    gasTypes: {
-      naturalGasH: {molecule: 80, co2Emission: 197},
-      naturalGasL: {molecule: 80, co2Emission: 200},
-      processGas: {molecule: 60, co2Emission: 210},
-    },
-
-    // Section 6: Steam
-    steamPrices: {
-      highPressure: 40,
-      lowPressure1: 30,
-      lowPressure2: 25,
-      fatal: 10
-    },
-
-    // Section 7: Water
-    waterPrices: {
-      potable: 3,
-      cooling: 1,
-      demineralized: 5,
-      soft: 2,
-      river: 0.5
-    },
-
-    // Section 8: Byproducts
-    byproducts: [
-      {
-        name: "Incineration ash / clinker / residues",
-        cost: 150,
-        truckType: 25,
-        distance: 30,
-        co2PerTKm: 0.119,
-        co2PerTrip: 89.25
-      },
-      {
-        name: "Boiler ashes disposal",
-        cost: 100,
-        truckType: 25,
-        distance: 30,
-        co2PerTKm: 0.119,
-        co2PerTrip: 89.25
-      },
-      {
-        name: "Fly ashes disposal",
-        cost: 100,
-        truckType: 25,
-        distance: 30,
-        co2PerTKm: 0.119,
-        co2PerTrip: 89.25
-      }
-    ],
-
-    // Section 9: Fuel Types
-    fuelTypes: {
-      FOD: {liquid: 1.04, co2Emission: 3.85},
-      FOL: {liquid: 0.8, co2Emission: 3.64},
-      FOM: {liquid: 0.75, co2Emission: 3.64},
-      FOH: {liquid: 0.70, co2Emission: 3.64},
-      MDO: {liquid: 1.1, co2Emission: 3.86},
-      HFO: {liquid: 0.70, co2Emission: 3.64},
-    },
-
-    // Section 10: Reagents
-    reagentsTypes: {
-      CaOH2: {cost: 0.1, Purity: 90, CO2emission: 0.846, truckType: 25, distance: 30, co2PerTKm: 0.119, co2PerTrip: 3.57},
-      CaO: {cost: 0.1, Purity: 95, CO2emission: 1.11, truckType: 25, distance: 30, co2PerTKm: 0.119, co2PerTrip: 3.57},
-      CaCO3: {cost: 0.1, Purity: 95, CO2emission: 0.76, truckType: 25, distance: 30, co2PerTKm: 0.119, co2PerTrip: 3.57},
-      HCO3: {cost: 1, Purity: 100, CO2emission: 1.166, truckType: 25, distance: 30, co2PerTKm: 0.119, co2PerTrip: 3.57},
-      NaOH: {cost: 0.3, Purity: 100, CO2emission: 1.174, truckType: 25, distance: 30, co2PerTKm: 0.119, co2PerTrip: 3.57},
-      NaOHCO3: {cost: 200, Purity: 100, CO2emission: 0.76, truckType: 25, distance: 30, co2PerTKm: 0.119, co2PerTrip: 3.57},
-      NH3: {cost: 0.05, Purity: 95, CO2emission: 2.11, truckType: 25, distance: 30, co2PerTKm: 0.119, co2PerTrip: 3.57},
-      Urea: {cost: 0.05, Purity: 95, CO2emission: 0.76, truckType: 25, distance: 30, co2PerTKm: 0.119, co2PerTrip: 3.57},
-      NaBr_CaBr2: {cost: 1, Purity: 52, CO2emission: 0.76, truckType: 25, distance: 30, co2PerTKm: 0.119, co2PerTrip: 3.57},
-      CAP: {cost: 1, Purity: 100, CO2emission: 0.99, truckType: 25, distance: 30, co2PerTKm: 0.119, co2PerTrip: 3.57},
-    }
-  };
+  const defaultValues = DEFAULT_OPEX_DATA;
 
   // Load from localStorage
   const loadFromLocalStorage = (key, defaultValue) => {
@@ -252,36 +150,36 @@ const OPEX_form = ({ onClose, currentLanguage = 'fr' }) => {
   }, [airPressure, compressorType]);
 
   // Calculate CO2 per trip for byproducts
+  const byproductsDepsKey = byproducts.map(item => `${item.co2PerTKm}-${item.distance}`).join(',');
   useEffect(() => {
-    const updatedByproducts = byproducts.map(item => ({
+    setByproducts(prev => prev.map(item => ({
       ...item,
-      co2PerTrip: item.co2PerTKm * item.distance 
-    }));
-    setByproducts(updatedByproducts);
-  }, [byproducts.map(item => `${item.co2PerTKm}-${item.distance}`).join(',')]);
+      co2PerTrip: item.co2PerTKm * item.distance
+    })));
+  }, [byproductsDepsKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Update reagent CO2 per trip calculations
+  const reagentsDepsKey = JSON.stringify(
+    Object.fromEntries(
+      Object.keys(reagentsTypes).map(key => [
+        key,
+        { co2PerTKm: reagentsTypes[key]?.co2PerTKm, truckType: reagentsTypes[key]?.truckType, distance: reagentsTypes[key]?.distance }
+      ])
+    )
+  );
   useEffect(() => {
     setReagentsTypes(prevState => {
       const updatedReagents = { ...prevState };
       Object.keys(updatedReagents).forEach(reagentKey => {
         const reagent = updatedReagents[reagentKey];
-        const newCo2PerTrip = reagent.co2PerTKm * reagent.truckType * reagent.distance * 2;
         updatedReagents[reagentKey] = {
           ...reagent,
-          co2PerTrip: parseFloat(newCo2PerTrip.toFixed(3))
+          co2PerTrip: parseFloat((reagent.co2PerTKm * reagent.truckType * reagent.distance * 2).toFixed(3))
         };
       });
       return updatedReagents;
     });
-  }, [JSON.stringify(Object.keys(reagentsTypes).reduce((acc, key) => {
-    acc[key] = {
-      co2PerTKm: reagentsTypes[key]?.co2PerTKm,
-      truckType: reagentsTypes[key]?.truckType,
-      distance: reagentsTypes[key]?.distance
-    };
-    return acc;
-  }, {}))]);
+  }, [reagentsDepsKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Update OPEX data service
   useEffect(() => {
@@ -393,7 +291,6 @@ const OPEX_form = ({ onClose, currentLanguage = 'fr' }) => {
   };
 
   const handleSave = () => {
-    console.log('Data saved successfully');
     if (onClose) {
       onClose();
     } else {

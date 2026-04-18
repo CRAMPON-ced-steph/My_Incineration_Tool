@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-//import { performCalculation_CO2 } from './CO2_calculations';
+// CO2_calculations.js non implémenté — stub local
+const performCalculation_CO2 = () => null;
 
 const CO2_Parameter_Tab = ({ nodeData, title, onSendData, onClose }) => {
     // Initialiser les états avec les données reçues ou des valeurs par défaut

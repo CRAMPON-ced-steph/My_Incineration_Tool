@@ -46,7 +46,7 @@ body::before {
   margin-top: 40px; /* Pour laisser de l'espace pour l'image */
 }
 
-{/*container box définit la couleur des fenetres de paramètres du retro bilan  background: rgb(149, 152, 179);*/}
+/* container box définit la couleur des fenetres de paramètres du retro bilan  background: rgb(149, 152, 179); */
 .container-box {
   width: 400px;
   background: linear-gradient(135deg, #969697 0%, #e9ecef 50%, #dee2e6 100%);
@@ -64,9 +64,7 @@ body::before {
 }
 
 
-background: linear-gradient(135deg, #969697 0%, #e9ecef 50%, #dee2e6 100%);
-
-{/*container box définit la couleur des cadres paramètres du bilan*/}
+/* container box définit la couleur des cadres paramètres du bilan */
 .cadre_param_bilan {
   background: LightGrey;
   padding: 20px;
@@ -319,4 +317,101 @@ BOUTON POUR LES AIRS PARASITES
     .rouge {
       background: rgb(238, 7, 7);
     }
+
+/* Eraser tool canvas overlay */
+.eraser-tool-overlay {
+  pointer-events: auto;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 4;
+  height: 100%;
+  width: 100%;
+  transform-origin: top left;
+  cursor: crosshair;
+  touch-action: none;
+}
+
+/* Eraser toggle button */
+.eraser-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px 14px;
+  height: 2.2rem;
+  border-radius: 20px;
+  background: #dbeafe;
+  color: #1d4ed8;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: 1.5px solid #93c5fd;
+  box-shadow: 0 2px 6px rgba(59,130,246,0.15);
+  transition: opacity 0.15s, box-shadow 0.15s;
+  white-space: nowrap;
+}
+
+.eraser-btn:hover {
+  opacity: 0.88;
+}
+
+.eraser-btn.active {
+  background: #bfdbfe;
+  box-shadow: 0 0 0 3px rgba(59,130,246,0.25), 0 2px 6px rgba(59,130,246,0.15);
+  outline: none;
+}
+
+.fit-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px 14px;
+  height: 2.2rem;
+  border-radius: 20px;
+  background: #ffffff;
+  color: #374151;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: 1.5px solid #d1d5db;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  transition: opacity 0.15s, box-shadow 0.15s;
+  white-space: nowrap;
+}
+
+.fit-btn:hover {
+  opacity: 0.88;
+}
+
+.lock-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px 14px;
+  height: 2.2rem;
+  border-radius: 20px;
+  background: #fff5f5;
+  color: #ef4444;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: 1.5px solid #fca5a5;
+  box-shadow: 0 2px 6px rgba(239,68,68,0.15);
+  transition: opacity 0.15s, box-shadow 0.15s;
+  white-space: nowrap;
+}
+
+.lock-btn:hover {
+  opacity: 0.88;
+}
+
+.lock-btn.active {
+  background: #fee2e2;
+  box-shadow: 0 0 0 3px rgba(239,68,68,0.25), 0 2px 6px rgba(239,68,68,0.15);
+  outline: none;
+}
+}
 

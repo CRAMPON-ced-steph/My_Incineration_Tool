@@ -4,6 +4,7 @@ import SCRUBBERFlueGasPollutantEmission from './3_SCRUBBER_Pollutant_Emission_ML
 import HClScrubberCalculator from './Laveur_acid';
 import SO2ScrubberCalculator from './Laveur_basique';
 import SCRUBBEROpex from './5_SCRUBBER_Opex';
+import SCRUBBER_Report from './SCRUBBER_Report';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './SCRUBBER_traduction';
 import '../../index.css';
@@ -38,6 +39,10 @@ const SCRUBBERMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, curr
       name: t('Opex'),
       content: <SCRUBBEROpex innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} />
     },
+    {
+      name: 'Rapport',
+      content: <SCRUBBER_Report innerData={innerData} />
+    },
   ];
 
   const renderTabContent = () => {
@@ -47,6 +52,7 @@ const SCRUBBERMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, curr
   const sendAllData = () => {
     onSendData({
       result: {
+        ...innerData,
         FG_OUT_kg_h: innerData['FG_OUT_kg_h'],
         PollutantInput: innerData['PInput'],
         T_OUT: innerData['T_OUT'],

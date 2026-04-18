@@ -55,6 +55,25 @@ const STACKFlueGasParameters = ({ innerData, currentLanguage = 'fr', setInnerDat
     N2: FG_N2_kg_h
   };
 
+  // Write Nm³/h volumes to innerData whenever gas flows change
+  useEffect(() => {
+    if (!setInnerData) return;
+    setInnerData(prev => ({
+      ...prev,
+      FG_STACK_OUT_Nm3_h: {
+        CO2: FG_CO2_m3_h,
+        H2O: FG_H2O_m3_h,
+        O2: FG_O2_m3_h,
+        N2: FG_N2_m3_h,
+        dry: FG_humide_tot_m3_h - FG_H2O_m3_h,
+        wet: FG_humide_tot_m3_h,
+      },
+      FG_humide_tot: FG_humide_tot_m3_h,
+      FG_sec_tot: FG_humide_tot_m3_h - FG_H2O_m3_h,
+      T_STACK_in: T_in,
+    }));
+  }, [FG_CO2_m3_h, FG_H2O_m3_h, FG_O2_m3_h, FG_N2_m3_h, FG_humide_tot_m3_h, T_in, setInnerData]); // eslint-disable-line react-hooks/exhaustive-deps
+
   // Handle input changes
   const handleChange = (name, value) => {
     setEmissions_STACK((prev) => ({

@@ -1,37 +1,8 @@
+/* eslint-disable react/prop-types */
 import React, { useState } from 'react';
 import AccessRequestModal from './AccessRequestModal';
-import { EMAILS_CONFIG } from '../ListeEmailAccess';
 
-// Conversion des emails permanents du fichier de configuration
-const PERMANENT_AUTHORIZED_EMAILS = EMAILS_CONFIG.PERMANENT_EMAILS.map(email => ({
-  ...email,
-  validUntil: new Date(email.validUntil)
-}));
-
-// Fonction pour récupérer les emails autorisés (fichier + localStorage)
-const getAuthorizedEmails = () => {
-  const stored = localStorage.getItem('authorizedEmails');
-  let storedEmails = [];
-  
-  if (stored) {
-    try {
-      storedEmails = JSON.parse(stored).map(item => ({
-        ...item,
-        validUntil: new Date(item.validUntil)
-      }));
-    } catch (error) {
-      console.error("Erreur lors de la lecture des emails autorisés:", error);
-    }
-  }
-  
-  const filteredStoredEmails = storedEmails.filter(
-    storedEmail => !PERMANENT_AUTHORIZED_EMAILS.some(permEmail => permEmail.email === storedEmail.email)
-  );
-  
-  return [...PERMANENT_AUTHORIZED_EMAILS, ...filteredStoredEmails];
-};
-
-function EmailVerification({ onAuthorize }) {
+function EmailVerification({ onAuthorize, authorizedEmails = [] }) {
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [showEmail, setShowEmail] = useState(false);
@@ -39,10 +10,7 @@ function EmailVerification({ onAuthorize }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
-    const authorizedEmails = getAuthorizedEmails();
-    
-    // Find the matching authorized email
+
     const authorizedEmail = authorizedEmails.find(
       auth => auth.email === email && new Date() <= auth.validUntil
     );
@@ -122,7 +90,7 @@ function EmailVerification({ onAuthorize }) {
         {/* Bouton pour demander un accès */}
         <div style={{ marginTop: '20px', borderTop: '1px solid #eee', paddingTop: '15px' }}>
           <p style={{ color: '#666', fontSize: '14px', marginBottom: '10px' }}>
-            Vous n'avez pas encore d'accès ?
+            Vous n&apos;avez pas encore d&apos;accès ?
           </p>
           <button
             onClick={() => setShowAccessRequest(true)}

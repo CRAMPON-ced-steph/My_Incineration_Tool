@@ -201,16 +201,6 @@ const OpexDashboard = ({
     const CO2_conso_elec_kg = ((ratioElec || 0) * conso_elec_kW / 1000);
     const cout_conso_elec = (conso_elec_kW/1000 * (purchaseElectricityPrice || 0));
 
-    console.log('DEBUG - Calculs coût électrique:', {
-      conso_elec_kW,
-      purchaseElectricityPrice,
-      cout_conso_elec,
-      cout_reactifs,
-      cout_gaz,
-      cout_fuel,
-      cout_air_co,
-      cout_Eau
-    });
 
     // CORRECTION: Calculs du transport des résidus
     const conso_transport_refidis_kg_h = params.conso_incineration_ash_kg_h + params.conso_boiler_ash_kg_h + params.conso_fly_ash_kg_h;

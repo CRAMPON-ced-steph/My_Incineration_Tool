@@ -57,12 +57,10 @@ const Energy_recuperee_kW = nodeData.result.data_Air_WHB.Energie_recuperee_WHB_k
 
 
     // Calculs basés sur bilanType_NCV_Masse
-    if (bilanType_NCV_Masse === 'Net Calorific Value') {
-        const NCV_calcule = (P_incinerateur_MWH * 1000) / (MasseDechet / 3600 * 4.1868);
-        NCV = NCV_calcule;
-    } else if (bilanType_NCV_Masse === 'Waste flowrate') {
-        const waste_flow_calcule = (P_incinerateur_MWH * 1000) / (NCV * 4.1868 / 3600);
-        MasseDechet = waste_flow_calcule;
+    if (bilanType_NCV_Masse === 'NET_CALORIFIC_VALUE') {
+        NCV = MasseDechet > 0 ? (P_incinerateur_MWH * 1000) / (MasseDechet / 3600 * 4.1868) : 0;
+    } else if (bilanType_NCV_Masse === 'WASTE_FLOWRATE') {
+        MasseDechet = NCV > 0 ? (P_incinerateur_MWH * 1000) / (NCV * 4.1868 / 3600) : 0;
     }
 
     return {

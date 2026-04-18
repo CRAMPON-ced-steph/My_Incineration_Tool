@@ -3,6 +3,7 @@ import DENOXFlueGasParameters from './1_DENOX_Flue_gas_ML';
 import DENOXFlueGasPollutantEmission from './2_DENOX_Pollutant_Emission_ML';
 import DENOXDesign from './3_DENOX_Design1_ML';
 import DENOXOpex from './4_DENOX_Opex';
+import DENOX_Report from './DENOX_Report';
 import PrintButton from '../../C_Components/Windows_print';
 import Input_bilan from '../../C_Components/MiseEnFormeInputParamBilan';
 import '../../index.css';
@@ -40,6 +41,10 @@ const DENOXMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, current
       name: t('Opex'),
       content: <DENOXOpex innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} />
     },
+    {
+      name: 'Rapport',
+      content: <DENOX_Report innerData={innerData} />
+    },
   ];
 
   const renderTabContent = () => {
@@ -49,6 +54,7 @@ const DENOXMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, current
   const sendAllData = () => {
     onSendData({
       result: {
+        ...innerData,
         FG_OUT_kg_h: innerData['FG_DENOX_out_reheating_kg_h'],
         PollutantInput: innerData['PInput'],
         T_OUT: innerData['T_melange_calcule'],

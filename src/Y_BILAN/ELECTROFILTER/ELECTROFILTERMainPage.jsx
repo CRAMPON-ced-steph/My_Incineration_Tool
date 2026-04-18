@@ -4,6 +4,7 @@ import ELECTROFILTERFlueGasParameters from './1_ELECTROFILTER_Flue_gas_ML';
 import ELECTROFILTERFlueGasPollutantEmission  from './2_ELECTROFILTER_Pollutant_Emission_ML';
 import ELECTROFILTERDesign from './3_ELECTROFILTER_Design_ML';
 import ELECTROFILTEROpex from './4_ELECTROFILTER_Opex';
+import ELECTROFILTER_Report from './ELECTROFILTER_Report';
 import '../../index.css';
 
 import PrintButton from '../../C_Components/Windows_print';
@@ -28,6 +29,7 @@ const ELECTROFILTERMainPage = ({ nodeData, title, onSendData, onClose, onGoBack 
   {name: t('Pollutant Emissions'), content: <ELECTROFILTERFlueGasPollutantEmission  innerData={innerData}setInnerData={setInnerData}currentLanguage={currentLanguage}/>,},
   {name: t('Design'), content: < ELECTROFILTERDesign innerData={innerData}setInnerData={setInnerData}currentLanguage={currentLanguage}/> },
   //{name: t('Opex'), content: < ELECTROFILTEROpex innerData={innerData}setInnerData={setInnerData} currentLanguage={currentLanguage}/> },
+  {name: 'Rapport', content: <ELECTROFILTER_Report innerData={innerData} />},
   ];
 
   const [activeTabIndex, setActiveTabIndex] = useState(0);
@@ -39,6 +41,7 @@ const ELECTROFILTERMainPage = ({ nodeData, title, onSendData, onClose, onGoBack 
   const sendAllData = () => {
     onSendData({
       result: {
+        ...innerData,
         FG_OUT_kg_h : innerData['FG_OUT_kg_h'],
         PollutantInput : innerData['PInput'],
         T_OUT : innerData['T_OUT'],

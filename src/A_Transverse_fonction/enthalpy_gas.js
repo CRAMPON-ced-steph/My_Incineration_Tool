@@ -86,6 +86,9 @@ export const fh_AIR = (T) => {
   return fh_N2(T) * 0.767 + fh_O2(T) * 0.233;
 };
 
+// Sensible entropy [kJ/kg/K] using Kirchhoff-Planck polynomial: Cp = A + B·T + C·T² + d/T²
+// Integral: s = A·ln(T) + B·T + C·T²/2 − d/(2·T²) + K
+// Coefficients from: Stull & Prophet (1971), JANAF Thermochemical Tables, 2nd ed., NBS
 export const fs_CO2 = (T) => {
   T += 273.159;
   const A = 1.0034;
@@ -93,10 +96,9 @@ export const fs_CO2 = (T) => {
   const C = 0;
   const d = -19400;
   const K = -6.3183;
-  const result = A; // Note: This seems incomplete. Original formula might be: A * Math.log(T) + B * T + C * T * T / 2 - d / (T * T * 2) + K
+  const result = A * Math.log(T) + B * T + C * T * T / 2 - d / (T * T * 2) + K;
   return result;
 };
-
 
 export const fs_HCl = (T) => {
   T += 273.159;
@@ -105,9 +107,7 @@ export const fs_HCl = (T) => {
   const C = 0;
   const d = 3000;
   const K = -4.0974;
-  // Note: La formule originale semble être commentée. Voici une possible implémentation :
-  // const result = A * Math.log(T) + B * T + C * T * T / 2 - d / (T * T * 2) + K;
-  const result = A; // Actuellement, seul A est retourné comme dans le code original
+  const result = A * Math.log(T) + B * T + C * T * T / 2 - d / (T * T * 2) + K;
   return result;
 };
 
@@ -120,6 +120,10 @@ export const fs_H2O = (T) => {
   const K = -9.5188;
   const result = A * Math.log(T) + B * T + C * T * T / 2 - d / (T * T * 2) + K;
   return result;
+};
+
+export const fs_O2 = (T) => {
+  return fh_O2(T);
 };
 
 export const fs_AIR = (T) => {
@@ -150,7 +154,6 @@ export const fs_CaCO3 = (T) => {
   // Commenté dans l'original, décommenté ici :
    const result = 4.186 * (19.68 * Math.log(T) + 0.01189 * T + 307600 / (T * T * 2) - 115.7) / 100;
    return result;
-  return 0; // Retourne 0 car la fonction originale ne retourne rien
 };
 
 export const fh_MgO = (T) => {
@@ -163,25 +166,19 @@ export const fs_MgO = (T) => {
   T += 273.159;
   // Commenté dans l'original, décommenté ici :
    const result = 4.186 * (10.86 * Math.log(T) + 0.001197 * T + 208700 / (T * T * 2) - 62.6458) / 40.3;
-  
   return result;
-  return 0; // Retourne 0 car la fonction originale ne retourne rien
 };
 
 
 
 
 export const fh_MgCO3 = (T) => {
-  T += 273.159;
   const result = fh_CO2(T) * 0.522 + fh_MgO(T) * 0.478;
- 
   return result;
 };
 
 export const fs_MgCO3 = (T) => {
-  T += 273.159;
   const result = fs_CO2(T) * 0.522 + fs_MgO(T) * 0.478;
-
   return result;
 };
 

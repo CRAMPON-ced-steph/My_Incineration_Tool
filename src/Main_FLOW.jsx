@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import COLORS from './C_Components/couleur';
-import {ReactFlow, Controls, Background, useNodesState, useEdgesState, addEdge, getIncomers, getOutgoers, getConnectedEdges} from '@xyflow/react';
+import {ReactFlow, Controls, Background, Panel, useNodesState, useEdgesState, addEdge, getIncomers, getOutgoers, getConnectedEdges, useReactFlow} from '@xyflow/react';
+import { Eraser } from './C_Components/EraserTool/Eraser';
 import '@xyflow/react/dist/style.css';
 import DropdownMenu from './C_Components/MenuDeroulant';
 import { takeScreenshot } from './H_SaveAndLoad/screenshotUtils';
@@ -29,9 +30,47 @@ import OPEX_form from './OPEX';
 import LinearGraph from './G_Graphiques/Combustion_diagramme/LinearGraph';
 import DataFlowDisplay from './C_Components/DataFlowDisplay';
 import DashboardWindow from './G_Graphiques/Dashboard/Dashboard';
+import GlobalReport from './D_BILAN_Rapports/GlobalReport';
+import GlobalRetroReport from './D_BILAN_Rapports/GlobalRetroReport';
 
 const initialNodes = [];
 const initialEdges = [];
+
+function FitViewButton() {
+  const { fitView } = useReactFlow();
+  return (
+    <button
+      className="fit-btn"
+      onClick={() => fitView({ padding: 0.2, duration: 300 })}
+      title="Fit canvas to window"
+    >
+      ⤢ Fit
+    </button>
+  );
+}
+
+function LockScrollButton() {
+  const { fitView } = useReactFlow();
+  const [locked, setLocked] = React.useState(false);
+
+  const toggle = () => {
+    const next = !locked;
+    document.documentElement.style.overflow = next ? 'hidden' : '';
+    document.body.style.overflow = next ? 'hidden' : '';
+    if (next) fitView({ padding: 0.2, duration: 300 });
+    setLocked(next);
+  };
+
+  return (
+    <button
+      className={`lock-btn${locked ? ' active' : ''}`}
+      onClick={toggle}
+      title={locked ? 'Restore scrollbars' : 'Hide scrollbars & fit view'}
+    >
+      {locked ? '⊠ Locked' : '⊡ Lock'}
+    </button>
+  );
+}
 
 function Flow({ 
   currentUser,
@@ -50,6 +89,7 @@ function Flow({
   const [showGraph, setShowGraph] = useState(false);
   const [showOPEX, setShowOPEX] = useState(false);
   const [showDashboard, setShowDashboard] = useState(false);
+  const [isEraserActive, setIsEraserActive] = useState(false);
 
   // Language management state
   const [currentLanguage, setCurrentLanguage] = useState(() => 
@@ -157,7 +197,7 @@ function Flow({
           );
         }
   
-        // Mise à jour du nœud sélectionné avec consommationElec
+        // Mise à jour du nœud sélectionné avec result + consommationElec
         const elecValue = data.result?.activeNodes_Elec?.[0]?.data?.consommationElec;
         const eauValue = data.result?.activeNodes_Eau?.[0]?.data?.consommationEau;
         const reactifsValue = data.result?.activeNodes_Reactifs?.[0]?.data?.consommationReactifs;
@@ -165,27 +205,27 @@ function Flow({
         const CO2Value = data.result?.activeNodes_CO2?.[0]?.data?.emissionsCO2;
         const coutValue = data.result?.activeNodes_cout?.[0]?.data?.cout;
 
-        if (elecValue !== undefined || eauValue !== undefined) {
-          setNodes((prevNodes) =>
-            prevNodes.map((node) =>
-              node.id === selectedNode.id
-                ? {
-                    ...node,
-                    data: {
-                      ...node.data,
-                      ...(elecValue !== undefined && { consommationElec: elecValue }),
-                      ...(eauValue !== undefined && { consommationEau: eauValue }),
-                      ...(reactifsValue !== undefined && { consommationReactifs: reactifsValue }),
-                      ...(energieValue !== undefined && { consommationEnergie: energieValue }),
-                      ...(CO2Value !== undefined && { emissionsCO2: CO2Value }),
-                      ...(coutValue !== undefined && { cout: coutValue }),
-                      isActive: true,
-                    },
-                  }
-                : node
-            )
-          );
-        }
+        setNodes((prevNodes) =>
+          prevNodes.map((node) =>
+            node.id === selectedNode.id
+              ? {
+                  ...node,
+                  data: {
+                    ...node.data,
+                    result: data.result,
+                    ...(data.inputData !== undefined && { inputData: data.inputData }),
+                    ...(elecValue !== undefined && { consommationElec: elecValue }),
+                    ...(eauValue !== undefined && { consommationEau: eauValue }),
+                    ...(reactifsValue !== undefined && { consommationReactifs: reactifsValue }),
+                    ...(energieValue !== undefined && { consommationEnergie: energieValue }),
+                    ...(CO2Value !== undefined && { emissionsCO2: CO2Value }),
+                    ...(coutValue !== undefined && { cout: coutValue }),
+                    isActive: true,
+                  },
+                }
+              : node
+          )
+        );
       }
     },
     [selectedNode, nodes, edges, mode, setNodes]
@@ -315,6 +355,16 @@ function Flow({
     }
   }, []);
 
+  const [showRapportEditor, setShowRapportEditor] = useState(false);
+  const [showRetroRapportEditor, setShowRetroRapportEditor] = useState(false);
+  const handleEditRapport = useCallback(() => {
+    if (mode === 'Bilan') {
+      setShowRapportEditor(prev => !prev);
+    } else {
+      setShowRetroRapportEditor(prev => !prev);
+    }
+  }, [mode]);
+
   return (
     <div className="Zone-fond-blanc">
       <Sidebar onAddNode={onAddNode} currentLanguage={currentLanguage} />
@@ -336,6 +386,7 @@ function Flow({
         onLoadProject={handleLoadProject}
         onLogout={onLogout}
         onScreenshot={handleScreenshot}
+        onEditRapport={handleEditRapport}
         currentLanguage={currentLanguage}
         onLanguageChange={handleLanguageChange}
       />
@@ -351,7 +402,7 @@ function Flow({
         <ReactFlow
           nodes={nodes}
           edges={edges}
-          onNodeClick={onNodeClick}
+          onNodeClick={isEraserActive ? undefined : onNodeClick}
           onNodesChange={onNodesChange}
           onNodesDelete={onNodesDelete}
           onEdgesChange={onEdgesChange}
@@ -362,6 +413,17 @@ function Flow({
         >
           <Background />
           <Controls />
+          <Panel position="top-left">
+            <button
+              className={`eraser-btn${isEraserActive ? ' active' : ''}`}
+              onClick={() => setIsEraserActive((v) => !v)}
+            >
+              🧹 Erase
+            </button>
+            <FitViewButton />
+            <LockScrollButton />
+          </Panel>
+          {isEraserActive && <Eraser />}
         </ReactFlow>
       </div>
 
@@ -389,9 +451,23 @@ function Flow({
       )}   
 
       {showOPEX && (
-        <OPEX_form 
-          onClose={() => setShowOPEX(false)} 
+        <OPEX_form
+          onClose={() => setShowOPEX(false)}
           currentLanguage={currentLanguage}
+        />
+      )}
+
+      {showRapportEditor && (
+        <GlobalReport
+          nodes={nodes}
+          onClose={() => setShowRapportEditor(false)}
+        />
+      )}
+
+      {showRetroRapportEditor && (
+        <GlobalRetroReport
+          nodes={nodes}
+          onClose={() => setShowRetroRapportEditor(false)}
         />
       )}
     </div>

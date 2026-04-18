@@ -32,7 +32,6 @@ export const performCalculation_COOLINGTOWER_option_Qeau = (nodeData, Teau, T_st
   const Qm_tot_intermediaire_kg_h = Qm_CO2_intermediaire_kg_h + Qm_H2O_intermediaire_kg_h + Qm_O2_intermediaire_kg_h + Qm_N2_intermediaire_kg_h;
 
 
-console.log(Qm_CO2_intermediaire_kg_h,Qm_H2O_intermediaire_kg_h,Qm_O2_intermediaire_kg_h,Qm_N2_intermediaire_kg_h)
 
   // ON CALCULE LA MASSE D'EAU QU'IL A FALLU AJOUTER POUR ARRIVER A LA TEMPERATURE FINALE
   const T_intermediaire = temp_bef_add_wat(Qeau_kg_h, Teau, Taval, Qm_CO2_out_kg_h, Qm_H2O_out_kg_h, Qm_N2_out_kg_h, Qm_O2_out_kg_h);
@@ -54,9 +53,6 @@ console.log(Qm_CO2_intermediaire_kg_h,Qm_H2O_intermediaire_kg_h,Qm_O2_intermedia
 
 const delta_H=H_tot_intermediaire_kj- H_vapeur_kJ;
 
-console.log(delta_H)
-console.log(Qm_CO2_kg_h, Qm_H2O_kg_h, Qm_O2_kg_h,Qm_N2_kg_h)
-
   const T_final = TEMP_FUMEE(delta_H, Qm_CO2_kg_h, Qm_H2O_kg_h, Qm_N2_kg_h, Qm_O2_kg_h);
 
   //ON CONVERTIT LES MASSES EN VOLUME
@@ -68,12 +64,12 @@ console.log(Qm_CO2_kg_h, Qm_H2O_kg_h, Qm_O2_kg_h,Qm_N2_kg_h)
   const Qv_wet_Nm3_h = Qv_sec_Nm3_h + Qv_H2O_Nm3_h;
 
   // ON CALCULE LA REPARTITION POURCENT VOLUMIQUE
-  const O2_dry_pourcent = Qv_O2_Nm3_h / Qv_sec_Nm3_h * 100;
-  const O2_humide_pourcent = Qv_O2_Nm3_h / Qv_wet_Nm3_h * 100;
-  const H2O_pourcent = Qv_H2O_Nm3_h / Qv_wet_Nm3_h * 100;
-  const N2_humide_pourcent = Qv_N2_Nm3_h / Qv_wet_Nm3_h * 100;
-  const CO2_dry_pourcent = Qv_CO2_Nm3_h / Qv_sec_Nm3_h * 100;
-  const CO2_humide_pourcent = Qv_CO2_Nm3_h / Qv_wet_Nm3_h * 100;
+  const O2_dry_pourcent = Qv_sec_Nm3_h > 0 ? (Qv_O2_Nm3_h / Qv_sec_Nm3_h) * 100 : 0;
+  const O2_humide_pourcent = Qv_wet_Nm3_h > 0 ? (Qv_O2_Nm3_h / Qv_wet_Nm3_h) * 100 : 0;
+  const H2O_pourcent = Qv_wet_Nm3_h > 0 ? (Qv_H2O_Nm3_h / Qv_wet_Nm3_h) * 100 : 0;
+  const N2_humide_pourcent = Qv_wet_Nm3_h > 0 ? (Qv_N2_Nm3_h / Qv_wet_Nm3_h) * 100 : 0;
+  const CO2_dry_pourcent = Qv_sec_Nm3_h > 0 ? (Qv_CO2_Nm3_h / Qv_sec_Nm3_h) * 100 : 0;
+  const CO2_humide_pourcent = Qv_wet_Nm3_h > 0 ? (Qv_CO2_Nm3_h / Qv_wet_Nm3_h) * 100 : 0;
 
 
 let T=T_final;

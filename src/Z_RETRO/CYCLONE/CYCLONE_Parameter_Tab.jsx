@@ -10,6 +10,7 @@ import CalculationResults from '../../C_Components/ShowCalculationResult_retro';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './CYCLONE_traduction';
 
+import CYCLONE_Retro_Rapport from './CYCLONE_Retro_Rapport';
 import '../../index.css';
 
 // Constantes pour localStorage
@@ -57,6 +58,7 @@ const CYCLONE_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLa
   });
   const [isSliderOpen, setIsSliderOpen] = useState(false);
   const [isCalculating, setIsCalculating] = useState(false);
+  const [showReport, setShowReport] = useState(false);
 
   // Récupération des traductions avec mémorisation
   const { languageCode, t } = useMemo(() => {
@@ -172,7 +174,7 @@ const CYCLONE_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLa
 
       setCalculationResult_CYCLONE(result);
       if (onSendData) {
-        onSendData({ result });
+        onSendData({ result, inputData: { T_amont_CYCLONE, T_air_parasite, Qair_parasite, PDC_aero } });
       }
 
     } catch (error) {
@@ -288,6 +290,24 @@ const CYCLONE_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLa
         <div className="no-results-message">
           <p>{t.NoResults}</p>
         </div>
+      )}
+
+      <div style={{ marginTop: '12px' }}>
+        <button
+          onClick={() => setShowReport(true)}
+          disabled={!CalculationResult_CYCLONE || isCalculating}
+          style={{ width: '100%', padding: '8px 16px', background: CalculationResult_CYCLONE ? '#1a3a6b' : '#ccc', color: '#fff', border: 'none', borderRadius: '4px', cursor: CalculationResult_CYCLONE ? 'pointer' : 'not-allowed', fontWeight: 'bold', fontSize: '13px' }}
+        >
+          Editer Rapport
+        </button>
+      </div>
+
+      {showReport && CalculationResult_CYCLONE && (
+        <CYCLONE_Retro_Rapport
+          calculationResult={CalculationResult_CYCLONE}
+          inputParams={{ T_amont_CYCLONE, T_air_parasite, Qair_parasite, PDC_aero }}
+          onClose={() => setShowReport(false)}
+        />
       )}
     </div>
   );

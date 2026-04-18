@@ -526,22 +526,6 @@ export const Emissivite_CO2_CO_T = (MR, T, pL, Pt) => {
   if (T_sup_MR_sup_pL_sup_Pt_sup === null) T_sup_MR_sup_pL_sup_Pt_sup = 0;
 
 
-  console.log('T_inf_MR_inf_pL_inf_Pt_inf:', T_inf_MR_inf_pL_inf_Pt_inf);
-  console.log('T_inf_MR_inf_pL_inf_Pt_sup:', T_inf_MR_inf_pL_inf_Pt_sup);
-  console.log('T_inf_MR_inf_pL_sup_Pt_inf:', T_inf_MR_inf_pL_sup_Pt_inf);
-  console.log('T_inf_MR_inf_pL_sup_Pt_sup:', T_inf_MR_inf_pL_sup_Pt_sup);
-  console.log('T_sup_MR_inf_pL_inf_Pt_inf:', T_sup_MR_inf_pL_inf_Pt_inf);
-  console.log('T_sup_MR_inf_pL_inf_Pt_sup:', T_sup_MR_inf_pL_inf_Pt_sup);
-  console.log('T_sup_MR_inf_pL_sup_Pt_inf:', T_sup_MR_inf_pL_sup_Pt_inf);
-  console.log('T_sup_MR_inf_pL_sup_Pt_sup:', T_sup_MR_inf_pL_sup_Pt_sup);
-  console.log('T_inf_MR_sup_pL_inf_Pt_inf:', T_inf_MR_sup_pL_inf_Pt_inf);
-  console.log('T_inf_MR_sup_pL_inf_Pt_sup:', T_inf_MR_sup_pL_inf_Pt_sup);
-  console.log('T_inf_MR_sup_pL_sup_Pt_inf:', T_inf_MR_sup_pL_sup_Pt_inf);
-  console.log('T_inf_MR_sup_pL_sup_Pt_sup:', T_inf_MR_sup_pL_sup_Pt_sup);
-  console.log('T_sup_MR_sup_pL_inf_Pt_inf:', T_sup_MR_sup_pL_inf_Pt_inf);
-  console.log('T_sup_MR_sup_pL_inf_Pt_sup:', T_sup_MR_sup_pL_inf_Pt_sup);
-  console.log('T_sup_MR_sup_pL_sup_Pt_inf:', T_sup_MR_sup_pL_sup_Pt_inf);
-  console.log('T_sup_MR_sup_pL_sup_Pt_sup:', T_sup_MR_sup_pL_sup_Pt_sup);
 
 
 

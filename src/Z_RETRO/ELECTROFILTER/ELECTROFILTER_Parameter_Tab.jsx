@@ -10,6 +10,7 @@ import CalculationResults from '../../C_Components/ShowCalculationResult_retro';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './ELECTROFILTER_traduction';
 
+import ELECTROFILTER_Retro_Rapport from './ELECTROFILTER_Retro_Rapport';
 import '../../index.css';
 
 // Constantes pour localStorage
@@ -57,6 +58,7 @@ const ELECTROFILTER_Parameter_Tab = ({ nodeData, title, onSendData, onClose, cur
   });
   const [isSliderOpen, setIsSliderOpen] = useState(false);
   const [isCalculating, setIsCalculating] = useState(false);
+  const [showReport, setShowReport] = useState(false);
 
   // Récupération des traductions avec mémorisation
   const { languageCode, t } = useMemo(() => {
@@ -147,7 +149,7 @@ const ELECTROFILTER_Parameter_Tab = ({ nodeData, title, onSendData, onClose, cur
 
       setCalculationResult_ELECTROFILTER(result);
       if (onSendData) {
-        onSendData({ result });
+        onSendData({ result, inputData: { T_amont_ELECTROFILTER, T_air_decolmatation, Qair_decolmatation, PDC_aero } });
       }
 
     } catch (error) {
@@ -263,6 +265,24 @@ const ELECTROFILTER_Parameter_Tab = ({ nodeData, title, onSendData, onClose, cur
         <div className="no-results-message">
           <p>{t.NoResults}</p>
         </div>
+      )}
+
+      <div style={{ marginTop: '12px' }}>
+        <button
+          onClick={() => setShowReport(true)}
+          disabled={!CalculationResult_ELECTROFILTER || isCalculating}
+          style={{ width: '100%', padding: '8px 16px', background: CalculationResult_ELECTROFILTER ? '#1a3a6b' : '#ccc', color: '#fff', border: 'none', borderRadius: '4px', cursor: CalculationResult_ELECTROFILTER ? 'pointer' : 'not-allowed', fontWeight: 'bold', fontSize: '13px' }}
+        >
+          Editer Rapport
+        </button>
+      </div>
+
+      {showReport && CalculationResult_ELECTROFILTER && (
+        <ELECTROFILTER_Retro_Rapport
+          calculationResult={CalculationResult_ELECTROFILTER}
+          inputParams={{ T_amont_ELECTROFILTER, T_air_decolmatation, Qair_decolmatation, PDC_aero }}
+          onClose={() => setShowReport(false)}
+        />
       )}
     </div>
   );

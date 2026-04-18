@@ -6,6 +6,7 @@ export const translations = {
     'Pollutant Emissions': 'Émissions de polluants',
     'Design': 'Dimensionnement',
     'Opex': 'OPEX',
+    'Rapport': 'Rapport',
     'Back to Flow': 'Retour au flux',
     'Clear memory': 'Effacer la mémoire',
     'Clear parameters': 'Effacer les paramètres',

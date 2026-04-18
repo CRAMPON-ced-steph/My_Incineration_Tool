@@ -25,22 +25,23 @@ const MassCalculator = ({ masses, TemperatureImposee }) => {
     volume.Total =
       volume.CO2 + volume.O2 + volume.H2O + volume.N2;
 
-    const repartition_volume_humide = {
+    const repartition_volume_humide = volume.Total > 0 ? {
       CO2: (CO2_kg_m3(initialMasses.CO2) / volume.Total) * 100,
       O2: (O2_kg_m3(initialMasses.O2) / volume.Total) * 100,
       H2O: (H2O_kg_m3(initialMasses.H2O) / volume.Total) * 100,
       N2: (N2_kg_m3(initialMasses.N2) / volume.Total) * 100,
-    };
+    } : { CO2: 0, O2: 0, H2O: 0, N2: 0 };
 
     repartition_volume_humide.Total =
       repartition_volume_humide.CO2 + repartition_volume_humide.O2 + repartition_volume_humide.H2O + repartition_volume_humide.N2;
 
-    const repartition_volume_sec = {
-      CO2: (CO2_kg_m3(initialMasses.CO2) / (volume.Total - volume.H2O)) * 100,
-      O2: (O2_kg_m3(initialMasses.O2) / (volume.Total - volume.H2O)) * 100,
+    const volSec = volume.Total - volume.H2O;
+    const repartition_volume_sec = volSec > 0 ? {
+      CO2: (CO2_kg_m3(initialMasses.CO2) / volSec) * 100,
+      O2: (O2_kg_m3(initialMasses.O2) / volSec) * 100,
       H2O: 0,
-      N2: (N2_kg_m3(initialMasses.N2) / (volume.Total - volume.H2O)) * 100,
-    };
+      N2: (N2_kg_m3(initialMasses.N2) / volSec) * 100,
+    } : { CO2: 0, O2: 0, H2O: 0, N2: 0 };
 
     repartition_volume_sec.Total =
       repartition_volume_sec.CO2 + repartition_volume_sec.O2 + repartition_volume_sec.H2O + repartition_volume_sec.N2;

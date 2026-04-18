@@ -9,9 +9,10 @@ import ClearButton from '../../C_Components/Clear_Button';
 import ShowResultButton from '../../C_Components/Show_result_retro';
 import CloseButton from '../../C_Components/OnCloseButton_retro';
 import CalculationResults from '../../C_Components/ShowCalculationResult_retro';
+import WHB_Retro_Rapport from './WHB_Retro_Rapport';
 import '../../index.css';
 
-import { getTranslatedParameter, getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
+import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './WHB_traduction';
 
 // Constantes pour les modes de calcul
@@ -126,12 +127,13 @@ const WHB_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLangua
   });
   const [isSliderOpen, setIsSliderOpen] = useState(false);
   const [isCalculating, setIsCalculating] = useState(false);
+  const [showReport, setShowReport] = useState(false);
 
   // Récupération des traductions avec mémorisation
-  const { languageCode, t } = useMemo(() => {
+  const { t } = useMemo(() => {
     const code = getLanguageCode(currentLanguage);
     const translationsObj = translations[code] || translations['en'];
-    return { languageCode: code, t: translationsObj };
+    return { t: translationsObj };
   }, [currentLanguage]);
 
   // Mappings pour les traductions des toggles
@@ -301,7 +303,7 @@ const WHB_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLangua
       const result = calculationFunction(...params);
       
       setCalculationResult_WHB(result);
-      onSendData({ result });
+      onSendData({ result, inputData: { T_eau_alimentation_C, Q_air_parasite_Nm3_h, Q_eau_purge_pourcent, T_air_exterieur_C, P_th_pourcent, P_vapeur_bar, T_vapeur_surchauffee_C, T_amont_WHB_C, Q_eau_alimentation, O2_mesure, bilanTypeVapeur, bilanType, bilanTypeAir } });
 
     } catch (error) {
       console.error('Erreur lors du calcul:', error);
@@ -552,6 +554,24 @@ const WHB_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLangua
         <div className="no-results-message">
           <p>{t.NoResults}</p>
         </div>
+      )}
+
+      <div style={{ marginTop: '12px' }}>
+        <button
+          onClick={() => setShowReport(true)}
+          disabled={!calculationResult_WHB || isCalculating}
+          style={{ width: '100%', padding: '8px 16px', background: calculationResult_WHB ? '#1a3a6b' : '#ccc', color: '#fff', border: 'none', borderRadius: '4px', cursor: calculationResult_WHB ? 'pointer' : 'not-allowed', fontWeight: 'bold', fontSize: '13px' }}
+        >
+          Editer Rapport
+        </button>
+      </div>
+
+      {showReport && calculationResult_WHB && (
+        <WHB_Retro_Rapport
+          calculationResult={calculationResult_WHB}
+          inputParams={{ T_eau_alimentation_C, Q_air_parasite_Nm3_h, Q_eau_purge_pourcent, T_air_exterieur_C, P_th_pourcent, P_vapeur_bar, T_vapeur_surchauffee_C, T_amont_WHB_C, Q_eau_alimentation, O2_mesure, bilanTypeVapeur, bilanType, bilanTypeAir }}
+          onClose={() => setShowReport(false)}
+        />
       )}
     </div>
   );

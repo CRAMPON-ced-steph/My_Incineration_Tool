@@ -10,7 +10,7 @@ export const  N2_kg_m3 = (kg)=> {return  kg * 22.4 / 28;};
 export const  conv_O2_ref = (O2_ref, O2_mes)=> {return  (21 - O2_ref)/  (21 - O2_mes);};
 export const  C_to_F = (T)=> {return 9 / 5 * T + 32;}; 
 export const  F_C = (T)=> {return 5 / 9 *  (T - 32);}; 
-export const  Nm3_to_ft = (V)=> {const F_t = 3.28084;const ft3 = ft^3;return V * ft3;}; 
+export const  Nm3_to_ft = (V)=> {const ft = 3.28084;const ft3 = ft**3;return V * ft3;};
 export const  Nm3h_SCFM = (V)=> {const ft = 0.3048 ;const ft3 = ft^3 ;const m3h = ft3 * 60;const K = m3h * 273 / 293;return V / K;}; 
 export const  Nm3h_ACFM = (V)=> {const ft = 0.3048 ;const ft3 = ft^3 ;const m3h = ft3 * 60;const K = m3h ;return  V / K;}; 
 export const  SCFM_Nm3h = (V)=> {return V * 1.7 *(273.159 / 293);}; 

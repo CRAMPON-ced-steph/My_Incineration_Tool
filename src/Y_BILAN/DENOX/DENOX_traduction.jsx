@@ -7,6 +7,7 @@ export const translations = {
     'Pollutant Emissions': 'Émissions polluantes',
     'Design': 'Dimensionnement',
     'Opex': 'Opex',
+    'Rapport': 'Rapport',
 
     // === DENOXFlueGasParameters - Paramètres d'émission ===
     'Calculation parameters': 'Paramètres de calcul',

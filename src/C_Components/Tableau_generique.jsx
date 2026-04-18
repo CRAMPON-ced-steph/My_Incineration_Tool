@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 
 const TableGeneric = ({ elements }) => {
   // Vérifie que des données valides sont fournies

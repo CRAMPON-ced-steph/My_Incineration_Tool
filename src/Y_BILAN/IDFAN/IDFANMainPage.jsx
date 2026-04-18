@@ -10,6 +10,7 @@ import { translations } from './IDFAN_traduction';
 
 
 import IDFANOpex from './4_IDFAN_Opex';
+import IDFAN_Report from './IDFAN_Report';
 
 
 
@@ -29,7 +30,7 @@ const IDFANMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, current
 
  //{name: 'Design', content: < IDFANDesign innerData={innerData}setInnerData={setInnerData}/> },
  {name: 'Opex', content: < IDFANOpex innerData={innerData}setInnerData={setInnerData}currentLanguage={currentLanguage} /> },
-
+ {name: 'Rapport', content: <IDFAN_Report innerData={innerData} />},
 
   ];
 
@@ -46,6 +47,7 @@ const IDFANMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, current
   const sendAllData = () => {
     onSendData({
       result: {
+        ...innerData,
         FG_OUT_kg_h : innerData['FG_OUT_kg_h'],
         PollutantInput : innerData['PInput'],
         T_OUT : innerData['T_OUT'],

@@ -9,6 +9,7 @@ import ToggleButton from '../../C_Components/toggle_button_retro';
 import CloseButton from '../../C_Components/OnCloseButton_retro';
 import CalculationResults from '../../C_Components/ShowCalculationResult_retro';
 
+import COOLINGTOWER_Retro_Rapport from './COOLINGTOWER_Retro_Rapport';
 import '../../index.css';
 
 const COOLINGTOWER_Parameter_Tab = ({ nodeData, title, onSendData, onClose }) => {
@@ -21,8 +22,8 @@ const COOLINGTOWER_Parameter_Tab = ({ nodeData, title, onSendData, onClose }) =>
 
 
   const [calculationResult_COOLINGTOWER, setCalculationResult] = useState(null);
-
   const [isSliderOpen, setIsSliderOpen] = useState(false);
+  const [showReport, setShowReport] = useState(false);
 
 
   // Sauvegarde dans le localStorage
@@ -58,7 +59,7 @@ const COOLINGTOWER_Parameter_Tab = ({ nodeData, title, onSendData, onClose }) =>
         result = performCalculation_COOLINGTOWER_option_Qeau(nodeData, parseFloat(Teau),parseFloat(T_steam_C),parseFloat(Qeau_kg_h), parseFloat(Qsteam_kg_h), parseFloat(PDC_aero));
   
       setCalculationResult(result);
-      onSendData({ result });
+      onSendData({ result, inputData: { Teau, T_steam_C, Qeau_kg_h, Qsteam_kg_h, PDC_aero } });
     } catch (error) {
       console.error('Calculation error:', error);
       alert(`Error in calculation: ${error.message}`);
@@ -111,6 +112,24 @@ const COOLINGTOWER_Parameter_Tab = ({ nodeData, title, onSendData, onClose }) =>
 
       {isSliderOpen && calculationResult_COOLINGTOWER && (
         <CalculationResults isOpen={isSliderOpen} results={calculationResult_COOLINGTOWER} />
+      )}
+
+      <div style={{ marginTop: '12px' }}>
+        <button
+          onClick={() => setShowReport(true)}
+          disabled={!calculationResult_COOLINGTOWER}
+          style={{ width: '100%', padding: '8px 16px', background: calculationResult_COOLINGTOWER ? '#1a3a6b' : '#ccc', color: '#fff', border: 'none', borderRadius: '4px', cursor: calculationResult_COOLINGTOWER ? 'pointer' : 'not-allowed', fontWeight: 'bold', fontSize: '13px' }}
+        >
+          Editer Rapport
+        </button>
+      </div>
+
+      {showReport && calculationResult_COOLINGTOWER && (
+        <COOLINGTOWER_Retro_Rapport
+          calculationResult={calculationResult_COOLINGTOWER}
+          inputParams={{ Teau, T_steam_C, Qeau_kg_h, Qsteam_kg_h, PDC_aero }}
+          onClose={() => setShowReport(false)}
+        />
       )}
     </div>
   );

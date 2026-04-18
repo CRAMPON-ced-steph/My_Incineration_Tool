@@ -10,6 +10,7 @@ import '../../index.css';
 
 import { getTranslatedParameter, getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './RK_traduction';
+import RK_Retro_Rapport from './RK_Retro_Rapport';
 
 // Constantes pour les valeurs logiques (ne changent pas avec la langue)
 const CALCULATION_MODES = {
@@ -22,6 +23,11 @@ const BALANCE_TYPES = {
   WASTE_FLOWRATE: 'WASTE_FLOWRATE'
 };
 
+const DIAGRAM_MODES = {
+  NO: 'NO',
+  YES: 'YES'
+};
+
 // Valeurs par défaut
 const DEFAULT_VALUES = {
   Tair_RK_C: '15',
@@ -29,7 +35,8 @@ const DEFAULT_VALUES = {
   NCV_kcal_kg: '2200',
   Masse_dechet_kg_h: '6000',
   bilanType_NCV_Masse: BALANCE_TYPES.NET_CALORIFIC_VALUE,
-  bilanType_whb: CALCULATION_MODES.WITH_WHB
+  bilanType_whb: CALCULATION_MODES.WITH_WHB,
+  diagramMode: DIAGRAM_MODES.NO
 };
 
 const RK_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage }) => {
@@ -48,17 +55,21 @@ const RK_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguag
   );
 
   // États pour les types de calcul (utilisation des constantes)
-  const [bilanType_NCV_Masse, setBilanType_NCV_Masse] = useState(() => 
+  const [bilanType_NCV_Masse, setBilanType_NCV_Masse] = useState(() =>
     localStorage.getItem('bilanType_NCV_Masse') || DEFAULT_VALUES.bilanType_NCV_Masse
   );
-  const [bilanType_whb, setBilanType_whb] = useState(() => 
+  const [bilanType_whb, setBilanType_whb] = useState(() =>
     localStorage.getItem('bilanType_whb') || DEFAULT_VALUES.bilanType_whb
+  );
+  const [diagramMode, setDiagramMode] = useState(() =>
+    localStorage.getItem('RK_diagramMode') || DEFAULT_VALUES.diagramMode
   );
 
   // États pour l'interface
   const [calculationResult_RK, setCalculationResult_RK] = useState(null);
   const [isSliderOpen, setIsSliderOpen] = useState(false);
   const [isCalculating, setIsCalculating] = useState(false);
+  const [showReport, setShowReport] = useState(false);
 
   // Récupération des traductions avec mémorisation
   const { languageCode, t } = useMemo(() => {
@@ -77,12 +88,13 @@ const RK_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguag
         localStorage.setItem('Masse_dechet_kg_h', Masse_dechet_kg_h);
         localStorage.setItem('bilanType_NCV_Masse', bilanType_NCV_Masse);
         localStorage.setItem('bilanType_whb', bilanType_whb);
+        localStorage.setItem('RK_diagramMode', diagramMode);
       } catch (error) {
         console.warn('Erreur lors de la sauvegarde dans localStorage:', error);
       }
     };
     saveToLocalStorage();
-  }, [Tair_RK_C, Thermal_losses_MW, NCV_kcal_kg, Masse_dechet_kg_h, bilanType_NCV_Masse, bilanType_whb]);
+  }, [Tair_RK_C, Thermal_losses_MW, NCV_kcal_kg, Masse_dechet_kg_h, bilanType_NCV_Masse, bilanType_whb, diagramMode]);
 
   // Sauvegarde des résultats de calcul
   useEffect(() => {
@@ -141,8 +153,27 @@ const RK_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguag
         );
       }
       
-      setCalculationResult_RK(result);
-      onSendData({ result });
+      const resultWithFlow = {
+        ...result,
+        dataFlow: nodeData?.result?.dataFlow || {},
+      };
+      setCalculationResult_RK(resultWithFlow);
+      onSendData({
+        result: resultWithFlow,
+        inputData: {
+          Tair_RK_C,
+          Thermal_losses_MW,
+          NCV_kcal_kg,
+          Masse_dechet_kg_h,
+          bilanType_NCV_Masse,
+          bilanType_whb,
+        },
+      });
+
+      if (diagramMode === DIAGRAM_MODES.YES) {
+        const pointE = { x: result.MasseDechet || 0, y: result.P_incinerateur_MWH || 0 };
+        localStorage.setItem('pointE', JSON.stringify(pointE));
+      }
       
     } catch (error) {
       console.error('Erreur lors du calcul:', error);
@@ -151,8 +182,15 @@ const RK_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguag
       setIsCalculating(false);
     }
   }, [
-    nodeData, bilanType_whb, bilanType_NCV_Masse, validateInputs, onSendData, t
+    nodeData, bilanType_whb, bilanType_NCV_Masse, diagramMode, validateInputs, onSendData, t
   ]);
+
+  // Toggle pour le diagramme de combustion
+  const toggleDiagramMode = useCallback(() => {
+    setDiagramMode(prev =>
+      prev === DIAGRAM_MODES.NO ? DIAGRAM_MODES.YES : DIAGRAM_MODES.NO
+    );
+  }, []);
 
   // Toggle pour le type de bilan WHB
   const toggleBilanType_whb = useCallback(() => {
@@ -180,7 +218,9 @@ const RK_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguag
   // Effacement de la mémoire
   const clearMemory = useCallback(() => {
     try {
-      localStorage.clear();
+      ['Tair_RK_C', 'Thermal_losses_MW', 'NCV_kcal_kg', 'Masse_dechet_kg_h',
+       'bilanType_NCV_Masse', 'bilanType_whb', 'calculationResult_RK', 'RK_diagramMode'
+      ].forEach(key => localStorage.removeItem(key));
       setCalculationResult_RK(null);
       
       // Réinitialisation aux valeurs par défaut
@@ -190,6 +230,7 @@ const RK_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguag
       setMasse_dechet_kg_h(DEFAULT_VALUES.Masse_dechet_kg_h);
       setBilanType_NCV_Masse(DEFAULT_VALUES.bilanType_NCV_Masse);
       setBilanType_whb(DEFAULT_VALUES.bilanType_whb);
+      setDiagramMode(DEFAULT_VALUES.diagramMode);
       
     } catch (error) {
       console.warn('Erreur lors de l\'effacement:', error);
@@ -221,6 +262,11 @@ const RK_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguag
     [BALANCE_TYPES.NET_CALORIFIC_VALUE]: t.NetCalorificValue,
     [BALANCE_TYPES.WASTE_FLOWRATE]: t.WasteFlowrate
   }), [t]);
+
+  const diagramDisplayMapping = useMemo(() => ({
+    [DIAGRAM_MODES.NO]: 'Non',
+    [DIAGRAM_MODES.YES]: 'Oui'
+  }), []);
 
   // Composant ToggleButton réutilisable et corrigé
   const ToggleButton = React.memo(({ label, value, mapping, onChange, testId }) => {
@@ -291,22 +337,33 @@ const RK_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguag
 
         {/* Champ conditionnel selon le type de bilan */}
         {bilanType_NCV_Masse === BALANCE_TYPES.NET_CALORIFIC_VALUE ? (
-          <InputField 
+          <InputField
             label={t.PCI}
-            unit={`[${t.kcalPerKg}]`} 
-            value={NCV_kcal_kg} 
+            unit={`[${t.kcalPerKg}]`}
+            value={NCV_kcal_kg}
             onChange={handleInputChange(setNCV_kcal_kg, '0')}
             disabled={isCalculating}
           />
         ) : (
-          <InputField 
+          <InputField
             label={t.DebitDechets}
-            unit={`[${t.kgPerHour}]`} 
-            value={Masse_dechet_kg_h} 
+            unit={`[${t.kgPerHour}]`}
+            value={Masse_dechet_kg_h}
             onChange={handleInputChange(setMasse_dechet_kg_h, '0')}
             disabled={isCalculating}
           />
         )}
+
+        {/* Toggle pour l'envoi vers le diagramme de combustion */}
+        <div className="toggle-container">
+          <ToggleButton
+            label="Diagramme"
+            value={diagramMode}
+            mapping={diagramDisplayMapping}
+            onChange={toggleDiagramMode}
+            testId="diagram-toggle"
+          />
+        </div>
       </div>
 
       {/* Boutons d'action */}
@@ -347,6 +404,44 @@ const RK_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguag
         <div className="no-results-message">
           <p>{t.NoResults}</p>
         </div>
+      )}
+
+      {/* Bouton Editer Rapport */}
+      <div style={{ marginTop: '12px' }}>
+        <button
+          onClick={() => setShowReport(true)}
+          disabled={!calculationResult_RK || isCalculating}
+          style={{
+            width: '100%',
+            padding: '8px 16px',
+            background: calculationResult_RK ? '#1a3a6b' : '#ccc',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '4px',
+            cursor: calculationResult_RK ? 'pointer' : 'not-allowed',
+            fontWeight: 'bold',
+            fontSize: '13px',
+          }}
+        >
+          Editer Rapport
+        </button>
+      </div>
+
+      {/* Modal rapport */}
+      {showReport && calculationResult_RK && (
+        <RK_Retro_Rapport
+          calculationResult={calculationResult_RK}
+          nodeData={nodeData}
+          inputParams={{
+            Tair_RK_C,
+            Thermal_losses_MW,
+            NCV_kcal_kg,
+            Masse_dechet_kg_h,
+            bilanType_NCV_Masse,
+            bilanType_whb,
+          }}
+          onClose={() => setShowReport(false)}
+        />
       )}
     </div>
   );
