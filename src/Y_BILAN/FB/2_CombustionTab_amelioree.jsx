@@ -66,6 +66,7 @@ const DEFAULT_EMISSIONS = {
   Masse_mineral_kg_h: 0,
   PCI_boue_kcal_kgMV: 0,
   Masse_eau_kg_h: 0,
+  eau_add_kg_h: 0,
 };
 
 const DEFAULT_THERMAL = {
@@ -96,7 +97,7 @@ function runIterativeCalc({
   composition, sludgeC, sludgeH, sludgeO, sludgeN, sludgeS, sludgeCl,
   Exces_air_lit, Exces_air_combustible,
   Teneur_en_eau_kgH2O_kgAS, Masse_volatile_kg_h, Masse_seche_kg_h, Masse_mineral_kg_h,
-  PCI_boue_kcal_kgMV, Masse_eau_kg_h, SO2_recupere_cendre_pourcent,
+  PCI_boue_kcal_kgMV, Masse_eau_kg_h, eau_add_kg_h, SO2_recupere_cendre_pourcent,
   Temp_boue_entree_C, Temp_fumee_voute_C, Temp_air_fluidisation_av_prechauffe_C,
   Temp_air_secondaire_C, Temp_air_tertiaire_C, Pertes_thermiques_pourcent,
   Temp_air_balayage_instrumentation_C, Tf_voute_ap_HX_C, Rdt_HX,
@@ -160,7 +161,7 @@ function runIterativeCalc({
     const Vvap_tot = Vvap_boue + Vvap_gaz;
     const Vair_comb_tot = Vair_sec_comb_tot + Vvap_tot;
 
-    const Debit_eau = Masse_eau_kg_h + Maire_balayage * Teneur_en_eau_kgH2O_kgAS + Maire_sec_comb_boue * Teneur_en_eau_kgH2O_kgAS;
+    const Debit_eau = Masse_eau_kg_h + eau_add_kg_h + Maire_balayage * Teneur_en_eau_kgH2O_kgAS + Maire_sec_comb_boue * Teneur_en_eau_kgH2O_kgAS;
 
     // --- Moles boues ---
     const MB_C = (Mboue.C / 12.01) * 1000;
@@ -271,8 +272,9 @@ function runIterativeCalc({
     const H_MV = (PCI_boue_kcal_kgMV * Masse_volatile_kg_h * 4.1868) / 3600;
     const H_MS = fh_MS_kW(Temp_boue_entree_C, Masse_seche_kg_h) || 0;
     const H_Evap = (Masse_eau_kg_h * (4.1868 * Temp_boue_entree_C - 2501.6)) / 3600;
+    const H_Evap_add = (eau_add_kg_h * (4.1868 * 15 - 2501.6)) / 3600;
     const H_MM = fh_MM_kW(Temp_fumee_voute_C, Masse_mineral_kg_h) || 0;
-    const H_NET_BOUE = H_MV + H_MS + H_Evap;
+    const H_NET_BOUE = H_MV + H_MS + H_Evap + H_Evap_add;
 
     const H_air_flu = cp_air(Temp_air_fluidisation_av_prechauffe_C) * Maire_sec_comb_tot + cp_dt_h2o(Temp_air_fluidisation_av_prechauffe_C) * Meau_air_comburant;
 
@@ -546,6 +548,7 @@ const CombustionTab = ({ innerData = {}, onInnerDataChange, onResultsChange, cur
         Masse_mineral_kg_h: emissions.Masse_mineral_kg_h || 0,
         PCI_boue_kcal_kgMV: emissions.PCI_boue_kcal_kgMV || 0,
         Masse_eau_kg_h: emissions.Masse_eau_kg_h || 0,
+        eau_add_kg_h: emissions.eau_add_kg_h || 0,
         SO2_recupere_cendre_pourcent: emissions.SO2_recupere_cendre_pourcent || 0,
         Temp_fumee_voute_C: thermalParams.Temp_fumee_voute_C,
         Temp_boue_entree_C: thermalParams.Temp_boue_entree_C,
@@ -819,6 +822,8 @@ const CombustionTab = ({ innerData = {}, onInnerDataChange, onResultsChange, cur
             <input type="number" step="0.1" value={emissions.O2_pct_air_combustion ?? DEFAULT_EMISSIONS.O2_pct_air_combustion} onChange={(e) => handleEmission('O2_pct_air_combustion', e.target.value)} style={inputStyle} /></div>
           <div><label style={labelStyle}>{t('Teneur en eau')} (kg H₂O/kg AS)</label>
             <input type="number" step="0.0001" value={emissions.Teneur_en_eau_kgH2O_kgAS ?? DEFAULT_EMISSIONS.Teneur_en_eau_kgH2O_kgAS} onChange={(e) => handleEmission('Teneur_en_eau_kgH2O_kgAS', e.target.value)} style={inputStyle} /></div>
+          <div><label style={labelStyle}>{t('Eau additionnelle')} (kg/h)</label>
+            <input type="number" step="1" value={emissions.eau_add_kg_h ?? DEFAULT_EMISSIONS.eau_add_kg_h} onChange={(e) => handleEmission('eau_add_kg_h', e.target.value)} style={inputStyle} /></div>
         </div>
       </div>
 
