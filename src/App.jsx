@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ReactFlowProvider } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 
@@ -20,6 +20,7 @@ const adminEmail = "cedric.crampon@gmail.com";
 
 // Apps Script comme source des emails autorisés (sheet Drive privé)
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzr3xGh0uqUppPuEf_2btR5oXQBe2SSFt4F2Ll-byCXF_JfvJSRQ8Z-617xUN5RzYvH/exec";
+const POLL_INTERVAL_MS = 60_000; // re-synchronisation avec le sheet toutes les 60 s
 export const GSHEET_EDIT_URL = `https://docs.google.com/spreadsheets/d/1051SBIOjr-ccUZJs8QezQTv8FfvIh3Oj1Aent2enPjQ/edit`;
 
 // Emails permanents (fallback si le script est inaccessible)
@@ -66,20 +67,9 @@ const fetchJsonp = (url) => new Promise((resolve, reject) => {
   document.body.appendChild(script);
 });
 
-// Merge permanents + sheet + éventuels extras localStorage
+// Source de vérité = permanents + sheet uniquement (pas de cache localStorage)
 const getAuthorizedEmails = (sheetEmails = []) => {
-  const allKnown = [...PERMANENT_AUTHORIZED_EMAILS, ...sheetEmails];
-  const knownSet = new Set(allKnown.map(e => e.email));
-
-  // Garde les éventuels emails ajoutés localement hors du sheet
-  let storedEmails = [];
-  try {
-    const raw = localStorage.getItem('authorizedEmails');
-    if (raw) storedEmails = JSON.parse(raw).map(item => ({ ...item, validUntil: new Date(item.validUntil) }));
-  } catch (e) { console.warn("localStorage authorizedEmails parse error:", e); }
-
-  const extra = storedEmails.filter(e => !knownSet.has(e.email));
-  return [...allKnown, ...extra];
+  return [...PERMANENT_AUTHORIZED_EMAILS, ...sheetEmails];
 };
 
 
@@ -91,14 +81,39 @@ function App() {
   const [authorizedEmails, setAuthorizedEmails] = useState(() => getAuthorizedEmails([]));
   const [currentUser, setCurrentUser] = useState(localStorage.getItem("authorizedEmail") || "");
 
-  // Fetch emails depuis Apps Script au démarrage
+  // Refs pour lire les valeurs courantes dans le callback du polling
+  const isAuthorizedRef = useRef(isAuthorized);
+  const currentUserRef  = useRef(currentUser);
+  useEffect(() => { isAuthorizedRef.current = isAuthorized; }, [isAuthorized]);
+  useEffect(() => { currentUserRef.current  = currentUser;  }, [currentUser]);
+
+  const handleLogout = () => {
+    localStorage.removeItem("authorizedEmail");
+    localStorage.removeItem("authorizedEmailValidUntil");
+    setIsAuthorized(false);
+    setCurrentUser("");
+  };
+
+  // Fetch initial + polling toutes les 60 s
   useEffect(() => {
     const fetchSheetEmails = async () => {
       try {
-        const data = await fetchJsonp(APPS_SCRIPT_URL);
+        const data   = await fetchJsonp(APPS_SCRIPT_URL);
         const parsed = parseSheetJSON(data);
+        const emails = getAuthorizedEmails(parsed);
         setSheetEmails(parsed);
-        setAuthorizedEmails(getAuthorizedEmails(parsed));
+        setAuthorizedEmails(emails);
+
+        // Re-valider l'utilisateur connecté à chaque synchronisation
+        if (isAuthorizedRef.current && currentUserRef.current) {
+          const stillValid = emails.find(
+            e => e.email === currentUserRef.current && new Date() <= new Date(e.validUntil)
+          );
+          if (!stillValid) {
+            // Email supprimé ou expiré dans le sheet → déconnexion immédiate
+            handleLogout();
+          }
+        }
       } catch (err) {
         console.warn("Apps Script inaccessible, mode dégradé (emails permanents uniquement):", err.message);
         setAuthorizedEmails(getAuthorizedEmails([]));
@@ -106,18 +121,20 @@ function App() {
         setSheetLoading(false);
       }
     };
-    fetchSheetEmails();
-  }, []);
 
-  // Vérification auto-login après chargement du sheet
+    fetchSheetEmails();
+    const interval = setInterval(fetchSheetEmails, POLL_INTERVAL_MS);
+    return () => clearInterval(interval);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Auto-login après chargement initial du sheet
   useEffect(() => {
     if (sheetLoading) return;
-    const savedEmail = localStorage.getItem("authorizedEmail");
+    const savedEmail      = localStorage.getItem("authorizedEmail");
     const savedValidUntil = localStorage.getItem("authorizedEmailValidUntil");
 
     if (savedEmail && savedValidUntil) {
-      const emails = getAuthorizedEmails(sheetEmails);
-      const match = emails.find(
+      const match = authorizedEmails.find(
         auth => auth.email === savedEmail && new Date() <= new Date(savedValidUntil)
       );
       if (match) {
@@ -128,20 +145,13 @@ function App() {
         localStorage.removeItem("authorizedEmailValidUntil");
       }
     }
-  }, [sheetLoading, sheetEmails]);
+  }, [sheetLoading]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Initialize OPEX defaults on component mount
   useEffect(() => {
     writeDefaultsToStorage(); // écrit les valeurs par défaut si absentes
     initFromStorage();        // charge le service depuis localStorage
   }, []);
-
-  const handleLogout = () => {
-    localStorage.removeItem("authorizedEmail");
-    localStorage.removeItem("authorizedEmailValidUntil");
-    setIsAuthorized(false);
-    setCurrentUser("");
-  };
 
   const handleAuthorize = (authorized, email = "") => {
     setIsAuthorized(authorized);
