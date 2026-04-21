@@ -10,20 +10,6 @@ export const EMAILS_CONFIG = {
       permanent: true,
       addedBy: "system",
       addedDate: "2024-01-01"
-    },
-    {
-      email: "admin@example.com",
-      validUntil: "2024-12-31",
-      permanent: true,
-      addedBy: "system",
-      addedDate: "2024-01-01"
-    },
-    {
-      email: "manager@company.com",
-      validUntil: "2025-06-30",
-      permanent: true,
-      addedBy: "system",
-      addedDate: "2024-01-01"
     }
   ],
 
