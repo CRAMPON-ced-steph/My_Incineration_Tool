@@ -1436,7 +1436,10 @@ const CombustionTab = ({ innerData = {}, onInnerDataChange, onResultsChange, cur
                 </tr>
                 <tr style={{ backgroundColor: '#F3F4F6' }}>
                   <td style={TDR}>Moles eau additionnelle dans carneau</td>
-                  {Array(18).fill(null).map((_, i) => <td key={i} style={TD}>-</td>)}
+                  <td style={TD}>-</td>
+                  <td style={TD}>{f((2 * (emissions.eau_add_kg_h || 0) / 18.016) * 1000, 3)}</td>
+                  <td style={TD}>{f(((emissions.eau_add_kg_h || 0) / 18.016) * 1000, 3)}</td>
+                  {Array(15).fill(null).map((_, i) => <td key={i} style={TD}>-</td>)}
                 </tr>
                 <tr style={{ backgroundColor: '#F3F4F6' }}>
                   <td style={TDR}>Moles air instrumentation</td>
