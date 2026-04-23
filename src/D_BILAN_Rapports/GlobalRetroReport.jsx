@@ -8,12 +8,13 @@ import {
   LinearScale,
   PointElement,
   LineElement,
+  ScatterController,
   Title,
   Tooltip,
   Legend,
 } from 'chart.js';
 
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, ScatterController, Title, Tooltip, Legend);
 
 // Map node label → truthy = has a retro report available
 const RETRO_REPORT_MAP = {
