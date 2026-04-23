@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { T_ref } from '../../A_Transverse_fonction/constantes';
 import TableGeneric from '../../C_Components/Tableau_generique';
 import { coeff_Nm3_to_m3 } from '../../A_Transverse_fonction/conv_calculation';
 import { getOpexData } from '../../A_Transverse_fonction/opexDataService';
@@ -79,7 +80,7 @@ const REACTORDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
     const ldRatio = reactorParams['L/D Ratio'];
     const agitationType = reactorParams['Agitation Type'];
 
-    const volumetricFlowRate = flowRate * (273.15 + temperature) / 273.15;
+    const volumetricFlowRate = flowRate * (T_ref + temperature) / T_ref;
     const volumetricFlowRateMs = volumetricFlowRate / 3600;
     const reactorVolume = volumetricFlowRateMs * residenceTime;
 

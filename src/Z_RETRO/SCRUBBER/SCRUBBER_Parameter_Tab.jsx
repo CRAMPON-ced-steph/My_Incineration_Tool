@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { T_ref } from '../../A_Transverse_fonction/constantes';
 import { performCalculation_SCRUBBER_option_TinTout } from './SCRUBBER_calculations';
 import { performCalculation_SCRUBBER_option_TinTsat } from './SCRUBBER_calculations2';
 
@@ -133,10 +134,10 @@ const SCRUBBER_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentL
     }
 
     // Validations spécifiques aux contraintes physiques
-    if (inputs.Teau < -273.15) {
+    if (inputs.Teau < -T_ref) {
       throw new Error(`${t.InvalidInput}: Water temperature cannot be below absolute zero`);
     }
-    if (inputs.T_amont_SCRUBBER < -273.15) {
+    if (inputs.T_amont_SCRUBBER < -T_ref) {
       throw new Error(`${t.InvalidInput}: Upstream temperature cannot be below absolute zero`);
     }
     if (inputs.PDC_aero < 0) {

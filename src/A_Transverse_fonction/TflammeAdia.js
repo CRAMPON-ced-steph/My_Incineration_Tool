@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Calculator } from 'lucide-react';
+import { T_ref } from "./constantes";
 
 // ============================================================================
 // FONCTION PURE DE CALCUL DE COMBUSTION - VERSION CORRIGÉE
@@ -81,7 +82,7 @@ export const calculerCombustion = (composition, O2_fumees, debit_gaz, temp_air) 
     const Hi = (hi_raw / Zmix) / 3.6;
 
     // Densité du gaz (kg/m³)
-    const Ro = (101.325 / 8.31451 / 273.15) * M / Zmix;
+    const Ro = (101.325 / 8.31451 / T_ref) * M / Zmix;
     const mol = 1000 * Ro / M;
 
     // Besoins stœchiométriques

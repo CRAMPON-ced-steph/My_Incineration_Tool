@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { T_ref } from '../../A_Transverse_fonction/constantes';
 import TableGeneric from '../../C_Components/Tableau_generique';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './SCRUBBER_traduction';
@@ -17,7 +18,7 @@ const constantes = {
 
 // ===== FONCTIONS UTILITAIRES =====
 const Nm3_to_m3 = (Qv, t, p) => {
-  return Qv * ((t + 273.159) / 273.159) * (760 / p);
+  return Qv * ((t + T_ref) / T_ref) * (760 / p);
 };
 
 const Sd_m2 = (D) => {

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { T_ref } from '../../A_Transverse_fonction/constantes';
 import cycloneImage from '/src/B_Images/cyclone_img.png';
 import TableGeneric from '../../C_Components/Tableau_generique';
 import { getOpexData } from '../../A_Transverse_fonction/opexDataService';
@@ -67,9 +68,9 @@ const CYCLONEDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
     const temperature = Parameters_cyclone.Tempe_flue_gas_C;
     const velocityTarget = Parameters_cyclone.VelocityTarget;
 
-    const airDensity = 101325 / (287.05 * (temperature + 273.15));
-    const volumeFlowRate = flueGasFlow * (temperature + 273.15) / 273.15;
-    const FlueGasFlow_m3_h = flueGasFlow * (273.159 + temperature) / 273.159;
+    const airDensity = 101325 / (287.05 * (temperature + T_ref));
+    const volumeFlowRate = flueGasFlow * (temperature + T_ref) / T_ref;
+    const FlueGasFlow_m3_h = flueGasFlow * (T_ref + temperature) / T_ref;
 
     // Iterative algorithm to find optimal diameter
     let D = 0.1;

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { T_ref } from '../../A_Transverse_fonction/constantes';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar } from 'recharts';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './WHB_traduction';
@@ -102,10 +103,10 @@ const TurbineCalculator = ({ innerData, setInnerData, currentLanguage = 'fr' }) 
     const Tsat = 100 + 28.96 * Math.log(pression);
     const surchauffe = Math.max(0, temperature - Tsat);
     const sfg = 6.048 - 0.0157 * Tsat;
-    const sf = 4.18 * Math.log((273 + Tsat) / 273);
+    const sf = 4.18 * Math.log((T_ref + Tsat) / T_ref);
     const sg = sf + sfg;
     const cpVapeur = 2.1;
-    const entropie = sg + cpVapeur * Math.log((273 + temperature) / (273 + Tsat));
+    const entropie = sg + cpVapeur * Math.log((T_ref + temperature) / (T_ref + Tsat));
     return entropie;
   };
 
@@ -114,7 +115,7 @@ const TurbineCalculator = ({ innerData, setInnerData, currentLanguage = 'fr' }) 
     const TsatSortie = 100 + 28.96 * Math.log(pressionSortie);
     const hfSortie = 4.18 * TsatSortie;
     const hfgSortie = 2256.4 - 2.3 * (TsatSortie - 100);
-    const sfSortie = 4.18 * Math.log((273 + TsatSortie) / 273);
+    const sfSortie = 4.18 * Math.log((T_ref + TsatSortie) / T_ref);
     const sfgSortie = 6.048 - 0.0157 * TsatSortie;
     const titre = Math.min(1, Math.max(0, (entropieEntree - sfSortie) / sfgSortie));
     return hfSortie + titre * hfgSortie;
@@ -284,8 +285,8 @@ const TurbineCalculator = ({ innerData, setInnerData, currentLanguage = 'fr' }) 
       const rendementGlobal = (parameters.rendementMecanique / 100) * (parameters.rendementGenerateur / 100);
       const puissanceElectrique = puissanceMecanique * rendementGlobal;
 
-      const T1 = parameters.temperatureEntree + 273.15;
-      const T2 = calculerTemperatureSaturation(parameters.pressionSortie) + 273.15;
+      const T1 = parameters.temperatureEntree + T_ref;
+      const T2 = calculerTemperatureSaturation(parameters.pressionSortie) + T_ref;
       const efficaciteCarnot = (T1 - T2) / T1 * 100;
 
       const consommationSpecifique = puissanceElectrique > 0 ? debitKgH / puissanceElectrique : 0;

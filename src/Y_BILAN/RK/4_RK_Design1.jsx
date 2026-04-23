@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { T_ref } from '../../A_Transverse_fonction/constantes';
 import TableGeneric from '../../C_Components/Tableau_generique';
 import DisplayDesignComponent from '../../C_Components/Display_design';
 import Input_bilan from '../../C_Components/MiseEnFormeInputParamBilan';
@@ -243,7 +244,7 @@ const RKdesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
   const Temperature_peau_C = Parametres_pertes_radiatives.temperaturePeau;
 
   const surfaceParoi_m2 = 2 * Math.PI * (Diametre_interne_m + 2 * Epaisseur_refractaire_m) / 2 * Longueur_four_m;
-  const pertesRad_MW = (0.9 * 5.67e-8 * ((Temperature_peau_C + 273.159) ** 4 - (10 + 273.159) ** 4) * surfaceParoi_m2) / 1e6;
+  const pertesRad_MW = (0.9 * 5.67e-8 * ((Temperature_peau_C + T_ref) ** 4 - (10 + T_ref) ** 4) * surfaceParoi_m2) / 1e6;
   const pertesConv_MW = (9 * surfaceParoi_m2 * (Temperature_peau_C - 10)) / 1e6;
   const pertesTotales_MW = pertesRad_MW + pertesConv_MW;
 
@@ -263,7 +264,7 @@ const RKdesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
   });
 
   const DT_virole = Parametres_refroidissement_virole.dtRefroidissement;
-  const Pertes_radiatives_virole = (0.9 * 5.67e-8 * ((DT_virole + 273.159) ** 4 - (10 + 273.159) ** 4) * surfaceParoi_m2) / 1e6;
+  const Pertes_radiatives_virole = (0.9 * 5.67e-8 * ((DT_virole + T_ref) ** 4 - (10 + T_ref) ** 4) * surfaceParoi_m2) / 1e6;
   const Pertes_convectives_virole = (7 * surfaceParoi_m2 * (DT_virole - 10)) / 1e6;
   const Pertes_convectives_virole_totale_MW = Pertes_radiatives_virole + Pertes_convectives_virole;
   const Conso_elec_Refroidissement_virole_kW = Pertes_convectives_virole_totale_MW * 1000 / 10;
@@ -360,7 +361,7 @@ const RKdesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
   const [Estimation_pertes_thermiques_SCC, setEstimation_pertes_thermiques_SCC] = useState({});
 
   const Surface_SCC_m2 = 2 * Math.PI * Diametre_SCC_m / 2 * Hauteur_SCC_m;
-  const Pth_radiatives_SCC_MW = (0.9 * 5.67e-8 * ((T_SCC_C + 273.159) ** 4 - (10 + 273.159) ** 4) * Surface_SCC_m2) / 1e6;
+  const Pth_radiatives_SCC_MW = (0.9 * 5.67e-8 * ((T_SCC_C + T_ref) ** 4 - (10 + T_ref) ** 4) * Surface_SCC_m2) / 1e6;
   const Pth_Conv_SCC_MW = (9 * Surface_SCC_m2 * (T_SCC_C - 10)) / 1e6;
   const Pth_totales_SCC_MW = Pth_radiatives_SCC_MW + Pth_Conv_SCC_MW;
 
@@ -459,7 +460,7 @@ const RKdesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
   const coeff_B = coeff_b / coeff_a;
   const coeff_C = coeff_c / coeff_a;
   const F = (1 + coeff_B ** 2 + coeff_C ** 2 - ((1 + coeff_B ** 2 + coeff_C ** 2) ** 2 - 4 * coeff_B ** 2 * coeff_C ** 2) ** 0.5) / (2 * coeff_B ** 2);
-  const FLux_radiatif_kW = F * emissivitefume * 5.67e-8 * ((Tfum_provisoire + 273.159) ** 4 - (Teau_extracteur + 273.159) ** 4) * S_echange / 1000;
+  const FLux_radiatif_kW = F * emissivitefume * 5.67e-8 * ((Tfum_provisoire + T_ref) ** 4 - (Teau_extracteur + T_ref) ** 4) * S_echange / 1000;
   const Eau_evap_extracteur_kg_h = FLux_radiatif_kW / (((hV_T(Teau_extracteur) - hL_T(Teau_extracteur))) / 3600);
   const Eau_evap_elements = [
     { text: 'H20pourcent', value: H20pourcent.toFixed(2) },

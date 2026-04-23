@@ -1,5 +1,7 @@
+import { T_ref } from "./constantes";
+
 export const fh_CO2 = (T) => {
-  T += 273.159;
+  T += T_ref;
   const A = 1.0034;
   const B = 0.000205;
   const C = 0;
@@ -10,7 +12,7 @@ export const fh_CO2 = (T) => {
 };
 
 export const fh_O2 = (T) => {
-  T += 273.159;
+  T += T_ref;
   let A, B, C, d, K;
   if (T < 1000) {
     A = 0.696;
@@ -30,7 +32,7 @@ export const fh_O2 = (T) => {
 };
 
 export const  fh_SO2 = (T) => {
-  T += 273.159;
+  T += T_ref;
   const A = 0.678;
   const B = 0.000166;
   const C = 0;
@@ -41,7 +43,7 @@ export const  fh_SO2 = (T) => {
 };
 
 export const fh_HCl = (T) => {
-  T += 273.159;
+  T += T_ref;
   const A = 0.7279;
   const B = 0.000126;
   const C = 0;
@@ -52,7 +54,7 @@ export const fh_HCl = (T) => {
 };
 
 export const fh_N2 = (T) => {
-  T += 273.159;
+  T += T_ref;
   let A, B, C, d, K;
   if (T < 800) {
     A = 0.9718;
@@ -72,7 +74,7 @@ export const fh_N2 = (T) => {
 };
 
 export const fh_H2O = (T) => {
-  T += 273.159;
+  T += T_ref;
   const A = 1.6658;
   const B = 0.0005945;
   const C = 0;
@@ -90,7 +92,7 @@ export const fh_AIR = (T) => {
 // Integral: s = A·ln(T) + B·T + C·T²/2 − d/(2·T²) + K
 // Coefficients from: Stull & Prophet (1971), JANAF Thermochemical Tables, 2nd ed., NBS
 export const fs_CO2 = (T) => {
-  T += 273.159;
+  T += T_ref;
   const A = 1.0034;
   const B = 0.000205;
   const C = 0;
@@ -101,7 +103,7 @@ export const fs_CO2 = (T) => {
 };
 
 export const fs_HCl = (T) => {
-  T += 273.159;
+  T += T_ref;
   const A = 0.7279;
   const B = 0.000126;
   const C = 0;
@@ -112,7 +114,7 @@ export const fs_HCl = (T) => {
 };
 
 export const fs_H2O = (T) => {
-  T += 273.159;
+  T += T_ref;
   const A = 1.6658;
   const B = 0.0005945;
   const C = 0;
@@ -131,39 +133,39 @@ export const fs_AIR = (T) => {
 };
 
 export const fh_CaO = (T) => {
-  T += 273.159;
+  T += T_ref;
   const result = 4.186 * (10 * T + 0.00484 * T * T / 2 + 108000 / T - 3305.96) / 56;
   return result;
 };
 
 export const fs_CaO = (T) => {
-  T += 273.159;
+  T += T_ref;
   const result = 4.186 * (10 * Math.log(T) + 0.00484 * T + 108000 / (T * T * 2) - 58.1406) / 56;
   return result;
 };
 
 export const fh_CaCO3 = (T) => {
-  T += 273.159;
+  T += T_ref;
   const result = 4.186 * (19.68 * T + 0.01189 * T * T / 2 + 307600 / T - 6942.45) / 100;
   return result;
 };
 
 
 export const fs_CaCO3 = (T) => {
-  T += 273.159;
+  T += T_ref;
   // Commenté dans l'original, décommenté ici :
    const result = 4.186 * (19.68 * Math.log(T) + 0.01189 * T + 307600 / (T * T * 2) - 115.7) / 100;
    return result;
 };
 
 export const fh_MgO = (T) => {
-  T += 273.159;
+  T += T_ref;
   const result = 4.186 * (10.86 * T + 0.001197 * T * T / 2 + 208700 / T - 3773.85) / 40.3;
   return result;
 };
 
 export const fs_MgO = (T) => {
-  T += 273.159;
+  T += T_ref;
   // Commenté dans l'original, décommenté ici :
    const result = 4.186 * (10.86 * Math.log(T) + 0.001197 * T + 208700 / (T * T * 2) - 62.6458) / 40.3;
   return result;
@@ -183,55 +185,55 @@ export const fs_MgCO3 = (T) => {
 };
 
 export const fh_C = (T) => {
-  T += 273.159;
+  T += T_ref;
   const result = 4.186 * (2.673 * T + 0.002617 * T * T / 2 + 116900 / T - 1255.45) / 12;
 
   return result;
 };
 
 export const fh_Al2O3 = (T) => {
-  T += 273.159;
+  T += T_ref;
   const result = 4.186 * (22.08 * T + 0.08971 * T * T / 2 + 522500 / T - 11281) / 102;
 
   return result;
 };
 
 export const fh_S = (T) => {
-  T += 273.159;
+  T += T_ref;
   const result = 4.1868 * (8.58 * T + 0.0003 * T * T / 2 - 2345) / 32;
   
   return result;
 };
 
 export const fh_K2O = (T) => {
-  T += 273.159;
+  T += T_ref;
   const result = 4.1868 * (12.78 * T + 0.02355 * T * T / 2 + 0.00001448 * T * T * T / 3 + 18791 / T - 4533) / 94;
 
   return result;
 };
 
 export const fh_FeO = (T) => {
-  T += 273.159;
+  T += T_ref;
   const result = 4.1868 * (12.62 * T + 0.001492 * T * T / 2 + 76200 / T - 3774) / 72;
 
   return result;
 };
 
 export const fh_MnO = (T) => {
-  T += 273.159;
+  T += T_ref;
   const result = 4.1868 * (7.43 * T + 0.01038 * T * T / 2 - 0.00000362 * T * T * T / 3 - 2391) / 71;
   
   return result;
 };
 
 export const fs_C = (T) => {
-  T += 273.159;
+  T += T_ref;
   const result = 4.1868 * (2.673 * Math.log(T) + 0.002617 * T + 116900 / (T * T * 2) - 16.4928) / 12;
   return result;
 };
 
 export const fs_SiO2 = (T) => {
-  T += 273.159;
+  T += T_ref;
   let result;
   if (T < 848) {
     result = (0.1812 * Math.log(T) + 0.0000726 * T * 2 + 4020 / (T ** 2) - 1.083) * 4.1868;
@@ -243,7 +245,7 @@ export const fs_SiO2 = (T) => {
 };
 
 export const fh_SiO2 = (T) => {
-  T += 273.159;
+  T += T_ref;
   let result;
   if (T < 848) {
     result = (0.1812 * T + 0.0000726 * T * T + 4020 / T - 69.59) * 4.1868;
@@ -276,9 +278,9 @@ export const fh_H2 = (T) => {
   const C = -0.000003298;
   const d = 0.000000001826;
   const e = -1832.381;
-  T += 273.159;
+  T += T_ref;
   const result = (A * T + B * T * T / 2 + C * T * T * T / 3 + d * T * T * T * T / 4 + e) * 4.18 / 2;
-  T -= 273.159;
+  T -= T_ref;
   return result;
 };
 
@@ -288,9 +290,9 @@ export const fh_CH4 = (T) => {
   const C = 0.00000286;
   const d = 0.000000002703;
   const e = -1740.48;
-  T += 273.159;
+  T += T_ref;
   const result = (A * T + B * T * T / 2 + C * T * T * T / 3 + d * T * T * T * T / 4 + e) * 4.186 / 16;
-  T -= 273.159;
+  T -= T_ref;
   return result;
 };
 
@@ -300,9 +302,9 @@ export const fh_C2H2 = (T) => {
   const C = 0.00001196;
   const d = 0.000000003373;
   const e = -2509.12;
-  T += 273.159;
+  T += T_ref;
   const result = (A * T + B * T * T / 2 + C * T * T * T / 3 + d * T * T * T * T / 4 + e) * 4.186 / 26;
-  T -= 273.159;
+  T -= T_ref;
   return result;
 };
 
@@ -312,9 +314,9 @@ export const fh_C2H4 = (T) => {
   const C = -0.00001994;
   const d = 0.000000004192;
   const e = -1512.43;
-  T += 273.159;
+  T += T_ref;
   const result = (A * T + B * T * T / 2 + C * T * T * T / 3 + d * T * T * T * T / 4 + e) * 4.186 / 28;
-  T -= 273.159;
+  T -= T_ref;
   return result;
 };
 
@@ -324,9 +326,9 @@ export const fh_C2H6 = (T) => {
   const C = -0.00001657;
   const d = 0.000000002081;
   const e = -1828.46;
-  T += 273.159;
+  T += T_ref;
   const result = (A * T + B * T * T / 2 + C * T * T * T / 3 + d * T * T * T * T / 4 + e) * 4.186 / 30;
-  T -= 273.159;
+  T -= T_ref;
   return result;
 };
 
@@ -336,9 +338,9 @@ export const fh_CO = (T) => {
   const C = 0.000006662;
   const d = -0.000000003037;
   const e = -1947.82;
-  T += 273.159;
+  T += T_ref;
   const result = (A * T + B * T * T / 2 + C * T * T * T / 3 + d * T * T * T * T / 4 + e) * 4.186 / 28;
-  T -= 273.159;
+  T -= T_ref;
   return result;
 };
 
@@ -357,10 +359,10 @@ export const fh_gaz = (T) => {
 };
 
 export const pression_equilibre_decar_dolomie = (T) => {
-  T += 273.159;
+  T += T_ref;
   const A = Math.pow(10, 11.44041 - 8655 / T);
   const result = A / 100000;
-  T -= 273.159;
+  T -= T_ref;
   return result;
 };
 
@@ -406,10 +408,10 @@ export const h_fumee = (T, m_CO2, m_H2O, M_N2, M_O2) => {
 };
 
 export const pression = (T) => {
-  T += 273.159;
+  T += T_ref;
   const P = Math.pow(10, 8.627 - 2147 / T);
   const result = P / 760;
-  T -= 273.159;
+  T -= T_ref;
   return result;
 };
 

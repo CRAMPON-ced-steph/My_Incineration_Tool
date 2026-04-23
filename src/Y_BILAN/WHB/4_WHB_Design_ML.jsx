@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { T_ref } from '../../A_Transverse_fonction/constantes';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { FG_emissivity } from '../../A_Transverse_fonction/FG_emissivite';
 import { getOpexData } from '../../A_Transverse_fonction/opexDataService';
@@ -301,7 +302,7 @@ const WHBDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
     const stefanBoltzmann = 5.67e-8;
     const T_amb = 253;
     return (Surface_d_echange * Emissivite * stefanBoltzmann *
-      (Math.pow(Temperature + 273, 4) - Math.pow(T_amb + 273, 4))) * (3600 / 1000);
+      (Math.pow(Temperature + T_ref, 4) - Math.pow(T_amb + T_ref, 4))) * (3600 / 1000);
   };
 
   const Tend_section = (Tfumee_in, H_cedee_par_radiation, H_fume_init) => {

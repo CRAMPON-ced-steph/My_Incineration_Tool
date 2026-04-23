@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { T_ref } from '../../A_Transverse_fonction/constantes';
 import { performCalculation_REACTOR } from './REACTOR_calculations';
 
 import ClearButton from '../../C_Components/Clear_Button';
@@ -164,10 +165,10 @@ const REACTOR_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLa
     }
 
     // Validations spécifiques aux contraintes physiques
-    if (inputs.T_amont_REACTOR < -273.15) {
+    if (inputs.T_amont_REACTOR < -T_ref) {
       throw new Error(`${t.InvalidInput}: Upstream temperature cannot be below absolute zero`);
     }
-    if (inputs.T_air < -273.15) {
+    if (inputs.T_air < -T_ref) {
       throw new Error(`${t.InvalidInput}: Air temperature cannot be below absolute zero`);
     }
     if (inputs.PDC_aero < 0) {

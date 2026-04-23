@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { T_ref } from '../../A_Transverse_fonction/constantes';
 import TableGeneric from '../../C_Components/Tableau_generique';
 import { coeff_Nm3_to_m3 } from '../../A_Transverse_fonction/conv_calculation';
 import { getOpexData } from '../../A_Transverse_fonction/opexDataService';
@@ -78,8 +79,8 @@ const QUENCHDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
   const Q_eau_add_l_min = Eau_add / 60;
   const V_FG_m_s = (Debit_fumees_humide_Nm3_h / 3600) / Surface_Quench;
 
-  const T_IN_K = T_IN + 273.159;
-  const T_sortie_K = T_sortie + 273.159;
+  const T_IN_K = T_IN + T_ref;
+  const T_sortie_K = T_sortie + T_ref;
 
   const Conso_elec_pompe_reelle_kW = Puissance_pompe_kW / (Rendement_pompe / 100);
 

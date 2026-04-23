@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { T_ref } from '../../A_Transverse_fonction/constantes';
 
 const styles = {
   container: {
@@ -316,7 +317,7 @@ function HXDiagram({ data, dTml, puissanceCedee }) {
 }
 
 function densiteFumees(T) {
-  return 1.293 * 273 / (273 + T);
+  return 1.293 * T_ref / (T_ref + T);
 }
 
 export default function Recuperateur() {

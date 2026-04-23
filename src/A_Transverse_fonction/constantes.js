@@ -8,6 +8,9 @@ export const mole_Cl = 35.45;
 export const O2_masse_volume = (21 * 32/22.4)/(21 * 32/22.4 + 79*28/22.4);
 export const rho_air = 0.21*32/22.4+0.79*28/22.4;
 
+export const T_ref = 273.15; // Température de référence en Kelvin
+export const P_ref = 101325; // Pression de référence en Pascals
+
 export const molarMasses = {
   C:12.01,
   H: 1.008,

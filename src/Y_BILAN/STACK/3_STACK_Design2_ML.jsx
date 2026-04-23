@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { T_ref } from '../../A_Transverse_fonction/constantes';
 import TableGeneric from '../../C_Components/Tableau_generique';
 import '../../index.css';
 import stack_hauteur_hp from '../../B_Images/stack/Stack_hauteur_hp.png';
@@ -100,7 +101,7 @@ const STACKdesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
   // Calculate concentration
   const concentration = (Qm_pollutant_kg_h * 1000) / Qm_FG_kg_h;
   const Qv_FG_Nm3_h = Qm_FG_kg_h / 1.29;
-  const Qv_FG_m3_h = Qv_FG_Nm3_h * (temperatureSortie + 273.15) / 273.15;
+  const Qv_FG_m3_h = Qv_FG_Nm3_h * (temperatureSortie + T_ref) / T_ref;
 
   // Determine k based on pollutant type
   const k = isGaz ? 340 : 680;
@@ -143,7 +144,7 @@ const STACKdesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
   const Qv_FG2_Nm3_h = getParameterValue(multiStackParams, MULTISTACK_KEYS.secondaryStackFlow);
   const Tf2 = getParameterValue(multiStackParams, MULTISTACK_KEYS.secondaryStackTemperature);
 
-  const R2 = Qv_FG2_Nm3_h * (Tf2 + 273.15) / 273.15;
+  const R2 = Qv_FG2_Nm3_h * (Tf2 + T_ref) / T_ref;
   let hp2 = hp;
   if (Distance_axe_hi_hj < (hi + hj + 10)) {
     if (hi > hj/2 || hj > hi/2) {

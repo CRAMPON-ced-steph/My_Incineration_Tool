@@ -4,7 +4,7 @@
 // ============================================
 
 import { fh_CO2, fh_O2, fh_CO, fh_HCl, fh_H2O, fh_H2, fh_SO2, fh_N2 } from "./enthalpy_gas";
-import {molarMasses} from "./constantes"
+import { molarMasses, T_ref } from "./constantes"
 
 // ============================================
 // DONNÉES CONSTANTES
@@ -53,17 +53,17 @@ const PCI_kcal_kgMV_VALUES = {
 // ============================================
 
 export const Calcul_DH_Voute = (Pvoute, TempAir, VitesseTuyere) => {
-  const PoidsAir = 0.001293 * (10.33 + (Pvoute / 1000)) / 10.33 * 273.159 / (TempAir + 273.159);
+  const PoidsAir = 0.001293 * (10.33 + (Pvoute / 1000)) / 10.33 * T_ref / (TempAir + T_ref);
   return (1.8 * PoidsAir * Math.pow(VitesseTuyere, 2)) / (2 * 9.81);
 };
 
 export const calculDebitPT = (debitTheoVol, pressionMmce, temperature) => {
   return debitTheoVol * (10.33 / (10.33 + 0.001 * pressionMmce)) * 
-         ((273.159 + temperature) / 273.159);
+         ((T_ref + temperature) / T_ref);
 };
 
 export const calculDebitPT_Nm3 = (debitTheoVol, pressionMmce, temperature) => {
-  return debitTheoVol * (273.159 / (273.159 + temperature)) * 
+  return debitTheoVol * (T_ref / (T_ref + temperature)) * 
          ((10.33 + pressionMmce * 0.001) / 10.33);
 };
 
@@ -306,7 +306,7 @@ export const MoleNOx = (tpMS, tpMV, tpPCI, Qboue, TempFreeBoard, MoleO2, MoleAzo
     const kgNOx = Math.pow(PCIboueBrute / (1.87 * Math.pow(10, 6)), 1.18);
     return (kgNOx / 30.008) * 1000;
   } else {
-    return Math.sqrt(21.9 * Math.exp(-43400 / (2 * (TempFreeBoard + 273))) * MoleO2 * MoleAzote);
+    return Math.sqrt(21.9 * Math.exp(-43400 / (2 * (TempFreeBoard + T_ref))) * MoleO2 * MoleAzote);
   }
 };
 
@@ -618,7 +618,7 @@ export const AllElementalComposition = (mCO2, mO2, mN2, mH2O, mSO2, mHCl, molarM
  * Constante d'équilibre K3 : [CO].[H2O] = K3.[CO2].[H2]
  */
  function calculateK3(tempFreeboard) {
-  const logT = Math.log10(tempFreeboard + 273.159);
+  const logT = Math.log10(tempFreeboard + T_ref);
   return Math.pow(10,
     -235.638681 +
     203.92436 * logT -

@@ -1,4 +1,6 @@
-export const coeff_Nm3_to_m3 = (P, T) => {return ((T + 273.159) / 273.159) * (1025 / (1025 + P));};
+import { T_ref } from "./constantes";
+
+export const coeff_Nm3_to_m3 = (P, T) => {return ((T + T_ref) / T_ref) * (1025 / (1025 + P));};
 export const CO2_m3_kg = (m3)=> {return m3 * 44 / 22.4;};
 export const  CO2_kg_m3 = (kg)=> {return kg * 22.4 / 44;}; 
 export const  H2O_m3_kg = (m3)=> {return m3 * 18 / 22.4;}; 
@@ -11,9 +13,9 @@ export const  conv_O2_ref = (O2_ref, O2_mes)=> {return  (21 - O2_ref)/  (21 - O2
 export const  C_to_F = (T)=> {return 9 / 5 * T + 32;}; 
 export const  F_C = (T)=> {return 5 / 9 *  (T - 32);}; 
 export const  Nm3_to_ft = (V)=> {const ft = 3.28084;const ft3 = ft**3;return V * ft3;};
-export const  Nm3h_SCFM = (V)=> {const ft = 0.3048 ;const ft3 = ft^3 ;const m3h = ft3 * 60;const K = m3h * 273 / 293;return V / K;}; 
+export const  Nm3h_SCFM = (V)=> {const ft = 0.3048 ;const ft3 = ft^3 ;const m3h = ft3 * 60;const K = m3h * T_ref / 293;return V / K;}; 
 export const  Nm3h_ACFM = (V)=> {const ft = 0.3048 ;const ft3 = ft^3 ;const m3h = ft3 * 60;const K = m3h ;return  V / K;}; 
-export const  SCFM_Nm3h = (V)=> {return V * 1.7 *(273.159 / 293);}; 
+export const  SCFM_Nm3h = (V)=> {return V * 1.7 *(T_ref / 293);}; 
 export const  kg_lb = (m)=> {return 2.20462 * m;}; 
 export const  lb_kg = (m)=> {return m / 2.20462;}; 
 export const  kJ_btu = (kJ)=> {return 0.94781712267 * kJ;}; 

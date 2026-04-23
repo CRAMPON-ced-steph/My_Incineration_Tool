@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { T_ref } from '../../A_Transverse_fonction/constantes';
 import { performCalculation_STACK } from './STACK_calculations';
 import InputField from '../../C_Components/input_retro';
 import ShowResultButton from '../../C_Components/Show_result_retro';
@@ -137,7 +138,7 @@ const STACK_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLang
     }
 
     // Validations spécifiques aux contraintes physiques
-    if (inputs.Tstack < -273.15) {
+    if (inputs.Tstack < -T_ref) {
       throw new Error(`${t.InvalidInput}: Temperature cannot be below absolute zero`);
     }
     if (inputs.Qv_wet_Nm3_h < 0) {

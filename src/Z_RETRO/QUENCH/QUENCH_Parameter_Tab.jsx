@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { T_ref } from '../../A_Transverse_fonction/constantes';
 import { performCalculation_QUENCH_option_T } from './QUENCH_calculations';
 import { performCalculation_QUENCH_option_Qeau } from './QUENCH_calculations2';
 
@@ -140,10 +141,10 @@ const QUENCH_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLan
     }
 
     // Validations spécifiques aux contraintes physiques
-    if (inputs.Teau < -273.15) {
+    if (inputs.Teau < -T_ref) {
       throw new Error(`${t.InvalidInput}: Water temperature cannot be below absolute zero`);
     }
-    if (inputs.T_amont_QUENCH < -273.15) {
+    if (inputs.T_amont_QUENCH < -T_ref) {
       throw new Error(`${t.InvalidInput}: Upstream temperature cannot be below absolute zero`);
     }
     if (inputs.Qeau < 0) {
