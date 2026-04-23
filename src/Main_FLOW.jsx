@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import {ReactFlow, Controls, Background, Panel, useNodesState, useEdgesState, addEdge, getIncomers, getOutgoers, getConnectedEdges, useReactFlow} from '@xyflow/react';
 import { Eraser } from './C_Components/EraserTool/Eraser';
 import '@xyflow/react/dist/style.css';
@@ -108,6 +108,33 @@ function Flow({
   useEffect(() => {
     localStorage.setItem('mode', mode);
   }, [mode]);
+
+  // Sauvegarde des positions originales avant réarrangement vertical
+  const savedPositionsRef = useRef(null);
+
+  useEffect(() => {
+    if (showDataFlowDisplay) {
+      // Sauvegarder les positions actuelles
+      setNodes(prevNodes => {
+        savedPositionsRef.current = prevNodes.map(n => ({ id: n.id, position: { ...n.position } }));
+        // Réarranger en colonne verticale
+        return prevNodes.map((node, index) => ({
+          ...node,
+          position: { x: 40, y: 20 + index * 90 },
+        }));
+      });
+    } else if (savedPositionsRef.current) {
+      // Restaurer les positions d'origine
+      const saved = savedPositionsRef.current;
+      savedPositionsRef.current = null;
+      setNodes(prevNodes =>
+        prevNodes.map(node => {
+          const orig = saved.find(s => s.id === node.id);
+          return orig ? { ...node, position: orig.position } : node;
+        })
+      );
+    }
+  }, [showDataFlowDisplay, setNodes]);
 
   const onNodeClick = useCallback((event, node) => {
     setSelectedNode(node);
@@ -387,9 +414,12 @@ function Flow({
         onLanguageChange={handleLanguageChange}
       />
 
-      <div className="relative-flex-container">
+      <div
+        className="relative-flex-container"
+        style={showDataFlowDisplay ? { flex: '0 0 280px', minWidth: 0 } : {}}
+      >
         <div className="btn-position">
-          <Toggle10choice 
+          <Toggle10choice
             currentLanguage={currentLanguage}
             onLanguageChange={handleLanguageChange}
           />
@@ -424,10 +454,12 @@ function Flow({
       </div>
 
       {showDataFlowDisplay && (
-        <DataFlowDisplay 
-          nodes={nodes} 
-          currentLanguage={currentLanguage} 
-        />
+        <div style={{ flex: 1, overflowY: 'auto', minWidth: 0, height: '100%' }}>
+          <DataFlowDisplay
+            nodes={nodes}
+            currentLanguage={currentLanguage}
+          />
+        </div>
       )}
       
       {showGraph && (
