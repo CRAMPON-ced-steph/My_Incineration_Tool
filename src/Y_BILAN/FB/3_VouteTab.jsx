@@ -240,9 +240,9 @@ const DimensionnementTab = ({ innerData = {}, innerDataTick, onDataChange, curre
         <h2 style={{ color: '#1a202c', fontSize: '20px', marginBottom: '20px' }}>
           🔥 {t('Paramètres du Four') || 'Paramètres du Four'}
         </h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '15px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '25px 20px', alignItems: 'start' }}>
           <div>
-            <label style={labelStyle}>NombreFour</label>
+            <label style={labelStyle}>Nombre de four</label>
             <input
               type="number"
               min="1"
@@ -254,38 +254,34 @@ const DimensionnementTab = ({ innerData = {}, innerDataTick, onDataChange, curre
           <div>
             <label style={labelStyle}>{t('Débit Fumées Humide') || 'Débit Fumées Humide'} [Nm³/h/Four]</label>
             <input
-              type="number"
-              min="0"
-              step="100"
+              type="text"
               value={Math.round(parametres.DebitVolFumeesHumide_Nm3hFour)}
-              onChange={(e) => handleParametreChange('DebitVolFumeesHumide_Nm3hFour', e.target.value)}
-              style={inputStyle}
+              readOnly
+              style={readOnlyStyle}
             />
           </div>
           <div>
-            <label style={labelStyle}>{t('Air Instrumentation') || 'Air Instrumentation'} [Nm³/h]</label>
+            <label style={labelStyle}>{t('Debit air sec instrumentation') || 'Debit air sec instrumentation'} [Nm³/h]</label>
             <input
-              type="number"
-              min="0"
-              step="10"
+              type="text"
               value={Math.round(parametres.VolTotalAirInstrumentation_Nm3h)}
-              onChange={(e) => handleParametreChange('VolTotalAirInstrumentation_Nm3h', e.target.value)}
-              style={inputStyle}
+              readOnly
+              style={readOnlyStyle}
             />
           </div>
           <div>
-            <label style={{ ...labelStyle, color: '#ea580c' }}>
-              🌡️ {t('Température Freeboard') || 'Température Freeboard'} [°C]
+            <label style={labelStyle}>
+              {t('Température Freeboard') || 'Température Freeboard'} [°C]
             </label>
             <input
               type="text"
               value={`${parametres.TempFreeboard_C} °C`}
               readOnly
-              style={{ ...readOnlyStyle, backgroundColor: '#fff7ed', border: '2px solid #f97316', color: '#c2410c' }}
+              style={readOnlyStyle}
             />
           </div>
           <div>
-            <label style={labelStyle}>PressionFreeboard_mmCe = 0</label>
+            <label style={labelStyle}>Pression Freeboard [mmCE]</label>
             <input type="text" value="0" disabled style={{ ...readOnlyStyle, cursor: 'not-allowed' }} />
           </div>
         </div>
@@ -295,7 +291,7 @@ const DimensionnementTab = ({ innerData = {}, innerDataTick, onDataChange, curre
             <h3 style={{ color: '#1e40af', fontSize: '16px', marginBottom: '10px' }}>
               📤 {t('Résultats') || 'Résultats'} - Four
             </h3>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '25px 20px', alignItems: 'start' }}>
               <div>
                 <label style={labelStyle}>{t('Débit Fumées Humides') || 'Débit Fumées Humides'} [m³/h/Four]</label>
                 <input
@@ -372,7 +368,7 @@ const DimensionnementTab = ({ innerData = {}, innerDataTick, onDataChange, curre
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '15px', marginTop: '20px' }}>
           <div>
-            <label style={labelStyle}>{t('NeutralisationCentre') || 'NeutralisationCentre'}</label>
+            <label style={labelStyle}>Neutralisation du centre</label>
             <select
               value={parametres.NeutralisationCentre ? 'true' : 'false'}
               onChange={(e) => handleParametreChange('NeutralisationCentre', e.target.value === 'true')}
@@ -383,7 +379,7 @@ const DimensionnementTab = ({ innerData = {}, innerDataTick, onDataChange, curre
             </select>
           </div>
           <div>
-            <label style={labelStyle}>DiametreTrous_mm</label>
+            <label style={labelStyle}>Diametre des trous [mm]</label>
             <input
               type="number"
               min="1"
@@ -432,23 +428,24 @@ const DimensionnementTab = ({ innerData = {}, innerDataTick, onDataChange, curre
         <h2 style={{ color: '#1a202c', fontSize: '20px', marginBottom: '20px' }}>
           🌡️ {t('Paramètres Voûte et Boîte à Vent') || 'Paramètres Voûte et Boîte à Vent'}
         </h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '15px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '25px 20px', alignItems: 'start' }}>
           {[
-            { label: 'TempEntreeBoiteVent_C', key: 'TempEntreeBoiteVent_C', step: '10' },
-            { label: 'TempNiveauVoute_C', key: 'TempNiveauVoute_C', step: '10' },
-            { label: 'PressionVouteDefaut_mmCe', key: 'PressionVouteDefaut_mmCe', step: '100' },
-            { label: 'VolAirEntreeBoiteVent_Nm3h', key: 'VolAirEntreeBoiteVent_Nm3h', step: '10' },
-            { label: 'VitesseReelleTuyere_ms', key: 'VitesseReelleTuyere_ms', step: '1' },
-          ].map(({ label, key, step }) => (
+            { label: 'Temperature Entree Boite à Vent [°C]', key: 'TempEntreeBoiteVent_C', step: '10' },
+            { label: 'Temperature Niveau Voute [°C]', key: 'TempNiveauVoute_C', step: '10' },
+            { label: 'Pression niveau Voute par Defaut [mmCE]', key: 'PressionVouteDefaut_mmCe', step: '100' },
+            { label: 'Débit Air humide Entree Boite à Vent [Nm3/h]', key: 'VolAirEntreeBoiteVent_Nm3h', step: '10', decimals: 2, readOnly: true },
+            { label: 'Vitesse Reelle Tuyere [m/s]', key: 'VitesseReelleTuyere_ms', step: '1' },
+          ].map(({ label, key, step, decimals, readOnly }) => (
             <div key={key}>
               <label style={labelStyle}>{label}</label>
               <input
-                type="number"
+                type={readOnly ? 'text' : 'number'}
                 min="0"
                 step={step}
-                value={parametres[key]}
-                onChange={(e) => handleParametreChange(key, e.target.value)}
-                style={inputStyle}
+                value={decimals !== undefined ? Number(parametres[key]).toFixed(decimals) : parametres[key]}
+                readOnly={readOnly}
+                onChange={readOnly ? undefined : (e) => handleParametreChange(key, e.target.value)}
+                style={readOnly ? readOnlyStyle : inputStyle}
               />
             </div>
           ))}
@@ -468,32 +465,32 @@ const DimensionnementTab = ({ innerData = {}, innerDataTick, onDataChange, curre
           <h2 style={{ color: '#1a202c', fontSize: '20px', marginBottom: '20px' }}>
             🔄 {t('Résultats') || 'Résultats'} - {t('PREMIÈRE ITÉRATION') || 'PREMIÈRE ITÉRATION'}
           </h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '15px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '25px 20px', alignItems: 'start' }}>
             {[
-              { label: 'PDC_Voute_Iter1 [mCE]', val: calculsComplets.PDC_Voute_Iter1.toFixed(4), bg: '#fef3c7' },
+              { label: 'PDC Voute Iter1 [mmCE]', val: calculsComplets.PDC_Voute_Iter1.toFixed(4), bg: '#fef3c7' },
               {
-                label: 'PressionVoute_Iter1 [mmCe]',
+                label: 'Pression Voute Iter1 [mmCE]',
                 val: calculsComplets.PressionVoute_Iter1_mmCe.toFixed(2),
                 bg: '#fef3c7',
               },
               {
-                label: 'DebitAirReelBoiteVentIter1 [m3/h]',
+                label: 'Debit air reel boite à vent Iter1 [m3/h]',
                 val: calculsComplets.DebitAirReelBoiteVentIter1_m3h.toFixed(2),
                 bg: '#fef3c7',
               },
               {
-                label: 'DebitReelTuyeresIter1 [m3/s]',
+                label: 'Debit reel tuyeres Iter 1 [m3/s]',
                 val: calculsComplets.DebitReelTuyeresIter1_m3s.toFixed(4),
                 bg: '#dcfce7',
               },
-              { label: 'NbTrousIter1', val: calculsComplets.NbTrousIter1, bg: '#dcfce7' },
+              { label: 'Nombre de trous iter 1', val: calculsComplets.NbTrousIter1, bg: '#dcfce7' },
               {
-                label: 'SurfaceTuyeresReelleIter1 [m2]',
+                label: 'Surface Tuyeres Reelle Iter1 [m2]',
                 val: calculsComplets.SurfaceTuyeresReelleIter1_m2.toFixed(6),
                 bg: '#dcfce7',
               },
               {
-                label: 'VitesseReelleTuyereIter1 [m/s]',
+                label: 'Vitesse reelle tuyere Iter1 [m/s]',
                 val: calculsComplets.VitesseReelleTuyereIter1_ms.toFixed(2),
                 bg: '#e0e7ff',
               },
@@ -520,32 +517,32 @@ const DimensionnementTab = ({ innerData = {}, innerDataTick, onDataChange, curre
           <h2 style={{ color: '#1a202c', fontSize: '20px', marginBottom: '20px' }}>
             🔄 {t('Résultats') || 'Résultats'} - {t('DEUXIÈME ITÉRATION (CONVERGE)') || 'DEUXIÈME ITÉRATION (CONVERGE)'}
           </h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '15px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '25px 20px', alignItems: 'start' }}>
             {[
-              { label: 'PDC_Voute_Iter2 [mCE]', val: calculsComplets.PDC_Voute_Iter2.toFixed(4), bg: '#fed7aa' },
+              { label: 'PDC Voute Iter2 [mmCE]', val: calculsComplets.PDC_Voute_Iter2.toFixed(4), bg: '#fed7aa' },
               {
-                label: 'PressionVoute_Iter2_mmCe',
+                label: 'Pression Voute Iter2 [mmCE]',
                 val: calculsComplets.PressionVoute_Iter2_mmCe.toFixed(2),
                 bg: '#fed7aa',
               },
               {
-                label: 'DebitAirReelBoiteVentIter2_m3h',
+                label: 'Debit air reel boite à vent Iter2 [m3/h]',
                 val: calculsComplets.DebitAirReelBoiteVentIter2_m3h.toFixed(2),
                 bg: '#fed7aa',
               },
               {
-                label: 'DebitReelTuyeresIter2_m3s',
+                label: 'Debit reel tuyeres Iter 2 [m3/s]',
                 val: calculsComplets.DebitReelTuyeresIter2_m3s.toFixed(4),
                 bg: '#bbf7d0',
               },
-              { label: 'NbTrousIter2', val: calculsComplets.NbTrousIter2, bg: '#bbf7d0' },
+              { label: 'Nombre de trous iter 2', val: calculsComplets.NbTrousIter2, bg: '#bbf7d0' },
               {
-                label: 'SurfaceTuyeresReelleIter2_m2',
+                label: 'Surface Tuyeres Reelle Iter2 [m2]',
                 val: calculsComplets.SurfaceTuyeresReelleIter2_m2.toFixed(6),
                 bg: '#bbf7d0',
               },
               {
-                label: 'VitesseReelleTuyereIter2_ms',
+                label: 'Vitesse reelle tuyere Iter2 [m/s]',
                 val: calculsComplets.VitesseReelleTuyereIter2_ms.toFixed(2),
                 bg: '#ddd6fe',
               },
@@ -556,7 +553,7 @@ const DimensionnementTab = ({ innerData = {}, innerDataTick, onDataChange, curre
               </div>
             ))}
             <div style={{ gridColumn: '1 / -1' }}>
-              <label style={labelStyle}>{t('PressionFreeboard FINAL') || 'PressionFreeboard FINAL'} [mmCE]</label>
+              <label style={labelStyle}>Pression finale freeboard [mmCE]</label>
               <input
                 type="text"
                 value={calculsComplets.PressionFreeboard.toFixed(2)}
