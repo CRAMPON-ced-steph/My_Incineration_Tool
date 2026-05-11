@@ -15,9 +15,9 @@ const useTranslation = (currentLanguage = 'fr') => {
 
 
 import {
-  cp_dt_h2o, fh_MS_kW, fh_MM_kW, Hfvoute_kW, Tair_fluide_FB,
+  cp_dt_h2o, fh_MS_kW, fh_MM_kW, Hfvoute_kW, TempSortieFumees,
   Masse_Air_Instrumentation, Mole_Excess_O2, Mole_Excess_O2_air_varia,
-  MoleNOx, cp_air, Masse_Air_Comb_gaz_Func, MasseAir_e, Vol_Air_e,
+  MoleNOx, Mole_CO, Mole_H2, cp_air, Masse_Air_Comb_gaz_Func, MasseAir_e, Vol_Air_e,
   FractionMassiqueC, FractionMassiqueH, FractionMassiqueO, FractionMassiqueN, FractionMassiqueS, FractionMassiqueCl
 } from '../../A_Transverse_fonction/bilan_fct_FB';
 
@@ -36,7 +36,7 @@ import SchemaProcessus from './SchemaProcessus';
 // ============================================================
 
 const FUEL_PROPERTIES = {
-  GAZ: { density: 0.75, pci: 7730, C_percent: 88.7, H_percent: 7.4, O_percent: 0.6, N_percent: 0.9, S_percent: 1.2, Cl_percent: 0 },
+  GAZ: { density: 0.75, pci: 7300, C_percent: 88.7, H_percent: 7.4, O_percent: 0.6, N_percent: 0.9, S_percent: 1.2, Cl_percent: 0 },
   BIOGAZ: { density: 1.15, pci: 5000, C_percent: 75, H_percent: 25, O_percent: 0, N_percent: 0, S_percent: 0, Cl_percent: 0 },
   FIOUL: { density: 850, pci: 10223, C_percent: 75, H_percent: 25, O_percent: 0, N_percent: 0, S_percent: 0, Cl_percent: 0 },
 };
@@ -54,7 +54,7 @@ const DEFAULT_AIR_COMPOSITION = {
 const DEFAULT_EMISSIONS = {
   type_energy: 'GAZ',
   densite_combustible: 0.75,
-  PCI_combustible: 7730,
+  PCI_combustible: 7300,
   Exces_air_lit: 78,
   Exces_air_combustible: 78,
   O2_pct_air_combustion: 21,
@@ -78,7 +78,7 @@ const DEFAULT_THERMAL = {
   Masse_air_tertiaire_kg_h: 0,
   Temp_air_tertiaire_C: 0,
   Temp_air_balayage_instrumentation_C: 15,
-  Tf_voute_ap_HX_C: 550,
+  Tair_ap_prechauffe_C: 580,
   Pertes_thermiques_pourcent: 3,
   Rdt_HX: 0.85,
 };
@@ -100,9 +100,10 @@ function runIterativeCalc({
   PCI_boue_kcal_kgMV, Masse_eau_kg_h, eau_add_kg_h, SO2_recupere_cendre_pourcent,
   Temp_boue_entree_C, Temp_fumee_voute_C, Temp_air_fluidisation_av_prechauffe_C,
   Temp_air_secondaire_C, Temp_air_tertiaire_C, Pertes_thermiques_pourcent,
-  Temp_air_balayage_instrumentation_C, Tf_voute_ap_HX_C, Rdt_HX,
+  Tair_ap_prechauffe_C, Rdt_HX,
   Masse_air_secondaire_kg_h, Masse_air_tertiaire_kg_h,
   MS_pourcent, MV_pourcent, BoueBrute_kg_h,
+  PCI_combustible_kcal_kg,
   airComposition,
   forceGazZero = false,
 }) {
@@ -225,12 +226,10 @@ function runIterativeCalc({
     const MoleO2excesAirSecondaire = Mole_Excess_O2_air_varia(Masse_air_secondaire_kg_h) || 0;
     const MoleO2excesAirTertiaire = Mole_Excess_O2_air_varia(Masse_air_tertiaire_kg_h) || 0;
 
-    // Bilan O sur zone primaire (inclut air instru dont l'O2 est entièrement en excès)
     const MF_O2exc_primary = MolesO2excGaz + MolesO2excBoue + MoleO2excesAirInstrumentation;
-    const ParamB1 = MF_O2 - 2 * MF_C - 2 * MF_O2exc_primary - 2 * MF_SO2;
-    const MF_H2O_primary = ParamB1 + MF_CO;
-    // Ajout des contributions de l'air secondaire et tertiaire aux fumées finales
     const MF_O2exc = MF_O2exc_primary + MoleO2excesAirSecondaire + MoleO2excesAirTertiaire;
+    const ParamB1 = MF_O2 - 2 * MF_C - 2 * MF_O2exc - 2 * MF_SO2;
+    const MF_H2O_primary = ParamB1 + MF_CO;
     const MF_H2O = MF_H2O_primary + (Masse_air_secondaire_kg_h + Masse_air_tertiaire_kg_h) * Teneur_en_eau_kgH2O_kgAS / 18.015 * 1000;
 
     const MF_NOX = MoleNOx(MS_pourcent, MV_pourcent, PCI_boue_kcal_kgMV, BoueBrute_kg_h) || 0;
@@ -271,7 +270,7 @@ function runIterativeCalc({
     const H_Evap = (Masse_eau_kg_h * (4.1868 * Temp_boue_entree_C - 2501.6)) / 3600;
     const H_Evap_add = (eau_add_kg_h * (4.1868 * 15 - 2501.6)) / 3600;
     const H_MM = fh_MM_kW(Temp_fumee_voute_C, Masse_mineral_kg_h) || 0;
-    const H_NET_BOUE = H_MV + H_MS + H_Evap + H_Evap_add;
+    const H_NET_BOUE = H_MV + H_MS + H_Evap;
 
     const H_air_flu = cp_air(Temp_air_fluidisation_av_prechauffe_C) * Maire_sec_comb_tot + cp_dt_h2o(Temp_air_fluidisation_av_prechauffe_C) * Meau_air_comburant;
 
@@ -287,20 +286,26 @@ function runIterativeCalc({
 
     const Meau_balayage = Teneur_en_eau_kgH2O_kgAS * Maire_balayage;
     const H_balayage = cp_air(T_soufflante) * Maire_balayage + cp_dt_h2o(T_soufflante) * Meau_balayage;
+    const H_air_soufflante = cp_air(T_soufflante) * Maire_sec_comb_tot + cp_dt_h2o(T_soufflante) * Meau_air_comburant;
 
     const Hf_voute = Hfvoute_kW(Temp_fumee_voute_C, FG_HCl, FG_CO2, FG_CO, FG_H2O, FG_H2, FG_O2exc, FG_N2, FG_SO2reel) || 0;
-    const Hf_voute_HX = Hfvoute_kW(Tf_voute_ap_HX_C, FG_HCl, FG_CO2, FG_CO, FG_H2O, FG_H2, FG_O2exc, FG_N2, FG_SO2reel) || 0;
 
-    const Tair_prech = Tair_fluide_FB(Hf_voute, Hf_voute_HX, 0, Rdt_HX, Maire_sec_comb_tot, Meau_air_comburant) || 0;
+    const Tair_prech = Tair_ap_prechauffe_C;
     const H_air_prech = cp_air(Tair_prech) * Maire_sec_comb_tot + cp_dt_h2o(Tair_prech) * (Maire_sec_comb_tot * Teneur_en_eau_kgH2O_kgAS);
 
-    const H_gaz_inter = (Masse_gaz_kg_h / 0.87) * 11.493;
+    const hTarget = Hf_voute - (H_air_prech - H_air_soufflante) / Rdt_HX;
+    const Tf_voute_ap_HX_C = TempSortieFumees(FG_CO, FG_CO2, FG_H2O, FG_H2, FG_N2, FG_O2exc, FG_SO2reel, FG_HCl, hTarget) || 0;
+    const Hf_voute_HX = Hfvoute_kW(Tf_voute_ap_HX_C, FG_HCl, FG_CO2, FG_CO, FG_H2O, FG_H2, FG_O2exc, FG_N2, FG_SO2reel) || 0;
 
-    const H_in = H_NET_BOUE + H_air_prech + H_balayage + H_gaz_inter;
-    const H_out = H_MM + Hf_voute + Pertes;
+    const PCI_gaz_kWh_Nm3 = (PCI_combustible_kcal_kg * 4.1868) / 3600;
+    const H_gaz_inter = (Masse_gaz_kg_h / 0.87) * PCI_gaz_kWh_Nm3;
+
+    const H_in = H_NET_BOUE + H_Evap_add + H_air_prech + H_balayage + H_gaz_inter;
+    const H_imbrule_kW = (2415 * FG_CO + FG_H2 * 28240) / 860;
+    const H_out = H_MM + Hf_voute + Pertes + H_imbrule_kW;
     const H_gaz = H_out - H_in;
 
-    const Q_gaz_Nm3 = H_gaz / 11.493;
+    const Q_gaz_Nm3 = PCI_gaz_kWh_Nm3 > 0 ? H_gaz / PCI_gaz_kWh_Nm3 : 0;
     const Q_gaz_kg = Q_gaz_Nm3 * 0.87;
 
     const Rho_FG_kg_Nm3 = Vvap_boue > 0 ? FG_wet_kg / FG_wet_Nm3 : 0;
@@ -403,7 +408,7 @@ function runIterativeCalc({
         Moles_Fumees_O2: MF_O2, Moles_Fumees_N: MF_N,
         Moles_Fumees_SO2: MF_SO2, Moles_Fumees_HCl: MF_HCl,
         Moles_Fumees_CO2: MF_CO2, Moles_Fumees_CO: MF_CO,
-        Moles_Fumees_H2O: MF_H2O, Moles_Fumees_O2exces: MF_O2exc,
+        Moles_Fumees_H2O: MF_H2O, Moles_Fumees_H2O_primary: MF_H2O_primary, Moles_Fumees_O2exces: MF_O2exc,
         Moles_Fumees_NOX: MF_NOX, Moles_Fumees_N2: MF_N2,
 
         // kg/h
@@ -432,10 +437,11 @@ function runIterativeCalc({
         Temp_air_soufflante_C: T_soufflante,
         Masse_eau_air_balayage_kg_h: Meau_balayage,
         H_air_balayage_instrumentation_kW: H_balayage,
-        Hf_voute_kW: Hf_voute, Hf_voute_ap_HX_kW: Hf_voute_HX,
+        H_air_soufflante_kW: H_air_soufflante,
+        Hf_voute_kW: Hf_voute, Hf_voute_ap_HX_kW: Hf_voute_HX, H_imbrule_kW,
         Tair_ap_prechauffe_C: Tair_prech,
         Hair_ap_prechauffage_kW: H_air_prech,
-        H_gaz_inter, H_gaz, H_in, H_out,
+        H_gaz_inter, H_gaz, H_in, H_out, PCI_gaz_kWh_Nm3,
         Rho_FG_kg_Nm3, Meau_air_comburant,
 
         // Moles display-only (composant pur, sans correction humidité/air)
@@ -554,15 +560,16 @@ const CombustionTab = ({ innerData = {}, onInnerDataChange, onResultsChange, cur
         Temp_air_tertiaire_C: thermalParams.Temp_air_tertiaire_C,
         Pertes_thermiques_pourcent: thermalParams.Pertes_thermiques_pourcent,
         Temp_air_balayage_instrumentation_C: thermalParams.Temp_air_balayage_instrumentation_C,
-        Tf_voute_ap_HX_C: thermalParams.Tf_voute_ap_HX_C,
+        Tair_ap_prechauffe_C: thermalParams.Tair_ap_prechauffe_C,
         Rdt_HX: thermalParams.Rdt_HX,
         Masse_air_secondaire_kg_h: thermalParams.Masse_air_secondaire_kg_h,
         Masse_air_tertiaire_kg_h: thermalParams.Masse_air_tertiaire_kg_h,
         MS_pourcent: innerData.MS_pourcent || 0,
         MV_pourcent: innerData.MV_pourcent || 0,
         BoueBrute_kg_h: innerData.BoueBrute_kg_h || 0,
+        PCI_combustible_kcal_kg: emissions.PCI_combustible || 0,
         airComposition,
-        forceGazZero: true,
+        forceGazZero: !useGazAppoint,
       });
     } catch (err) { console.error('Erreur calcul combustion:', err); return {}; }
   }, [emissions, thermalParams, composition, airComposition, useGazAppoint,
@@ -584,7 +591,7 @@ const CombustionTab = ({ innerData = {}, onInnerDataChange, onResultsChange, cur
     innerData.Exces_air_lit = emissions.Exces_air_lit || 0;
     innerData.Exces_air_combustible = emissions.Exces_air_combustible || 0;
     innerData.Temp_fumee_voute_C = thermalParams.Temp_fumee_voute_C || 870;
-    innerData.Tf_voute_ap_HX_C = thermalParams.Tf_voute_ap_HX_C || 550;
+    innerData.Tf_voute_ap_HX_C = results.Tf_voute_ap_HX_C || 0;
     innerData.Rdt_HX = thermalParams.Rdt_HX * 100 || 85;
     innerData.Temp_air_soufflante_C = results.Temp_air_soufflante_C || 60;
     innerData.Q_air_comb_tot_Nm3_h = results.VolumeAirCombustionTot_Nm3_h || 0;
@@ -1415,8 +1422,12 @@ const CombustionTab = ({ innerData = {}, onInnerDataChange, onResultsChange, cur
                   <td style={TD}>{f((results.Display_MolesBoues_N || 0) + (airMolesCalc.air_combustion_boue?.N || 0), 1)}</td>
                   <td style={TD}>{f((results.Display_MolesBoues_S || 0) + (airMolesCalc.air_combustion_boue?.S || 0), 3)}</td>
                   <td style={TD}>{f((results.Display_MolesBoues_Cl || 0) + (airMolesCalc.air_combustion_boue?.Cl || 0), 3)}</td>
-                  <td style={TD}>-</td><td style={TD}>-</td><td style={TD}>-</td><td style={TD}>-</td>
-                  <td style={TD}>{f(results.MolesO2excesBoue)}</td><td style={TD}>-</td><td style={TD}>-</td><td style={TD}>-</td>
+                  <td style={TD}>{f((results.Moles_Fumees_C * Math.sqrt(results.Moles_Fumees_O2 || 0)) / (0.05 + Math.sqrt(results.Moles_Fumees_O2 || 0)))}</td>
+                  <td style={TD}>{f(Mole_CO(results.Temp_fumee_voute_C, results.Moles_Fumees_C, results.Moles_Fumees_O2, (results.Display_MolesBoues_O || 0) + (results.Display_MolesEauBoue_O || 0) + (airMolesCalc.air_combustion_boue?.O || 0) + (results.Display_MolesGaz_O || 0) + (airMolesCalc.air_combustion_gaz?.O || 0), results.Moles_Fumees_HCl, results.Moles_Fumees_O2exces, results.Moles_Fumees_SO2, results.Moles_Fumees_H))}</td>
+                  <td style={TD}>{f(results.Moles_Fumees_H2O_primary)}</td>
+                  <td style={TD}>{f(Mole_H2(results.Temp_fumee_voute_C, results.Moles_Fumees_C, results.Moles_Fumees_O2, results.Moles_Fumees_O2, results.Moles_Fumees_HCl, results.Moles_Fumees_O2exces, results.Moles_Fumees_SO2, results.Moles_Fumees_H))}</td>
+                  <td style={TD}>{f(results.MolesO2excesBoue)}</td><td style={TD}>{f(results.Moles_Fumees_NOX)}</td>
+                  <td style={TD}>{f(((results.Display_MolesBoues_N||0)+(airMolesCalc.air_combustion_boue?.N||0)+(results.Display_MolesGaz_N||0)+(airMolesCalc.air_combustion_gaz?.N||0)+(airMolesCalc.air_instrumentation?.N||0)+(airMolesCalc.air_secondaire?.N||0)+(airMolesCalc.air_tertiaire?.N||0) - (results.Moles_Fumees_NOX||0)) / 2)}</td><td style={TD}>-</td>
                   <td style={TD}>-</td><td style={TD}>-</td><td style={TD}>-</td><td style={TD}>-</td>
                 </tr>
                 <tr style={{ backgroundColor: '#FFFDE7' }}>
@@ -1446,7 +1457,9 @@ const CombustionTab = ({ innerData = {}, onInnerDataChange, onResultsChange, cur
                   <td style={TD}>{f(airMolesCalc.air_instrumentation?.N, 1)}</td>
                   <td style={TD}>{f(airMolesCalc.air_instrumentation?.S, 3)}</td>
                   <td style={TD}>{f(airMolesCalc.air_instrumentation?.Cl, 3)}</td>
-                  {Array(12).fill(null).map((_, i) => <td key={i} style={TD}>-</td>)}
+                  {Array(4).fill(null).map((_, i) => <td key={i} style={TD}>-</td>)}
+                  <td style={TD}>{f(results.MoleO2excesAirInstrumentation)}</td>
+                  {Array(7).fill(null).map((_, i) => <td key={`r${i}`} style={TD}>-</td>)}
                 </tr>
                 <tr style={{ backgroundColor: '#F3F4F6' }}>
                   <td style={TDR}>Moles air secondaire</td>
@@ -1456,7 +1469,9 @@ const CombustionTab = ({ innerData = {}, onInnerDataChange, onResultsChange, cur
                   <td style={TD}>{f(airMolesCalc.air_secondaire?.N, 1)}</td>
                   <td style={TD}>{f(airMolesCalc.air_secondaire?.S, 3)}</td>
                   <td style={TD}>{f(airMolesCalc.air_secondaire?.Cl, 3)}</td>
-                  {Array(12).fill(null).map((_, i) => <td key={i} style={TD}>-</td>)}
+                  {Array(4).fill(null).map((_, i) => <td key={i} style={TD}>-</td>)}
+                  <td style={TD}>{f(results.MoleO2excesAirSecondaire)}</td>
+                  {Array(7).fill(null).map((_, i) => <td key={`r${i}`} style={TD}>-</td>)}
                 </tr>
                 <tr style={{ backgroundColor: '#F3F4F6' }}>
                   <td style={TDR}>Moles air tertiaire</td>
@@ -1466,17 +1481,24 @@ const CombustionTab = ({ innerData = {}, onInnerDataChange, onResultsChange, cur
                   <td style={TD}>{f(airMolesCalc.air_tertiaire?.N, 1)}</td>
                   <td style={TD}>{f(airMolesCalc.air_tertiaire?.S, 3)}</td>
                   <td style={TD}>{f(airMolesCalc.air_tertiaire?.Cl, 3)}</td>
-                  {Array(12).fill(null).map((_, i) => <td key={i} style={TD}>-</td>)}
+                  {Array(4).fill(null).map((_, i) => <td key={i} style={TD}>-</td>)}
+                  <td style={TD}>{f(results.MoleO2excesAirTertiaire)}</td>
+                  {Array(7).fill(null).map((_, i) => <td key={`r${i}`} style={TD}>-</td>)}
                 </tr>
                 <tr style={{ backgroundColor: '#E8F5E9', fontWeight: 'bold' }}>
                   <td style={TDL}>Moles totale</td>
-                  <td style={TD}>{f(results.Moles_Fumees_C)}</td><td style={TD}>{f(results.Moles_Fumees_H)}</td>
-                  <td style={TD}>{f(results.Moles_Fumees_O2)}</td><td style={TD}>{f(results.Moles_Fumees_N)}</td>
-                  <td style={TD}>{f(results.Moles_Fumees_SO2)}</td><td style={TD}>{f(results.Moles_Fumees_HCl)}</td>
-                  <td style={TD}>{f(results.Moles_Fumees_CO2)}</td><td style={TD}>{f(results.Moles_Fumees_CO)}</td>
-                  <td style={TD}>{f(results.Moles_Fumees_H2O)}</td><td style={TD}>-</td>
+                  <td style={TD}>{f((results.Display_MolesBoues_C||0)+(airMolesCalc.air_combustion_boue?.C||0)+(results.Display_MolesGaz_C||0)+(airMolesCalc.air_combustion_gaz?.C||0)+(airMolesCalc.air_instrumentation?.C||0)+(airMolesCalc.air_secondaire?.C||0)+(airMolesCalc.air_tertiaire?.C||0))}</td>
+                  <td style={TD}>{f((results.Display_MolesBoues_H||0)+(results.Display_MolesEauBoue_H||0)+(airMolesCalc.air_combustion_boue?.H||0)+(results.Display_MolesGaz_H||0)+(airMolesCalc.air_combustion_gaz?.H||0)+(2*(emissions.eau_add_kg_h||0)/18.015)*1000+(airMolesCalc.air_instrumentation?.H||0)+(airMolesCalc.air_secondaire?.H||0)+(airMolesCalc.air_tertiaire?.H||0))}</td>
+                  <td style={TD}>{f((results.Display_MolesBoues_O||0)+(results.Display_MolesEauBoue_O||0)+(airMolesCalc.air_combustion_boue?.O||0)+(results.Display_MolesGaz_O||0)+(airMolesCalc.air_combustion_gaz?.O||0)+((emissions.eau_add_kg_h||0)/18.015)*1000+(airMolesCalc.air_instrumentation?.O||0)+(airMolesCalc.air_secondaire?.O||0)+(airMolesCalc.air_tertiaire?.O||0))}</td>
+                  <td style={TD}>{f((results.Display_MolesBoues_N||0)+(airMolesCalc.air_combustion_boue?.N||0)+(results.Display_MolesGaz_N||0)+(airMolesCalc.air_combustion_gaz?.N||0)+(airMolesCalc.air_instrumentation?.N||0)+(airMolesCalc.air_secondaire?.N||0)+(airMolesCalc.air_tertiaire?.N||0))}</td>
+                  <td style={TD}>{f((results.Display_MolesBoues_S||0)+(airMolesCalc.air_combustion_boue?.S||0)+(results.Display_MolesGaz_S||0)+(airMolesCalc.air_combustion_gaz?.S||0))}</td>
+                  <td style={TD}>{f((results.Display_MolesBoues_Cl||0)+(airMolesCalc.air_combustion_boue?.Cl||0)+(results.Display_MolesGaz_Cl||0)+(airMolesCalc.air_combustion_gaz?.Cl||0))}</td>
+                  <td style={TD}>{f(results.Moles_Fumees_CO2)}</td>
+                  <td style={TD}>{f(Mole_CO(results.Temp_fumee_voute_C, results.Moles_Fumees_C, results.Moles_Fumees_O2, (results.Display_MolesBoues_O||0)+(results.Display_MolesEauBoue_O||0)+(airMolesCalc.air_combustion_boue?.O||0)+(results.Display_MolesGaz_O||0)+(airMolesCalc.air_combustion_gaz?.O||0), results.Moles_Fumees_HCl, results.Moles_Fumees_O2exces, results.Moles_Fumees_SO2, results.Moles_Fumees_H))}</td>
+                  <td style={TD}>{f(results.Moles_Fumees_H2O_primary)}</td>
+                  <td style={TD}>{f(Mole_H2(results.Temp_fumee_voute_C, results.Moles_Fumees_C, results.Moles_Fumees_O2, results.Moles_Fumees_O2, results.Moles_Fumees_HCl, results.Moles_Fumees_O2exces, results.Moles_Fumees_SO2, results.Moles_Fumees_H))}</td>
                   <td style={TD}>{f(results.Moles_Fumees_O2exces)}</td><td style={TD}>{f(results.Moles_Fumees_NOX)}</td>
-                  <td style={TD}>{f(results.Moles_Fumees_N2)}</td><td style={TD}>-</td>
+                  <td style={TD}>{f(((results.Display_MolesBoues_N||0)+(airMolesCalc.air_combustion_boue?.N||0)+(results.Display_MolesGaz_N||0)+(airMolesCalc.air_combustion_gaz?.N||0)+(airMolesCalc.air_instrumentation?.N||0)+(airMolesCalc.air_secondaire?.N||0)+(airMolesCalc.air_tertiaire?.N||0) - (results.Moles_Fumees_NOX||0)) / 2)}</td><td style={TD}>-</td>
                   <td style={TD}>-</td><td style={TD}>-</td><td style={TD}>-</td><td style={TD}>-</td>
                 </tr>
                 <tr style={{ backgroundColor: '#FFFFCC' }}>
@@ -1488,7 +1510,7 @@ const CombustionTab = ({ innerData = {}, onInnerDataChange, onResultsChange, cur
                   <td style={TD}>{f(results.FG_kg_h_O2exces)}</td><td style={TD}>{f(results.FG_kg_h_NOX)}</td>
                   <td style={TD}>{f(results.FG_kg_h_N2)}</td><td style={TD}>{f(results.FG_kg_h_SO2reel)}</td>
                   <td style={TD}>{f(results.FG_wet_kg_h)}</td><td style={TD}>{f(results.FG_dry_kg_h)}</td>
-                  <td style={TD}>{f(results.FG_wet_Nm3_h)}</td><td style={TD}>{f(results.FG_dry_Nm3_h)}</td>
+                  <td style={TD}>-</td><td style={TD}>-</td>
                 </tr>
                 <tr style={{ backgroundColor: '#FFFFCC' }}>
                   <td style={{ ...TD, fontWeight: 'bold' }}>Nm³/h</td>
@@ -1552,7 +1574,7 @@ const CombustionTab = ({ innerData = {}, onInnerDataChange, onResultsChange, cur
             { label: 'Masse air tertiaire', key: 'Masse_air_tertiaire_kg_h' },
             { label: 'Temp. air balayage', key: 'Temp_air_balayage_instrumentation_C' },
             { label: 'Pertes thermiques', key: 'Pertes_thermiques_pourcent' },
-            { label: 'Temp. fumée après HX', key: 'Tf_voute_ap_HX_C' },
+            { label: 'Temp. air flu. ap. préch. (col. 8)', key: 'Tair_ap_prechauffe_C' },
             { label: 'Rendement HX', key: 'Rdt_HX', step: '0.01' },
           ].map(({ label, key, step = '0.1' }) => (
             <div key={key}><label style={labelStyle}>{t(label)}</label>
@@ -1575,30 +1597,49 @@ const CombustionTab = ({ innerData = {}, onInnerDataChange, onResultsChange, cur
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '10px' }}>
                 <thead>
                   <tr>
+                    <th style={{ ...TH, width: '160px', position: 'sticky', left: 0, zIndex: 1 }} />
+                    {['1a','1b','1c','1d','1e','2','3','4','5','6','7','8','9','10','11','12'].map((n) => (
+                      <th key={n} style={{ ...TH, fontSize: '9px', fontWeight: 'bold', textAlign: 'center', minWidth: '70px', backgroundColor: '#f0f0f0' }}>{n}</th>
+                    ))}
+                  </tr>
+                  <tr>
                     <th style={{ ...TH, width: '160px', position: 'sticky', left: 0, zIndex: 1 }}>Énergie</th>
+                    <th colSpan={3} style={{ ...TH, backgroundColor: '#FFE4B5', fontSize: '8px', textAlign: 'center' }}>Boue entrée</th>
                     {[
-                      { label: 'Boue entrée', c: '#FFE4B5' }, { label: '1. Matières minérales', c: '#D3D3D3' },
+                      { label: '1. Matières minérales', c: '#D3D3D3' },
                       { label: 'Énergie nette boues', c: '#90EE90' }, { label: '2. Air flu. neuf préch.', c: '#87CEEB' },
                       { label: '3. Air secondaire', c: '#87CEEB' }, { label: '4. Air tertiaire', c: '#87CEEB' },
                       { label: '5. Énergie combustible', c: '#FFD700' }, { label: '6. Pertes therm.', c: '#FFA07A' },
                       { label: '7. Air balayage', c: '#87CEEB' }, { label: '8. Air flu. ap. préch.', c: '#87CEEB' },
                       { label: '9. Air flu. av. préch.', c: '#87CEEB' }, { label: '10. Fumées four', c: '#DDA0DD' },
-                      { label: '11. Fumées préch.', c: '#DDA0DD' }, { label: '12. Fumées préch. 2', c: '#DDA0DD' },
-                      { label: '13. Eau refr. entrée', c: '#ADD8E6' }, { label: '14. Eau refr. sortie', c: '#ADD8E6' },
-                      { label: '15. Pertes imbrûlés', c: '#FFA07A' },
+                      { label: '11. Fumées préch.', c: '#DDA0DD' },
+                      { label: '12. Pertes imbrûlés', c: '#FFA07A' },
                     ].map((col, i) => <th key={i} style={{ ...TH, backgroundColor: col.c, fontSize: '8px', minWidth: '70px' }}>{col.label}</th>)}
                   </tr>
                 </thead>
                 <tbody>
                   {[
-                    { label: 'Température [°C]', vals: [thermalParams.Temp_boue_entree_C, thermalParams.Temp_fumee_voute_C, null, thermalParams.Temp_air_fluidisation_av_prechauffe_C, thermalParams.Temp_air_secondaire_C, thermalParams.Temp_air_tertiaire_C, null, null, thermalParams.Temp_air_balayage_instrumentation_C, results.Tair_ap_prechauffe_C, thermalParams.Temp_air_fluidisation_av_prechauffe_C, thermalParams.Temp_fumee_voute_C, thermalParams.Tf_voute_ap_HX_C, null, null, null, null] },
-                    { label: 'T° soufflante [°C]', vals: [null, null, null, null, null, null, null, null, results.Temp_air_soufflante_C, null, null, null, null, null, null, null, null] },
-                    { label: 'Masse [kg/h]', vals: [emissions.Masse_brute_kg_h, emissions.Masse_mineral_kg_h, null, results.Masse_air_sec_combustion_tot_kg_h, thermalParams.Masse_air_secondaire_kg_h, thermalParams.Masse_air_tertiaire_kg_h, null, null, results.Masse_air_balayage_kg_h, results.Masse_air_sec_combustion_tot_kg_h, results.Masse_air_sec_combustion_tot_kg_h, null, null, null, null, null, null] },
-                    { label: 'Enthalpie [kW]', vals: [results.H_NETTE_BOUE_kW, results.H_matiere_minerale_kW, results.H_NETTE_BOUE_kW, results.H_air_fluidisation_av_prechauffe_kW, results.H_air_secondaire_kW, results.H_air_tertiaire_kW, results.H_gaz_inter, results.Pertes_thermiques_kW, results.H_air_balayage_instrumentation_kW, results.Hair_ap_prechauffage_kW, results.H_air_fluidisation_av_prechauffe_kW, results.Hf_voute_kW, results.Hf_voute_ap_HX_kW, null, null, null, null] },
+                    { label: 'Température [°C]',               vals: [thermalParams.Temp_boue_entree_C, thermalParams.Temp_boue_entree_C, null, thermalParams.Temp_fumee_voute_C, null, thermalParams.Temp_air_fluidisation_av_prechauffe_C, thermalParams.Temp_air_secondaire_C, thermalParams.Temp_air_tertiaire_C, null, null, thermalParams.Temp_air_balayage_instrumentation_C, results.Tair_ap_prechauffe_C, results.Temp_air_soufflante_C, thermalParams.Temp_fumee_voute_C, results.Tf_voute_ap_HX_C, null] },
+                    { label: 'Température air soufflante [°C]', vals: [null, null, null, null, null, null, null, null, null, null, results.Temp_air_soufflante_C, null, null, null, null, null] },
+                    { label: 'Masse [kg/h]',                    vals: [emissions.Masse_brute_kg_h, null, null, emissions.Masse_mineral_kg_h, null, results.Masse_air_sec_combustion_tot_kg_h, thermalParams.Masse_air_secondaire_kg_h, thermalParams.Masse_air_tertiaire_kg_h, results.Masse_gaz_kg_h, null, results.Masse_air_balayage_kg_h, results.Masse_air_sec_combustion_tot_kg_h, results.Masse_air_sec_combustion_tot_kg_h, null, null, null] },
+                    { label: 'Débit [m³(n)/h]',                 vals: [null, null, null, null, null, null, null, null, results.Q_gaz_Nm3_h, null, null, null, null, null, null, null] },
+                    { label: 'PCI [kWh/m³(n)]',                 vals: [null, null, null, null, null, null, null, null, results.PCI_gaz_kWh_Nm3, null, null, null, null, null, null, null] },
+                    { label: 'Masse air sec [kg/h]',            vals: [null, null, null, null, null, results.Masse_air_sec_combustion_tot_kg_h, thermalParams.Masse_air_secondaire_kg_h, thermalParams.Masse_air_tertiaire_kg_h, null, null, results.Masse_air_balayage_kg_h, results.Masse_air_sec_combustion_tot_kg_h, results.Masse_air_sec_combustion_tot_kg_h, null, null, null] },
+                    { label: 'Humidité [kgH2O/kgAS]', decimals: 3, vals: [null, null, null, null, null, emissions.Teneur_en_eau_kgH2O_kgAS, emissions.Teneur_en_eau_kgH2O_kgAS, emissions.Teneur_en_eau_kgH2O_kgAS, null, null, emissions.Teneur_en_eau_kgH2O_kgAS, emissions.Teneur_en_eau_kgH2O_kgAS, emissions.Teneur_en_eau_kgH2O_kgAS, null, null, null] },
+                    { label: 'Masse d\'eau [kgH2O/h]',          vals: [null, null, null, null, null, results.Masse_humidite_air_combustion_total_kg_h, results.Mhum_air_sec, results.Mhum_air_tert, null, null, results.Mhum_air_instru, results.Masse_humidite_air_combustion_total_kg_h, results.Masse_humidite_air_combustion_total_kg_h, null, null, null] },
+                    { label: '% pertes',                        vals: [null, null, null, null, null, null, null, null, null, thermalParams.Pertes_thermiques_pourcent, null, null, null, null, null, null] },
+                    { label: 'PCI boues in [kCal/kgMV]',        vals: [emissions.PCI_boue_kcal_kgMV, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null] },
+                    { label: 'kgMV/h',                          vals: [emissions.Masse_volatile_kg_h, null, null, null, null, null, null, null, null, emissions.Masse_volatile_kg_h, null, null, null, null, null, null] },
+                    { label: 'Débit MS des boues [kg/h]',       vals: [null, emissions.Masse_seche_kg_h, null, null, null, null, null, null, null, null, null, null, null, null, null, null] },
+                    { label: 'Débit eau à évaporer [kg/h]',     vals: [null, null, emissions.Masse_eau_kg_h, null, null, null, null, null, null, null, null, null, null, null, null, null] },
+                    { label: 'Efficacité [%]',                  vals: [null, null, null, null, null, null, null, null, null, null, null, null, null, thermalParams.Rdt_HX * 100, null, null] },
+                    { label: 'Énergie cédée par les fumées [kWh]', vals: [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null] },
+                    { label: 'Énergie transmise [kWh]',         vals: [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null] },
+                    { label: 'Enthalpie [kWh]',                 vals: [(emissions.Masse_volatile_kg_h * emissions.PCI_boue_kcal_kgMV * 4.1868) / 3600, fh_MS_kW(thermalParams.Temp_boue_entree_C, emissions.Masse_seche_kg_h), (emissions.Masse_eau_kg_h * (4.1868 * thermalParams.Temp_boue_entree_C - 2501.6)) / 3600, results.H_matiere_minerale_kW, results.H_NETTE_BOUE_kW, results.H_air_fluidisation_av_prechauffe_kW, results.H_air_secondaire_kW, results.H_air_tertiaire_kW, results.H_gaz_inter, results.Pertes_thermiques_kW, results.H_air_balayage_instrumentation_kW, results.Hair_ap_prechauffage_kW, results.H_air_soufflante_kW, results.Hf_voute_kW, results.Hf_voute_ap_HX_kW, results.H_imbrule_kW] },
                   ].map((row, ri) => (
                     <tr key={ri} style={{ backgroundColor: ri % 2 === 0 ? '#FAFAFA' : '#fff' }}>
                       <td style={{ ...TD, fontWeight: 'bold', textAlign: 'left', position: 'sticky', left: 0, backgroundColor: ri % 2 === 0 ? '#FAFAFA' : '#fff', zIndex: 1 }}>{row.label}</td>
-                      {row.vals.map((v, ci) => <td key={ci} style={TD}>{v != null ? (typeof v === 'number' ? v.toFixed(2) : v) : ''}</td>)}
+                      {row.vals.map((v, ci) => <td key={ci} style={TD}>{v != null ? (typeof v === 'number' ? v.toFixed(row.decimals ?? 2) : v) : ''}</td>)}
                     </tr>
                   ))}
                 </tbody>
@@ -1626,6 +1667,7 @@ const CombustionTab = ({ innerData = {}, onInnerDataChange, onResultsChange, cur
                 { label: 'H_matière_minérale', in: null, out: results.H_matiere_minerale_kW },
                 { label: 'Hf_voûte', in: null, out: results.Hf_voute_kW },
                 { label: 'Pertes thermiques', in: null, out: results.Pertes_thermiques_kW },
+                { label: 'Imbrûlés (CO + H₂)', in: null, out: results.H_imbrule_kW },
               ].map(({ label, in: vin, out: vout }) => (
                 <tr key={label}>
                   <td style={{ ...TD, fontWeight: 'bold' }}>{label}</td>
