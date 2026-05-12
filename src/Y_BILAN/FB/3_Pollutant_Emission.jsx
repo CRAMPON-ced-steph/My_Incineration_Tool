@@ -123,9 +123,9 @@ const FBPollutantEmission = ({ innerData, currentLanguage = 'fr' }) => {
   const HF_stoechiométrie = emissions2.hfStoechiometrie ?? 1.2;
 
   // ✅ CORRECTION : Extraction robuste des données depuis innerData
-  const Debit_fumees_sec_Nm3_h = innerData?.FG_OUT_Nm3_h?.dry ?? 10000;
-  const Debit_fumees_humide_Nm3_h = innerData?.FG_OUT_Nm3_h?.wet ?? 10000;
-  const FG_O2_calcule = innerData?.O2_calcule ?? 12;
+  const Debit_fumees_sec_Nm3_h = innerData?.FG_dry_Nm3_h ?? 10000;   // débit sec complet (CO2+N2+O2+H2O+HCl+CO+NOx+SO2)
+  const Debit_fumees_humide_Nm3_h = innerData?.FG_wet_Nm3_h ?? 10000; // débit humide complet
+  const FG_O2_calcule_pct = (innerData?.O2_calcule ?? 0.11) * 100; // converti ratio→% pour conv_O2_ref et affichage
   const masse_dechets = innerData?.MasseBoueBrute ?? 0;
   const Inert_kg_h = innerData?.Inert_kg_h ?? 0;
 
@@ -455,7 +455,7 @@ const FBPollutantEmission = ({ innerData, currentLanguage = 'fr' }) => {
     { text: t('wasteFlow'), value: masse_dechets },
     { text: t('flueGasFlowWet'), value: Debit_fumees_humide_Nm3_h.toFixed(0) },
     { text: t('flueGasFlowDry'), value: Debit_fumees_sec_Nm3_h.toFixed(0) },
-    { text: t('o2Calculated'), value: FG_O2_calcule.toFixed(2) },
+    { text: t('o2Calculated'), value: FG_O2_calcule_pct.toFixed(2) },
   ];
 
   const residusCalculations = [
@@ -512,7 +512,7 @@ const FBPollutantEmission = ({ innerData, currentLanguage = 'fr' }) => {
       <h4>{t('inputFlueGas') || 'Fumées d\'entrée'}</h4>
       <PollutantCalculator
         masses={masses_pollutant_input}
-        O2_mesure={FG_O2_calcule}
+        O2_mesure={FG_O2_calcule_pct}
         O2_ref={O2ref}
         Debit_fumees_sec_Nm3_h={Debit_fumees_sec_Nm3_h}
       />
@@ -845,7 +845,7 @@ const FBPollutantEmission = ({ innerData, currentLanguage = 'fr' }) => {
       <h4>{t('outputFlueGas') || 'Fumées de sortie'}</h4>
       <PollutantCalculator
         masses={masses_pollutant_output}
-        O2_mesure={FG_O2_calcule}
+        O2_mesure={FG_O2_calcule_pct}
         O2_ref={O2ref}
         Debit_fumees_sec_Nm3_h={Debit_fumees_sec_Nm3_h}
       />

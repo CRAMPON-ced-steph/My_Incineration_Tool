@@ -635,7 +635,7 @@ const CombustionTab = ({ innerData = {}, onInnerDataChange, onResultsChange, cur
     innerData['FG_OUT_kg_h'] = masses_FG_out;
     innerData['FG_OUT_Nm3_h'] = volume_FG_out;
     innerData['FG_pollutant_OUT_kg_h'] = masses_pollutant_FG_out;
-    innerData['O2_calcule'] = O2_sec_pourcent;
+    innerData['O2_calcule'] = O2_sec_pourcent; // ratio 0-1 (convention projet)
 
     onInnerDataChange?.();
     onResultsChange?.({
