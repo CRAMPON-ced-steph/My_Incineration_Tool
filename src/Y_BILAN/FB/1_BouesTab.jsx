@@ -401,6 +401,7 @@ const BouesTab = ({ innerData, currentLanguage  }) => {
     border: '1px solid #ddd',
     borderRadius: '4px',
     fontSize: '13px',
+    boxSizing: 'border-box',
   };
 
   const readOnlyStyle = {
@@ -454,7 +455,7 @@ const BouesTab = ({ innerData, currentLanguage  }) => {
         <h2 style={{ color: '#1a202c', fontSize: '20px', marginBottom: '20px' }}>
           {t('Fonctionnement') || 'Fonctionnement'}
         </h2>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', alignItems: 'start' }}>
           <div>
             <label style={labelStyle}>{t('Nombre de jours par semaine') || 'Nombre de jours par semaine'}</label>
             <input
@@ -533,7 +534,7 @@ const BouesTab = ({ innerData, currentLanguage  }) => {
           </select>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '15px', marginBottom: '20px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '15px', marginBottom: '20px', alignItems: 'start' }}>
           <div>
             <label style={labelStyle}>{t('Siccité') || 'Siccité'} [%]</label>
             <input
@@ -571,7 +572,7 @@ const BouesTab = ({ innerData, currentLanguage  }) => {
           </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '15px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '15px', alignItems: 'start' }}>
           {[
             { label: t('Matière brute') || 'Matière brute', unit: '[kg/h]', val: boue.BoueBrute_kg_h },
             { label: t('Matière volatile') || 'Matière volatile', unit: '[kg/h]', val: boue.MV_kg_h },
@@ -604,7 +605,7 @@ const BouesTab = ({ innerData, currentLanguage  }) => {
           </span>
         </h2>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '10px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '10px', alignItems: 'start' }}>
           {['C', 'H', 'O', 'N', 'S', 'Cl'].map((el) => (
             <div key={el}>
               <label style={labelStyle}>
@@ -638,7 +639,7 @@ const BouesTab = ({ innerData, currentLanguage  }) => {
           <h3 style={{ color: '#374151', fontSize: '16px', marginBottom: '15px' }}>
             📥 {t('Concentrations') || 'Concentrations'} [mg/kg MS]
           </h3>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '15px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '15px', alignItems: 'start' }}>
             {[
               { label: 'Al (Aluminium)', id: 'al', def: 6000 },
               { label: 'As (Arsenic)', id: 'as', def: 20 },
@@ -724,7 +725,7 @@ const BouesTab = ({ innerData, currentLanguage  }) => {
             ];
 
             return (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', alignItems: 'start' }}>
                 {masses.map(({ label, value, color }) => (
                   <div
                     key={label}

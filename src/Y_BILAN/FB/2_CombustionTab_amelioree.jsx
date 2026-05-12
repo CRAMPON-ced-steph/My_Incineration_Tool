@@ -104,6 +104,7 @@ function runIterativeCalc({
   Masse_air_secondaire_kg_h, Masse_air_tertiaire_kg_h,
   MS_pourcent, MV_pourcent, BoueBrute_kg_h,
   PCI_combustible_kcal_kg,
+  densite_combustible = 0.87,
   airComposition,
   forceGazZero = false,
 }) {
@@ -298,7 +299,7 @@ function runIterativeCalc({
     const Hf_voute_HX = Hfvoute_kW(Tf_voute_ap_HX_C, FG_HCl, FG_CO2, FG_CO, FG_H2O, FG_H2, FG_O2exc, FG_N2, FG_SO2reel) || 0;
 
     const PCI_gaz_kWh_Nm3 = (PCI_combustible_kcal_kg * 4.1868) / 3600;
-    const H_gaz_inter = (Masse_gaz_kg_h / 0.87) * PCI_gaz_kWh_Nm3;
+    const H_gaz_inter = (Masse_gaz_kg_h / densite_combustible) * PCI_gaz_kWh_Nm3;
 
     const H_in = H_NET_BOUE + H_Evap_add + H_air_prech + H_balayage + H_gaz_inter;
     const H_imbrule_kW = (2415 * FG_CO + FG_H2 * 28240) / 860;
@@ -306,7 +307,7 @@ function runIterativeCalc({
     const H_gaz = H_out - H_in;
 
     const Q_gaz_Nm3 = PCI_gaz_kWh_Nm3 > 0 ? H_gaz / PCI_gaz_kWh_Nm3 : 0;
-    const Q_gaz_kg = Q_gaz_Nm3 * 0.87;
+    const Q_gaz_kg = Q_gaz_Nm3 * densite_combustible;
 
     const Rho_FG_kg_Nm3 = Vvap_boue > 0 ? FG_wet_kg / FG_wet_Nm3 : 0;
 
@@ -337,7 +338,7 @@ function runIterativeCalc({
 
     if (isConverged || isLastIter) {
       r = {
-        Q_gaz_kg_h: Masse_gaz_kg_h, Q_gaz_Nm3_h: Masse_gaz_kg_h / 0.87,
+        Q_gaz_kg_h: Masse_gaz_kg_h, Q_gaz_Nm3_h: Masse_gaz_kg_h / densite_combustible,
         Masse_gaz_kg_h, iteration: iter + 1, converged: isConverged,
         forceGazZero,
         Temp_fumee_voute_C, Tf_voute_ap_HX_C,
@@ -508,7 +509,7 @@ const CombustionTab = ({ innerData = {}, onInnerDataChange, onResultsChange, cur
   const [showExpertAir, setShowExpertAir] = useState(false);
   const [showExpertFumees, setShowExpertFumees] = useState(false);
   const [showDetailedBilan, setShowDetailedBilan] = useState(false);
-  const [useGazAppoint, setUseGazAppoint] = useState(false);
+  const [useGazAppoint, setUseGazAppoint] = useState(true);
 
   useEffect(() => { lsSet('emissions', emissions); }, [emissions]);
   useEffect(() => { lsSet('thermalParams', thermalParams); }, [thermalParams]);
@@ -568,6 +569,7 @@ const CombustionTab = ({ innerData = {}, onInnerDataChange, onResultsChange, cur
         MV_pourcent: innerData.MV_pourcent || 0,
         BoueBrute_kg_h: innerData.BoueBrute_kg_h || 0,
         PCI_combustible_kcal_kg: emissions.PCI_combustible || 0,
+        densite_combustible: Number(emissions.densite_combustible) || 0.87,
         airComposition,
         forceGazZero: !useGazAppoint,
       });
@@ -606,6 +608,10 @@ const CombustionTab = ({ innerData = {}, onInnerDataChange, onResultsChange, cur
     innerData.m_o2 = results.FG_kg_h_O2exces || 0;
     innerData.m_so2 = results.FG_kg_h_SO2reel || 0;
     innerData.m_chcl = results.FG_kg_h_HCl || 0;
+    innerData.H_in_kW = results.H_in || 0;
+    innerData.H_pertes_kW = results.Pertes_thermiques_kW || 0;
+    innerData.H_imbrule_kW = results.H_imbrule_kW || 0;
+    innerData.H_air_balayage_kW = results.H_air_balayage_instrumentation_kW || 0;
 
     const masses_FG_out = {
       CO2: (results.FG_kg_h_CO2 || 0) + (results.FG_kg_h_CO || 0),
