@@ -1,12 +1,13 @@
 import React, { useState, useRef, useCallback, useMemo } from 'react';
 import BouesTab from './1_BouesTab';
-import CombustionTab from './2_CombustionTab_amelioree';
+import CombustionTab from './2_CombustionTab';
 
 //import CombustionTab from './2_CombustionTabTequi';
 
 import Pollutant from './3_Pollutant_Emission';
 import DimensionnementTab from './3_VouteTab';
 import Recuperateur from './4_Recuperator';
+import FBopex from './5_FB_Opex';
 
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './FB_traduction';
@@ -53,6 +54,7 @@ const FBMainPage = ({ innerData, nodeData, title, onSendData, onClose, onGoBack,
     { name: 'pollutant', label: t('Polluant') || 'Polluant' },
     { name: 'voute', label: t('Voûte') || 'Voûte' },
     { name: 'HX', label: t('HX') || 'HX' },
+    { name: 'opex', label: t('OPEX') || 'OPEX' },
   ], [currentLanguage]);
 
   // ============================================================
@@ -314,6 +316,19 @@ const FBMainPage = ({ innerData, nodeData, title, onSendData, onClose, onGoBack,
           <Recuperateur
             innerData={innerDataRef.current}
             combustionResults={combustionResults}
+            currentLanguage={currentLanguage}
+          />
+        );
+
+      case 'opex':
+        return (
+          <FBopex
+            innerData={innerDataRef.current}
+            setInnerData={(updater) => {
+              const newVal = typeof updater === 'function' ? updater(innerDataRef.current) : updater;
+              Object.assign(innerDataRef.current, newVal);
+              notifyInnerDataChanged();
+            }}
             currentLanguage={currentLanguage}
           />
         );

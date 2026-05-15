@@ -47,7 +47,7 @@ const CombustionTabHTML = ({
   t, emissions, thermalParams, airComposition, results, composition, sludgeComp, residuConvergence, f, f0,
   handleFuelChange, handleEmission, handleThermal, handleAirComp,
   showExpertAir, setShowExpertAir, showExpertFumees, setShowExpertFumees, showDetailedBilan, setShowDetailedBilan,
-  airCompositionCalculations
+  airCompositionCalculations, currentLanguage
 }) => {
   return (
     <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '20px' }}>
@@ -153,7 +153,7 @@ const CombustionTabHTML = ({
       </div>
 
       {/* ═══ SCHÉMA ═══ */}
-      <SchemaProcessus data={{ ...emissions, ...thermalParams, ...results }} />
+      <SchemaProcessus data={{ ...emissions, ...thermalParams, ...results }} currentLanguage={currentLanguage} />
 
       {/* ═══ PARAMÈTRES THERMIQUES ═══ */}
       <div style={card}>
