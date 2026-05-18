@@ -1,6 +1,7 @@
 import React, { useState, useRef, useCallback, useMemo } from 'react';
 import BouesTab from './1_BouesTab';
 import CombustionTab from './2_CombustionTab';
+import FB_Report from './FB_Report';
 
 //import CombustionTab from './2_CombustionTabTequi';
 
@@ -8,6 +9,7 @@ import Pollutant from './3_Pollutant_Emission';
 import DimensionnementTab from './3_VouteTab';
 import Recuperateur from './4_Recuperator';
 import FBopex from './5_FB_Opex';
+import FBCalcOpex from './5_1_FB_calcul_Opex';
 
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './FB_traduction';
@@ -55,6 +57,7 @@ const FBMainPage = ({ innerData, nodeData, title, onSendData, onClose, onGoBack,
     { name: 'voute', label: t('Voûte') || 'Voûte' },
     { name: 'HX', label: t('HX') || 'HX' },
     { name: 'opex', label: t('OPEX') || 'OPEX' },
+    { name: 'rapport', label: t('Rapport') || 'Rapport' },
   ], [currentLanguage]);
 
   // ============================================================
@@ -122,6 +125,104 @@ const FBMainPage = ({ innerData, nodeData, title, onSendData, onClose, onGoBack,
           // === DONNÉES BOUE ===
           MasseBoueBrute: innerDataRef.current['MasseBoueBrute'] ?? 0,
           masse_dechets: innerDataRef.current['MasseBoueBrute'] ?? 0,
+
+          // Fonctionnement
+          daysPerWeek:       innerDataRef.current['daysPerWeek']       ?? 0,
+          hoursPerDay:       innerDataRef.current['hoursPerDay']       ?? 0,
+          totalHoursPerWeek: innerDataRef.current['totalHoursPerWeek'] ?? 0,
+
+          // Caractéristiques boue
+          sludgeType:       innerDataRef.current['sludgeType']       ?? '',
+          MS_pourcent:      innerDataRef.current['MS_pourcent']      ?? 0,
+          MV_pourcent:      innerDataRef.current['MV_pourcent']      ?? 0,
+          MS_kg_h:          innerDataRef.current['MS_kg_h']          ?? 0,
+          BoueBrute_kg_h:   innerDataRef.current['BoueBrute_kg_h']   ?? 0,
+          MV_kg_h:          innerDataRef.current['MV_kg_h']          ?? 0,
+          EauExtraite_kg_h: innerDataRef.current['EauExtraite_kg_h'] ?? 0,
+          MM_kg_h:          innerDataRef.current['MM_kg_h']          ?? 0,
+
+          // CHONS (% de MV)
+          C_percent:  innerDataRef.current['C_percent']  ?? 0,
+          H_percent:  innerDataRef.current['H_percent']  ?? 0,
+          O_percent:  innerDataRef.current['O_percent']  ?? 0,
+          N_percent:  innerDataRef.current['N_percent']  ?? 0,
+          S_percent:  innerDataRef.current['S_percent']  ?? 0,
+          Cl_percent: innerDataRef.current['Cl_percent'] ?? 0,
+
+          // PCI / PCS
+          pciKJkgMV:   innerDataRef.current['pciKJkgMV']   ?? 0,
+          PCIKCALKGMV: innerDataRef.current['PCIKCALKGMV'] ?? 0,
+          pciKcalkg:   innerDataRef.current['pciKcalkg']   ?? 0,
+          pcsKcalkgMV: innerDataRef.current['pcsKcalkgMV'] ?? 0,
+          pcsKcalkg:   innerDataRef.current['pcsKcalkg']   ?? 0,
+          pciDulong:   innerDataRef.current['pciDulong']   ?? 0,
+
+          // Métaux lourds (mg/kg MS)
+          heavyMetalsData: innerDataRef.current['heavyMetalsData'] || {},
+
+          // Masses métalliques [kg/h]
+          Al_kg_h:    innerDataRef.current['Al_kg_h']    ?? 0,
+          As_kg_h:    innerDataRef.current['As_kg_h']    ?? 0,
+          Cd_kg_h:    innerDataRef.current['Cd_kg_h']    ?? 0,
+          Cr_kg_h:    innerDataRef.current['Cr_kg_h']    ?? 0,
+          Cu_kg_h:    innerDataRef.current['Cu_kg_h']    ?? 0,
+          Fe_kg_h:    innerDataRef.current['Fe_kg_h']    ?? 0,
+          Hg_kg_h:    innerDataRef.current['Hg_kg_h']    ?? 0,
+          Ni_kg_h:    innerDataRef.current['Ni_kg_h']    ?? 0,
+          Pb_kg_h:    innerDataRef.current['Pb_kg_h']    ?? 0,
+          Zn_kg_h:    innerDataRef.current['Zn_kg_h']    ?? 0,
+          PCDDF_kg_h: innerDataRef.current['PCDDF_kg_h'] ?? 0,
+          Ti_kg_h:    innerDataRef.current['Ti_kg_h']    ?? 0,
+          HF_kg_h:    innerDataRef.current['HF_kg_h']    ?? 0,
+
+          // === AIR DE COMBUSTION ===
+          Masse_air_sec_combustion_tot_kg_h:    innerDataRef.current['Masse_air_sec_combustion_tot_kg_h']    ?? 0,
+          Q_air_comb_tot_Nm3_h:                 innerDataRef.current['Q_air_comb_tot_Nm3_h']                 ?? 0,
+          Volume_air_balayage:                  innerDataRef.current['Volume_air_balayage']                  ?? 0,
+          Volume_air_combustible_total_Nm3_h:   innerDataRef.current['Volume_air_combustible_total_Nm3_h']   ?? 0,
+          Temp_air_fluidisation_av_prechauffe_C: innerDataRef.current['Temp_air_fluidisation_av_prechauffe_C'] ?? 0,
+          Tair_ap_prechauffe_C:                 innerDataRef.current['Tair_ap_prechauffe_C']                 ?? 0,
+          Temp_air_soufflante_C:                innerDataRef.current['Temp_air_soufflante_C']                ?? 0,
+          Meau_air_comburant:                   innerDataRef.current['Meau_air_comburant']                   ?? 0,
+
+          // === PARAMÈTRES COMBUSTION ===
+          Exces_air:                innerDataRef.current['Exces_air']                ?? 0,
+          Exces_air_lit:            innerDataRef.current['Exces_air_lit']            ?? 0,
+          Exces_air_combustible:    innerDataRef.current['Exces_air_combustible']    ?? 0,
+          Q_gaz_kg_h:               innerDataRef.current['Q_gaz_kg_h']              ?? 0,
+          Q_gaz_Nm3_h:              innerDataRef.current['Q_gaz_Nm3_h']             ?? 0,
+
+          // === FUMÉES VOÛTE ===
+          FG_wet_Nm3_h:             innerDataRef.current['FG_wet_Nm3_h']            ?? 0,
+          FG_dry_Nm3_h:             innerDataRef.current['FG_dry_Nm3_h']            ?? 0,
+          Rho_FG_kg_Nm3:            innerDataRef.current['Rho_FG_kg_Nm3']           ?? 0,
+          Temp_fumee_voute_C:       innerDataRef.current['Temp_fumee_voute_C']      ?? 0,
+          Tf_voute_ap_HX_C:         innerDataRef.current['Tf_voute_ap_HX_C']        ?? 0,
+          m_co:                     innerDataRef.current['m_co']                    ?? 0,
+          m_co2:                    innerDataRef.current['m_co2']                   ?? 0,
+          m_h2o:                    innerDataRef.current['m_h2o']                   ?? 0,
+          m_n2:                     innerDataRef.current['m_n2']                    ?? 0,
+          m_o2:                     innerDataRef.current['m_o2']                    ?? 0,
+          m_so2:                    innerDataRef.current['m_so2']                   ?? 0,
+          m_chcl:                   innerDataRef.current['m_chcl']                  ?? 0,
+
+          // === PARAMÈTRES THERMIQUES ===
+          Rdt_HX:                   innerDataRef.current['Rdt_HX']                  ?? 0,
+          Hf_voute_kW:              innerDataRef.current['Hf_voute_kW']             ?? 0,
+          Hf_voute_ap_HX_kW:        innerDataRef.current['Hf_voute_ap_HX_kW']      ?? 0,
+          Hair_ap_prechauffage_kW:  innerDataRef.current['Hair_ap_prechauffage_kW'] ?? 0,
+
+          // === BILAN ÉNERGÉTIQUE ===
+          H_in_kW:                  innerDataRef.current['H_in_kW']                 ?? 0,
+          H_out_kW:                 innerDataRef.current['H_out_kW']                ?? 0,
+          H_pertes_kW:              innerDataRef.current['H_pertes_kW']             ?? 0,
+          H_imbrule_kW:             innerDataRef.current['H_imbrule_kW']            ?? 0,
+          H_air_balayage_kW:        innerDataRef.current['H_air_balayage_kW']       ?? 0,
+          H_air_soufflante_kW:      innerDataRef.current['H_air_soufflante_kW']     ?? 0,
+          H_NETTE_BOUE_kW:          innerDataRef.current['H_NETTE_BOUE_kW']         ?? 0,
+          H_matiere_minerale_kW:    innerDataRef.current['H_matiere_minerale_kW']   ?? 0,
+          H_gaz_inter:              innerDataRef.current['H_gaz_inter']             ?? 0,
+          H_gaz_residuel:           innerDataRef.current['H_gaz_residuel']          ?? 0,
         },
       };
 
@@ -296,6 +397,11 @@ const FBMainPage = ({ innerData, nodeData, title, onSendData, onClose, onGoBack,
         return (
           <Pollutant
             innerData={innerDataRef.current}
+            setInnerData={(updater) => {
+              const newVal = typeof updater === 'function' ? updater(innerDataRef.current) : updater;
+              Object.assign(innerDataRef.current, newVal);
+              notifyInnerDataChanged();
+            }}
             onInnerDataChange={notifyInnerDataChanged}
             currentLanguage={currentLanguage}
           />
@@ -329,6 +435,14 @@ const FBMainPage = ({ innerData, nodeData, title, onSendData, onClose, onGoBack,
               Object.assign(innerDataRef.current, newVal);
               notifyInnerDataChanged();
             }}
+            currentLanguage={currentLanguage}
+          />
+        );
+
+      case 'rapport':
+        return (
+          <FB_Report
+            innerData={innerDataRef.current}
             currentLanguage={currentLanguage}
           />
         );
@@ -445,6 +559,16 @@ const FBMainPage = ({ innerData, nodeData, title, onSendData, onClose, onGoBack,
           </button>
         ))}
       </div>
+
+      {/* Composant de calcul OPEX — invisible, toujours monté */}
+      <FBCalcOpex
+        innerData={innerDataRef.current}
+        setInnerData={(updater) => {
+          const newVal = typeof updater === 'function' ? updater(innerDataRef.current) : updater;
+          Object.assign(innerDataRef.current, newVal);
+          notifyInnerDataChanged();
+        }}
+      />
 
       {/* ════════════════════════════════════════ CONTENT ════════════════════════════════════════ */}
       <div

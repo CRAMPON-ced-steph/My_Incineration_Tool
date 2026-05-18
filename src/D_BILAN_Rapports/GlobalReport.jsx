@@ -4,6 +4,7 @@ import jsPDF from 'jspdf';
 import { getOpexData } from '../A_Transverse_fonction/opexDataService';
 
 import RK_Report from '../Y_BILAN/RK/RK_Report';
+import FB_Report from '../Y_BILAN/FB/FB_Report';
 import BHF_Report from '../Y_BILAN/BHF/BHF_Report';
 import COOLINGTOWER_Report from '../Y_BILAN/COOLINGTOWER/COOLINGTOWER_Report';
 import CYCLONE_Report from '../Y_BILAN/CYCLONE/CYCLONE_Report';
@@ -18,6 +19,7 @@ import WHB_Report from '../Y_BILAN/WHB/WHB_Report';
 
 const REPORT_MAP = {
   RK: RK_Report,
+  FB: FB_Report,
   BHF: BHF_Report,
   COOLINGTOWER: COOLINGTOWER_Report,
   CYCLONE: CYCLONE_Report,

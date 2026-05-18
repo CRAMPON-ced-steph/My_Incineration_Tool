@@ -621,6 +621,11 @@ const CombustionTab = ({ innerData = {}, onInnerDataChange, onResultsChange, cur
     innerData.H_air_balayage_kW = results.H_air_balayage_instrumentation_kW || 0;
     innerData.H_air_soufflante_kW = results.H_air_soufflante_kW || 0;
     innerData.Meau_air_comburant = results.Meau_air_comburant || 0;
+    innerData.H_NETTE_BOUE_kW = results.H_NETTE_BOUE_kW || 0;
+    innerData.H_matiere_minerale_kW = results.H_matiere_minerale_kW || 0;
+    innerData.H_gaz_inter = results.H_gaz_inter || 0;
+    innerData.H_out_kW = results.H_out || 0;
+    innerData.H_gaz_residuel = results.H_gaz || 0;
 
     const masses_FG_out = {
       CO2: (results.FG_kg_h_CO2 || 0) + (results.FG_kg_h_CO || 0),
