@@ -202,6 +202,23 @@ const DimensionnementTab = ({ innerData = {}, innerDataTick, onDataChange, curre
     });
   }, [calculsComplets, onDataChange, REACTEURS, VOUTES]);
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   const handleParametreChange = useCallback((key, value) => {
     setParametres((prev) => ({ ...prev, [key]: value }));
   }, []);

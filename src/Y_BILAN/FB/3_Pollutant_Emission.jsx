@@ -21,7 +21,7 @@ const useTranslation = (currentLanguage = 'fr') => {
   }, [currentLanguage]);
 };
 
-const FBPollutantEmission = ({ innerData, currentLanguage = 'fr' }) => {
+const FBPollutantEmission = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
   // ✅ Utiliser le hook pour traductions dynamiques
   const t = useTranslation(currentLanguage);
   // ✅ CORRECTION : Ajouter languageCode ici
@@ -464,14 +464,33 @@ const FBPollutantEmission = ({ innerData, currentLanguage = 'fr' }) => {
     { text: t('flyAsh'), value: FlyAsh_kg_h },
   ];
 
-  // Mise à jour de innerData
-  if (innerData) {
-    innerData['Residus'] = Residus;
-    innerData['PInput'] = masses_pollutant_input;
-    innerData['Poutput'] = masses_pollutant_output;
-    innerData['REFIDIS'] = mass_residus_tot;
-    innerData['Conso_reactifs'] = Conso_Reactifs;
-  }
+  // Mise à jour de innerData via setInnerData
+  useEffect(() => {
+    if (!setInnerData) return;
+    setInnerData(prev => ({
+      ...prev,
+      Residus,
+      PInput: masses_pollutant_input,
+      Poutput: masses_pollutant_output,
+      REFIDIS: mass_residus_tot,
+      Conso_reactifs: Conso_Reactifs,
+    }));
+  }, [
+    Conso_Reactifs.CaCO3,
+    Conso_Reactifs.CaO,
+    Conso_Reactifs.CaOH2wet,
+    Conso_Reactifs.CaOH2dry,
+    Conso_Reactifs.NaOH,
+    Conso_Reactifs.NaOHCO3,
+    Conso_Reactifs.Ammonia,
+    Conso_Reactifs.NaBrCaBr2,
+    Conso_Reactifs.CAP,
+    DryBottomAsh_kg_h,
+    WetBottomAsh_kg_h,
+    FlyAsh_kg_h,
+    mass_residus_tot,
+    setInnerData,
+  ]);
 
   return (
     <div className="cadre_pour_onglet">

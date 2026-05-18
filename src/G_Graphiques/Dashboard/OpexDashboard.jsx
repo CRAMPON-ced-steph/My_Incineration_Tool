@@ -1,11 +1,133 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { getOpexData } from '../../A_Transverse_fonction/opexDataService';
 
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './OpexDashboard_traduction';
 
 
-const OpexDashboard = ({ 
+// ─── Helpers et composants définis au niveau module ───────────────────────────
+// Raison : si ces fonctions/composants sont définis DANS OpexDashboard, React
+// crée de nouvelles références à chaque re-render → unmount/remount de toutes
+// les instances → EditableCell perd son état local (isEditing, value) et les
+// lignes ajoutées disparaissent (nouvelle fonction = nouveau type pour React).
+
+const calculateSum = (data) =>
+  data.reduce((sum, row) => sum + (row.value === '' ? 0 : (parseFloat(row.value) || 0)), 0);
+
+// Affiche toutes les lignes (y compris les nouvelles lignes vides juste ajoutées)
+const getVisibleRows = (data) => data;
+
+const handleTableChange = (setter, index, field, value) => {
+  setter(prev => {
+    const next = [...prev];
+    next[index] = { ...next[index], [field]: value };
+    return next;
+  });
+};
+
+const addRow = (data, setter) =>
+  setter([...data, { key: `row${Date.now()}`, label: '', value: '' }]);
+
+const deleteRow = (data, setter, index) => {
+  if (data.length > 1) setter(data.filter((_, i) => i !== index));
+};
+
+const EditableCell = ({ initialValue, onSave, type = 'text' }) => {
+  const [value, setValue] = useState(initialValue);
+  const [isEditing, setIsEditing] = useState(false);
+
+  useEffect(() => { setValue(initialValue); }, [initialValue]);
+
+  const commit = (v) => { setIsEditing(false); onSave(v); };
+
+  return isEditing ? (
+    <input
+      type={type}
+      value={value}
+      onChange={e => setValue(e.target.value)}
+      onBlur={() => commit(value)}
+      onKeyDown={e => e.key === 'Enter' && commit(value)}
+      autoFocus
+      style={{ width: '100%', padding: '6px', border: '1px solid #ccc', borderRadius: '4px' }}
+    />
+  ) : (
+    <div
+      onClick={() => setIsEditing(true)}
+      style={{ padding: '6px', height: '34px', cursor: 'text', border: '1px solid #ccc', borderRadius: '4px', backgroundColor: '#f9f9f9', display: 'flex', alignItems: 'center' }}
+    >
+      {value || ''}
+    </div>
+  );
+};
+
+const ToggleSwitch = ({ isOn, handleToggle }) => (
+  <div
+    style={{ position: 'relative', width: '50px', height: '24px', backgroundColor: isOn ? '#4CAF50' : '#ccc', borderRadius: '12px', cursor: 'pointer', transition: 'background-color 0.3s' }}
+    onClick={handleToggle}
+  >
+    <div style={{ position: 'absolute', left: isOn ? '26px' : '2px', top: '2px', width: '20px', height: '20px', backgroundColor: 'white', borderRadius: '50%', transition: 'left 0.3s', boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }} />
+  </div>
+);
+
+const DataTable = ({ title, color, data, setData, type, convertValue, getUnit, t }) => {
+  const sum = calculateSum(data);
+  const displaySum = convertValue(sum, type);
+  const unit = getUnit(type);
+  const visibleRows = getVisibleRows(data);
+
+  return (
+    <div style={{ marginBottom: '30px' }}>
+      <div style={{ backgroundColor: color, padding: '10px 15px', borderRadius: '5px 5px 0 0', color: 'white', fontWeight: 'bold', fontSize: '18px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <span>{title} {unit && `[${unit}]`}</span>
+        <span>{t('total')}: {displaySum.toFixed(2)}</span>
+      </div>
+      <div style={{ border: `1px solid ${color}`, borderTop: 'none', padding: '15px', borderRadius: '0 0 5px 5px' }}>
+        {visibleRows.length > 0 ? (
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <thead>
+              <tr>
+                <th style={{ padding: '8px', textAlign: 'left', borderBottom: '1px solid #ddd' }}>{t('description')}</th>
+                <th style={{ padding: '8px', textAlign: 'left', borderBottom: '1px solid #ddd' }}>{t('value')}</th>
+                <th style={{ padding: '8px', textAlign: 'center', borderBottom: '1px solid #ddd', width: '80px' }}>{t('action')}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {visibleRows.map(row => {
+                const realIndex = data.findIndex(item => item.key === row.key);
+                return (
+                  <tr key={row.key}>
+                    <td style={{ padding: '8px', borderBottom: '1px solid #eee' }}>
+                      <EditableCell initialValue={row.label} onSave={v => handleTableChange(setData, realIndex, 'label', v)} />
+                    </td>
+                    <td style={{ padding: '8px', borderBottom: '1px solid #eee' }}>
+                      <EditableCell initialValue={row.value} onSave={v => handleTableChange(setData, realIndex, 'value', v)} type="text" />
+                    </td>
+                    <td style={{ padding: '8px', borderBottom: '1px solid #eee', textAlign: 'center' }}>
+                      <button onClick={() => deleteRow(data, setData, realIndex)} style={{ padding: '4px 8px', backgroundColor: '#ff5252', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>✕</button>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        ) : (
+          <div style={{ textAlign: 'center', padding: '20px', color: '#666', fontStyle: 'italic' }}>{t('noDataToDisplay')}</div>
+        )}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '15px', padding: '10px', backgroundColor: '#f9f9f9', borderRadius: '4px' }}>
+          <button onClick={() => addRow(data, setData)} style={{ padding: '8px 12px', backgroundColor: color, color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
+            {t('addRow')}
+          </button>
+          <div style={{ fontWeight: 'bold', fontSize: '16px', padding: '8px 12px', backgroundColor: '#f0f0f0', borderRadius: '4px', border: '1px solid #ddd' }}>
+            {t('total')}: {displaySum.toFixed(2)} {unit}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+// ─── Fin composants module-level ──────────────────────────────────────────────
+
+const OpexDashboard = ({
   equipmentType, 
   innerData, 
   setInnerData,
@@ -293,8 +415,19 @@ const OpexDashboard = ({
     };
   };
 
-  // État pour le mode annuel/horaire
-  const [isAnnualMode, setIsAnnualMode] = useState(false);
+  // Clé de persistance localStorage (unique par équipement)
+  const STORAGE_KEY = `opexDashboard_${equipmentType}`;
+
+  // Données initiales calculées (fallback et reset)
+  const initialData = generateInitialData();
+
+  // Lire l'état sauvegardé pour l'hydratation initiale
+  const savedState = (() => {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)); } catch { return null; }
+  })();
+
+  // État pour le mode annuel/horaire (persisté)
+  const [isAnnualMode, setIsAnnualMode] = useState(savedState?.isAnnualMode ?? false);
 
   // Données de consommation brutes (toujours en valeurs horaires)
   const [rawConsumptionData, setRawConsumptionData] = useState({
@@ -307,16 +440,18 @@ const OpexDashboard = ({
     cout: 0
   });
 
-  // Générer les données initiales
-  const initialData = generateInitialData();
+  // États pour chaque catégorie de données (persistés)
+  const [elecData, setElecData] = useState(savedState?.elecData ?? [...initialData.initialElecData]);
+  const [eauData, setEauData] = useState(savedState?.eauData ?? [...initialData.initialEauData]);
+  const [reactifsData, setReactifsData] = useState(savedState?.reactifsData ?? [...initialData.initialReactifsData]);
+  const [energieData, setEnergieData] = useState(savedState?.energieData ?? [...initialData.initialEnergieData]);
+  const [co2Data, setCo2Data] = useState(savedState?.co2Data ?? [...initialData.initialCo2Data]);
+  const [coutData, setCoutData] = useState(savedState?.coutData ?? [...initialData.initialcoutData]);
 
-  // États pour chaque catégorie de données
-  const [elecData, setElecData] = useState([...initialData.initialElecData]);
-  const [eauData, setEauData] = useState([...initialData.initialEauData]);
-  const [reactifsData, setReactifsData] = useState([...initialData.initialReactifsData]);
-  const [energieData, setEnergieData] = useState([...initialData.initialEnergieData]);
-  const [co2Data, setCo2Data] = useState([...initialData.initialCo2Data]);
-  const [coutData, setCoutData] = useState([...initialData.initialcoutData]);
+  // Ref: true = l'utilisateur a modifié les tableaux → ne pas écraser avec les recalculs innerData.
+  // Initialisé à true si on restaure depuis localStorage (les modifs de l'utilisateur sont présentes).
+  // Reset par le bouton "Réinitialiser" pour permettre à nouveau la mise à jour auto depuis les calculs.
+  const userModifiedRef = useRef(!!savedState);
 
   // Données de consommation affichées (converties selon le mode)
   const [activeNodes_Elec, setActiveNodes_Elec] = useState([{ label: equipmentType, data: { consommationElec: 0 } }]);
@@ -327,17 +462,17 @@ const OpexDashboard = ({
   const [activeNodes_cout, setActiveNodes_cout] = useState([{ label: equipmentType, data: { cout: 0 } }]);
 
   // EFFET POUR MISE À JOUR AUTOMATIQUE QUAND innerData CHANGE
+  // Sauté si l'utilisateur a déjà modifié les tableaux (ajout/suppression/édition).
+  // Le bouton Reset remet userModifiedRef à false pour autoriser une nouvelle mise à jour.
   useEffect(() => {
-    if (innerData) {
-      const newInitialData = generateInitialData();
-      
-      setElecData([...newInitialData.initialElecData]);
-      setEauData([...newInitialData.initialEauData]);
-      setReactifsData([...newInitialData.initialReactifsData]);
-      setEnergieData([...newInitialData.initialEnergieData]);
-      setCo2Data([...newInitialData.initialCo2Data]);
-      setCoutData([...newInitialData.initialcoutData]);
-    }
+    if (!innerData || userModifiedRef.current) return;
+    const newInitialData = generateInitialData();
+    setElecData([...newInitialData.initialElecData]);
+    setEauData([...newInitialData.initialEauData]);
+    setReactifsData([...newInitialData.initialReactifsData]);
+    setEnergieData([...newInitialData.initialEnergieData]);
+    setCo2Data([...newInitialData.initialCo2Data]);
+    setCoutData([...newInitialData.initialcoutData]);
   }, [
     innerData?.consoElec1, innerData?.consoElec2, innerData?.consoElec3, innerData?.consoElec4, 
     innerData?.consoElec5, innerData?.consoElec6, innerData?.consoElec7, innerData?.consoElec8,
@@ -356,23 +491,6 @@ const OpexDashboard = ({
     innerData?.CO2_transport_incineratino_ash, innerData?.CO2_transport_boiler_ash, innerData?.CO2_transport_fly_ash, innerData?.CO2_transport_reactifs,
     innerData?.cout_transport_incineratino_ash, innerData?.cout_transport_boiler_ash, innerData?.cout_transport_fly_ash, innerData?.cout_transport_reactifs
   ]);
-
-  // Fonction pour filtrer les lignes avec valeur 0 (pour l'affichage uniquement)
-  const getVisibleRows = (data) => {
-    return data.filter(row => {
-      const value = parseFloat(row.value) || 0;
-      // Afficher si la ligne a un label ET (une valeur non nulle OU un label significatif)
-      return row.label && (value !== 0 || row.label.trim() !== '');
-    });
-  };
-
-  // Fonction pour calculer la somme des valeurs
-  const calculateSum = (data) => {
-    return data.reduce((sum, row) => {
-      const value = row.value === '' ? 0 : (parseFloat(row.value) || 0);
-      return sum + value;
-    }, 0);
-  };
 
   // Mettre à jour les valeurs brutes de consommation lorsque les données des tableaux changent
   useEffect(() => {
@@ -404,6 +522,21 @@ const OpexDashboard = ({
     const sum = calculateSum(coutData);
     setRawConsumptionData(prev => ({ ...prev, cout: sum }));
   }, [coutData]);
+
+  // Persister l'état dans localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        isAnnualMode,
+        elecData,
+        eauData,
+        reactifsData,
+        energieData,
+        co2Data,
+        coutData,
+      }));
+    } catch {}
+  }, [isAnnualMode, elecData, eauData, reactifsData, energieData, co2Data, coutData]);
 
   // Fonction pour convertir les valeurs selon le mode
   const convertValue = (value, type) => {
@@ -497,35 +630,10 @@ const OpexDashboard = ({
     }
   }, [activeNodes_Elec, activeNodes_Eau, activeNodes_Reactifs, activeNodes_Energie, activeNodes_CO2, activeNodes_cout, setInnerData]);
 
-  // Fonction pour mettre à jour les données du tableau
-  const handleTableChange = (setter, index, field, value) => {
-    setter(prevData => {
-      const newData = [...prevData];
-      newData[index] = { ...newData[index], [field]: value };
-      return newData;
-    });
-  };
-
-  // Fonction pour ajouter une ligne à un tableau
-  const addRow = (data, setter) => {
-    const newRow = { 
-      key: `row${Date.now()}`,
-      label: '', 
-      value: ''
-    };
-    setter([...data, newRow]);
-  };
-
-  // Fonction pour supprimer une ligne d'un tableau
-  const deleteRow = (data, setter, index) => {
-    if (data.length > 1) {
-      setter(data.filter((_, i) => i !== index));
-    }
-  };
-
   // Fonction pour réinitialiser les données
   const resetData = () => {
     if (window.confirm(t('confirmReset'))) {
+      userModifiedRef.current = false; // Autorise à nouveau la mise à jour auto depuis les calculs
       const newInitialData = generateInitialData();
       setElecData([...newInitialData.initialElecData]);
       setEauData([...newInitialData.initialEauData]);
@@ -540,321 +648,64 @@ const OpexDashboard = ({
     }
   };
 
-  // Composant pour une cellule de tableau éditable
-  const EditableCell = ({ initialValue, onSave, type = "text" }) => {
-    const [value, setValue] = useState(initialValue);
-    const [isEditing, setIsEditing] = useState(false);
-
-    useEffect(() => {
-      setValue(initialValue);
-    }, [initialValue]);
-
-    const handleChange = (e) => {
-      setValue(e.target.value);
-    };
-
-    const handleBlur = () => {
-      setIsEditing(false);
-      onSave(value);
-    };
-
-    const handleKeyDown = (e) => {
-      if (e.key === 'Enter') {
-        setIsEditing(false);
-        onSave(value);
-      }
-    };
-
-    return isEditing ? (
-      <input
-        type={type}
-        value={value}
-        onChange={handleChange}
-        onBlur={handleBlur}
-        onKeyDown={handleKeyDown}
-        autoFocus
-        style={{
-          width: '100%',
-          padding: '6px',
-          border: '1px solid #ccc',
-          borderRadius: '4px'
-        }}
-      />
-    ) : (
-      <div 
-        onClick={() => setIsEditing(true)}
-        style={{
-          padding: '6px',
-          height: '34px',
-          cursor: 'text',
-          border: '1px solid #ccc',
-          borderRadius: '4px',
-          backgroundColor: '#f9f9f9',
-          display: 'flex',
-          alignItems: 'center'
-        }}
-      >
-        {value || ""}
-      </div>
-    );
-  };
-
-  // Toggle Switch Component
-  const ToggleSwitch = ({ isOn, handleToggle }) => {
-    return (
-      <div style={{
-        position: 'relative',
-        width: '50px',
-        height: '24px',
-        backgroundColor: isOn ? '#4CAF50' : '#ccc',
-        borderRadius: '12px',
-        cursor: 'pointer',
-        transition: 'background-color 0.3s'
-      }} onClick={handleToggle}>
-        <div style={{
-          position: 'absolute',
-          left: isOn ? '26px' : '2px',
-          top: '2px',
-          width: '20px',
-          height: '20px',
-          backgroundColor: 'white',
-          borderRadius: '50%',
-          transition: 'left 0.3s',
-          boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
-        }} />
-      </div>
-    );
-  };
-
-  // Composant pour un tableau de données
-  const DataTable = ({ title, color, data, setData, type }) => {
-    const sum = calculateSum(data);
-    const displaySum = convertValue(sum, type);
-    const unit = getUnit(type);
-    
-    const visibleRows = getVisibleRows(data);
-    
-    return (
-      <div style={{ marginBottom: '30px' }}>
-        <div style={{ 
-          backgroundColor: color, 
-          padding: '10px 15px', 
-          borderRadius: '5px 5px 0 0',
-          color: 'white',
-          fontWeight: 'bold',
-          fontSize: '18px',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center'
-        }}>
-          <span>{title} {unit && `[${unit}]`}</span>
-          <span>{t('total')}: {displaySum.toFixed(2)}</span>
-        </div>
-        <div style={{ 
-          border: `1px solid ${color}`, 
-          borderTop: 'none', 
-          padding: '15px',
-          borderRadius: '0 0 5px 5px'
-        }}>
-          {visibleRows.length > 0 ? (
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <thead>
-                <tr>
-                  <th style={{ padding: '8px', textAlign: 'left', borderBottom: '1px solid #ddd' }}>{t('description')}</th>
-                  <th style={{ padding: '8px', textAlign: 'left', borderBottom: '1px solid #ddd' }}>{t('value')}</th>
-                  <th style={{ padding: '8px', textAlign: 'center', borderBottom: '1px solid #ddd', width: '80px' }}>{t('action')}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {visibleRows.map((row, visibleIndex) => {
-                  const realIndex = data.findIndex(item => item.key === row.key);
-                  return (
-                    <tr key={row.key}>
-                      <td style={{ padding: '8px', borderBottom: '1px solid #eee' }}>
-                        <EditableCell 
-                          initialValue={row.label} 
-                          onSave={(value) => handleTableChange(setData, realIndex, 'label', value)} 
-                        />
-                      </td>
-                      <td style={{ padding: '8px', borderBottom: '1px solid #eee' }}>
-                        <EditableCell 
-                          initialValue={row.value} 
-                          onSave={(value) => handleTableChange(setData, realIndex, 'value', value)}
-                          type="text" 
-                        />
-                      </td>
-                      <td style={{ padding: '8px', borderBottom: '1px solid #eee', textAlign: 'center' }}>
-                        <button
-                          onClick={() => deleteRow(data, setData, realIndex)}
-                          style={{
-                            padding: '4px 8px',
-                            backgroundColor: '#ff5252',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '4px',
-                            cursor: 'pointer'
-                          }}
-                        >
-                          ✕
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          ) : (
-            <div style={{
-              textAlign: 'center',
-              padding: '20px',
-              color: '#666',
-              fontStyle: 'italic'
-            }}>
-              {t('noDataToDisplay')}
-            </div>
-          )}
-          <div style={{ 
-            display: 'flex', 
-            justifyContent: 'space-between', 
-            alignItems: 'center',
-            marginTop: '15px',
-            padding: '10px',
-            backgroundColor: '#f9f9f9',
-            borderRadius: '4px'
-          }}>
-            <button
-              onClick={() => addRow(data, setData)}
-              style={{
-                padding: '8px 12px',
-                backgroundColor: color,
-                color: 'white',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer'
-              }}
-            >
-              {t('addRow')}
-            </button>
-            <div style={{ 
-              fontWeight: 'bold', 
-              fontSize: '16px',
-              padding: '8px 12px',
-              backgroundColor: '#f0f0f0',
-              borderRadius: '4px',
-              border: '1px solid #ddd'
-            }}>
-              {t('total')}: {displaySum.toFixed(2)} {unit}
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
   // Afficher les valeurs de consommation actuelles
   const ConsumptionSummary = () => {
+    // Calculer directement pendant le rendu pour réactivité immédiate au toggle
+    const elecValue   = convertValue(calculateSum(elecData),     'elec');
+    const eauValue    = convertValue(calculateSum(eauData),      'eau');
+    const reactifsValue = convertValue(calculateSum(reactifsData), 'reactifs');
+    const energieValue  = convertValue(calculateSum(energieData),  'energie');
+    const co2Value    = convertValue(calculateSum(co2Data),      'co2');
+    const coutValue   = convertValue(calculateSum(coutData),     'cout');
+
     return (
-      <div style={{ 
-        marginBottom: '30px', 
-        padding: '15px', 
-        backgroundColor: '#f5f5f5', 
+      <div style={{
+        marginBottom: '30px',
+        padding: '15px',
+        backgroundColor: '#f5f5f5',
         borderRadius: '5px',
         border: '1px solid #ddd'
       }}>
-        <div style={{ 
-          display: 'flex', 
-          justifyContent: 'space-between', 
-          alignItems: 'center', 
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
           marginBottom: '15px'
         }}>
           <h2 style={{ marginTop: 0, marginBottom: 0 }}>{t('consumptionSummary')} - {equipmentType}</h2>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <span style={{ color: !isAnnualMode ? config.color : '#666', fontWeight: !isAnnualMode ? 'bold' : 'normal' }}>{t('hourly')}</span>
-            <ToggleSwitch 
-              isOn={isAnnualMode} 
-              handleToggle={() => setIsAnnualMode(!isAnnualMode)}
+            <ToggleSwitch
+              isOn={isAnnualMode}
+              handleToggle={() => setIsAnnualMode(prev => !prev)}
             />
             <span style={{ color: isAnnualMode ? '#4CAF50' : '#666', fontWeight: isAnnualMode ? 'bold' : 'normal' }}>{t('annual')}</span>
           </div>
         </div>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '15px' }}>
-          <div style={{ 
-            flex: '1 1 30%', 
-            padding: '10px', 
-            backgroundColor: '#4a90e2', 
-            color: 'white', 
-            borderRadius: '4px',
-            minWidth: '150px'
-          }}>
+          <div style={{ flex: '1 1 30%', padding: '10px', backgroundColor: '#4a90e2', color: 'white', borderRadius: '4px', minWidth: '150px' }}>
             <div>{t('electricity')} [{getUnit('elec')}]</div>
-            <div style={{ fontSize: '24px', fontWeight: 'bold' }}>
-              {activeNodes_Elec[0].data.consommationElec.toFixed(2)}
-            </div>
+            <div style={{ fontSize: '24px', fontWeight: 'bold' }}>{elecValue.toFixed(2)}</div>
           </div>
-          <div style={{ 
-            flex: '1 1 30%', 
-            padding: '10px', 
-            backgroundColor: '#2ecc71', 
-            color: 'white', 
-            borderRadius: '4px',
-            minWidth: '150px'
-          }}>
+          <div style={{ flex: '1 1 30%', padding: '10px', backgroundColor: '#2ecc71', color: 'white', borderRadius: '4px', minWidth: '150px' }}>
             <div>{t('water')} [{getUnit('eau')}]</div>
-            <div style={{ fontSize: '24px', fontWeight: 'bold' }}>
-              {activeNodes_Eau[0].data.consommationEau.toFixed(2)}
-            </div>
+            <div style={{ fontSize: '24px', fontWeight: 'bold' }}>{eauValue.toFixed(2)}</div>
           </div>
-          <div style={{ 
-            flex: '1 1 30%', 
-            padding: '10px', 
-            backgroundColor: '#e74c3c', 
-            color: 'white', 
-            borderRadius: '4px',
-            minWidth: '150px'
-          }}>
+          <div style={{ flex: '1 1 30%', padding: '10px', backgroundColor: '#e74c3c', color: 'white', borderRadius: '4px', minWidth: '150px' }}>
             <div>{t('reagents')} [{getUnit('reactifs')}]</div>
-            <div style={{ fontSize: '24px', fontWeight: 'bold' }}>
-              {activeNodes_Reactifs[0].data.consommationReactifs.toFixed(2)}
-            </div>
+            <div style={{ fontSize: '24px', fontWeight: 'bold' }}>{reactifsValue.toFixed(2)}</div>
           </div>
-          <div style={{ 
-            flex: '1 1 30%', 
-            padding: '10px', 
-            backgroundColor: '#f39c12', 
-            color: 'white', 
-            borderRadius: '4px',
-            minWidth: '150px'
-          }}>
+          <div style={{ flex: '1 1 30%', padding: '10px', backgroundColor: '#f39c12', color: 'white', borderRadius: '4px', minWidth: '150px' }}>
             <div>{t('energy')} [{getUnit('energie')}]</div>
-            <div style={{ fontSize: '24px', fontWeight: 'bold' }}>
-              {activeNodes_Energie[0].data.consommationEnergie.toFixed(2)}
-            </div>
+            <div style={{ fontSize: '24px', fontWeight: 'bold' }}>{energieValue.toFixed(2)}</div>
           </div>
-          <div style={{ 
-            flex: '1 1 30%', 
-            padding: '10px', 
-            backgroundColor: '#9b59b6', 
-            color: 'white', 
-            borderRadius: '4px',
-            minWidth: '150px'
-          }}>
+          <div style={{ flex: '1 1 30%', padding: '10px', backgroundColor: '#9b59b6', color: 'white', borderRadius: '4px', minWidth: '150px' }}>
             <div>CO2 [{getUnit('co2')}]</div>
-            <div style={{ fontSize: '24px', fontWeight: 'bold' }}>
-              {activeNodes_CO2[0].data.emissionsCO2.toFixed(2)}
-            </div>
+            <div style={{ fontSize: '24px', fontWeight: 'bold' }}>{co2Value.toFixed(2)}</div>
           </div>
-          <div style={{ 
-            flex: '1 1 30%', 
-            padding: '10px', 
-            backgroundColor: '#34495e', 
-            color: 'white', 
-            borderRadius: '4px',
-            minWidth: '150px'
-          }}>
+          <div style={{ flex: '1 1 30%', padding: '10px', backgroundColor: '#34495e', color: 'white', borderRadius: '4px', minWidth: '150px' }}>
             <div>{t('cost')} [{getUnit('cout')}]</div>
-            <div style={{ fontSize: '24px', fontWeight: 'bold' }}>
-              {activeNodes_cout[0].data.cout.toFixed(2)}
-            </div>
+            <div style={{ fontSize: '24px', fontWeight: 'bold' }}>{coutValue.toFixed(2)}</div>
           </div>
         </div>
       </div>
@@ -884,57 +735,75 @@ const OpexDashboard = ({
 
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px' }}>
         <div style={{ flex: '1 1 45%', minWidth: '300px' }}>
-          <DataTable 
+          <DataTable
             title={t('electricity')}
-            color="#4a90e2" 
-            data={elecData} 
-            setData={setElecData}
+            color="#4a90e2"
+            data={elecData}
+            setData={v => { userModifiedRef.current = true; setElecData(v); }}
             type="elec"
+            convertValue={convertValue}
+            getUnit={getUnit}
+            t={t}
           />
         </div>
         <div style={{ flex: '1 1 45%', minWidth: '300px' }}>
-          <DataTable 
+          <DataTable
             title={t('water')}
-            color="#2ecc71" 
-            data={eauData} 
-            setData={setEauData}
+            color="#2ecc71"
+            data={eauData}
+            setData={v => { userModifiedRef.current = true; setEauData(v); }}
             type="eau"
+            convertValue={convertValue}
+            getUnit={getUnit}
+            t={t}
           />
         </div>
         <div style={{ flex: '1 1 45%', minWidth: '300px' }}>
-          <DataTable 
+          <DataTable
             title={t('reagents')}
-            color="#e74c3c" 
-            data={reactifsData} 
-            setData={setReactifsData}
+            color="#e74c3c"
+            data={reactifsData}
+            setData={v => { userModifiedRef.current = true; setReactifsData(v); }}
             type="reactifs"
+            convertValue={convertValue}
+            getUnit={getUnit}
+            t={t}
           />
         </div>
         <div style={{ flex: '1 1 45%', minWidth: '300px' }}>
-          <DataTable 
+          <DataTable
             title={t('fossilEnergyConsumed')}
-            color="#f39c12" 
-            data={energieData} 
-            setData={setEnergieData}
+            color="#f39c12"
+            data={energieData}
+            setData={v => { userModifiedRef.current = true; setEnergieData(v); }}
             type="energie"
+            convertValue={convertValue}
+            getUnit={getUnit}
+            t={t}
           />
         </div>
         <div style={{ flex: '1 1 45%', minWidth: '300px' }}>
-          <DataTable 
-            title="CO2" 
-            color="#9b59b6" 
-            data={co2Data} 
-            setData={setCo2Data}
+          <DataTable
+            title="CO2"
+            color="#9b59b6"
+            data={co2Data}
+            setData={v => { userModifiedRef.current = true; setCo2Data(v); }}
             type="co2"
+            convertValue={convertValue}
+            getUnit={getUnit}
+            t={t}
           />
         </div>
         <div style={{ flex: '1 1 45%', minWidth: '300px' }}>
-          <DataTable 
+          <DataTable
             title={t('cost')}
-            color="#34495e" 
-            data={coutData} 
-            setData={setCoutData}
+            color="#34495e"
+            data={coutData}
+            setData={v => { userModifiedRef.current = true; setCoutData(v); }}
             type="cout"
+            convertValue={convertValue}
+            getUnit={getUnit}
+            t={t}
           />
         </div>
       </div>
