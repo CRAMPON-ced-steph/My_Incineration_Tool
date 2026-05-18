@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { molarMasses } from "../A_Transverse_fonction/constantes";
 
 const SCC_NOxAndMercuryCalculator = ({ masses, Debit_fumees_sec_Nm3_h,innerData }) => {
   const parseStoredValue = (key, defaultValue) => {
@@ -7,11 +6,11 @@ const SCC_NOxAndMercuryCalculator = ({ masses, Debit_fumees_sec_Nm3_h,innerData 
     return storedValue !== null ? JSON.parse(storedValue) : defaultValue;
   };
 
-  const [sncr, setSncr] = useState(parseStoredValue("sncr", "non"));
-  const [noxTarget, setNoxTarget] = useState(parseStoredValue("noxTarget", 150));
-  const [coefStoechio, setCoefStoechio] = useState(parseStoredValue("coefStoechio", 1.2));
-  const [mercuryTreatment, setMercuryTreatment] = useState(parseStoredValue("mercuryTreatment", "non"));
-  const [brHgRatio, setBrHgRatio] = useState(parseStoredValue("brHgRatio", 400));
+  const [sncr, setSncr] = useState(parseStoredValue("sncr_SCC", "non"));
+  const [noxTarget, setNoxTarget] = useState(parseStoredValue("noxTarget_SCC", 150));
+  const [coefStoechio, setCoefStoechio] = useState(parseStoredValue("coefStoechio_SCC", 1.2));
+  const [mercuryTreatment, setMercuryTreatment] = useState(parseStoredValue("mercuryTreatment_SCC", "non"));
+  const [brHgRatio, setBrHgRatio] = useState(parseStoredValue("brHgRatio_SCC", 400));
 
   const [ammoniaConsumption, setAmmoniaConsumption] = useState(0);
   const [bromideConsumption, setBromideConsumption] = useState(0);
@@ -21,11 +20,11 @@ const SCC_NOxAndMercuryCalculator = ({ masses, Debit_fumees_sec_Nm3_h,innerData 
   }, [sncr, noxTarget, coefStoechio, mercuryTreatment, brHgRatio, masses, Debit_fumees_sec_Nm3_h]);
 
   useEffect(() => {
-    localStorage.setItem("sncr", JSON.stringify(sncr));
-    localStorage.setItem("noxTarget", JSON.stringify(noxTarget));
-    localStorage.setItem("coefStoechio", JSON.stringify(coefStoechio));
-    localStorage.setItem("mercuryTreatment", JSON.stringify(mercuryTreatment));
-    localStorage.setItem("brHgRatio", JSON.stringify(brHgRatio));
+    localStorage.setItem("sncr_SCC", JSON.stringify(sncr));
+    localStorage.setItem("noxTarget_SCC", JSON.stringify(noxTarget));
+    localStorage.setItem("coefStoechio_SCC", JSON.stringify(coefStoechio));
+    localStorage.setItem("mercuryTreatment_SCC", JSON.stringify(mercuryTreatment));
+    localStorage.setItem("brHgRatio_SCC", JSON.stringify(brHgRatio));
   }, [sncr, noxTarget, coefStoechio, mercuryTreatment, brHgRatio]);
 
   const calculateConsumptions = () => {
@@ -50,8 +49,10 @@ const SCC_NOxAndMercuryCalculator = ({ masses, Debit_fumees_sec_Nm3_h,innerData 
     }
   };
 
-  innerData['etat_mercury_treatment'] = mercuryTreatment ;
-  innerData['etat_NOx_treatment'] = sncr ;
+  useEffect(() => {
+    innerData['etat_mercury_treatment'] = mercuryTreatment;
+    innerData['etat_NOx_treatment'] = sncr;
+  }, [mercuryTreatment, sncr]);
 
   const tableStyle = {
     borderCollapse: "collapse",

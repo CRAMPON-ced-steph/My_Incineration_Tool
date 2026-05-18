@@ -23,9 +23,9 @@ const BALANCE_TYPES = {
 
 // Constantes pour localStorage
 const STORAGE_KEYS = {
-  T_EAU: 'Teau',
+  T_EAU: 'Teau_SCRUBBER',
   T_AMONT_SCRUBBER: 'T_amont_SCRUBBER',
-  PDC_AERO: 'PDC_aero',
+  PDC_AERO: 'PDC_aero_SCRUBBER',
   BILAN_TYPE: 'SCRUBBER_bilanType',
   CALCULATION_RESULT: 'calculationResult_SCRUBBER'
 };

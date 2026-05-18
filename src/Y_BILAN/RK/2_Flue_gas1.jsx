@@ -19,7 +19,7 @@ import '../../index.css';
 const FlueGasParameters = ({ innerData, currentLanguage = 'fr' }) => {
   // Utilisation de clés internes simples
   const [emissions, setEmissions] = useState(() => {
-    const savedEmissions = localStorage.getItem('emissions');
+    const savedEmissions = localStorage.getItem('emissions_RK');
     return savedEmissions ? JSON.parse(savedEmissions) : {
       flueGasTemperatureOutlet: 900,
       airFactor: 1,
@@ -48,7 +48,7 @@ const FlueGasParameters = ({ innerData, currentLanguage = 'fr' }) => {
   };
 
   useEffect(() => {
-    localStorage.setItem('emissions', JSON.stringify(emissions));
+    localStorage.setItem('emissions_RK', JSON.stringify(emissions));
   }, [emissions]);
 
   // Fonction de traduction
@@ -275,7 +275,7 @@ const FlueGasParameters = ({ innerData, currentLanguage = 'fr' }) => {
   };
 
   const clearMemory = useCallback(() => {
-    localStorage.removeItem('emissions');
+    localStorage.removeItem('emissions_RK');
     setEmissions(defaultEmissions);
   }, []);
 

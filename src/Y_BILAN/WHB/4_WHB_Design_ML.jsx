@@ -503,7 +503,7 @@ const WHBDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
         chute_temperature: T_fumee_init_C - pass1_data[pass1_data.length - 1].T_end_section,
         surface_echange: surface_totale_pass1,
         chaleur_recuperee: pass1_data.reduce((sum, d) => sum + d.heat_exchanged, 0),
-        emissivite_moyenne: pass1_data.reduce((sum, d) => sum + d.emissivity, 0) / pass1_data.length
+        emissivite_moyenne: pass1_data.length > 0 ? pass1_data.reduce((sum, d) => sum + d.emissivity, 0) / pass1_data.length : 0
       });
 
       resultatsPassages.push({
@@ -513,7 +513,7 @@ const WHBDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
         chute_temperature: T_fumee_init_pass2_C - pass2_data[pass2_data.length - 1].T_end_section,
         surface_echange: surface_totale_pass2,
         chaleur_recuperee: pass2_data.reduce((sum, d) => sum + d.heat_exchanged, 0),
-        emissivite_moyenne: pass2_data.reduce((sum, d) => sum + d.emissivity, 0) / pass2_data.length
+        emissivite_moyenne: pass2_data.length > 0 ? pass2_data.reduce((sum, d) => sum + d.emissivity, 0) / pass2_data.length : 0
       });
 
       resultatsPassages.push({
@@ -523,7 +523,7 @@ const WHBDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
         chute_temperature: T_fumee_init_pass3_C - pass3_data[pass3_data.length - 1].T_end_section,
         surface_echange: surface_totale_pass3,
         chaleur_recuperee: pass3_data.reduce((sum, d) => sum + d.heat_exchanged, 0),
-        emissivite_moyenne: pass3_data.reduce((sum, d) => sum + d.emissivity, 0) / pass3_data.length
+        emissivite_moyenne: pass3_data.length > 0 ? pass3_data.reduce((sum, d) => sum + d.emissivity, 0) / pass3_data.length : 0
       });
 
       // CALCUL DES ÉCHANGEURS SUPPLÉMENTAIRES

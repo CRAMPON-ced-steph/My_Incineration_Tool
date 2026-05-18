@@ -12,19 +12,19 @@ import BHF_Retro_Rapport from './BHF_Retro_Rapport';
 import '../../index.css';
 
 const BHF_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage }) => {
-  const [Qair_decolmatation, setQair_decolmatation] = useState(() => parseFloat(localStorage.getItem('Qair_decolmatation')) || 0);
-  const [T_air_decolmatation, setT_air_decolmatation] = useState(() => parseFloat(localStorage.getItem('T_air_decolmatation')) || 15);
+  const [Qair_decolmatation, setQair_decolmatation] = useState(() => parseFloat(localStorage.getItem('Qair_decolmatation_BHF')) || 0);
+  const [T_air_decolmatation, setT_air_decolmatation] = useState(() => parseFloat(localStorage.getItem('T_air_decolmatation_BHF')) || 15);
   const [T_amont_BHF, setT_amont_BHF] = useState(() => parseFloat(localStorage.getItem('T_amont_BHF')) || nodeData?.result?.dataFlow?.T || '10');
-  const [PDC_aero, setPDC_aero] = useState(() => localStorage.getItem('PDC_aero') || '50');
+  const [PDC_aero, setPDC_aero] = useState(() => localStorage.getItem('PDC_aero_BHF') || '50');
 
   const [CalculationResult_BHF, setCalculationResult] = useState(null);
   const [isSliderOpen, setIsSliderOpen] = useState(false);
   const [showReport, setShowReport] = useState(false);
 
-  useEffect(() => {localStorage.setItem('Qair_decolmatation', Qair_decolmatation);}, [Qair_decolmatation]);
-  useEffect(() => {localStorage.setItem('T_air_decolmatation', T_air_decolmatation);}, [T_air_decolmatation]);
+  useEffect(() => {localStorage.setItem('Qair_decolmatation_BHF', Qair_decolmatation);}, [Qair_decolmatation]);
+  useEffect(() => {localStorage.setItem('T_air_decolmatation_BHF', T_air_decolmatation);}, [T_air_decolmatation]);
   useEffect(() => {localStorage.setItem('T_amont_BHF', T_amont_BHF);}, [T_amont_BHF]);
-  useEffect(() => { localStorage.setItem('PDC_aero', PDC_aero); }, [PDC_aero]);
+  useEffect(() => { localStorage.setItem('PDC_aero_BHF', PDC_aero); }, [PDC_aero]);
 
   useEffect(() => {
     if (CalculationResult_BHF) {
@@ -86,9 +86,9 @@ const BHF_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLangua
     setPDC_aero('50');
     setCalculationResult(null);
     setIsSliderOpen(false);
-    localStorage.removeItem('PDC_aero');
-    localStorage.removeItem('Qair_decolmatation');
-    localStorage.removeItem('T_air_decolmatation');
+    localStorage.removeItem('PDC_aero_BHF');
+    localStorage.removeItem('Qair_decolmatation_BHF');
+    localStorage.removeItem('T_air_decolmatation_BHF');
     localStorage.removeItem('T_amont_BHF');
     localStorage.removeItem('CalculationResult_BHF');
   };

@@ -23,10 +23,10 @@ const BALANCE_TYPES = {
 
 // Constantes pour localStorage
 const STORAGE_KEYS = {
-  T_EAU: 'Teau',
+  T_EAU: 'Teau_QUENCH',
   T_AMONT_QUENCH: 'T_amont_QUENCH',
-  Q_EAU: 'Qeau',
-  PDC_AERO: 'PDC_aero',
+  Q_EAU: 'Qeau_QUENCH',
+  PDC_AERO: 'PDC_aero_QUENCH',
   BILAN_TYPE: 'QUENCH_bilanType',
   CALCULATION_RESULT: 'calculationResult_QUENCH'
 };

@@ -53,8 +53,10 @@ const FGT = ({ masses, innerData,Debit_fumees_sec_Nm3_h,  O2_mesure,O2_ref }) =>
     }
   };
 
-  innerData['etat_mercury_treatment'] = mercuryTreatment ;
-  innerData['etat_NOx_treatment'] = sncr ;
+  useEffect(() => {
+    innerData['etat_mercury_treatment'] = mercuryTreatment;
+    innerData['etat_NOx_treatment'] = sncr;
+  }, [mercuryTreatment, sncr]);
 
   const tableStyle = {
     borderCollapse: "collapse",

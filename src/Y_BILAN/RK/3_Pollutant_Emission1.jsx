@@ -16,7 +16,7 @@ import { translations } from './RK_traduction';
 const FlueGasPollutantEmission = ({ innerData, currentLanguage = 'fr' }) => {
   // Utilisation de clés internes simplifiées
   const [emissions2, setEmissions2] = useState(() => {
-    const savedEmissions = localStorage.getItem('emissions2');
+    const savedEmissions = localStorage.getItem('emissions2_RK');
     return savedEmissions ? JSON.parse(savedEmissions) : {
       mercuryTreatmentThreshold: 9,
       noxIn: 296,
@@ -55,7 +55,7 @@ const FlueGasPollutantEmission = ({ innerData, currentLanguage = 'fr' }) => {
   } = getOpexData();
 
   useEffect(() => {
-    localStorage.setItem('emissions2', JSON.stringify(emissions2));
+    localStorage.setItem('emissions2_RK', JSON.stringify(emissions2));
   }, [emissions2]);
 
   // Fonction de traduction
@@ -395,7 +395,7 @@ const FlueGasPollutantEmission = ({ innerData, currentLanguage = 'fr' }) => {
     };
     
     setEmissions2(defaultValues);
-    localStorage.removeItem('emissions2');
+    localStorage.removeItem('emissions2_RK');
   };
 
   const elementsGeneric = [

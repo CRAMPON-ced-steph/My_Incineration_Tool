@@ -45,13 +45,13 @@ const RK_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguag
     localStorage.getItem('Tair_RK_C') || DEFAULT_VALUES.Tair_RK_C
   );
   const [Thermal_losses_MW, setThermal_losses_MW] = useState(() => 
-    localStorage.getItem('Thermal_losses_MW') || DEFAULT_VALUES.Thermal_losses_MW
+    localStorage.getItem('Thermal_losses_MW_RK') || DEFAULT_VALUES.Thermal_losses_MW
   );
   const [NCV_kcal_kg, setNCV_kcal_kg] = useState(() => 
-    localStorage.getItem('NCV_kcal_kg') || DEFAULT_VALUES.NCV_kcal_kg
+    localStorage.getItem('NCV_kcal_kg_RK') || DEFAULT_VALUES.NCV_kcal_kg
   );
   const [Masse_dechet_kg_h, setMasse_dechet_kg_h] = useState(() => 
-    localStorage.getItem('Masse_dechet_kg_h') || DEFAULT_VALUES.Masse_dechet_kg_h
+    localStorage.getItem('Masse_dechet_kg_h_RK') || DEFAULT_VALUES.Masse_dechet_kg_h
   );
 
   // États pour les types de calcul (utilisation des constantes)
@@ -83,9 +83,9 @@ const RK_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguag
     const saveToLocalStorage = () => {
       try {
         localStorage.setItem('Tair_RK_C', Tair_RK_C);
-        localStorage.setItem('Thermal_losses_MW', Thermal_losses_MW);
-        localStorage.setItem('NCV_kcal_kg', NCV_kcal_kg);
-        localStorage.setItem('Masse_dechet_kg_h', Masse_dechet_kg_h);
+        localStorage.setItem('Thermal_losses_MW_RK', Thermal_losses_MW);
+        localStorage.setItem('NCV_kcal_kg_RK', NCV_kcal_kg);
+        localStorage.setItem('Masse_dechet_kg_h_RK', Masse_dechet_kg_h);
         localStorage.setItem('bilanType_NCV_Masse', bilanType_NCV_Masse);
         localStorage.setItem('bilanType_whb', bilanType_whb);
         localStorage.setItem('RK_diagramMode', diagramMode);
@@ -218,7 +218,7 @@ const RK_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguag
   // Effacement de la mémoire
   const clearMemory = useCallback(() => {
     try {
-      ['Tair_RK_C', 'Thermal_losses_MW', 'NCV_kcal_kg', 'Masse_dechet_kg_h',
+      ['Tair_RK_C', 'Thermal_losses_MW_RK', 'NCV_kcal_kg_RK', 'Masse_dechet_kg_h_RK',
        'bilanType_NCV_Masse', 'bilanType_whb', 'calculationResult_RK', 'RK_diagramMode'
       ].forEach(key => localStorage.removeItem(key));
       setCalculationResult_RK(null);

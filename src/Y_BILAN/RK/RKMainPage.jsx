@@ -9,11 +9,9 @@ import RK_Report from './RK_Report';
 
 //OPEX sans le cout
 
-import PrintButton from '../../C_Components/Windows_print';
-import Input_bilan from '../../C_Components/MiseEnFormeInputParamBilan';
 import '../../index.css';
 
-import { getTranslatedParameter, getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
+import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './RK_traduction';
 
 const RKMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLanguage = 'fr' }) => {
@@ -91,7 +89,6 @@ const RKMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
     },
   ];
 
-  const [isActive, setIsActive] = useState(true);
   const [activeTab, setActiveTab] = useState(tabs[0].name); // Onglet actif par défaut
   
   const renderTabContent = () => {

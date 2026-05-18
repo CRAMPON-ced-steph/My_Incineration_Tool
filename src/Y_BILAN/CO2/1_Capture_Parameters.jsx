@@ -10,7 +10,7 @@ import { TEMP_FUMEE_INC, Q_AIR_DILUTION } from '../../A_Transverse_fonction/enth
 
 const CaptureParameters = ({ innerData }) => {
   const [emissions, setEmissions] = useState(() => {
-    const savedEmissions = localStorage.getItem('emissions');
+    const savedEmissions = localStorage.getItem('emissions_CO2');
     return savedEmissions ? JSON.parse(savedEmissions) : {
       'Flue gas temperature outlet [°C]': 900,
       'Air factor': 1,
@@ -39,7 +39,7 @@ const CaptureParameters = ({ innerData }) => {
   };
 
   useEffect(() => {
-    localStorage.setItem('emissions', JSON.stringify(emissions));
+    localStorage.setItem('emissions_CO2', JSON.stringify(emissions));
   }, [emissions]);
 
   const handleChange = (name, value) => {

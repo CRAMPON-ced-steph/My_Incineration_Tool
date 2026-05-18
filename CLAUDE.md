@@ -70,3 +70,75 @@ Each equipment's `MainPage` component and `Parameter_Tab` are re-exported from `
 - Utility/calculation files: snake_case or camelCase `.js`
 - Translation companion files follow the pattern `<Component>_traduction.jsx`
 - CSS companion files follow the pattern `<Component>.css`
+
+### localStorage Key Conventions
+
+All equipment-specific keys must include the equipment suffix to avoid cross-contamination between components. Pattern: `'keyName_EQUIPMENT'` (e.g., `'PDC_aero_BHF'`, `'Teau_QUENCH'`, `'emissions2_FB'`).
+
+**Intentionally shared keys** (do NOT add suffixes):
+- `'pointE'` — Written by `Z_RETRO/FB/FB_Parameter_Tab.jsx`, `Z_RETRO/RK/RK_Parameter_Tab.jsx`, and `Z_RETRO/GF/GF_Parameter_Tab.jsx`; read by `G_Graphiques/Combustion_diagramme/LinearGraph.jsx` and `D_BILAN_Rapports/GlobalRetroReport.jsx` to display the current operating point on the combustion diagram. Only one furnace type is active per process flow, so last-write-wins is correct behavior.
+
+### Known Patterns (not bugs)
+
+- **`innerData` mutations in `C_Components/Traitement_fumées.jsx`** (lines 200, 248) — `innerData[row.pollutant] = {...}` inside `calculateValues()` and `innerData['Poutput'] = masses_pollutant_output` at body level are intentional. `innerData` is a plain mutable shared object (not React state), so synchronous body-level mutations are safe and read immediately by downstream body-level code in the same render cycle. This is the established pattern for shared FGT utility components.
+- **`niveaux[0/1/2]` in `Y_BILAN/WHB/6_WHB_ValoVapeur3_ML.jsx`** — Array is always constructed with exactly 3 hardcoded elements; fixed-index access is safe.
+
+---
+
+## Corrections History (audit sessions — 2026-05-18)
+
+### localStorage key collisions fixed
+
+| Key(s) | Files affected | Fix applied |
+|--------|---------------|-------------|
+| `'emissions'` | `Y_BILAN/RK/2_Flue_gas1.jsx`, `Y_BILAN/CO2/1_Capture_Parameters.jsx` | → `'emissions_RK'`, `'emissions_CO2'` |
+| `'PDC_aero'` | `Z_RETRO/BHF`, `Z_RETRO/CYCLONE`, `Z_RETRO/ELECTROFILTER`, `Z_RETRO/QUENCH`, `Z_RETRO/SCRUBBER`, `Z_RETRO/REACTOR` | → `'PDC_aero_BHF'`, `'PDC_aero_CYCLONE'`, `'PDC_aero_ELECTROFILTER'`, `'PDC_aero_QUENCH'`, `'PDC_aero_SCRUBBER'`, `'PDC_aero_REACTOR'` |
+| `'Qair_decolmatation'` | `Z_RETRO/BHF`, `Z_RETRO/ELECTROFILTER` | → `'Qair_decolmatation_BHF'`, `'Qair_decolmatation_ELECTROFILTER'` |
+| `'T_air_decolmatation'` | `Z_RETRO/BHF`, `Z_RETRO/ELECTROFILTER` | → `'T_air_decolmatation_BHF'`, `'T_air_decolmatation_ELECTROFILTER'` |
+| `'Teau'` | `Z_RETRO/QUENCH`, `Z_RETRO/SCRUBBER`, `Z_RETRO/COOLINGTOWER` | → `'Teau_QUENCH'`, `'Teau_SCRUBBER'`, `'Teau_COOLINGTOWER'` |
+| `'Qeau'` | `Z_RETRO/QUENCH` | → `'Qeau_QUENCH'` |
+| `'emissions2'` | `Y_BILAN/FB/3_Pollutant_Emission.jsx`, `Y_BILAN/RK/3_Pollutant_Emission1.jsx` | → `'emissions2_FB'`, `'emissions2_RK'` |
+| `'sncr'`, `'noxTarget'`, `'coefStoechio'`, `'mercuryTreatment'`, `'brHgRatio'` | `C_Components/Traitement_fumées.jsx`, `C_Components/Traitement_fumées_SCC.jsx` | → `_SCC` suffix on all 5 keys in SCC file |
+| `'Thermal_losses_MW'`, `'NCV_kcal_kg'`, `'Masse_dechet_kg_h'` | `Z_RETRO/FB/FB_Parameter_Tab.jsx`, `Z_RETRO/RK/RK_Parameter_Tab.jsx` | → `_FB` / `_RK` suffixes |
+
+### Division by zero fixed
+
+| File | Lines | Fix |
+|------|-------|-----|
+| `Y_BILAN/RK/1_CombustionParameters1.jsx` | 289, 296–297, 357–359, 380–381 | `totalMass !== 0 ?` guards; `Comb [kg/h] !== 0` guard |
+| `Y_BILAN/WHB/4_WHB_Design_ML.jsx` | 506, 516, 526 | `pass_data.length > 0 ?` guards on `emissivite_moyenne` |
+
+### Array safety fixed
+
+| File | Lines | Fix |
+|------|-------|-----|
+| `Y_BILAN/RK/1_CombustionParameters1.jsx` | 299–304 | `if (updatedRows2.length < 6) return` before fixed-index access |
+
+### Unused imports removed
+
+| File | Removed |
+|------|---------|
+| `Y_BILAN/RK/RKMainPage.jsx` | `PrintButton`, `Input_bilan`, `getTranslatedParameter` |
+| `Y_BILAN/BHF/4_BHF_Opex.jsx` | `useState`, `useEffect` |
+| `Y_BILAN/COOLINGTOWER/5_COOLINGTOWER_Opex.jsx` | `useState`, `useEffect` |
+| `Y_BILAN/RK/5_RK_Opex.jsx` | `useState`, `useEffect` |
+| `C_Components/Traitement_fumées_SCC.jsx` | `molarMasses` |
+| `Y_BILAN/RK/1_CombustionParameters1.jsx` | `getTranslatedParameter` |
+
+### Dead state removed
+
+| File | Removed |
+|------|---------|
+| `Y_BILAN/RK/RKMainPage.jsx` | `const [isActive, setIsActive] = useState(true)` |
+
+### innerData mutation pattern fixed
+
+| File | Fix |
+|------|-----|
+| `C_Components/Traitement_fumées.jsx` | `innerData['etat_mercury_treatment']` and `innerData['etat_NOx_treatment']` moved from body level into `useEffect([mercuryTreatment, sncr])` |
+| `C_Components/Traitement_fumées_SCC.jsx` | Same fix |
+
+### FB Report — HX section restructured
+
+- `Y_BILAN/FB/4_Recuperator.jsx`: removed redundant `tempSortieFumees` dichotomy; `T_fumee_sortie_HX_C` now taken from `Tf_voute_ap_HX_C` (CombustionTab col. 11). Added second `useEffect` writing fan/airside variables to `innerData`. Fixed variable hoisting bug (declarations moved before `useEffect` calls).
+- `Y_BILAN/FB/FB_Report.jsx`: HX section split into 4 SubSections — "HX côté fumées", "HX côté air", "Dimensionnement de l'échangeur", "Ventilateur" — each with 32px column gap.

@@ -574,10 +574,29 @@ const FB_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
   // Capacité et densité thermique
   const CapaciteThermique_kW        = H_in_kW - H_pertes_kW - H_imbrule_kW - H_air_balayage_kW;
   const DensiteThermique_kW_m2      = _surf ? (CapaciteThermique_kW / _surf) : 0;
-  // HX data
-  const S_echange_m2                = innerData.S_echange_m2  || 0;
-  const DTLM_HX                     = innerData.DTLM_HX       || 0;
-  const Facteur_UA                  = innerData.Facteur_UA     || 0;
+  // HX data — dimensionnement échangeur
+  const S_echange_m2                = innerData.S_echange_m2        || 0;
+  const DTLM_HX                     = innerData.DTLM_HX             || 0;
+  const Facteur_UA                  = innerData.Facteur_UA           || 0;
+  const Coeff_Hext_HX               = innerData.Coeff_Hext_HX       ?? 0;
+  const coeff_Hint_HX               = innerData.coeff_Hint_HX       ?? 0;
+  const FactUEncrasse_HX            = innerData.FactUEncrasse_HX    ?? 0;
+  const Section_calandre_m2         = innerData.Section_calandre_m2 ?? 0;
+  // HX côté fumées
+  const P_freeboard_mmCE            = innerData.P_freeboard          ?? 0;
+  const Q_FG_wet_entree_m3_h        = innerData.Q_FG_wet_entree_m3_h ?? 0;
+  const P_sortie_HX_fg_mmCE        = innerData.P_sortie_HX_fg_mmCE  ?? 0;
+  const Q_FG_wet_sortie_m3_h       = innerData.Q_FG_wet_sortie_m3_h ?? 0;
+  // HX côté air
+  const PDC_HX_cote_air_mmCE        = innerData.PDC_HX_cote_air_mmCE   ?? 0;
+  const P_cote_air_entree_mmCE      = innerData.P_cote_air_entree_mmCE ?? 0;
+  const Q_air_entree_HX_m3_h        = innerData.Q_air_entree_HX_m3_h  ?? 0;
+  const Q_air_sortie_HX_m3_h        = innerData.Q_air_sortie_HX_m3_h  ?? 0;
+  // Ventilateur
+  const Q_air_pulser_Nm3_h          = innerData.Q_air_pulser_Nm3_h           ?? 0;
+  const Q_air_ventilateur_m3_h      = innerData.Q_air_ventilateur_m3_h       ?? 0;
+  const Puissance_elec_ventilateur_kW = innerData.Puissance_elec_ventilateur_kW ?? 0;
+  const Rendement_ventilateur_HX    = innerData.Rendement_ventilateur_HX     ?? 0;
 
   // ── Section 5 : OPEX ─────────────────────────────────────────────────────────
   const opex = computeOpexCosts(innerData);
@@ -870,17 +889,74 @@ const FB_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
           )}
         </SubSection>
 
-        <SubSection title={`Récupérateur ${t('HX')}`}>
-          <KV label="T° fumées sortie HX [°C]"   value={fmt(T_OUT, 0)}        />
-          <KV label="Pression sortie HX [mmCE]"  value={fmt(P_out_mmCE)}      />
-          <KV label="Surface d'échange [m²]"     value={fmt(S_echange_m2, 1)} />
-          <KV label="DTLM [°C]"                  value={fmt(DTLM_HX, 1)}      />
-          <KV label="Facteur UA [W/K]"            value={fmt(Facteur_UA, 0)}   />
-          {S_echange_m2 === 0 && (
-            <p style={{ color: '#888', fontSize: 11, margin: '6px 0 0 0' }}>
-              Surface et DTLM non transmis — ouvrir l'onglet HX.
-            </p>
-          )}
+        <SubSection title="HX côté fumées">
+          <div style={{ ...styles.twoCol, gap: 32 }}>
+            <div>
+              <KV label="T° fumées voûte [°C]"             value={fmt(Temp_fumee_voute_C, 0)}      />
+              <KV label="Débit fumées humides [Nm³/h]"     value={fmt(FG_wet_Nm3_h, 0)}            />
+              <KV label="Pression freeboard [mmCE]"        value={fmt(P_freeboard_mmCE, 0)}        />
+              <KV label="Débit fumées entrée HX [m³/h]"    value={fmt(Q_FG_wet_entree_m3_h, 0)}   />
+              <KV label="Enthalpie fumées entrée [kW]"     value={fmt(Hf_voute_kW, 1)}             />
+            </div>
+            <div>
+              <KV label="T° fumées sortie HX [°C]"         value={fmt(Tf_voute_ap_HX_C, 0)}       />
+              <KV label="Pression sortie HX fumées [mmCE]" value={fmt(P_sortie_HX_fg_mmCE, 0)}    />
+              <KV label="Débit fumées sortie HX [m³/h]"   value={fmt(Q_FG_wet_sortie_m3_h, 0)}   />
+              <KV label="Enthalpie fumées sortie [kW]"     value={fmt(Hf_voute_ap_HX_kW, 1)}      />
+            </div>
+          </div>
+        </SubSection>
+
+        <SubSection title="HX côté air">
+          <div style={{ ...styles.twoCol, gap: 32 }}>
+            <div>
+              <KV label="T° air soufflante [°C]"           value={fmt(Temp_air_soufflante_C, 0)}  />
+              <KV label="Débit air [Nm³/h]"                value={fmt(Q_air_comb_tot_Nm3_h, 0)}   />
+              <KV label="PDC HX côté air [mmCE]"           value={fmt(PDC_HX_cote_air_mmCE, 1)}   />
+              <KV label="Pression entrée HX air [mmCE]"    value={fmt(P_cote_air_entree_mmCE, 0)} />
+              <KV label="Débit air entrée HX [m³/h]"       value={fmt(Q_air_entree_HX_m3_h, 0)}   />
+              <KV label="Enthalpie air entrée [kW]"        value={fmt(H_air_soufflante_kW, 1)}    />
+            </div>
+            <div>
+              <KV label="T° air ap. préchauffe [°C]"       value={fmt(Tair_ap_prechauffe_C, 0)}   />
+              <KV label="Débit air sortie HX [m³/h]"       value={fmt(Q_air_sortie_HX_m3_h, 0)}   />
+              <KV label="Enthalpie air sortie [kW]"        value={fmt(Hair_ap_prechauffage_kW, 1)} />
+            </div>
+          </div>
+        </SubSection>
+
+        <SubSection title="Dimensionnement de l'échangeur">
+          <div style={{ ...styles.twoCol, gap: 32 }}>
+            <div>
+              <KV label="Rendement HX [%]"                 value={fmt(Rdt_HX, 1)}                             />
+              <KV label="Q chaleur cédée fumées [kW]"      value={fmt(Hf_voute_kW - Hf_voute_ap_HX_kW, 1)}   />
+              <KV label="Q chaleur reçue air [kW]"         value={fmt(Hair_ap_prechauffage_kW - H_air_soufflante_kW, 1)} />
+              <KV label="DTLM [K]"                         value={fmt(DTLM_HX, 2)}                            />
+              <KV label="Facteur UA [W/K]"                 value={fmt(Facteur_UA, 0)}                         />
+            </div>
+            <div>
+              <KV label="Surface d'échange [m²]"           value={fmt(S_echange_m2, 2)}                       />
+              <KV label="Section calandre [m²]"            value={fmt(Section_calandre_m2, 4)}                />
+              <KV label="Hext [kCal/m².°C]"                value={fmt(Coeff_Hext_HX, 4)}                     />
+              <KV label="Hint [kCal/m².°C]"                value={fmt(coeff_Hint_HX, 4)}                     />
+              <KV label="U encrassé [kCal/m².°C]"          value={fmt(FactUEncrasse_HX, 4)}                   />
+            </div>
+          </div>
+        </SubSection>
+
+        <SubSection title="Ventilateur">
+          <div style={{ ...styles.twoCol, gap: 32 }}>
+            <div>
+              <KV label="Débit air à pulser [Nm³/h]"       value={fmt(Q_air_pulser_Nm3_h, 0)}             />
+              <KV label="Pression ventilateur [mmCE]"      value={fmt(P_cote_air_entree_mmCE, 0)}         />
+              <KV label="T° air soufflante [°C]"           value={fmt(Temp_air_soufflante_C, 0)}          />
+            </div>
+            <div>
+              <KV label="Débit ventilateur [m³/h]"         value={fmt(Q_air_ventilateur_m3_h, 0)}         />
+              <KV label="Rendement ventilateur [%]"        value={fmt(Rendement_ventilateur_HX * 100, 1)} />
+              <KV label="Puissance électrique [kW]"        value={fmt(Puissance_elec_ventilateur_kW, 1)}  />
+            </div>
+          </div>
         </SubSection>
 
       </Section>

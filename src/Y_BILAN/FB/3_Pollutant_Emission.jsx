@@ -29,7 +29,7 @@ const FBPollutantEmission = ({ innerData, setInnerData, currentLanguage = 'fr' }
 
   // ✅ CORRECTION : Initialisation sécurisée avec valeurs par défaut robustes
   const [emissions2, setEmissions2] = useState(() => {
-    const savedEmissions = localStorage.getItem('emissions2');
+    const savedEmissions = localStorage.getItem('emissions2_FB');
     if (savedEmissions) {
       try {
         return JSON.parse(savedEmissions);
@@ -90,7 +90,7 @@ const FBPollutantEmission = ({ innerData, setInnerData, currentLanguage = 'fr' }
   } = getOpexData();
 
   useEffect(() => {
-    localStorage.setItem('emissions2', JSON.stringify(emissions2));
+    localStorage.setItem('emissions2_FB', JSON.stringify(emissions2));
   }, [emissions2]);
 
   // ✅ CORRECTION : Extraction robuste avec vérification de l'existence
@@ -445,7 +445,7 @@ const FBPollutantEmission = ({ innerData, setInnerData, currentLanguage = 'fr' }
 
     setEmissions2(defaultValues);
     try {
-      localStorage.removeItem('emissions2');
+      localStorage.removeItem('emissions2_FB');
     } catch (e) {
       console.warn('Failed to clear localStorage:', e);
     }

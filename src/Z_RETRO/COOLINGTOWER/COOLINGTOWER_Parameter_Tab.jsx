@@ -14,11 +14,11 @@ import '../../index.css';
 
 const COOLINGTOWER_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage }) => {
   
-  const [Teau, setTeau] = useState(() => parseFloat(localStorage.getItem('Teau')) || 15);
+  const [Teau, setTeau] = useState(() => parseFloat(localStorage.getItem('Teau_COOLINGTOWER')) || 15);
   const [T_steam_C, setT_steam_C] = useState(() => parseFloat(localStorage.getItem('T_steam_C')) || (nodeData?.result?.dataFlow?.T || 120));
   const [Qeau_kg_h, setQeau_kg_h] = useState(() => parseFloat(localStorage.getItem('Qeau_kg_h')) || 0);
   const [Qsteam_kg_h, setQsteam_kg_h] = useState(() => parseFloat(localStorage.getItem('Qsteam_kg_h')) || 0);
-  const [PDC_aero, setPDC_aero] = useState(() => localStorage.getItem('PDC_aero') || '20');
+  const [PDC_aero, setPDC_aero] = useState(() => localStorage.getItem('PDC_aero_COOLINGTOWER') || '20');
 
 
   const [calculationResult_COOLINGTOWER, setCalculationResult] = useState(null);
@@ -27,11 +27,11 @@ const COOLINGTOWER_Parameter_Tab = ({ nodeData, title, onSendData, onClose, curr
 
 
   // Sauvegarde dans le localStorage
-  useEffect(() => { localStorage.setItem('Teau', Teau); }, [Teau]);
+  useEffect(() => { localStorage.setItem('Teau_COOLINGTOWER', Teau); }, [Teau]);
   useEffect(() => { localStorage.setItem('T_steam_C', T_steam_C); }, [T_steam_C]);
   useEffect(() => { localStorage.setItem('Qeau_kg_h', Qeau_kg_h); }, [Qeau_kg_h]);
   useEffect(() => { localStorage.setItem('Qsteam_kg_h', Qsteam_kg_h); }, [Qsteam_kg_h]);
-  useEffect(() => { localStorage.setItem('PDC_aero', PDC_aero); }, [PDC_aero]);
+  useEffect(() => { localStorage.setItem('PDC_aero_COOLINGTOWER', PDC_aero); }, [PDC_aero]);
   useEffect(() => { if (calculationResult_COOLINGTOWER) { localStorage.setItem('calculationResult_COOLINGTOWER', JSON.stringify(calculationResult_COOLINGTOWER)); } }, [calculationResult_COOLINGTOWER]);
 
   // Calcul à chaque changement de paramètre
@@ -74,11 +74,11 @@ const COOLINGTOWER_Parameter_Tab = ({ nodeData, title, onSendData, onClose, curr
 
   // Fonction pour réinitialiser le localStorage
   const clearMemory = () => {
-    localStorage.removeItem('Teau');
+    localStorage.removeItem('Teau_COOLINGTOWER');
     localStorage.removeItem('T_steam_C');
     localStorage.removeItem('Qeau_kg_h');
     localStorage.removeItem('Qsteam_kg_h');
-    localStorage.removeItem('PDC_aero');
+    localStorage.removeItem('PDC_aero_COOLINGTOWER');
     localStorage.removeItem('calculationResult_COOLINGTOWER');
     setTeau(15);  // Réinitialise l'état après avoir vidé le localStorage
     setT_steam_C(120);

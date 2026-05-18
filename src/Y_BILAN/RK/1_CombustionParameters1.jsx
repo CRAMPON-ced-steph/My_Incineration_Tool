@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { cv_kj_kg, cv_waste } from '../../A_Transverse_fonction/bilan_fct_combustion';
-import { getTranslatedParameter, getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
+import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './RK_traduction';
 
 const CombustionParameters = ({ innerData, currentLanguage = 'fr' }) => {
@@ -286,16 +286,17 @@ const CombustionParameters = ({ innerData, currentLanguage = 'fr' }) => {
     columns2.forEach(col => {
       if (col === 'Masse totale [kg/h]') {
         updatedRows2[0].data[col] = totalMass;
-        updatedRows2[1].data[col] = totalMass/totalMass*100;
+        updatedRows2[1].data[col] = totalMass !== 0 ? 100 : 0;
       } 
       else if (['C [kg/h]','H [kg/h]', 'O [kg/h]', 'N [kg/h]', 'S [kg/h]', 'Cl [kg/h]'].includes(col)) 
       {
         const element = col.split(' ')[0];
         const total = parameters.reduce((sum, row) => sum + (row.data['Masse [kg/h]'] || 0) * (row.data[element + '%'] || 0)/100 * (row.data['%Comb'] || 0) / 100, 0);
         updatedRows2[0].data[col] = total;
-        updatedRows2[1].data[col] = (total / totalMass) * 100;
-        updatedRows2[2].data[col] = (updatedRows2[0].data[col]) / (updatedRows2[0].data['Comb  [kg/h]']) * 100;
+        updatedRows2[1].data[col] = totalMass !== 0 ? (total / totalMass) * 100 : 0;
+        updatedRows2[2].data[col] = updatedRows2[0].data['Comb  [kg/h]'] !== 0 ? (updatedRows2[0].data[col]) / (updatedRows2[0].data['Comb  [kg/h]']) * 100 : 0;
 
+        if (updatedRows2.length < 6) return;
         updatedRows2[3].data['C [kg/h]'] = updatedRows2[0].data['C [kg/h]'] / 12.01;
         updatedRows2[3].data['H [kg/h]'] = updatedRows2[0].data['H [kg/h]'] / 2.016;
         updatedRows2[3].data['O [kg/h]'] = updatedRows2[0].data['O [kg/h]'] / 16/2;
@@ -353,9 +354,9 @@ const CombustionParameters = ({ innerData, currentLanguage = 'fr' }) => {
 
     updatedRows2[0].data['SUM2 tot'] = ['Comb  [kg/h]', 'Water  [kg/h]', 'Inert  [kg/h]']
       .reduce((sum, key) => sum + (updatedRows2[0].data[key] || 0), 0);
-    updatedRows2[1].data['Comb  [kg/h]'] = (updatedRows2[0].data['Comb  [kg/h]']*100) / totalMass;
-    updatedRows2[1].data['Water  [kg/h]'] = (updatedRows2[0].data['Water  [kg/h]']*100) / totalMass;
-    updatedRows2[1].data['Inert  [kg/h]'] = (updatedRows2[0].data['Inert  [kg/h]']*100) / totalMass;
+    updatedRows2[1].data['Comb  [kg/h]'] = totalMass !== 0 ? (updatedRows2[0].data['Comb  [kg/h]']*100) / totalMass : 0;
+    updatedRows2[1].data['Water  [kg/h]'] = totalMass !== 0 ? (updatedRows2[0].data['Water  [kg/h]']*100) / totalMass : 0;
+    updatedRows2[1].data['Inert  [kg/h]'] = totalMass !== 0 ? (updatedRows2[0].data['Inert  [kg/h]']*100) / totalMass : 0;
   
     updatedRows2[1].data['SUM2 tot'] = ['Comb  [kg/h]', 'Water  [kg/h]', 'Inert  [kg/h]']
     .reduce((sum, key) => sum + (updatedRows2[1].data[key] || 0), 0);
@@ -374,11 +375,11 @@ const CombustionParameters = ({ innerData, currentLanguage = 'fr' }) => {
     );
 
     updatedRows2[2].data['Comb CV tot [kJ/kg]'] = cv_kJ_kg;
-    updatedRows2[2].data['Waste CV tot [kJ/kg]'] = cv_waste(
+    updatedRows2[2].data['Waste CV tot [kJ/kg]'] = totalMass !== 0 ? cv_waste(
       updatedRows2[2].data['Comb CV tot [kJ/kg]'],
       (totalCombMass / totalMass) * 100,
       (totalWaterMass / totalMass) * 100
-    );
+    ) : 0;
     
     updatedRows2[2].data['Waste CV tot [kcal/kg]'] = updatedRows2[2].data['Waste CV tot [kJ/kg]'] / 4.1868;
   

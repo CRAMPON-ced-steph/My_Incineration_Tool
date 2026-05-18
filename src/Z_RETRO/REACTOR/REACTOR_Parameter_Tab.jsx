@@ -23,7 +23,7 @@ const REAGENT_TYPES = {
 const STORAGE_KEYS = {
   T_AMONT_REACTOR: 'T_amont_REACTOR',
   T_AIR: 'T_air',
-  PDC_AERO: 'PDC_aero',
+  PDC_AERO: 'PDC_aero_REACTOR',
   REAGENT_TYPE: 'reagentType',
   BESOIN_AIR_LIME: 'Besoin_air_pulverisation_lime_Nm3_kg',
   CONCENTRATION_LIME: 'Concentration_Lime_kg_lime_Nm3_FG',

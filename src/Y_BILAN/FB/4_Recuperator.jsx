@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 
 import {
-  calculDebitPT, tempSortieFumees, D_TLM,
+  calculDebitPT, D_TLM,
   Coef_Hext, Coef_Hint, Fact_U, Fact_U_Encrasse, Fact_A, DP_RecupAir,
   cp_air, cp_dt_h2o,
 } from '../../A_Transverse_fonction/bilan_fct_FB';
@@ -38,16 +38,6 @@ const Recuperateur = ({ innerData = {}, combustionResults = {}, currentLanguage 
   const H_fumees_in_kW    = innerData?.Hf_voute_kW ?? 0;
   const rho_FG            = innerData?.Rho_FG_kg_Nm3 ?? 1.1;
 
-  // Fractions massiques fumées [kg/h]
-  const m_co   = innerData?.m_co   ?? 0;
-  const m_co2  = innerData?.m_co2  ?? 0;
-  const m_h2o  = innerData?.m_h2o  ?? 0;
-  const m_h2   = innerData?.m_h2   ?? 0;
-  const m_n2   = innerData?.m_n2   ?? 0;
-  const m_o2   = innerData?.m_o2   ?? 0;
-  const m_so2  = innerData?.m_so2  ?? 0;
-  const m_chcl = innerData?.m_chcl ?? 0;
-
   // ── Entrées air depuis CombustionTab ──
   const T_air_entree_C               = innerData?.Temp_air_fluidisation_av_prechauffe_C ?? 0;
   const Q_Air_dry_Nm3_h              = innerData?.Q_air_comb_tot_Nm3_h ?? 0;
@@ -78,21 +68,17 @@ const Recuperateur = ({ innerData = {}, combustionResults = {}, currentLanguage 
 
   const designRecup = useMemo(() => {
     try {
-      // ÉTAPE 1 : CHALEUR ÉCHANGÉE
-      const H_apporte_par_fumee_kW = H_fumees_in_kW * Rdt_HX;
-      const H_fumees_out_kW        = H_fumees_in_kW - H_apporte_par_fumee_kW;
+      // ÉTAPE 1 : TEMPÉRATURE FUMÉES SORTIE HX — reprise du bilan CombustionTab (col. 11)
+      const T_fumee_sortie_HX_C = Tf_voute_ap_HX_C;
 
-      // ÉTAPE 2 : TEMPÉRATURE FUMÉES SORTIE
-      const T_fumee_sortie_HX_C = tempSortieFumees(
-        m_co, m_co2, m_h2o, m_h2, m_n2, m_o2, m_so2, m_chcl,
-        H_fumees_out_kW
-      );
+      // CHALEUR ÉCHANGÉE — déduite des enthalpies CombustionTab
+      const H_apporte_par_fumee_kW = H_fumees_in_kW - Hf_voute_ap_HX_kW;
 
-      // ÉTAPE 3 : TEMPÉRATURES AIR
+      // ÉTAPE 2 : TEMPÉRATURES AIR
       const T_sortie_air_C    = T_air_entree_C + 100; // estimation initiale (non itérée)
       const T_air_entree_HX_C = T_air_entree_C + 45;  // +45°C apport soufflante
 
-      // ÉTAPE 4 : DTLM ET UA
+      // ÉTAPE 3 : DTLM ET UA
       const DTLM       = D_TLM(T_fumee_sortie_HX_C, T_entree_fumee_C, T_sortie_air_C, T_air_entree_HX_C);
       const Facteur_UA = DTLM > 0 ? (H_apporte_par_fumee_kW / DTLM) * 1000 : 0; // W/K
 
@@ -126,33 +112,13 @@ const Recuperateur = ({ innerData = {}, combustionResults = {}, currentLanguage 
       return {};
     }
   }, [
-    T_entree_fumee_C, Q_FG_wet_Nm3_h, H_fumees_in_kW, rho_FG,
-    m_co, m_co2, m_h2o, m_h2, m_n2, m_o2, m_so2, m_chcl,
-    T_air_entree_C, Q_Air_dry_Nm3_h, Rdt_HX, freeParams,
+    T_entree_fumee_C, Q_FG_wet_Nm3_h, H_fumees_in_kW, Hf_voute_ap_HX_kW,
+    Tf_voute_ap_HX_C, rho_FG, T_air_entree_C, Q_Air_dry_Nm3_h, freeParams,
   ]);
 
   // ============================================================
   // MISE À JOUR innerData AVEC RÉSULTATS
   // ============================================================
-
-  useEffect(() => {
-    if (!innerData || Object.keys(designRecup).length === 0) return;
-    innerData.T_fumee_sortie_HX_C = designRecup.T_fumee_sortie_HX_C ?? 0;
-    innerData.P_sortie_HX_mmCE    = designRecup.P_sortie_HX_mmCE    ?? 0;
-    innerData.Q_Air_dry_m3_h      = designRecup.Q_Air_dry_m3_h      ?? 0;
-    innerData.T_sortie_air_C      = designRecup.T_sortie_air_C      ?? 0;
-    innerData.S_echange_m2        = designRecup.S_echange_m2        ?? 0;
-    innerData.DTLM_HX             = designRecup.DTLM                ?? 0;
-    innerData.Facteur_UA          = designRecup.Facteur_UA           ?? 0;
-  }, [designRecup, innerData]);
-
-  // ============================================================
-  // HANDLERS
-  // ============================================================
-
-  const handleFreeParamChange = useCallback((key, value) => {
-    setFreeParams((prev) => ({ ...prev, [key]: parseFloat(value) || 0 }));
-  }, []);
 
   // ============================================================
   // DÉBITS AFFICHÉS DANS LES CARTES HX
@@ -189,6 +155,59 @@ const Recuperateur = ({ innerData = {}, combustionResults = {}, currentLanguage 
     freeParams.Rendement_ventilateur > 0
       ? (Q_air_ventilateur_m3_h / 3600) * P_cote_air_entree_mmCE * 9.8 / freeParams.Rendement_ventilateur / 1000
       : 0;
+
+  // ============================================================
+  // MISE À JOUR innerData AVEC RÉSULTATS
+  // ============================================================
+
+  useEffect(() => {
+    if (!innerData || Object.keys(designRecup).length === 0) return;
+    // Résultats dimensionnement échangeur
+    innerData.T_fumee_sortie_HX_C    = designRecup.T_fumee_sortie_HX_C    ?? 0;
+    innerData.P_sortie_HX_mmCE       = designRecup.P_sortie_HX_mmCE       ?? 0;
+    innerData.Q_Air_dry_m3_h         = designRecup.Q_Air_dry_m3_h         ?? 0;
+    innerData.T_sortie_air_C         = designRecup.T_sortie_air_C         ?? 0;
+    innerData.S_echange_m2           = designRecup.S_echange_m2           ?? 0;
+    innerData.DTLM_HX                = designRecup.DTLM                   ?? 0;
+    innerData.Facteur_UA             = designRecup.Facteur_UA              ?? 0;
+    innerData.Coeff_Hext_HX          = designRecup.Coeff_Hext             ?? 0;
+    innerData.coeff_Hint_HX          = designRecup.coeff_Hint             ?? 0;
+    innerData.FactUEncrasse_HX       = designRecup.FactUEncrasse           ?? 0;
+    innerData.Section_calandre_m2    = designRecup.Section_calandre_m2    ?? 0;
+  }, [designRecup, innerData]);
+
+  useEffect(() => {
+    if (!innerData) return;
+    // HX côté fumées — débits et pressions
+    innerData.Q_FG_wet_entree_m3_h   = Q_FG_wet_entree_m3_h;
+    innerData.P_sortie_HX_fg_mmCE    = P_sortie_HX_fg_mmCE;
+    innerData.Q_FG_wet_sortie_m3_h   = Q_FG_wet_sortie_m3_h;
+    // HX côté air — débits et pressions
+    innerData.PDC_HX_cote_air_mmCE   = PDC_HX_cote_air_mmCE;
+    innerData.P_cote_air_entree_mmCE = P_cote_air_entree_mmCE;
+    innerData.Q_air_entree_HX_m3_h   = Q_air_entree_HX_m3_h;
+    innerData.Q_air_sortie_HX_m3_h   = Q_air_sortie_HX_m3_h;
+    innerData.H_air_soufflante_kW    = H_air_soufflante_kW;
+    // Ventilateur
+    innerData.Q_air_pulser_Nm3_h          = Q_air_pulser_Nm3_h;
+    innerData.Q_air_ventilateur_m3_h      = Q_air_ventilateur_m3_h;
+    innerData.Puissance_elec_ventilateur_kW = Puissance_elec_ventilateur_kW;
+    innerData.Rendement_ventilateur_HX    = freeParams.Rendement_ventilateur;
+  }, [innerData,
+    Q_FG_wet_entree_m3_h, P_sortie_HX_fg_mmCE, Q_FG_wet_sortie_m3_h,
+    PDC_HX_cote_air_mmCE, P_cote_air_entree_mmCE, Q_air_entree_HX_m3_h,
+    Q_air_sortie_HX_m3_h, H_air_soufflante_kW, Q_air_pulser_Nm3_h,
+    Q_air_ventilateur_m3_h, Puissance_elec_ventilateur_kW,
+    freeParams.Rendement_ventilateur,
+  ]);
+
+  // ============================================================
+  // HANDLERS
+  // ============================================================
+
+  const handleFreeParamChange = useCallback((key, value) => {
+    setFreeParams((prev) => ({ ...prev, [key]: parseFloat(value) || 0 }));
+  }, []);
 
   // ============================================================
   // STYLES

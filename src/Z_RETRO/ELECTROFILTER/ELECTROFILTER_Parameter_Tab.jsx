@@ -15,10 +15,10 @@ import '../../index.css';
 
 // Constantes pour localStorage
 const STORAGE_KEYS = {
-  QAIR_DECOLMATATION: 'Qair_decolmatation',
-  T_AIR_DECOLMATATION: 'T_air_decolmatation',
+  QAIR_DECOLMATATION: 'Qair_decolmatation_ELECTROFILTER',
+  T_AIR_DECOLMATATION: 'T_air_decolmatation_ELECTROFILTER',
   T_AMONT_ELECTROFILTER: 'T_amont_ELECTROFILTER',
-  PDC_AERO: 'PDC_aero',
+  PDC_AERO: 'PDC_aero_ELECTROFILTER',
   CALCULATION_RESULT: 'CalculationResult_ELECTROFILTER'
 };
 

@@ -55,13 +55,13 @@ const FB_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguag
     localStorage.getItem('Tair_FB_C') || DEFAULT_VALUES.Tair_FB_C
   );
   const [Thermal_losses_MW, setThermal_losses_MW] = useState(() => 
-    localStorage.getItem('Thermal_losses_MW') || DEFAULT_VALUES.Thermal_losses_MW
+    localStorage.getItem('Thermal_losses_MW_FB') || DEFAULT_VALUES.Thermal_losses_MW
   );
   const [NCV_kcal_kg, setNCV_kcal_kg] = useState(() => 
-    localStorage.getItem('NCV_kcal_kg') || DEFAULT_VALUES.NCV_kcal_kg
+    localStorage.getItem('NCV_kcal_kg_FB') || DEFAULT_VALUES.NCV_kcal_kg
   );
   const [Masse_dechet_kg_h, setMasse_dechet_kg_h] = useState(() => 
-    localStorage.getItem('Masse_dechet_kg_h') || DEFAULT_VALUES.Masse_dechet_kg_h
+    localStorage.getItem('Masse_dechet_kg_h_FB') || DEFAULT_VALUES.Masse_dechet_kg_h
   );
 
   // États pour les types de calcul
@@ -104,9 +104,9 @@ const FB_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguag
     const saveToLocalStorage = () => {
       try {
         localStorage.setItem('Tair_FB_C', Tair_FB_C);
-        localStorage.setItem('Thermal_losses_MW', Thermal_losses_MW);
-        localStorage.setItem('NCV_kcal_kg', NCV_kcal_kg);
-        localStorage.setItem('Masse_dechet_kg_h', Masse_dechet_kg_h);
+        localStorage.setItem('Thermal_losses_MW_FB', Thermal_losses_MW);
+        localStorage.setItem('NCV_kcal_kg_FB', NCV_kcal_kg);
+        localStorage.setItem('Masse_dechet_kg_h_FB', Masse_dechet_kg_h);
         localStorage.setItem('FB_bilanType', bilanType);
         localStorage.setItem('FB_diagramMode', diagramMode);
         // Nouveaux paramètres
