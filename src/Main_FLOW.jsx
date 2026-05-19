@@ -9,10 +9,10 @@ import Toggle10choice from './F_Gestion_Langues/togglechoice';
 
 import {
   STACK_Parameter_Tab, IDFAN_Parameter_Tab, QUENCH_Parameter_Tab, WHB_Parameter_Tab, 
-  DENOX_Parameter_Tab, BHF_Parameter_Tab, COOLINGTOWER_Parameter_Tab, ELECTROFILTER_Parameter_Tab,
+  DENOX_Parameter_Tab, BHF_Parameter_Tab, IACT_Parameter_Tab, COOLINGTOWER_Parameter_Tab, ELECTROFILTER_Parameter_Tab,
   CYCLONE_Parameter_Tab, REACTOR_Parameter_Tab, RK_Parameter_Tab, SCRUBBER_Parameter_Tab,
   CO2_Parameter_Tab, GF_Parameter_Tab, FB_Parameter_Tab,RKMainPage, FBMainPage, WHBMainPage,
-  CO2MainPage, QUENCHMainPage, CYCLONEMainPage, BHFMainPage, ELECTROFILTERMainPage,
+  CO2MainPage, QUENCHMainPage, CYCLONEMainPage, BHFMainPage, IACTMainPage, ELECTROFILTERMainPage,
   REACTORMainPage, DENOXMainPage, STACKMainPage, SCRUBBERMainPage, IDFANMainPage, COOLINGTOWERMainPage,
 
   AIRCOOLERMainPage ,
@@ -267,6 +267,7 @@ function Flow({
       ...(mode === 'Bilan' ? { CYCLONE: CYCLONEMainPage } : { CYCLONE: CYCLONE_Parameter_Tab }),
       ...(mode === 'Bilan' ? { SCRUBBER: SCRUBBERMainPage } : { SCRUBBER: SCRUBBER_Parameter_Tab }),
       ...(mode === 'Bilan' ? { BHF: BHFMainPage } : { BHF: BHF_Parameter_Tab }),
+      ...(mode === 'Bilan' ? { IACT: IACTMainPage } : { IACT: IACT_Parameter_Tab }),
       ...(mode === 'Bilan' ? { ELECTROFILTER: ELECTROFILTERMainPage } : { ELECTROFILTER: ELECTROFILTER_Parameter_Tab }),
       ...(mode === 'Bilan' ? { DENOX: DENOXMainPage } : { DENOX: DENOX_Parameter_Tab }),
       ...(mode === 'Bilan' ? { REACTOR: REACTORMainPage } : { REACTOR: REACTOR_Parameter_Tab }),

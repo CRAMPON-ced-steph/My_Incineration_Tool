@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { getOpexData } from '../../A_Transverse_fonction/opexDataService';
 
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
@@ -30,6 +30,16 @@ const addRow = (data, setter) =>
 
 const deleteRow = (data, setter, index) => {
   if (data.length > 1) setter(data.filter((_, i) => i !== index));
+};
+
+// Met à jour les lignes calculées (clés statiques row1…rowN) et conserve les lignes
+// ajoutées manuellement par l'utilisateur (clés dynamiques row<timestamp>).
+const mergeComputedRows = (prev, computed) => {
+  const computedMap = new Map(computed.map(r => [r.key, r]));
+  const updated = prev.map(r => computedMap.has(r.key) ? computedMap.get(r.key) : r);
+  const existingKeys = new Set(prev.map(r => r.key));
+  const added = computed.filter(r => !existingKeys.has(r.key));
+  return [...updated, ...added];
 };
 
 const EditableCell = ({ initialValue, onSave, type = 'text' }) => {
@@ -128,11 +138,12 @@ const DataTable = ({ title, color, data, setData, type, convertValue, getUnit, t
 // ─── Fin composants module-level ──────────────────────────────────────────────
 
 const OpexDashboard = ({
-  equipmentType, 
-  innerData, 
+  equipmentType,
+  innerData,
+  innerDataTick,
   setInnerData,
    currentLanguage = 'fr',
-  equipmentConfig = {} 
+  equipmentConfig = {}
 }) => {
   const { 
     availability, 
@@ -232,7 +243,6 @@ const OpexDashboard = ({
     const conso_gaz_H_MW = toSignificantFigures(innerData?.conso_gaz_H_MW || 0);
     const conso_gaz_L_MW = toSignificantFigures(innerData?.conso_gaz_L_MW || 0);
     const conso_gaz_Process_MW = toSignificantFigures(innerData?.conso_gaz_Process_MW || 0);
-
     const conso_fuel_MW = toSignificantFigures(innerData?.conso_fuel_MW || 0);
 
     // CORRECTION: Valeurs par défaut à 0 pour rester générique
@@ -358,7 +368,7 @@ const OpexDashboard = ({
       { key: 'row6', label: params.labelElec6, value: params.consoElec6.toString() },
       { key: 'row7', label: params.labelElec7, value: params.consoElec7.toString() },
       { key: 'row8', label: params.labelElec8, value: params.consoElec8.toString() },
-    ];
+    ].slice(0, config.numElecRows ?? 8);
 
     const initialEauData = [
       { key: 'row1', label: t('waterDrinking'), value: params.Conso_EauPotable_m3.toString() },
@@ -448,10 +458,6 @@ const OpexDashboard = ({
   const [co2Data, setCo2Data] = useState(savedState?.co2Data ?? [...initialData.initialCo2Data]);
   const [coutData, setCoutData] = useState(savedState?.coutData ?? [...initialData.initialcoutData]);
 
-  // Ref: true = l'utilisateur a modifié les tableaux → ne pas écraser avec les recalculs innerData.
-  // Initialisé à true si on restaure depuis localStorage (les modifs de l'utilisateur sont présentes).
-  // Reset par le bouton "Réinitialiser" pour permettre à nouveau la mise à jour auto depuis les calculs.
-  const userModifiedRef = useRef(!!savedState);
 
   // Données de consommation affichées (converties selon le mode)
   const [activeNodes_Elec, setActiveNodes_Elec] = useState([{ label: equipmentType, data: { consommationElec: 0 } }]);
@@ -462,19 +468,20 @@ const OpexDashboard = ({
   const [activeNodes_cout, setActiveNodes_cout] = useState([{ label: equipmentType, data: { cout: 0 } }]);
 
   // EFFET POUR MISE À JOUR AUTOMATIQUE QUAND innerData CHANGE
-  // Sauté si l'utilisateur a déjà modifié les tableaux (ajout/suppression/édition).
-  // Le bouton Reset remet userModifiedRef à false pour autoriser une nouvelle mise à jour.
+  // Les lignes calculées (row1…rowN) sont toujours mises à jour.
+  // Les lignes ajoutées manuellement (clés timestamp) sont conservées.
   useEffect(() => {
-    if (!innerData || userModifiedRef.current) return;
+    if (!innerData) return;
     const newInitialData = generateInitialData();
-    setElecData([...newInitialData.initialElecData]);
-    setEauData([...newInitialData.initialEauData]);
-    setReactifsData([...newInitialData.initialReactifsData]);
-    setEnergieData([...newInitialData.initialEnergieData]);
-    setCo2Data([...newInitialData.initialCo2Data]);
-    setCoutData([...newInitialData.initialcoutData]);
+    setElecData(prev => mergeComputedRows(prev, newInitialData.initialElecData));
+    setEauData(prev => mergeComputedRows(prev, newInitialData.initialEauData));
+    setReactifsData(prev => mergeComputedRows(prev, newInitialData.initialReactifsData));
+    setEnergieData(prev => mergeComputedRows(prev, newInitialData.initialEnergieData));
+    setCo2Data(prev => mergeComputedRows(prev, newInitialData.initialCo2Data));
+    setCoutData(prev => mergeComputedRows(prev, newInitialData.initialcoutData));
   }, [
-    innerData?.consoElec1, innerData?.consoElec2, innerData?.consoElec3, innerData?.consoElec4, 
+    innerDataTick,
+    innerData?.consoElec1, innerData?.consoElec2, innerData?.consoElec3, innerData?.consoElec4,
     innerData?.consoElec5, innerData?.consoElec6, innerData?.consoElec7, innerData?.consoElec8,
     innerData?.labelElec1, innerData?.labelElec2, innerData?.labelElec3, innerData?.labelElec4,
     innerData?.labelElec5, innerData?.labelElec6, innerData?.labelElec7, innerData?.labelElec8,
@@ -633,7 +640,6 @@ const OpexDashboard = ({
   // Fonction pour réinitialiser les données
   const resetData = () => {
     if (window.confirm(t('confirmReset'))) {
-      userModifiedRef.current = false; // Autorise à nouveau la mise à jour auto depuis les calculs
       const newInitialData = generateInitialData();
       setElecData([...newInitialData.initialElecData]);
       setEauData([...newInitialData.initialEauData]);
@@ -739,7 +745,7 @@ const OpexDashboard = ({
             title={t('electricity')}
             color="#4a90e2"
             data={elecData}
-            setData={v => { userModifiedRef.current = true; setElecData(v); }}
+            setData={v => { setElecData(v); }}
             type="elec"
             convertValue={convertValue}
             getUnit={getUnit}
@@ -751,7 +757,7 @@ const OpexDashboard = ({
             title={t('water')}
             color="#2ecc71"
             data={eauData}
-            setData={v => { userModifiedRef.current = true; setEauData(v); }}
+            setData={v => { setEauData(v); }}
             type="eau"
             convertValue={convertValue}
             getUnit={getUnit}
@@ -763,7 +769,7 @@ const OpexDashboard = ({
             title={t('reagents')}
             color="#e74c3c"
             data={reactifsData}
-            setData={v => { userModifiedRef.current = true; setReactifsData(v); }}
+            setData={v => { setReactifsData(v); }}
             type="reactifs"
             convertValue={convertValue}
             getUnit={getUnit}
@@ -775,7 +781,7 @@ const OpexDashboard = ({
             title={t('fossilEnergyConsumed')}
             color="#f39c12"
             data={energieData}
-            setData={v => { userModifiedRef.current = true; setEnergieData(v); }}
+            setData={v => { setEnergieData(v); }}
             type="energie"
             convertValue={convertValue}
             getUnit={getUnit}
@@ -787,7 +793,7 @@ const OpexDashboard = ({
             title="CO2"
             color="#9b59b6"
             data={co2Data}
-            setData={v => { userModifiedRef.current = true; setCo2Data(v); }}
+            setData={v => { setCo2Data(v); }}
             type="co2"
             convertValue={convertValue}
             getUnit={getUnit}
@@ -799,7 +805,7 @@ const OpexDashboard = ({
             title={t('cost')}
             color="#34495e"
             data={coutData}
-            setData={v => { userModifiedRef.current = true; setCoutData(v); }}
+            setData={v => { setCoutData(v); }}
             type="cout"
             convertValue={convertValue}
             getUnit={getUnit}

@@ -8,6 +8,7 @@ import QUENCH_Parameter_Tab from '../Z_RETRO/QUENCH/QUENCH_Parameter_Tab';
 import WHB_Parameter_Tab from '../Z_RETRO/WHB/WHB_Parameter_Tab';
 import DENOX_Parameter_Tab from '../Z_RETRO/DENOX/DENOX_Parameter_Tab';
 import BHF_Parameter_Tab from '../Z_RETRO/BHF/BHF_Parameter_Tab';
+import IACT_Parameter_Tab from '../Z_RETRO/IACT/IACT_Parameter_Tab';
 import COOLINGTOWER_Parameter_Tab from '../Z_RETRO/COOLINGTOWER/COOLINGTOWER_Parameter_Tab';
 import ELECTROFILTER_Parameter_Tab from '../Z_RETRO/ELECTROFILTER/ELECTROFILTER_Parameter_Tab';
 import CYCLONE_Parameter_Tab from '../Z_RETRO/CYCLONE/CYCLONE_Parameter_Tab';
@@ -28,6 +29,7 @@ import CO2MainPage from '../Y_BILAN/CO2/CO2MainPage';
 import QUENCHMainPage from '../Y_BILAN/QUENCH/QUENCHMainPage';
 import CYCLONEMainPage from '../Y_BILAN/CYCLONE/CYCLONEMainPage';
 import BHFMainPage from '../Y_BILAN/BHF/BHFMainPage';
+import IACTMainPage from '../Y_BILAN/IACT/IACTMainPage';
 import ELECTROFILTERMainPage from '../Y_BILAN/ELECTROFILTER/ELECTROFILTERMainPage';
 import REACTORMainPage from '../Y_BILAN/REACTOR/REACTORMainPage';
 import DENOXMainPage from '../Y_BILAN/DENOX/DENOXMainPage';
@@ -54,6 +56,7 @@ export {
   WHB_Parameter_Tab,
   DENOX_Parameter_Tab,
   BHF_Parameter_Tab,
+  IACT_Parameter_Tab,
   COOLINGTOWER_Parameter_Tab,
   ELECTROFILTER_Parameter_Tab,
   CYCLONE_Parameter_Tab,
@@ -72,6 +75,7 @@ export {
   QUENCHMainPage,
   CYCLONEMainPage,
   BHFMainPage,
+  IACTMainPage,
   ELECTROFILTERMainPage,
   REACTORMainPage,
   DENOXMainPage,

@@ -35,9 +35,62 @@ Each equipment type lives in two parallel directories:
 - `src/Y_BILAN/<EQUIPMENT>/` — Bilan (forward balance) tabs and calculations
 - `src/Z_RETRO/<EQUIPMENT>/` — Retro (design) tabs and calculations
 
-Equipment types: `FB` (fluidized bed furnace), `RK` (rotary kiln), `WHB` (waste heat boiler), `QUENCH`, `DENOX`, `BHF`, `COOLINGTOWER`, `ELECTROFILTER`, `CYCLONE`, `REACTOR`, `SCRUBBER`, `CO2`, `STACK`, `IDFAN`, `SEPARATEURS`.
+Equipment types: `FB` (fluidized bed furnace), `RK` (rotary kiln), `WHB` (waste heat boiler), `QUENCH`, `DENOX`, `BHF`, `IACT`, `COOLINGTOWER`, `ELECTROFILTER`, `CYCLONE`, `REACTOR`, `SCRUBBER`, `CO2`, `STACK`, `IDFAN`, `SEPARATEURS`.
 
 Each equipment's `MainPage` component and `Parameter_Tab` are re-exported from `src/C_Components/RetroAndBilanComponents.jsx`, which acts as a single aggregation point imported by `Main_FLOW.jsx`.
+
+### Procédure : dupliquer un équipement (NEW_EQ à partir de SRC_EQ)
+
+Quand l'utilisateur demande de "dupliquer un équipement" (ex. dupliquer BHF en IACT), appliquer **exactement** cette procédure dans l'ordre :
+
+#### 1. Créer les répertoires
+```bash
+mkdir -p src/Y_BILAN/<NEW_EQ>
+mkdir -p src/Z_RETRO/<NEW_EQ>
+```
+
+#### 2. Copier les fichiers de traduction verbatim (cp)
+```bash
+cp src/Y_BILAN/<SRC_EQ>/<SRC_EQ>_traduction.jsx src/Y_BILAN/<NEW_EQ>/<NEW_EQ>_traduction.jsx
+cp src/Z_RETRO/<SRC_EQ>/<SRC_EQ>_traduction.jsx src/Z_RETRO/<NEW_EQ>/<NEW_EQ>_traduction.jsx
+```
+
+#### 3. Créer les fichiers dupliqués (Write tool) avec substitutions
+
+Pour **chaque fichier** de `Y_BILAN/<SRC_EQ>/` et `Z_RETRO/<SRC_EQ>/` :
+
+| Quoi remplacer | Règle |
+|----------------|-------|
+| Nom de fichier | `<SRC_EQ>` → `<NEW_EQ>` dans le nom |
+| Imports de chemins | `'./<SRC_EQ>_traduction'` → `'./<NEW_EQ>_traduction'`, idem pour tous les fichiers locaux |
+| Noms de composants/fonctions | `<SRC_EQ>MainPage` → `<NEW_EQ>MainPage`, `<SRC_EQ>_Parameter_Tab` → `<NEW_EQ>_Parameter_Tab`, `performCalculation_<SRC_EQ>` → `performCalculation_<NEW_EQ>`, etc. |
+| localStorage keys | Toutes les clés suffixées `_<SRC_EQ>` → `_<NEW_EQ>` (ex. `emissions_BHF` → `emissions_IACT`) |
+| Objet data interne | `data<SRC_EQ>` → `data<NEW_EQ>` (ex. `dataBHF` → `dataIACT`) dans calculations.js et Retro_Rapport |
+| `equipmentType` prop | `equipmentType="<SRC_EQ>"` → `equipmentType="<NEW_EQ>"` dans le fichier Opex |
+| Titres UI | Strings visibles contenant `<SRC_EQ>` → `<NEW_EQ>` (ex. `'BHF Configuration'` → `'IACT Configuration'`) |
+| Export default | `<SRC_EQ>xxx` → `<NEW_EQ>xxx` |
+
+#### 4. Enregistrer dans RetroAndBilanComponents.jsx
+Ajouter :
+- `import <NEW_EQ>_Parameter_Tab from '../Z_RETRO/<NEW_EQ>/<NEW_EQ>_Parameter_Tab';`
+- `import <NEW_EQ>MainPage from '../Y_BILAN/<NEW_EQ>/<NEW_EQ>MainPage';`
+- Les deux dans le bloc `export { ... }`
+
+#### 5. Enregistrer dans Main_FLOW.jsx
+- Ajouter `<NEW_EQ>_Parameter_Tab` et `<NEW_EQ>MainPage` dans l'import de RetroAndBilanComponents
+- Ajouter dans `componentMap` : `...(mode === 'Bilan' ? { <NEW_EQ>: <NEW_EQ>MainPage } : { <NEW_EQ>: <NEW_EQ>_Parameter_Tab })`
+
+#### 6. Ajouter dans SidebarV1.jsx
+Dans la section cible (ex. `Energy_recovery`), ajouter :
+```js
+{ id: '<NEW_EQ>', label: t.add<NEW_EQ> },
+```
+
+#### 7. Ajouter les clés dans SidebarV1_traduction.jsx
+Pour **chaque langue** présente (`fr`, `en`, `es`, `de`, `it`, `pt`, `ar`, `ru`, `ja`, `zh`) :
+```js
+add<NEW_EQ>: 'Ajouter <NEW_EQ>',  // adapter selon la langue
+```
 
 ### Source Directory Structure
 
@@ -137,6 +190,47 @@ All equipment-specific keys must include the equipment suffix to avoid cross-con
 |------|-----|
 | `C_Components/Traitement_fumées.jsx` | `innerData['etat_mercury_treatment']` and `innerData['etat_NOx_treatment']` moved from body level into `useEffect([mercuryTreatment, sncr])` |
 | `C_Components/Traitement_fumées_SCC.jsx` | Same fix |
+
+---
+
+## Corrections History (audit session — 2026-05-19)
+
+### localStorage key collisions fixed
+
+| Key(s) | Files affected | Fix applied |
+|--------|---------------|-------------|
+| `'emissions'` | `Y_BILAN/FB/2_CombustionTab.jsx` | → `'emissions_FB'` |
+| `'thermalParams'` | `Y_BILAN/FB/2_CombustionTab.jsx` | → `'thermalParams_FB'` |
+| `'airComposition'` | `Y_BILAN/FB/2_CombustionTab.jsx` | → `'airComposition_FB'` |
+| `'emissions2'` | `Y_BILAN/FB/FBMainPage.jsx` (reset list) | → `'emissions2_FB'` (reset list corrected) |
+
+`FBMainPage.jsx` reset list updated to use new suffixed keys; `'airComposition_FB'` added (was missing from reset).
+
+### Division by zero / fallback fixed
+
+| File | Line | Fix |
+|------|------|-----|
+| `Y_BILAN/FB/2_CombustionTab.jsx` | 600 | `thermalParams.Rdt_HX * 100 \|\| 85` → `thermalParams.Rdt_HX != null ? thermalParams.Rdt_HX * 100 : 85` |
+
+### Dead code removed
+
+| File | Removed |
+|------|---------|
+| `Y_BILAN/FB/2_CombustionTab.jsx` | `f0` helper function (never called) |
+| `Y_BILAN/FB/2_CombustionTab.jsx` | `airCompRows` constant (never used) |
+
+### FB OPEX — missing notifyInnerDataChanged fixed
+
+- `Y_BILAN/FB/4_Recuperator.jsx`: added `onInnerDataChange` prop; called after `innerData` mutations in `useEffect` so downstream `FBCalcOpex` sees updated `Puissance_elec_ventilateur_kW`.
+- `Y_BILAN/FB/FBMainPage.jsx`: passes `onInnerDataChange={notifyInnerDataChanged}` to `Recuperateur`.
+
+### FB OPEX dashboard auto-update unblocked
+
+- `G_Graphiques/Dashboard/OpexDashboard.jsx`: `userModifiedRef = useRef(!!savedState)` → `useRef(false)`. Restoring from localStorage no longer permanently blocks computed-value updates.
+
+### FB CalcOpex — copy-paste artifacts removed
+
+- `Y_BILAN/FB/5_1_FB_calcul_Opex.jsx`: cleared `parametersToSave` of RK/SCC/EXT/VENT/EAU keys. Removed undefined `consoElec7/8` and `labelElec7/8` from `setInnerData` spread. Fixed extra `)` on `Puissance_elec_ventilateur_kW` line. Corrected key name from `Puissance_electrique_ventilateur_kW` → `Puissance_elec_ventilateur_kW` (matches `4_Recuperator.jsx`). Added missing dep `innerData?.Puissance_elec_ventilateur_kW`.
 
 ### FB Report — HX section restructured
 

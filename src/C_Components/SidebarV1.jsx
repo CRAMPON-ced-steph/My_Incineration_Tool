@@ -94,9 +94,9 @@ const Sidebar = ({ onAddNode, currentLanguage = 'fr' }) => {
       title: t.energyRecovery,
       items: [
         { id: 'WHB', label: t.addWasteHeatBoiler },
-      { id: 'HX_TubeAndShell', label: t.TubeAndShell }
-    
-  ],
+        { id: 'HX_TubeAndShell', label: t.TubeAndShell },
+        { id: 'IACT', label: t.addIACT },
+      ],
     },
     {
       key: 'Dry_treatment',

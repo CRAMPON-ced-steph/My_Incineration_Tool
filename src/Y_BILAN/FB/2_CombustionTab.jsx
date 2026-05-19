@@ -36,7 +36,8 @@ import SchemaProcessus from './SchemaProcessus';
 // ============================================================
 
 const FUEL_PROPERTIES = {
-  GAZ: { density: 0.75, pci: 7300, C_percent: 88.7, H_percent: 7.4, O_percent: 0.6, N_percent: 0.9, S_percent: 1.2, Cl_percent: 0 },
+ 
+   GAZ: { density: 0.75, pci: 7300, C_percent: 88.7, H_percent: 7.4, O_percent: 0.6, N_percent: 0.9, S_percent: 1.2, Cl_percent: 0 },
   BIOGAZ: { density: 1.15, pci: 5000, C_percent: 75, H_percent: 25, O_percent: 0, N_percent: 0, S_percent: 0, Cl_percent: 0 },
   FIOUL: { density: 850, pci: 10223, C_percent: 75, H_percent: 25, O_percent: 0, N_percent: 0, S_percent: 0, Cl_percent: 0 },
 };
@@ -67,6 +68,7 @@ const DEFAULT_EMISSIONS = {
   PCI_boue_kcal_kgMV: 0,
   Masse_eau_kg_h: 0,
   eau_add_kg_h: 0,
+  type_eau_add: 'EAU_POTABLE',
 };
 
 const DEFAULT_THERMAL = {
@@ -498,22 +500,22 @@ const CombustionTab = ({ innerData = {}, onInnerDataChange, onResultsChange, cur
   const t = useTranslation(currentLanguage);
 
   const [emissions, setEmissions] = useState(() => {
-    const saved = lsGet('emissions', {});
+    const saved = lsGet('emissions_FB', {});
     return { ...DEFAULT_EMISSIONS, ...Object.fromEntries(Object.entries(saved).filter(([, v]) => v != null)) };
   });
   const [thermalParams, setThermalParams] = useState(() => {
-    const saved = lsGet('thermalParams', {});
+    const saved = lsGet('thermalParams_FB', {});
     return { ...DEFAULT_THERMAL, ...Object.fromEntries(Object.entries(saved).filter(([, v]) => v != null)) };
   });
-  const [airComposition, setAirComposition] = useState(() => lsGet('airComposition', DEFAULT_AIR_COMPOSITION));
+  const [airComposition, setAirComposition] = useState(() => lsGet('airComposition_FB', DEFAULT_AIR_COMPOSITION));
   const [showExpertAir, setShowExpertAir] = useState(false);
   const [showExpertFumees, setShowExpertFumees] = useState(false);
   const [showDetailedBilan, setShowDetailedBilan] = useState(false);
   const [useGazAppoint, setUseGazAppoint] = useState(true);
 
-  useEffect(() => { lsSet('emissions', emissions); }, [emissions]);
-  useEffect(() => { lsSet('thermalParams', thermalParams); }, [thermalParams]);
-  useEffect(() => { lsSet('airComposition', airComposition); }, [airComposition]);
+  useEffect(() => { lsSet('emissions_FB', emissions); }, [emissions]);
+  useEffect(() => { lsSet('thermalParams_FB', thermalParams); }, [thermalParams]);
+  useEffect(() => { lsSet('airComposition_FB', airComposition); }, [airComposition]);
 
   // ---- Sync boue depuis innerData ----
   useEffect(() => {
@@ -596,7 +598,7 @@ const CombustionTab = ({ innerData = {}, onInnerDataChange, onResultsChange, cur
     innerData.Tf_voute_ap_HX_C = results.Tf_voute_ap_HX_C || 0;
     innerData.Hf_voute_ap_HX_kW = results.Hf_voute_ap_HX_kW || 0;
     innerData.Hair_ap_prechauffage_kW = results.Hair_ap_prechauffage_kW || 0;
-    innerData.Rdt_HX = thermalParams.Rdt_HX * 100 || 85;
+    innerData.Rdt_HX = thermalParams.Rdt_HX != null ? thermalParams.Rdt_HX * 100 : 85;
     innerData.Temp_air_soufflante_C = results.Temp_air_soufflante_C || 60;
     innerData.Q_air_comb_tot_Nm3_h = results.VolumeAirCombustionTot_Nm3_h || 0;
     innerData.Volume_air_combustible_total_Nm3_h =
@@ -626,6 +628,19 @@ const CombustionTab = ({ innerData = {}, onInnerDataChange, onResultsChange, cur
     innerData.H_gaz_inter = results.H_gaz_inter || 0;
     innerData.H_out_kW = results.H_out || 0;
     innerData.H_gaz_residuel = results.H_gaz || 0;
+    const H_gaz_appoint_kW = results.H_gaz_inter || 0;
+    const fuelType = emissions.type_energy;
+    const eau_add_m3_h = (emissions.eau_add_kg_h || 0) / 1000;
+    const waterType = emissions.type_eau_add ?? 'EAU_POTABLE';
+    innerData.Conso_EauPotable_m3        = waterType === 'EAU_POTABLE'         ? eau_add_m3_h : 0;
+    innerData.Conso_EauRefroidissement_m3 = waterType === 'EAU_REFROIDISSEMENT' ? eau_add_m3_h : 0;
+    innerData.Conso_EauDemin_m3          = waterType === 'EAU_DEMINERALISEE'   ? eau_add_m3_h : 0;
+    innerData.Conso_EauRiviere_m3        = waterType === 'EAU_RIVIERE'         ? eau_add_m3_h : 0;
+    innerData.Conso_EauAdoucie_m3        = waterType === 'EAU_ADOUCIE'         ? eau_add_m3_h : 0;
+    innerData.conso_gaz_H_MW       = fuelType === 'GAZ'    ? H_gaz_appoint_kW/1000  : 0;
+    innerData.conso_gaz_L_MW       = fuelType === 'GAZ'    ? 0 : 0;
+    innerData.conso_gaz_Process_MW = fuelType === 'BIOGAZ' ? H_gaz_appoint_kW/1000  : 0;
+    innerData.conso_fuel_MW        = fuelType === 'FIOUL'  ? H_gaz_appoint_kW/1000  : 0;
 
     const masses_FG_out = {
       CO2: (results.FG_kg_h_CO2 || 0) + (results.FG_kg_h_CO || 0),
@@ -698,18 +713,6 @@ const CombustionTab = ({ innerData = {}, onInnerDataChange, onResultsChange, cur
   const sludgeComp = { C: innerData.C_percent || 0, H: innerData.H_percent || 0, O: innerData.O_percent || 0, N: innerData.N_percent || 0, S: innerData.S_percent || 0, Cl: innerData.Cl_percent || 0 };
   const residuConvergence = results.H_gaz ?? null;
   const f = (v, d = 2) => v != null && isFinite(v) ? v.toFixed(d) : '-';
-  const f0 = (v) => f(v, 0);
-
-  // ============================================================
-  // AIR COMPOSITION ROWS pour le tableau simplifié
-  // ============================================================
-  const airCompRows = [
-    { key: 'air_instrumentation', label: 'Air instrumentation' },
-    { key: 'air_secondaire', label: 'Air secondaire' },
-    { key: 'air_tertiaire', label: 'Air tertiaire' },
-    { key: 'air_combustion_boue', label: 'Air combustion boue' },
-    { key: 'air_combustion_gaz', label: 'Air combustion gaz' },
-  ];
 
   // Masses relatives par kg d'air sec (référence = 1 kg) pour le calcul des fractions élémentaires.
   // On n'utilise pas masse_seche (= 0 par défaut) — les fractions sont indépendantes de la masse totale.
@@ -853,6 +856,19 @@ const CombustionTab = ({ innerData = {}, onInnerDataChange, onResultsChange, cur
             <input type="number" step="0.0001" value={emissions.Teneur_en_eau_kgH2O_kgAS ?? DEFAULT_EMISSIONS.Teneur_en_eau_kgH2O_kgAS} onChange={(e) => handleEmission('Teneur_en_eau_kgH2O_kgAS', e.target.value)} style={inputStyle} /></div>
           <div><label style={labelStyle}>{t('Eau additionnelle')} (kg/h)</label>
             <input type="number" step="1" value={emissions.eau_add_kg_h ?? DEFAULT_EMISSIONS.eau_add_kg_h} onChange={(e) => handleEmission('eau_add_kg_h', e.target.value)} style={inputStyle} /></div>
+          <div><label style={labelStyle}>{t('Type eau additionnelle')}</label>
+            <select
+              value={emissions.type_eau_add ?? DEFAULT_EMISSIONS.type_eau_add}
+              onChange={(e) => setEmissions((prev) => ({ ...prev, type_eau_add: e.target.value }))}
+              style={inputStyle}
+            >
+              <option value="EAU_POTABLE">Eau Potable</option>
+              <option value="EAU_REFROIDISSEMENT">Eau de refroidissement</option>
+              <option value="EAU_DEMINERALISEE">Eau deminéralisée</option>
+              <option value="EAU_RIVIERE">Eau de rivière</option>
+              <option value="EAU_ADOUCIE">Eau adoucie</option>
+            </select>
+          </div>
         </div>
       </div>
 

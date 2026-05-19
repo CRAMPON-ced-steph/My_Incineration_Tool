@@ -16,19 +16,27 @@ const useTranslation = (currentLanguage = 'fr') => {
   }, [currentLanguage]);
 };
 
-const Recuperateur = ({ innerData = {}, combustionResults = {}, currentLanguage = 'fr' }) => {
+const LS_KEY = 'freeParams_HX_FB';
+const DEFAULT_FREE_PARAMS = {
+  Encrassement_pourcent: 10,
+  vitesse_des_fumees_m_s: 16,
+  PDC_carneau_mmCE: 5,
+  PDC_echangeur_air_mmCE: 0,
+  PDC_recuperateur_fumees_mmCE: 40,
+  vitesse_air_m_s: 25,
+  PDC_reseau_sortie_entree_boite_mmCe: 50,
+  PDC_HX_FG_mmCE: 50,
+  Rendement_ventilateur: 0.7,
+};
+
+const Recuperateur = ({ innerData = {}, combustionResults = {}, currentLanguage = 'fr', onInnerDataChange }) => {
   const t = useTranslation(currentLanguage);
 
-  const [freeParams, setFreeParams] = useState({
-    Encrassement_pourcent: 10,
-    vitesse_des_fumees_m_s: 16,
-    PDC_carneau_mmCE: 5,
-    PDC_echangeur_air_mmCE: 0,
-    PDC_recuperateur_fumees_mmCE: 40,
-    vitesse_air_m_s: 25,
-    PDC_reseau_sortie_entree_boite_mmCe: 50,
-    PDC_HX_FG_mmCE: 50,
-    Rendement_ventilateur: 0.7,
+  const [freeParams, setFreeParams] = useState(() => {
+    try {
+      const saved = localStorage.getItem(LS_KEY);
+      return saved ? { ...DEFAULT_FREE_PARAMS, ...JSON.parse(saved) } : DEFAULT_FREE_PARAMS;
+    } catch { return DEFAULT_FREE_PARAMS; }
   });
 
   // ── Entrées fumées depuis CombustionTab ──
@@ -153,7 +161,7 @@ const Recuperateur = ({ innerData = {}, combustionResults = {}, currentLanguage 
   const Q_air_ventilateur_m3_h = calculDebitPT(Q_air_pulser_Nm3_h, P_cote_air_entree_mmCE, Temp_air_soufflante_C);
   const Puissance_elec_ventilateur_kW =
     freeParams.Rendement_ventilateur > 0
-      ? (Q_air_ventilateur_m3_h / 3600) * P_cote_air_entree_mmCE * 9.8 / freeParams.Rendement_ventilateur / 1000
+      ? ((Q_air_ventilateur_m3_h / 3600) * P_cote_air_entree_mmCE * 9.8 )/ freeParams.Rendement_ventilateur / 1000
       : 0;
 
   // ============================================================
@@ -193,17 +201,22 @@ const Recuperateur = ({ innerData = {}, combustionResults = {}, currentLanguage 
     innerData.Q_air_ventilateur_m3_h      = Q_air_ventilateur_m3_h;
     innerData.Puissance_elec_ventilateur_kW = Puissance_elec_ventilateur_kW;
     innerData.Rendement_ventilateur_HX    = freeParams.Rendement_ventilateur;
+    onInnerDataChange?.();
   }, [innerData,
     Q_FG_wet_entree_m3_h, P_sortie_HX_fg_mmCE, Q_FG_wet_sortie_m3_h,
     PDC_HX_cote_air_mmCE, P_cote_air_entree_mmCE, Q_air_entree_HX_m3_h,
     Q_air_sortie_HX_m3_h, H_air_soufflante_kW, Q_air_pulser_Nm3_h,
     Q_air_ventilateur_m3_h, Puissance_elec_ventilateur_kW,
-    freeParams.Rendement_ventilateur,
+    freeParams.Rendement_ventilateur, onInnerDataChange,
   ]);
 
   // ============================================================
   // HANDLERS
   // ============================================================
+
+  useEffect(() => {
+    try { localStorage.setItem(LS_KEY, JSON.stringify(freeParams)); } catch { /* noop */ }
+  }, [freeParams]);
 
   const handleFreeParamChange = useCallback((key, value) => {
     setFreeParams((prev) => ({ ...prev, [key]: parseFloat(value) || 0 }));

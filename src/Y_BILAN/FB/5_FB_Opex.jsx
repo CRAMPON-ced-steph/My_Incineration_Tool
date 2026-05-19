@@ -1,24 +1,25 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import OpexDashboard from '../../G_Graphiques/Dashboard/OpexDashboard';
 
-import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
-import { translations } from './FB_traduction';
-
-const FBopex = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
-
-  const languageCode = getLanguageCode(currentLanguage);
-  const t = (key) => {
-    return translations[languageCode]?.[key] || translations['fr']?.[key] || key;
-  };
-
+const FBopex = ({ innerData, innerDataTick, setInnerData, currentLanguage = 'fr' }) => {
   return (
     <OpexDashboard
       equipmentType="FB"
       innerData={innerData}
+      innerDataTick={innerDataTick}
       setInnerData={setInnerData}
       currentLanguage={currentLanguage}
+      equipmentConfig={{ numElecRows: 6 }}
     />
   );
+};
+
+FBopex.propTypes = {
+  innerData: PropTypes.object.isRequired,
+  innerDataTick: PropTypes.number,
+  setInnerData: PropTypes.func.isRequired,
+  currentLanguage: PropTypes.string,
 };
 
 export default FBopex;

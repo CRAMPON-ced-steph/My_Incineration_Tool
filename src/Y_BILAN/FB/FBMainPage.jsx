@@ -43,6 +43,12 @@ const FBMainPage = ({ innerData, nodeData, title, onSendData, onClose, onGoBack,
     setInnerDataTick((t) => t + 1);
   }, []);
 
+  const setInnerDataForCalcOpex = useCallback((updater) => {
+    const newVal = typeof updater === 'function' ? updater(innerDataRef.current) : updater;
+    Object.assign(innerDataRef.current, newVal);
+    notifyInnerDataChanged();
+  }, [notifyInnerDataChanged]);
+
   // ✅ State pour onglet actif
   const [activeTab, setActiveTab] = useState('boues');
 
@@ -291,10 +297,13 @@ const FBMainPage = ({ innerData, nodeData, title, onSendData, onClose, onGoBack,
       'bouesTab_boue',
       'bouesTab_chons',
       'bouesTab_heavyMetals',
-      'emissions',
+      'emissions_FB',
       'Temperatures_imposees',
-      'thermalParams',
-      'emissions2',
+      'thermalParams_FB',
+      'airComposition_FB',
+      'emissions2_FB',
+      'freeParams_HX_FB',
+      'opexDashboard_FB',
     ];
     keys.forEach((k) => {
       try {
@@ -423,6 +432,7 @@ const FBMainPage = ({ innerData, nodeData, title, onSendData, onClose, onGoBack,
             innerData={innerDataRef.current}
             combustionResults={combustionResults}
             currentLanguage={currentLanguage}
+            onInnerDataChange={notifyInnerDataChanged}
           />
         );
 
@@ -430,6 +440,7 @@ const FBMainPage = ({ innerData, nodeData, title, onSendData, onClose, onGoBack,
         return (
           <FBopex
             innerData={innerDataRef.current}
+            innerDataTick={innerDataTick}
             setInnerData={(updater) => {
               const newVal = typeof updater === 'function' ? updater(innerDataRef.current) : updater;
               Object.assign(innerDataRef.current, newVal);
@@ -563,11 +574,8 @@ const FBMainPage = ({ innerData, nodeData, title, onSendData, onClose, onGoBack,
       {/* Composant de calcul OPEX — invisible, toujours monté */}
       <FBCalcOpex
         innerData={innerDataRef.current}
-        setInnerData={(updater) => {
-          const newVal = typeof updater === 'function' ? updater(innerDataRef.current) : updater;
-          Object.assign(innerDataRef.current, newVal);
-          notifyInnerDataChanged();
-        }}
+        innerDataTick={innerDataTick}
+        setInnerData={setInnerDataForCalcOpex}
       />
 
       {/* ════════════════════════════════════════ CONTENT ════════════════════════════════════════ */}
