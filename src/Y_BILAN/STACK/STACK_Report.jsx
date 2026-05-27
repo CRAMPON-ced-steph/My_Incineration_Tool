@@ -1,5 +1,7 @@
 import React from 'react';
 import { getOpexData } from '../../A_Transverse_fonction/opexDataService';
+import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
+import { translations } from './STACK_traduction';
 
 const fmt = (v, decimals = 2) => { const n = parseFloat(v); return isNaN(n) ? '—' : n.toFixed(decimals); };
 const Section = ({ title, children }) => <div style={styles.section}><h2 style={styles.sectionTitle}>{title}</h2>{children}</div>;
@@ -26,12 +28,12 @@ const PollutantTable = ({ masses = {} }) => {
   return <table style={styles.table}><thead><tr>{keys.map(k => <th key={k} style={styles.th}>{k}</th>)}</tr></thead><tbody><tr>{keys.map(k => <td key={k} style={styles.td}>{fmt(masses[k], 4)}</td>)}</tr></tbody></table>;
 };
 
-const ElecTable = ({ rows }) => (
+const ElecTable = ({ rows, t }) => (
   <table style={styles.table}>
-    <thead><tr><th style={styles.th}>Consommateur</th><th style={styles.th}>kW</th></tr></thead>
+    <thead><tr><th style={styles.th}>{t('consumer')}</th><th style={styles.th}>kW</th></tr></thead>
     <tbody>
       {rows.map(r => <tr key={r.label}><td style={styles.tdLabel}>{r.label}</td><td style={styles.td}>{fmt(r.value)}</td></tr>)}
-      <tr style={{ background: '#eaf0fb', fontWeight: 'bold' }}><td style={styles.tdLabel}>Total</td><td style={styles.td}>{fmt(rows.reduce((s, r) => s + (parseFloat(r.value) || 0), 0))}</td></tr>
+      <tr style={{ background: '#eaf0fb', fontWeight: 'bold' }}><td style={styles.tdLabel}>{t('total')}</td><td style={styles.td}>{fmt(rows.reduce((s, r) => s + (parseFloat(r.value) || 0), 0))}</td></tr>
     </tbody>
   </table>
 );
@@ -52,7 +54,9 @@ const computeOpexCosts = (innerData) => {
   return { elecRows, totalElec_kW, coutElec, co2Elec, coutAir, co2Air, totalCout_h, totalCout_an, totalCO2_kgh, currency, availability };
 };
 
-const STACK_Report = ({ innerData = {} }) => {
+const STACK_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
+  const languageCode = getLanguageCode(currentLanguage);
+  const t = (key) => translations[languageCode]?.[key] || translations['fr']?.[key] || key;
   // ── Gaz de combustion ──────────────────────────────────────────────────────
   const T_OUT    = innerData.T_OUT || 0;
   const T_STACK_in = innerData.T_STACK_in || T_OUT;
@@ -91,19 +95,19 @@ const STACK_Report = ({ innerData = {} }) => {
 
   return (
     <div style={styles.container}>
-      <h1 style={styles.mainTitle}>Cheminée (Stack) — Rapport de synthèse</h1>
+      <h1 style={styles.mainTitle}>{t('reportTitle_STACK')}</h1>
 
       {/* ── Section 1 : Gaz de combustion ─────────────────────────────────── */}
-      <Section title="1. Gaz de combustion">
+      <Section title={`1. ${t('combustionGases')}`}>
         <div style={styles.twoCol}>
           <SubSection>
-            <KV label="Température entrée cheminée [°C]" value={fmt(T_STACK_in, 0)} />
-            <KV label="O₂ (sec)" value={fmt(O2_calcule)} unit="%" />
-            <KV label="Débit humide total [kg/h]" value={fmt(FG_wet_total)} />
-            <KV label="Débit sec [Nm³/h]"    value={fmt(FG_OUT_Nm3_h.dry  ?? innerData.FG_sec_tot,  0)} />
-            <KV label="Débit humide [Nm³/h]" value={fmt(FG_OUT_Nm3_h.wet  ?? innerData.FG_humide_tot, 0)} />
+            <KV label={t('stackInletTemp')} value={fmt(T_STACK_in, 0)} />
+            <KV label={t('o2Dry')} value={fmt(O2_calcule)} unit="%" />
+            <KV label={t('wetFlowTotal')} value={fmt(FG_wet_total)} />
+            <KV label={t('dryFlowNm3h')}    value={fmt(FG_OUT_Nm3_h.dry  ?? innerData.FG_sec_tot,  0)} />
+            <KV label={t('wetFlowNm3h')} value={fmt(FG_OUT_Nm3_h.wet  ?? innerData.FG_humide_tot, 0)} />
           </SubSection>
-          <SubSection title="Composition gaz">
+          <SubSection title={t('gasComposition')}>
             <GasTable data={{
               'kg/h':   FG_OUT_kg_h,
               'Nm³/h':  { CO2: FG_OUT_Nm3_h.CO2, H2O: FG_OUT_Nm3_h.H2O, O2: FG_OUT_Nm3_h.O2, N2: FG_OUT_Nm3_h.N2 },
@@ -113,75 +117,75 @@ const STACK_Report = ({ innerData = {} }) => {
       </Section>
 
       {/* ── Section 2 : Émissions polluantes ──────────────────────────────── */}
-      <Section title="2. Émissions polluantes">
-        <SubSection title="Polluants en entrée [kg/h]"><PollutantTable masses={PInput} /></SubSection>
-        <SubSection title="Polluants en sortie [kg/h]"><PollutantTable masses={Poutput} /></SubSection>
+      <Section title={`2. ${t('pollutantEmissions')}`}>
+        <SubSection title={t('pollutantsInput')}><PollutantTable masses={PInput} /></SubSection>
+        <SubSection title={t('pollutantsOutput')}><PollutantTable masses={Poutput} /></SubSection>
       </Section>
 
       {/* ── Section 3 : Design cheminée ───────────────────────────────────── */}
-      <Section title="3. Design — Dimensionnement cheminée">
+      <Section title={`3. ${t('stackDesignTitle')}`}>
         {!hasDesignData ? (
           <p style={{ color: '#999', fontSize: 12, padding: '10px 14px' }}>
-            Données non disponibles — ouvrir l'onglet Design.
+            {t('noDesignData')}
           </p>
         ) : (
           <div style={styles.twoCol}>
-            <SubSection title="Débits gaz">
-              <KV label="Débit massique humide [kg/h]"   value={fmt(Qm_kg_h,  0)} />
-              <KV label="Volume sec [Nm³/h]"              value={fmt(Qv_Nm3_h, 0)} />
-              <KV label="Volume réel à T sortie [m³/h]"  value={fmt(Qv_m3_h,  0)} />
-              <KV label="Polluant de référence"           value={pollutantType} />
-              <KV label="Type"                            value={isGaz ? 'Gaz' : 'Poussières'} />
-              <KV label="Zone réglementaire"              value={zone !== undefined ? `Zone ${zone}` : '—'} />
+            <SubSection title={t('gasFlows')}>
+              <KV label={t('wetMassFlow')}   value={fmt(Qm_kg_h,  0)} />
+              <KV label={t('dryVolume')}              value={fmt(Qv_Nm3_h, 0)} />
+              <KV label={t('realVolAtTemp')}  value={fmt(Qv_m3_h,  0)} />
+              <KV label={t('referencePolluant')}           value={pollutantType} />
+              <KV label={t('typeLabel')}                            value={isGaz ? t('gas') : t('dust')} />
+              <KV label={t('regulatoryZone')}              value={zone !== undefined ? `${t('zone')} ${zone}` : '—'} />
             </SubSection>
-            <SubSection title="Hauteurs calculées [m]">
-              <KV label="Hauteur min. théorique"          value={fmt(hp_min,        1)} />
-              <KV label="Hauteur corrigée multi-stack"    value={fmt(hp_multistack, 1)} />
-              <KV label="Hauteur corrigée obstacles"      value={fmt(hp_obstacles,  1)} />
+            <SubSection title={t('calculatedHeightsM')}>
+              <KV label={t('minTheoreticalHeight')}          value={fmt(hp_min,        1)} />
+              <KV label={t('correctedMultiStack')}    value={fmt(hp_multistack, 1)} />
+              <KV label={t('correctedObstacles')}      value={fmt(hp_obstacles,  1)} />
             </SubSection>
           </div>
         )}
         {hasDesignData && (
-          <SubSection title="Conformité réglementaire">
+          <SubSection title={t('regulatoryCompliance')}>
             <div style={{ ...styles.complianceBadge, borderColor: compliant ? '#27ae60' : '#e74c3c', background: compliant ? '#eafaf1' : '#fdf2f2' }}>
-              <KV label={`Concentration calculée [mg/Nm³]`} value={fmt(concentration, 2)} />
-              <KV label={`Limite d'émission VLE [mg/Nm³]`}  value={fmt(emissionLimit,  2)} />
-              <KV label="% de la VLE"                       value={fmt(compliantPct,   1)} unit="%" />
-              <KV label="Statut"                            value={compliant ? '✔ Conforme' : '✘ Non conforme'} />
+              <KV label={t('calculatedConcentrationMg')} value={fmt(concentration, 2)} />
+              <KV label={t('emissionLimitVLE')}  value={fmt(emissionLimit,  2)} />
+              <KV label={t('percentVLE')}                       value={fmt(compliantPct,   1)} unit="%" />
+              <KV label={t('statusLabel')}                            value={compliant ? `✔ ${t('compliantStatus')}` : `✘ ${t('nonCompliantStatus')}`} />
             </div>
           </SubSection>
         )}
         {elecRows.length > 0 && (
-          <SubSection title="Consommations électriques">
-            <ElecTable rows={elecRows} />
+          <SubSection title={t('electricalConsumption')}>
+            <ElecTable rows={elecRows} t={t} />
           </SubSection>
         )}
       </Section>
 
       {/* ── Section 4 : OPEX ──────────────────────────────────────────────── */}
-      <Section title="4. OPEX — Coûts horaires">
+      <Section title={`4. ${t('opexHourlyCosts')}`}>
         {opex.totalElec_kW === 0
-          ? <p style={{ color: '#999', fontSize: 12, padding: '10px 14px' }}>Coûts OPEX non disponibles — ouvrir les onglets Design et Opex.</p>
+          ? <p style={{ color: '#999', fontSize: 12, padding: '10px 14px' }}>{t('noOpexData')}</p>
           : (
             <div>
               <div style={styles.subSection}>
                 <div style={styles.tagRow}>
                   <div style={{ ...styles.tag, borderLeft: '4px solid #4a90e2', minWidth: 130 }}>
-                    <span style={styles.tagLabel}>{`Électricité [${opex.currency}/h]`}</span>
+                    <span style={styles.tagLabel}>{`${t('electricityTag')} [${opex.currency}/h]`}</span>
                     <span style={{ ...styles.tagValue, color: '#4a90e2' }}>{fmt(opex.coutElec, 2)}</span>
                   </div>
                 </div>
               </div>
               <div style={styles.twoCol}>
                 <div style={{ ...styles.subSection, background: '#f0f5ff', margin: 8, borderRadius: 6 }}>
-                  <h3 style={{ ...styles.subTitle, color: '#1a3a6b', fontSize: 14 }}>Total coût</h3>
-                  <KV label={`Coût horaire [${opex.currency}/h]`}                  value={fmt(opex.totalCout_h, 2)} />
-                  <KV label={`Coût annuel (${opex.availability}h) [${opex.currency}/an]`} value={fmt(opex.totalCout_an, 0)} />
+                  <h3 style={{ ...styles.subTitle, color: '#1a3a6b', fontSize: 14 }}>{t('totalCost')}</h3>
+                  <KV label={`${t('hourlyCost')} [${opex.currency}/h]`}                  value={fmt(opex.totalCout_h, 2)} />
+                  <KV label={`${t('annualCost')} (${opex.availability}h) [${opex.currency}/an]`} value={fmt(opex.totalCout_an, 0)} />
                 </div>
                 <div style={{ ...styles.subSection, background: '#f5f0ff', margin: 8, borderRadius: 6 }}>
-                  <h3 style={{ ...styles.subTitle, color: '#6a1a6b', fontSize: 14 }}>Total CO₂ [kg/h]</h3>
-                  <KV label="CO₂ électricité" value={fmt(opex.co2Elec, 3)} />
-                  <KV label="Total CO₂"       value={fmt(opex.totalCO2_kgh, 2)} />
+                  <h3 style={{ ...styles.subTitle, color: '#6a1a6b', fontSize: 14 }}>{t('totalCO2')}</h3>
+                  <KV label={t('co2Electricity')} value={fmt(opex.co2Elec, 3)} />
+                  <KV label={t('totalCO2label')}       value={fmt(opex.totalCO2_kgh, 2)} />
                 </div>
               </div>
             </div>
@@ -189,7 +193,7 @@ const STACK_Report = ({ innerData = {} }) => {
         }
       </Section>
 
-      <div style={styles.footer}>Rapport généré automatiquement — {new Date().toLocaleDateString()}</div>
+      <div style={styles.footer}>{t('autoReport')} — {new Date().toLocaleDateString()}</div>
     </div>
   );
 };

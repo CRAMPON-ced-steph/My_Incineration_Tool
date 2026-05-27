@@ -29,7 +29,7 @@ const ELECTROFILTERMainPage = ({ nodeData, title, onSendData, onClose, onGoBack 
   {name: t('Pollutant Emissions'), content: <ELECTROFILTERFlueGasPollutantEmission  innerData={innerData}setInnerData={setInnerData}currentLanguage={currentLanguage}/>,},
   {name: t('Design'), content: < ELECTROFILTERDesign innerData={innerData}setInnerData={setInnerData}currentLanguage={currentLanguage}/> },
   //{name: t('Opex'), content: < ELECTROFILTEROpex innerData={innerData}setInnerData={setInnerData} currentLanguage={currentLanguage}/> },
-  {name: 'Rapport', content: <ELECTROFILTER_Report innerData={innerData} />},
+  {name: t('Rapport'), content: <ELECTROFILTER_Report innerData={innerData} currentLanguage={currentLanguage} />},
   ];
 
   const [activeTabIndex, setActiveTabIndex] = useState(0);

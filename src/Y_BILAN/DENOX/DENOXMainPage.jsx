@@ -42,8 +42,8 @@ const DENOXMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, current
       content: <DENOXOpex innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} />
     },
     {
-      name: 'Rapport',
-      content: <DENOX_Report innerData={innerData} />
+      name: t('Rapport'),
+      content: <DENOX_Report innerData={innerData} currentLanguage={currentLanguage} />
     },
   ];
 

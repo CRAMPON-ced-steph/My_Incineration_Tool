@@ -21,16 +21,19 @@ import '../../index.css';
 
 const IDFANMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLanguage = 'fr'  }) => {
 
+  const languageCode = getLanguageCode(currentLanguage);
+  const t = (key) => translations[languageCode]?.[key] || translations['fr']?.[key] || key;
+
   const [innerData, setInnerData] = useState(nodeData.result);
   const tabs = [
   //{name: 'Steam Parameters',content: (<IDFAN_Parameters innerData={innerData} />),},
-  {name: 'Flue gases', content: < IDFANFlueGasParameters innerData={innerData}setInnerData={setInnerData}currentLanguage={currentLanguage}/> },
-  {name: 'Pollutant Emissions', content: <IDFANFlueGasPollutantEmission  innerData={innerData}setInnerData={setInnerData}currentLanguage={currentLanguage}/>,},
+  {name: t('Flue gases'), content: < IDFANFlueGasParameters innerData={innerData}setInnerData={setInnerData}currentLanguage={currentLanguage}/> },
+  {name: t('Pollutant Emissions'), content: <IDFANFlueGasPollutantEmission  innerData={innerData}setInnerData={setInnerData}currentLanguage={currentLanguage}/>,},
  // {name: 'Design', content: < IDFANDesign innerData={innerData}/> },
 
  //{name: 'Design', content: < IDFANDesign innerData={innerData}setInnerData={setInnerData}/> },
- {name: 'Opex', content: < IDFANOpex innerData={innerData}setInnerData={setInnerData}currentLanguage={currentLanguage} /> },
- {name: 'Rapport', content: <IDFAN_Report innerData={innerData} />},
+ {name: t('Opex'), content: < IDFANOpex innerData={innerData}setInnerData={setInnerData}currentLanguage={currentLanguage} /> },
+ {name: t('Rapport'), content: <IDFAN_Report innerData={innerData} currentLanguage={currentLanguage} />},
 
   ];
 
@@ -95,7 +98,7 @@ const IDFANMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, current
           marginBottom: '20px',
         }}
       >
-        <h1>IDFAN Configuration</h1>
+        <h1>{t('IDFAN Configuration')}</h1>
         <button
           onClick={() =>{onGoBack(null); sendAllData()}}
           style={{
@@ -107,7 +110,7 @@ const IDFANMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, current
             cursor: 'pointer',
           }}
         >
-          Back to Flow
+          {t('Back to Flow')}
         </button>
       </div>
 

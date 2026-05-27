@@ -40,8 +40,8 @@ const SCRUBBERMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, curr
       content: <SCRUBBEROpex innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} />
     },
     {
-      name: 'Rapport',
-      content: <SCRUBBER_Report innerData={innerData} />
+      name: t('rapport'),
+      content: <SCRUBBER_Report innerData={innerData} currentLanguage={currentLanguage} />
     },
   ];
 

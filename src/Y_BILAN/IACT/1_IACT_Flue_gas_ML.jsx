@@ -1,21 +1,24 @@
+/* eslint-disable react/prop-types */
 import React, { useState, useEffect, useCallback } from 'react';
 import MassCalculator from '../../C_Components/Tableau_fumee_inverse';
 import TableGeneric from '../../C_Components/Tableau_generique';
-import { Tsat_p, hL_T, hL_p, hV_p, h_pT } from '../../A_Transverse_fonction/steam_table3';
-import { fh_CO2, fh_H2O, fh_O2, fh_N2 } from '../../A_Transverse_fonction/enthalpy_gas';
-import PrintButton from '../../C_Components/Windows_print';
 import { H2O_kg_m3, CO2_kg_m3, O2_kg_m3, N2_kg_m3 } from '../../A_Transverse_fonction/conv_calculation';
-import { h_fumee, Qeau_added_to_be_at_T } from '../../A_Transverse_fonction/enthalpy_mix_gas';
+import { h_fumee } from '../../A_Transverse_fonction/enthalpy_mix_gas';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './IACT_traduction';
 
+// Densités air sec à 0°C, 1 atm [kg/Nm³]
+const rho_air = 1.293;
+const O2_mass_frac = 0.233;
+const N2_mass_frac = 0.767;
+
 const IACTFlueGasParameters = ({ innerData, currentLanguage = 'fr' }) => {
   const initialEmissions_IACT = {
-    'Flue gas temperature outlet [°C]': innerData?.T_OUT -10,
+    'Flue gas temperature outlet [°C]': innerData?.T_OUT - 10,
     'Ambient air temperature [°C]': 20,
-    'Volume of air ingress [Nm3/h]': 0,
-    'Thermal losses [%]': 2,
-    'Cooling water temperature [°C]': 20,
+    'Temperature de l\'air réchauffé [°C]': 150,
+    'Rendement d\'échange [%]': 98,
+    'PDC_mmCE [mmCE]': 10,
   };
 
   const languageCode = getLanguageCode(currentLanguage);
@@ -24,123 +27,134 @@ const IACTFlueGasParameters = ({ innerData, currentLanguage = 'fr' }) => {
   };
 
   const [emissions_IACT, setEmissions_IACT] = useState(() => {
-    const savedEmissions = localStorage.getItem('emissions_IACT');
-    return savedEmissions ? JSON.parse(savedEmissions) : initialEmissions_IACT;
+    try {
+      const saved = JSON.parse(localStorage.getItem('emissions_IACT') || '{}');
+      // Ne conserver que les clés actuelles, avec fallback sur les valeurs par défaut
+      return Object.fromEntries(
+        Object.keys(initialEmissions_IACT).map(k => [k, saved[k] ?? initialEmissions_IACT[k]])
+      );
+    } catch {
+      return initialEmissions_IACT;
+    }
   });
 
   useEffect(() => {
     localStorage.setItem('emissions_IACT', JSON.stringify(emissions_IACT));
   }, [emissions_IACT]);
 
-  // Input data with fallback values
+  // Données amont
   const T_IN = innerData?.T_OUT || 200;
-
   const P_IN = innerData?.P_OUT || 0;
   const FG_IN = innerData?.FG_OUT_kg_h || { CO2: 1, H2O: 1, O2: 1, N2: 1 };
 
-  // Extract parameters from state
-  const T_out = emissions_IACT['Flue gas temperature outlet [°C]'];
-  const T_air = emissions_IACT['Ambient air temperature [°C]'];
-  const V_air_ingress = emissions_IACT['Volume of air ingress [Nm3/h]'];
-  const Pth = emissions_IACT['Thermal losses [%]'];
-  const T_eau = emissions_IACT['Cooling water temperature [°C]'];
+  // Paramètres utilisateur
+  const T_out     = emissions_IACT['Flue gas temperature outlet [°C]'];
+  const T_air_in  = emissions_IACT['Ambient air temperature [°C]'];
+  const T_air_out = emissions_IACT['Temperature de l\'air réchauffé [°C]'];
+  const Pth       = emissions_IACT['Rendement d\'échange [%]'];
+  const PDC_mmCE  = emissions_IACT['PDC_mmCE [mmCE]'];
 
-  // Calculate mass flows
+  // Débits massiques fumées (inchangés côté fumées — échangeur sans mélange)
   const FG_CO2_kg_h = FG_IN.CO2;
   const FG_H2O_kg_h = FG_IN.H2O;
-  const FG_O2_kg_h = FG_IN.O2;
-  const FG_N2_kg_h = FG_IN.N2;
+  const FG_O2_kg_h  = FG_IN.O2;
+  const FG_N2_kg_h  = FG_IN.N2;
 
-  // Convert to volumetric flows
+  // Débits volumiques fumées entrée [Nm³/h]
   const FG_CO2_m3_h = CO2_kg_m3(FG_CO2_kg_h);
   const FG_H2O_m3_h = H2O_kg_m3(FG_H2O_kg_h);
-  const FG_O2_m3_h = O2_kg_m3(FG_O2_kg_h);
-  const FG_N2_m3_h = N2_kg_m3(FG_N2_kg_h);
+  const FG_O2_m3_h  = O2_kg_m3(FG_O2_kg_h);
+  const FG_N2_m3_h  = N2_kg_m3(FG_N2_kg_h);
 
   const FG_humide_tot_m3_h = FG_CO2_m3_h + FG_H2O_m3_h + FG_O2_m3_h + FG_N2_m3_h;
-  const FG_sec_tot_m3_h = FG_CO2_m3_h + FG_O2_m3_h + FG_N2_m3_h;
+  const FG_sec_tot_m3_h    = FG_CO2_m3_h + FG_O2_m3_h + FG_N2_m3_h;
 
-  // Air ingress composition
-  let FG_air_O2_kg_h = 0;
-  let FG_air_N2_kg_h = 0;
-  let FG_air_CO2_kg_h = 0;
-  let FG_air_H2O_kg_h = 0;
-  let Q_eau_kg_h = 0;
-  let Delta_H = 0;
-  let H_in_IACT = 0;
-  let H_out_IACT = 0;
-  let T_with_air_ingress_out = T_out;
+  // Bilan enthalpique côté fumées
+  const H_in_IACT   = h_fumee(T_IN,  FG_IN.CO2, FG_IN.H2O, FG_IN.N2, FG_IN.O2);
+  const H_out_IACT  = h_fumee(T_out, FG_IN.CO2, FG_IN.H2O, FG_IN.N2, FG_IN.O2);
+  const Delta_H_FG  = H_in_IACT - H_out_IACT;            // kJ/h cédé par les fumées
+  const Delta_H_air = Delta_H_FG * (Pth / 100);           // kJ/h transférés à l'air
 
-  // Calculate with or without air ingress
-  if (V_air_ingress !== 0) {
-    FG_air_O2_kg_h = 0.21 * V_air_ingress;
-    FG_air_N2_kg_h = 0.79 * V_air_ingress;
+  // Débit d'air calculé par boucle — incrémente de 1 Nm³/h jusqu'à satisfaire le bilan
+  const m_O2_per_Nm3 = O2_mass_frac * rho_air;
+  const m_N2_per_Nm3 = N2_mass_frac * rho_air;
+  const h_air_out_unit = h_fumee(T_air_out, 0, 0, m_N2_per_Nm3, m_O2_per_Nm3);
+  const h_air_in_unit  = h_fumee(T_air_in,  0, 0, m_N2_per_Nm3, m_O2_per_Nm3);
 
-    T_with_air_ingress_out = (T_out * FG_humide_tot_m3_h + V_air_ingress * T_air) / (FG_humide_tot_m3_h + V_air_ingress);
-    H_in_IACT = h_fumee(T_IN, FG_IN.CO2, FG_IN.H2O, FG_IN.N2, FG_IN.O2);
-    H_out_IACT = h_fumee(T_out + (T_out - T_with_air_ingress_out), FG_IN.CO2, FG_IN.H2O, FG_IN.N2, FG_IN.O2);
-    Delta_H = H_in_IACT * (1 - Pth / 100) - H_out_IACT;
-    Q_eau_kg_h = Qeau_added_to_be_at_T(T_IN, T_eau, T_out + (T_out - T_with_air_ingress_out), Pth, FG_IN.CO2, FG_IN.H2O, FG_IN.N2, FG_IN.O2);
-  } else {
-    T_with_air_ingress_out = T_out;
-    H_in_IACT = h_fumee(T_IN, FG_IN.CO2, FG_IN.H2O, FG_IN.N2, FG_IN.O2);
-    H_out_IACT = h_fumee(T_out, FG_IN.CO2, FG_IN.H2O, FG_IN.N2, FG_IN.O2);
-    Delta_H = H_in_IACT * (1 - Pth / 100) - H_out_IACT;
-    Q_eau_kg_h = Qeau_added_to_be_at_T(T_IN, T_eau, T_out, Pth, FG_IN.CO2, FG_IN.H2O, FG_IN.N2, FG_IN.O2);
-  }
+  // Débit d'air chauffé (cp_air moyen ≈ 1.005 kJ/kg·K)
+  const cp_air = 1.005; // kJ/(kg·K)
+  const Delta_T_air = T_air_out - T_air_in;
+  const Qm_air_kg_h = Delta_T_air > 0
+    ? Delta_H_air / (cp_air * Delta_T_air)
+    : 0;
+  const V_air_Nm3_h = Qm_air_kg_h / rho_air;
 
-  // Output composition
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  // Débits massiques air chauffé
+  const Qm_air_O2_kg_h = V_air_Nm3_h * m_O2_per_Nm3;
+  const Qm_air_N2_kg_h = V_air_Nm3_h * m_N2_per_Nm3;
+
+  // Composition fumées : identique en entrée et sortie (pas de mélange)
   const masses_FG_in_IACT = {
     CO2: FG_CO2_kg_h,
-    O2: FG_O2_kg_h,
+    O2:  FG_O2_kg_h,
     H2O: FG_H2O_kg_h,
-    N2: FG_N2_kg_h
+    N2:  FG_N2_kg_h,
+  };
+  const masses_FG_out_IACT = { ...masses_FG_in_IACT };
+
+  // Composition air chauffé en sortie
+  const masses_air_out = {
+    CO2: 0,
+    O2:  Qm_air_O2_kg_h,
+    H2O: 0,
+    N2:  Qm_air_N2_kg_h,
   };
 
-  const masses_FG_out_IACT = {
-    CO2: FG_CO2_kg_h + FG_air_CO2_kg_h,
-    O2: FG_O2_kg_h + FG_air_O2_kg_h,
-    H2O: FG_H2O_kg_h + Q_eau_kg_h + FG_air_H2O_kg_h,
-    N2: FG_N2_kg_h + FG_air_N2_kg_h
-  };
+  const P_out_mmCE = P_IN - PDC_mmCE;
 
-  // Output volumetric flows
-  const FG_CO2_EAU_m3_h = CO2_kg_m3(masses_FG_out_IACT.CO2);
-  const FG_H2O_EAU_m3_h = H2O_kg_m3(masses_FG_out_IACT.H2O);
-  const FG_O2_EAU_m3_h = O2_kg_m3(masses_FG_out_IACT.O2);
-  const FG_N2_EAU_m3_h = N2_kg_m3(masses_FG_out_IACT.N2);
-
-  const FG_humide_EAU_tot_m3_h = FG_CO2_EAU_m3_h + FG_O2_EAU_m3_h + FG_N2_EAU_m3_h + FG_H2O_EAU_m3_h;
-
-  // Update innerData with calculated values
+  // Mise à jour innerData (mutations intentionnelles — pattern établi)
   if (innerData) {
-    innerData.FG_humide_tot = FG_humide_tot_m3_h;
-    innerData.FG_sec_tot = FG_sec_tot_m3_h;
-    innerData.T_sortie = T_out;
-    innerData.Pin_mmCE = P_IN;
-    innerData.FG_humide_EAU_tot = FG_humide_EAU_tot_m3_h;
-    innerData.Q_eau_kg_h = Q_eau_kg_h;
+    innerData.FG_humide_tot        = FG_humide_tot_m3_h;
+    innerData.FG_sec_tot           = FG_sec_tot_m3_h;
+    innerData.T_sortie             = T_out;
+    innerData.Pin_mmCE             = P_IN;
+    innerData.P_out_mmCE           = P_out_mmCE;
+    innerData.P_OUT                = P_out_mmCE;
+    innerData.FG_OUT_kg_h          = masses_FG_out_IACT;
+    innerData.V_air_chauffe_Nm3_h  = V_air_Nm3_h;
+    innerData.Delta_H_to_air       = Delta_H_air;
+    innerData.H_FG_in              = H_in_IACT;
+    innerData.H_FG_out             = H_out_IACT;
+    innerData.H_air_in             = h_air_in_unit  * V_air_Nm3_h;
+    innerData.H_air_out            = h_air_out_unit * V_air_Nm3_h;
+    innerData.T_air_in             = T_air_in;
+    innerData.T_air_out            = T_air_out;
+    innerData.Pth_echange          = Pth;
+    innerData.PDC_mmCE             = PDC_mmCE;
   }
 
-  // Air ingress composition
-  const masses_Air_ingress = {
-    CO2: FG_air_CO2_kg_h,
-    O2: FG_air_O2_kg_h,
-    H2O: FG_air_H2O_kg_h,
-    N2: FG_air_N2_kg_h,
-  };
-
   const elementsGeneric = [
-    { text: t('Temperature inlet BHF [°C]'), value: T_IN.toFixed(1) },
-    { text: t('Delta enthalpies [kJ/kg]'), value: Delta_H.toFixed(0) },
-    { text: t('Sprayed/cooling water [kg/h]'), value: Q_eau_kg_h.toFixed(0) },
-    { text: t('Outlet flue gas volume [Nm3/h]'), value: FG_humide_EAU_tot_m3_h.toFixed(2) },
+    { text: t('Temperature inlet IACT [°C]'),       value: T_IN.toFixed(1) },
+    { text: t('Delta enthalpies fumées [kJ/h]'),    value: Delta_H_FG.toFixed(0) },
+    { text: t('Chaleur transmise à l\'air [kJ/h]'), value: Delta_H_air.toFixed(0) },
+    { text: t('Débit air chauffé [Nm³/h]'),         value:  V_air_Nm3_h.toFixed(0) },
   ];
 
   const handleChange = (name, value) => {
-    if (name === 'Volume of air ingress [Nm3/h]') {
-      value = Math.max(0, Math.min(10000, value));
-    }
     setEmissions_IACT((prev) => ({
       ...prev,
       [name]: value,
@@ -166,48 +180,30 @@ const IACTFlueGasParameters = ({ innerData, currentLanguage = 'fr' }) => {
             borderRadius: '4px',
             cursor: 'pointer',
             fontWeight: 'bold',
-            marginBottom: '15px'
+            marginBottom: '15px',
           }}
         >
           {t('Clear memory')}
         </button>
 
-        {/* Inline parameters form */}
         <div style={{ display: 'grid', gap: '12px' }}>
-          {Object.entries(emissions_IACT).map(([key, value]) => (
-            <div
-              key={key}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '10px',
-              }}
-            >
-              <label
-                style={{
-                  flex: '1',
-                  minWidth: '250px',
-                  textAlign: 'right',
-                  fontWeight: '500',
-                  color: '#333',
-                }}
-              >
-                {t(key)}:
-              </label>
-              <input
-                type="number"
-                value={value}
-                onChange={(e) => handleChange(key, parseFloat(e.target.value) || 0)}
-                style={{
-                  flex: '0 0 150px',
-                  padding: '8px',
-                  border: '1px solid #ddd',
-                  borderRadius: '4px',
-                  fontSize: '14px',
-                }}
-              />
-            </div>
-          ))}
+          {Object.entries(emissions_IACT).map(([key, value]) => {
+            const isToutlet = key === 'Flue gas temperature outlet [°C]';
+            return (
+              <div key={key} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <label style={{ flex: '1', minWidth: '250px', textAlign: 'right', fontWeight: '500', color: '#333' }}>
+                  {t(key)}:
+                </label>
+                <input
+                  type="number"
+                  value={isToutlet ? parseFloat(Number(value).toFixed(2)) : value}
+                  step={isToutlet ? '0.01' : undefined}
+                  onChange={(e) => handleChange(key, parseFloat(e.target.value) || 0)}
+                  style={{ flex: '0 0 150px', padding: '8px', border: '1px solid #ddd', borderRadius: '4px', fontSize: '14px' }}
+                />
+              </div>
+            );
+          })}
         </div>
       </div>
 
@@ -218,11 +214,11 @@ const IACTFlueGasParameters = ({ innerData, currentLanguage = 'fr' }) => {
       <h4>{t('Flue gas inlet at inlet temperature')} ({T_IN}°C)</h4>
       <MassCalculator masses={masses_FG_in_IACT} TemperatureImposee={T_IN} />
 
-      <h4>{t('Air ingress at ambient temperature')} ({T_air}°C)</h4>
-      <MassCalculator masses={masses_Air_ingress} TemperatureImposee={T_air} />
-
       <h4>{t('Flue gas outlet at outlet temperature')} ({T_out}°C)</h4>
       <MassCalculator masses={masses_FG_out_IACT} TemperatureImposee={T_out} />
+
+      <h4>{t('Air chauffé en sortie')} ({T_air_out}°C)</h4>
+      <MassCalculator masses={masses_air_out} TemperatureImposee={T_air_out} />
     </div>
   );
 };

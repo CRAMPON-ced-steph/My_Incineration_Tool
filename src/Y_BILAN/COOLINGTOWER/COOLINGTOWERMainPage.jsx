@@ -28,7 +28,7 @@ const COOLINGTOWERMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, 
   {name: 'Pollutant Emissions', content: <COOLINGTOWERFlueGasPollutantEmission  innerData={innerData}setInnerData={setInnerData}currentLanguage={currentLanguage} />,},
   {name: 'Design', content: < COOLINGTOWERDesign innerData={innerData}setInnerData={setInnerData}currentLanguage={currentLanguage} /> },
   {name: 'Opex', content: < COOLINGTOWEROpex innerData={innerData}setInnerData={setInnerData}currentLanguage={currentLanguage}  /> },
-  {name: 'Rapport', content: <COOLINGTOWER_Report innerData={innerData} />},
+  {name: 'Rapport', content: <COOLINGTOWER_Report innerData={innerData} currentLanguage={currentLanguage} />},
   ];
 
   const [isActive, setIsActive] = useState(true);

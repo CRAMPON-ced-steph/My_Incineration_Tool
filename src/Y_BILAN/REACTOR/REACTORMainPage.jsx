@@ -46,7 +46,7 @@ const REACTORMainPage = ({ nodeData, title, onSendData, onClose, onGoBack,  curr
     },
     {
       name: 'Rapport',
-      content: <REACTOR_Report innerData={innerData} />
+      content: <REACTOR_Report innerData={innerData} currentLanguage={currentLanguage} />
     },
   ], [currentLanguage, innerData, t]);
 

@@ -1,6 +1,8 @@
 import React from 'react';
 import { getOpexData } from '../../A_Transverse_fonction/opexDataService';
 import { CO2_kg_m3, H2O_kg_m3, O2_kg_m3, N2_kg_m3 } from '../../A_Transverse_fonction/conv_calculation';
+import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
+import { translations } from './IDFAN_traduction';
 
 const fmt = (v, decimals = 2) => { const n = parseFloat(v); return isNaN(n) ? '—' : n.toFixed(decimals); };
 const Section = ({ title, children }) => <div style={styles.section}><h2 style={styles.sectionTitle}>{title}</h2>{children}</div>;
@@ -42,7 +44,9 @@ const computeOpexCosts = (innerData) => {
   return { totalElec_kW, coutElec, co2Elec, coutAir, co2Air, eauRows, coutEau, totalCout_h, totalCout_an, totalCO2_kgh, currency, availability };
 };
 
-const IDFAN_Report = ({ innerData = {} }) => {
+const IDFAN_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
+  const languageCode = getLanguageCode(currentLanguage);
+  const t = (key) => translations[languageCode]?.[key] || translations['fr']?.[key] || key;
   const T_OUT = innerData.T_OUT || 0;
   const O2_calcule = innerData.O2_calcule || 0;
   const FG_OUT_kg_h = innerData.FG_OUT_kg_h || {};
@@ -57,49 +61,49 @@ const IDFAN_Report = ({ innerData = {} }) => {
 
   return (
     <div style={styles.container}>
-      <h1 style={styles.mainTitle}>Ventilateur d'Extraction (ID Fan) — Rapport de synthèse</h1>
+      <h1 style={styles.mainTitle}>{t('reportTitle_IDFAN')}</h1>
 
-      <Section title="1. Gaz de combustion">
+      <Section title={`1. ${t('combustionGases')}`}>
         <div style={styles.twoCol}>
           <SubSection>
-            <KV label="Température de sortie" value={fmt(T_OUT, 0)} unit="°C" />
-            <KV label="O₂ mesuré (sec)" value={fmt(O2_calcule)} unit="%" />
-            <KV label="Débit humide total [kg/h]" value={fmt(FG_wet_total)} />
-            <KV label="Débit sec [Nm³/h]" value={fmt(FG_OUT_Nm3_h.dry, 0)} />
-            <KV label="Débit humide [Nm³/h]" value={fmt(FG_OUT_Nm3_h.wet, 0)} />
+            <KV label={t('outletTemp')} value={fmt(T_OUT, 0)} unit="°C" />
+            <KV label={t('o2Dry')} value={fmt(O2_calcule)} unit="%" />
+            <KV label={t('wetFlowTotal')} value={fmt(FG_wet_total)} />
+            <KV label={t('dryFlowNm3h')} value={fmt(FG_OUT_Nm3_h.dry, 0)} />
+            <KV label={t('wetFlowNm3h')} value={fmt(FG_OUT_Nm3_h.wet, 0)} />
           </SubSection>
-          <SubSection title="Composition gaz de sortie">
+          <SubSection title={t('outletGasComposition')}>
             <GasTable data={{ 'kg/h': FG_OUT_kg_h, 'Nm³/h': { CO2: FG_OUT_Nm3_h.CO2, H2O: FG_OUT_Nm3_h.H2O, O2: FG_OUT_Nm3_h.O2, N2: FG_OUT_Nm3_h.N2 } }} />
           </SubSection>
         </div>
       </Section>
 
-      <Section title="2. Émissions polluantes">
-        <SubSection title="Gaz en entrée [kg/h]"><PollutantTable masses={PInput} /></SubSection>
-        <SubSection title="Gaz en sortie [kg/h]"><PollutantTable masses={Poutput} /></SubSection>
+      <Section title={`2. ${t('pollutantEmissions')}`}>
+        <SubSection title={t('gasInlet')}><PollutantTable masses={PInput} /></SubSection>
+        <SubSection title={t('gasOutlet')}><PollutantTable masses={Poutput} /></SubSection>
       </Section>
 
-      <Section title="3. OPEX — Coûts horaires">
+      <Section title={`3. ${t('opexHourlyCosts')}`}>
         {opex.totalElec_kW === 0 && opex.coutEau === 0
-          ? <p style={{ color: '#999', fontSize: 12, padding: '10px 14px' }}>Coûts OPEX non disponibles — ouvrir l'onglet Opex.</p>
+          ? <p style={{ color: '#999', fontSize: 12, padding: '10px 14px' }}>{t('noOpexData')}</p>
           : (
             <div>
               <div style={styles.subSection}>
                 <div style={styles.tagRow}>
-                  <div style={{ ...styles.tag, borderLeft: '4px solid #4a90e2', minWidth: 130 }}><span style={styles.tagLabel}>{`Électricité [${opex.currency}/h]`}</span><span style={{ ...styles.tagValue, color: '#4a90e2' }}>{fmt(opex.coutElec, 2)}</span></div>
-                  <div style={{ ...styles.tag, borderLeft: '4px solid #17a2b8', minWidth: 130 }}><span style={styles.tagLabel}>{`Air [${opex.currency}/h]`}</span><span style={{ ...styles.tagValue, color: '#17a2b8' }}>{fmt(opex.coutAir, 2)}</span></div>
+                  <div style={{ ...styles.tag, borderLeft: '4px solid #4a90e2', minWidth: 130 }}><span style={styles.tagLabel}>{`${t('electricityTag')} [${opex.currency}/h]`}</span><span style={{ ...styles.tagValue, color: '#4a90e2' }}>{fmt(opex.coutElec, 2)}</span></div>
+                  <div style={{ ...styles.tag, borderLeft: '4px solid #17a2b8', minWidth: 130 }}><span style={styles.tagLabel}>{`${t('airTag')} [${opex.currency}/h]`}</span><span style={{ ...styles.tagValue, color: '#17a2b8' }}>{fmt(opex.coutAir, 2)}</span></div>
                 </div>
               </div>
               <div style={styles.twoCol}>
                 <div style={{ ...styles.subSection, background: '#f0f5ff', margin: 8, borderRadius: 6 }}>
-                  <h3 style={{ ...styles.subTitle, color: '#1a3a6b', fontSize: 14 }}>Total coût</h3>
-                  <KV label={`Coût horaire [${opex.currency}/h]`} value={fmt(opex.totalCout_h, 2)} />
-                  <KV label={`Coût annuel (${opex.availability}h) [${opex.currency}/an]`} value={fmt(opex.totalCout_an, 0)} />
+                  <h3 style={{ ...styles.subTitle, color: '#1a3a6b', fontSize: 14 }}>{t('totalCost')}</h3>
+                  <KV label={`${t('hourlyCost')} [${opex.currency}/h]`} value={fmt(opex.totalCout_h, 2)} />
+                  <KV label={`${t('annualCost')} (${opex.availability}h) [${opex.currency}/an]`} value={fmt(opex.totalCout_an, 0)} />
                 </div>
                 <div style={{ ...styles.subSection, background: '#f5f0ff', margin: 8, borderRadius: 6 }}>
-                  <h3 style={{ ...styles.subTitle, color: '#6a1a6b', fontSize: 14 }}>Total CO₂ [kg/h]</h3>
-                  <KV label="CO₂ électricité" value={fmt(opex.co2Elec, 3)} />
-                  <KV label="Total CO₂" value={fmt(opex.totalCO2_kgh, 2)} />
+                  <h3 style={{ ...styles.subTitle, color: '#6a1a6b', fontSize: 14 }}>{t('totalCO2')}</h3>
+                  <KV label={t('co2Electricity')} value={fmt(opex.co2Elec, 3)} />
+                  <KV label={t('totalCO2label')} value={fmt(opex.totalCO2_kgh, 2)} />
                 </div>
               </div>
             </div>
@@ -107,7 +111,7 @@ const IDFAN_Report = ({ innerData = {} }) => {
         }
       </Section>
 
-      <div style={styles.footer}>Rapport généré automatiquement — {new Date().toLocaleDateString()}</div>
+      <div style={styles.footer}>{t('autoReport')} — {new Date().toLocaleDateString()}</div>
     </div>
   );
 };

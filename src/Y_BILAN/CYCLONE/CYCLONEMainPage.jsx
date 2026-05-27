@@ -42,8 +42,8 @@ const CYCLONEMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, curre
       content: <CYCLONEOpex innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} />
     },
     {
-      name: 'Rapport',
-      content: <CYCLONE_Report innerData={innerData} />
+      name: t('Rapport'),
+      content: <CYCLONE_Report innerData={innerData} currentLanguage={currentLanguage} />
     },
   ];
 

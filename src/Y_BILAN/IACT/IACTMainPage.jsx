@@ -1,11 +1,7 @@
+/* eslint-disable react/prop-types */
 import React, { useState } from 'react';
 import IACTFlueGasParameters from './1_IACT_Flue_gas_ML';
-import IACTFlueGasPollutantEmission from './2_IACT_Pollutant_Emission_ML';
-import IACTDesign from './3_IACT_Design_ML';
-import IACTOpex from './4_IACT_Opex';
 import IACT_Report from './IACT_Report';
-import PrintButton from '../../C_Components/Windows_print';
-import Input_bilan from '../../C_Components/MiseEnFormeInputParamBilan';
 import '../../index.css';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './IACT_traduction';
@@ -24,20 +20,8 @@ const IACTMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentL
       content: <IACTFlueGasParameters innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} />
     },
     {
-      name: t('Pollutant Emissions'),
-      content: <IACTFlueGasPollutantEmission innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} />
-    },
-    {
-      name: t('Design'),
-      content: <IACTDesign innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} />
-    },
-    {
-      name: t('Opex'),
-      content: <IACTOpex innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} />
-    },
-    {
       name: 'Rapport',
-      content: <IACT_Report innerData={innerData} />
+      content: <IACT_Report innerData={innerData} currentLanguage={currentLanguage} />
     },
   ];
 
@@ -49,20 +33,21 @@ const IACTMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentL
   };
 
   const sendAllData = () => {
+    const upstream = nodeData?.result || {};
     onSendData({
       result: {
         ...innerData,
-        PollutantInput: innerData['PInput'] || {},
-        PollutantOutput: innerData['Poutput'] || {},
-        ResidusOutput: innerData['Residus'] || {},
-        MasseDechet: innerData['masse'] || 0,
-        P_OUT: innerData['P_out_mmCE'] || 0,
-        activeNodes_Elec: innerData['activeNodes_Elec'] || [],
-        activeNodes_Eau: innerData['activeNodes_Eau'] || [],
-        activeNodes_Reactifs: innerData['activeNodes_Reactifs'] || [],
-        activeNodes_Energie: innerData['activeNodes_Energie'] || [],
-        activeNodes_CO2: innerData['activeNodes_CO2'] || [],
-        activeNodes_cout: innerData['activeNodes_cout'] || []
+        PollutantInput: upstream['PInput'] || upstream['PollutantInput'] || {},
+        PollutantOutput: upstream['Poutput'] || upstream['PollutantOutput'] || {},
+        ResidusOutput: upstream['Residus'] || upstream['ResidusOutput'] || {},
+        MasseDechet: upstream['masse'] || upstream['MasseDechet'] || 0,
+        P_OUT: innerData?.P_out_mmCE || 0,
+        activeNodes_Elec: upstream['activeNodes_Elec'] || [],
+        activeNodes_Eau: upstream['activeNodes_Eau'] || [],
+        activeNodes_Reactifs: upstream['activeNodes_Reactifs'] || [],
+        activeNodes_Energie: upstream['activeNodes_Energie'] || [],
+        activeNodes_CO2: upstream['activeNodes_CO2'] || [],
+        activeNodes_cout: upstream['activeNodes_cout'] || []
       }
     });
   };

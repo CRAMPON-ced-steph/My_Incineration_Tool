@@ -72,8 +72,8 @@ const STACKMainPage = ({
       )
     },
     {
-      name: 'Rapport',
-      content: <STACK_Report innerData={innerData} />
+      name: t('rapport'),
+      content: <STACK_Report innerData={innerData} currentLanguage={currentLanguage} />
     }
   ];
 

@@ -1,6 +1,8 @@
 import React from 'react';
 import { getOpexData } from '../../A_Transverse_fonction/opexDataService';
 import { CO2_kg_m3, H2O_kg_m3, O2_kg_m3, N2_kg_m3 } from '../../A_Transverse_fonction/conv_calculation';
+import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
+import { translations } from './SCRUBBER_traduction';
 
 const fmt = (v, decimals = 2) => { const n = parseFloat(v); return isNaN(n) ? '—' : n.toFixed(decimals); };
 const Section = ({ title, children }) => <div style={styles.section}><h2 style={styles.sectionTitle}>{title}</h2>{children}</div>;
@@ -49,35 +51,41 @@ const computeOpexCosts = (innerData) => {
   return { totalElec_kW, coutElec, co2Elec, coutAir, co2Air, eauRows, coutEau, reactifRows, coutReactifs, totalCout_h, totalCout_an, totalCO2_kgh, currency, availability };
 };
 
-const OpexSummary = ({ opex }) => {
+const OpexSummary = ({ opex, t }) => {
   const { coutElec, co2Elec, coutAir, co2Air, coutEau, coutReactifs, totalCout_h, totalCout_an, totalCO2_kgh, currency, availability, totalElec_kW } = opex;
-  if (totalElec_kW === 0 && coutEau === 0 && coutReactifs === 0) return <p style={{ color: '#999', fontSize: 12, padding: '10px 14px' }}>Coûts OPEX non disponibles — ouvrir l'onglet Opex.</p>;
+  if (totalElec_kW === 0 && coutEau === 0 && coutReactifs === 0) return <p style={{ color: '#999', fontSize: 12, padding: '10px 14px' }}>{t('noOpexData')}</p>;
   return (
     <div>
       <div style={styles.subSection}>
         <div style={styles.tagRow}>
-          {[{ label: `Électricité [${currency}/h]`, val: coutElec, color: '#4a90e2' }, { label: `Eau [${currency}/h]`, val: coutEau, color: '#2ecc71' }, { label: `Réactifs [${currency}/h]`, val: coutReactifs, color: '#e74c3c' }].map(({ label, val, color }) => (
+          {[
+            { label: `${t('electricityTag')} [${currency}/h]`, val: coutElec, color: '#4a90e2' },
+            { label: `${t('waterTag')} [${currency}/h]`, val: coutEau, color: '#2ecc71' },
+            { label: `${t('reagentsTag')} [${currency}/h]`, val: coutReactifs, color: '#e74c3c' }
+          ].map(({ label, val, color }) => (
             <div key={label} style={{ ...styles.tag, borderLeft: `4px solid ${color}`, minWidth: 130 }}><span style={styles.tagLabel}>{label}</span><span style={{ ...styles.tagValue, color }}>{fmt(val, 2)}</span></div>
           ))}
         </div>
       </div>
       <div style={styles.twoCol}>
         <div style={{ ...styles.subSection, background: '#f0f5ff', margin: 8, borderRadius: 6 }}>
-          <h3 style={{ ...styles.subTitle, color: '#1a3a6b', fontSize: 14 }}>Total coût</h3>
-          <KV label={`Coût horaire [${currency}/h]`} value={fmt(totalCout_h, 2)} />
-          <KV label={`Coût annuel (${availability}h) [${currency}/an]`} value={fmt(totalCout_an, 0)} />
+          <h3 style={{ ...styles.subTitle, color: '#1a3a6b', fontSize: 14 }}>{t('totalCost')}</h3>
+          <KV label={`${t('hourlyCost')} [${currency}/h]`} value={fmt(totalCout_h, 2)} />
+          <KV label={`${t('annualCost')} (${availability}h) [${currency}/an]`} value={fmt(totalCout_an, 0)} />
         </div>
         <div style={{ ...styles.subSection, background: '#f5f0ff', margin: 8, borderRadius: 6 }}>
-          <h3 style={{ ...styles.subTitle, color: '#6a1a6b', fontSize: 14 }}>Total CO₂ [kg/h]</h3>
-          <KV label="CO₂ électricité" value={fmt(co2Elec, 3)} />
-          <KV label="Total CO₂" value={fmt(totalCO2_kgh, 2)} />
+          <h3 style={{ ...styles.subTitle, color: '#6a1a6b', fontSize: 14 }}>{t('totalCO2')}</h3>
+          <KV label={t('co2Electricity')} value={fmt(co2Elec, 3)} />
+          <KV label={t('totalCO2label')} value={fmt(totalCO2_kgh, 2)} />
         </div>
       </div>
     </div>
   );
 };
 
-const SCRUBBER_Report = ({ innerData = {} }) => {
+const SCRUBBER_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
+  const languageCode = getLanguageCode(currentLanguage);
+  const t = (key) => translations[languageCode]?.[key] || translations['fr']?.[key] || key;
   const T_OUT = innerData.T_OUT || 0;
   const O2_calcule = innerData.O2_calcule || 0;
   const FG_OUT_kg_h = innerData.FG_OUT_kg_h || {};
@@ -92,59 +100,59 @@ const SCRUBBER_Report = ({ innerData = {} }) => {
 
   return (
     <div style={styles.container}>
-      <h1 style={styles.mainTitle}>Laveur de fumées (Scrubber) — Rapport de synthèse</h1>
+      <h1 style={styles.mainTitle}>{t('reportTitle_SCRUBBER')}</h1>
 
-      <Section title="1. Gaz de combustion">
+      <Section title={`1. ${t('combustionGases')}`}>
         <div style={styles.twoCol}>
           <SubSection>
-            <KV label="Température de sortie" value={fmt(T_OUT, 0)} unit="°C" />
-            <KV label="O₂ mesuré (sec)" value={fmt(O2_calcule)} unit="%" />
-            <KV label="Débit humide total [kg/h]" value={fmt(FG_wet_total)} />
-            <KV label="Débit sec [Nm³/h]" value={fmt(FG_OUT_Nm3_h.dry, 0)} />
-            <KV label="Débit humide [Nm³/h]" value={fmt(FG_OUT_Nm3_h.wet, 0)} />
+            <KV label={t('outletTemp')} value={fmt(T_OUT, 0)} unit="°C" />
+            <KV label={t('o2Dry')} value={fmt(O2_calcule)} unit="%" />
+            <KV label={t('wetFlowTotal')} value={fmt(FG_wet_total)} />
+            <KV label={t('dryFlowNm3h')} value={fmt(FG_OUT_Nm3_h.dry, 0)} />
+            <KV label={t('wetFlowNm3h')} value={fmt(FG_OUT_Nm3_h.wet, 0)} />
           </SubSection>
-          <SubSection title="Composition gaz de sortie">
+          <SubSection title={t('outletGasComposition')}>
             <GasTable data={{ 'kg/h': FG_OUT_kg_h, 'Nm³/h': { CO2: FG_OUT_Nm3_h.CO2, H2O: FG_OUT_Nm3_h.H2O, O2: FG_OUT_Nm3_h.O2, N2: FG_OUT_Nm3_h.N2 } }} />
           </SubSection>
         </div>
       </Section>
 
-      <Section title="2. Émissions polluantes">
-        <SubSection title="Gaz en entrée [kg/h]"><PollutantTable masses={PInput} /></SubSection>
-        <SubSection title="Gaz en sortie [kg/h]"><PollutantTable masses={Poutput} /></SubSection>
+      <Section title={`2. ${t('pollutantEmissions')}`}>
+        <SubSection title={t('gasInlet')}><PollutantTable masses={PInput} /></SubSection>
+        <SubSection title={t('gasOutlet')}><PollutantTable masses={Poutput} /></SubSection>
       </Section>
 
-      <Section title="3. Scrubber acide — Traitement HCl">
+      <Section title={`3. ${t('acidScrubberTitle')}`}>
         <div style={styles.twoCol}>
-          <SubSection title="Performances">
-            <KV label="Température gaz sortie" value={fmt(innerData.T_FG_out_acid, 1)} unit="°C" />
-            <KV label="Efficacité HCl [%]" value={fmt(innerData.FG_HCl_efficiency, 1)} />
+          <SubSection title={t('performances')}>
+            <KV label={t('outletGasTemp')} value={fmt(innerData.T_FG_out_acid, 1)} unit="°C" />
+            <KV label={t('hclEfficiencyPct')} value={fmt(innerData.FG_HCl_efficiency, 1)} />
           </SubSection>
-          <SubSection title="Paramètres d'entrée">
-            <KV label="HCl entrant [kg/h]" value={fmt(PInput?.HCl)} />
-            <KV label="HCl sortant [kg/h]" value={fmt(Poutput?.HCl)} />
+          <SubSection title={t('inputParameters')}>
+            <KV label={t('hclInlet')} value={fmt(PInput?.HCl)} />
+            <KV label={t('hclOutlet')} value={fmt(Poutput?.HCl)} />
           </SubSection>
         </div>
       </Section>
 
-      <Section title="4. Scrubber basique — Traitement SO₂">
+      <Section title={`4. ${t('basicScrubberTitle')}`}>
         <div style={styles.twoCol}>
-          <SubSection title="Performances">
-            <KV label="Efficacité SO₂ [%]" value={fmt(innerData.SO2_efficiency, 1)} />
-            <KV label="SO₂ éliminé [kg/h]" value={fmt(innerData.SO2_removed_load)} />
-            <KV label="Consommation réactif [kg/h]" value={fmt(innerData.SO2_consumption)} />
+          <SubSection title={t('performances')}>
+            <KV label={t('so2EfficiencyPct')} value={fmt(innerData.SO2_efficiency, 1)} />
+            <KV label={t('so2Removed')} value={fmt(innerData.SO2_removed_load)} />
+            <KV label={t('reagentConsumption')} value={fmt(innerData.SO2_consumption)} />
           </SubSection>
-          <SubSection title="Design colonne">
-            <KV label="Diamètre colonne [m]" value={fmt(innerData.column_diameter, 2)} />
-            <KV label="Volume garnissage [m³]" value={fmt(innerData.packing_volume, 2)} />
-            <KV label="Débit solution lavage [m³/h]" value={fmt(innerData.wash_solution_flow, 2)} />
+          <SubSection title={t('columnDesign')}>
+            <KV label={t('columnDiameter')} value={fmt(innerData.column_diameter, 2)} />
+            <KV label={t('packingVolume')} value={fmt(innerData.packing_volume, 2)} />
+            <KV label={t('washSolutionFlow')} value={fmt(innerData.wash_solution_flow, 2)} />
           </SubSection>
         </div>
       </Section>
 
-      <Section title="5. OPEX — Coûts horaires"><OpexSummary opex={opex} /></Section>
+      <Section title={`5. ${t('opexHourlyCosts')}`}><OpexSummary opex={opex} t={t} /></Section>
 
-      <div style={styles.footer}>Rapport généré automatiquement — {new Date().toLocaleDateString()}</div>
+      <div style={styles.footer}>{t('autoReport')} — {new Date().toLocaleDateString()}</div>
     </div>
   );
 };

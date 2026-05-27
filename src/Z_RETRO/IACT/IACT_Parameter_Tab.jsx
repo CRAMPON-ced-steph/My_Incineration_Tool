@@ -1,10 +1,10 @@
+/* eslint-disable react/prop-types */
 import React, { useState, useEffect } from 'react';
 import { performCalculation_IACT } from './IACT_calculations';
 
 import InputField from '../../C_Components/input_retro';
 import ClearButton from '../../C_Components/Clear_Button';
 import ShowResultButton from '../../C_Components/Show_result_retro';
-import ToggleButton from '../../C_Components/toggle_button_retro';
 import CloseButton from '../../C_Components/OnCloseButton_retro';
 import CalculationResults from '../../C_Components/ShowCalculationResult_retro';
 
@@ -12,18 +12,20 @@ import IACT_Retro_Rapport from './IACT_Retro_Rapport';
 import '../../index.css';
 
 const IACT_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage }) => {
-  const [Qair_decolmatation, setQair_decolmatation] = useState(() => parseFloat(localStorage.getItem('Qair_decolmatation_IACT')) || 0);
-  const [T_air_decolmatation, setT_air_decolmatation] = useState(() => parseFloat(localStorage.getItem('T_air_decolmatation_IACT')) || 15);
-  const [T_amont_IACT, setT_amont_IACT] = useState(() => parseFloat(localStorage.getItem('T_amont_IACT')) || nodeData?.result?.dataFlow?.T || '10');
-  const [PDC_aero, setPDC_aero] = useState(() => localStorage.getItem('PDC_aero_IACT') || '50');
+  const [T_air_ambiant, setT_air_ambiant]       = useState(() => parseFloat(localStorage.getItem('T_air_decolmatation_IACT')) || 15);
+  const [T_air_chauffe, setT_air_chauffe]       = useState(() => parseFloat(localStorage.getItem('T_air_chauffe_IACT')) || 150);
+  const [Rendement_echange, setRendement_echange] = useState(() => parseFloat(localStorage.getItem('Rendement_echange_IACT')) || 95);
+  const [T_amont_IACT, setT_amont_IACT]         = useState(() => parseFloat(localStorage.getItem('T_amont_IACT')) || nodeData?.result?.dataFlow?.T || 200);
+  const [PDC_aero, setPDC_aero]                 = useState(() => parseFloat(localStorage.getItem('PDC_aero_IACT')) || 10);
 
   const [CalculationResult_IACT, setCalculationResult] = useState(null);
   const [isSliderOpen, setIsSliderOpen] = useState(false);
   const [showReport, setShowReport] = useState(false);
 
-  useEffect(() => {localStorage.setItem('Qair_decolmatation_IACT', Qair_decolmatation);}, [Qair_decolmatation]);
-  useEffect(() => {localStorage.setItem('T_air_decolmatation_IACT', T_air_decolmatation);}, [T_air_decolmatation]);
-  useEffect(() => {localStorage.setItem('T_amont_IACT', T_amont_IACT);}, [T_amont_IACT]);
+  useEffect(() => { localStorage.setItem('T_air_decolmatation_IACT', T_air_ambiant); }, [T_air_ambiant]);
+  useEffect(() => { localStorage.setItem('T_air_chauffe_IACT', T_air_chauffe); }, [T_air_chauffe]);
+  useEffect(() => { localStorage.setItem('Rendement_echange_IACT', Rendement_echange); }, [Rendement_echange]);
+  useEffect(() => { localStorage.setItem('T_amont_IACT', T_amont_IACT); }, [T_amont_IACT]);
   useEffect(() => { localStorage.setItem('PDC_aero_IACT', PDC_aero); }, [PDC_aero]);
 
   useEffect(() => {
@@ -37,8 +39,9 @@ const IACT_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLangu
       try {
         const result = performCalculation_IACT(
           nodeData,
-          parseFloat(T_air_decolmatation),
-          parseFloat(Qair_decolmatation),
+          parseFloat(T_air_ambiant),
+          parseFloat(T_air_chauffe),
+          parseFloat(Rendement_echange),
           parseFloat(T_amont_IACT),
           parseFloat(PDC_aero)
         );
@@ -47,26 +50,26 @@ const IACT_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLangu
         console.error('Error recalculating with updated nodeData:', error);
       }
     }
-  }, [nodeData, T_air_decolmatation, Qair_decolmatation, T_amont_IACT, PDC_aero]);
+  }, [nodeData, T_air_ambiant, T_air_chauffe, Rendement_echange, T_amont_IACT, PDC_aero]);
 
   const handleSendData = () => {
     if (!nodeData?.result) {
       console.warn('No input data available');
       return;
     }
-
     try {
       const result = performCalculation_IACT(
         nodeData,
-        parseFloat(T_air_decolmatation),
-        parseFloat(Qair_decolmatation),
+        parseFloat(T_air_ambiant),
+        parseFloat(T_air_chauffe),
+        parseFloat(Rendement_echange),
         parseFloat(T_amont_IACT),
         parseFloat(PDC_aero)
       );
       setCalculationResult(result);
       onSendData({
         result,
-        inputData: { T_amont_IACT, T_air_decolmatation, Qair_decolmatation, PDC_aero },
+        inputData: { T_amont_IACT, T_air_ambiant, T_air_chauffe, Rendement_echange, PDC_aero },
       });
     } catch (error) {
       console.error('Calculation error:', error);
@@ -74,21 +77,19 @@ const IACT_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLangu
     }
   };
 
-  const toggleSlider = () => {
-    setIsSliderOpen(!isSliderOpen);
-  };
-
   const clearMemory = () => {
-    setQair_decolmatation(0);
-    setT_air_decolmatation(15);
-    setT_amont_IACT(nodeData?.result?.dataFlow?.T || '10');
-    setPDC_aero('50');
+    setT_air_ambiant(15);
+    setT_air_chauffe(150);
+    setRendement_echange(95);
+    setT_amont_IACT(nodeData?.result?.dataFlow?.T || 200);
+    setPDC_aero(10);
     setCalculationResult(null);
     setIsSliderOpen(false);
-    localStorage.removeItem('PDC_aero_IACT');
-    localStorage.removeItem('Qair_decolmatation_IACT');
     localStorage.removeItem('T_air_decolmatation_IACT');
+    localStorage.removeItem('T_air_chauffe_IACT');
+    localStorage.removeItem('Rendement_echange_IACT');
     localStorage.removeItem('T_amont_IACT');
+    localStorage.removeItem('PDC_aero_IACT');
     localStorage.removeItem('CalculationResult_IACT');
   };
 
@@ -98,25 +99,23 @@ const IACT_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLangu
 
       <h3>{title} Parameters</h3>
 
-      <div style={{ marginTop: '10px', display: 'flex', alignItems: 'center' }}>
-
-      </div>
-
       <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-        <InputField label="Qair_decolmatation" unit="[m³/h]" value={Qair_decolmatation} onChange={(e) => setQair_decolmatation(parseFloat(e.target.value) || 0)}/>
-        <InputField label="Tair" unit="[°C]" value={T_air_decolmatation} onChange={(e) => setT_air_decolmatation(parseFloat(e.target.value) || 0)}/>
-        <InputField label="T fumées amont" unit="[°C]" value={T_amont_IACT} onChange={(e) => setT_amont_IACT(parseFloat(e.target.value) || 0)}/>
-        <InputField label="PDC aero" unit="[mmCE]" value={PDC_aero} onChange={(e) => setPDC_aero(e.target.value)} />
+        <InputField label="T fumées amont"       unit="[°C]"  value={T_amont_IACT}      onChange={(e) => setT_amont_IACT(parseFloat(e.target.value) || 0)} />
+        <InputField label="T air ambiant"         unit="[°C]"  value={T_air_ambiant}     onChange={(e) => setT_air_ambiant(parseFloat(e.target.value) || 0)} />
+        <InputField label="T air réchauffé"       unit="[°C]"  value={T_air_chauffe}     onChange={(e) => setT_air_chauffe(parseFloat(e.target.value) || 0)} />
+        <InputField label="Rendement d'échange"   unit="[%]"   value={Rendement_echange} onChange={(e) => setRendement_echange(parseFloat(e.target.value) || 0)} />
+        <InputField label="PDC aero"              unit="[mmCE]" value={PDC_aero}         onChange={(e) => setPDC_aero(parseFloat(e.target.value) || 0)} />
       </div>
 
       <div className="prez-3-buttons">
         <button onClick={handleSendData}>Calculate and Send Data</button>
-        <ShowResultButton isOpen={isSliderOpen} onToggle={toggleSlider} />
+        <ShowResultButton isOpen={isSliderOpen} onToggle={() => setIsSliderOpen(!isSliderOpen)} />
         <ClearButton onClick={clearMemory} />
       </div>
 
       {isSliderOpen && CalculationResult_IACT && (
-      <CalculationResults isOpen={isSliderOpen} results={CalculationResult_IACT} />)}
+        <CalculationResults isOpen={isSliderOpen} results={CalculationResult_IACT} />
+      )}
 
       <div style={{ marginTop: '12px' }}>
         <button
@@ -131,7 +130,7 @@ const IACT_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLangu
       {showReport && CalculationResult_IACT && (
         <IACT_Retro_Rapport
           calculationResult={CalculationResult_IACT}
-          inputParams={{ T_amont_IACT, T_air_decolmatation, Qair_decolmatation, PDC_aero }}
+          inputParams={{ T_amont_IACT, T_air_ambiant, T_air_chauffe, Rendement_echange, PDC_aero }}
           onClose={() => setShowReport(false)}
         />
       )}

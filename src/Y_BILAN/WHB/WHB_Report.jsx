@@ -1,6 +1,8 @@
 import React from 'react';
 import { getOpexData } from '../../A_Transverse_fonction/opexDataService';
 import { CO2_kg_m3, H2O_kg_m3, O2_kg_m3, N2_kg_m3 } from '../../A_Transverse_fonction/conv_calculation';
+import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
+import { translations } from './WHB_traduction';
 
 const fmt = (v, decimals = 2) => { const n = parseFloat(v); return isNaN(n) ? '—' : n.toFixed(decimals); };
 const Section = ({ title, children }) => <div style={styles.section}><h2 style={styles.sectionTitle}>{title}</h2>{children}</div>;
@@ -22,12 +24,12 @@ const PollutantTable = ({ masses = {} }) => {
   return <table style={styles.table}><thead><tr>{keys.map(k => <th key={k} style={styles.th}>{k}</th>)}</tr></thead><tbody><tr>{keys.map(k => <td key={k} style={styles.td}>{fmt(masses[k], 4)}</td>)}</tr></tbody></table>;
 };
 
-const ElecTable = ({ rows }) => (
+const ElecTable = ({ rows, tFn }) => (
   <table style={styles.table}>
-    <thead><tr><th style={styles.th}>Consommateur</th><th style={styles.th}>kW</th></tr></thead>
+    <thead><tr><th style={styles.th}>{tFn('consumer')}</th><th style={styles.th}>kW</th></tr></thead>
     <tbody>
       {rows.map(r => <tr key={r.label}><td style={styles.tdLabel}>{r.label}</td><td style={styles.td}>{fmt(r.value)}</td></tr>)}
-      <tr style={{ background: '#eaf0fb', fontWeight: 'bold' }}><td style={styles.tdLabel}>Total</td><td style={styles.td}>{fmt(rows.reduce((s, r) => s + (parseFloat(r.value) || 0), 0))}</td></tr>
+      <tr style={{ background: '#eaf0fb', fontWeight: 'bold' }}><td style={styles.tdLabel}>{tFn('total')}</td><td style={styles.td}>{fmt(rows.reduce((s, r) => s + (parseFloat(r.value) || 0), 0))}</td></tr>
     </tbody>
   </table>
 );
@@ -45,7 +47,7 @@ const computeOpexCosts = (innerData) => {
   const eauRows = [
     { label: 'Eau potable', m3h: d.Conso_EauPotable_m3 || 0, prix: waterPrices?.potable || 0 },
     { label: 'Eau déminéralisée', m3h: d.Conso_EauDemin_m3 || 0, prix: waterPrices?.demineralized || 0 },
-    { label: 'Eau d\'alimentation chaudière', m3h: d.Debit_eau_m3_h || 0, prix: waterPrices?.demineralized || 0 },
+    { label: "Eau d'alimentation chaudière", m3h: d.Debit_eau_m3_h || 0, prix: waterPrices?.demineralized || 0 },
   ].filter(r => r.m3h > 0);
   const coutEau = eauRows.reduce((s, r) => s + r.m3h * r.prix, 0);
   const totalCout_h = coutElec + coutAir + coutEau;
@@ -54,7 +56,9 @@ const computeOpexCosts = (innerData) => {
   return { elecRows, totalElec_kW, coutElec, co2Elec, coutAir, co2Air, eauRows, coutEau, totalCout_h, totalCout_an, totalCO2_kgh, currency, availability };
 };
 
-const WHB_Report = ({ innerData = {} }) => {
+const WHB_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
+  const languageCode = getLanguageCode(currentLanguage);
+  const t = (key) => translations[languageCode]?.[key] || translations['fr']?.[key] || key;
   const T_OUT = innerData.T_OUT || innerData.T_WHB_out || 0;
   const T_IN = innerData.T_inlet_WHB || 0;
   const O2_calcule = innerData.O2_calcule || 0;
@@ -71,86 +75,86 @@ const WHB_Report = ({ innerData = {} }) => {
 
   return (
     <div style={styles.container}>
-      <h1 style={styles.mainTitle}>Chaudière de récupération (WHB) — Rapport de synthèse</h1>
+      <h1 style={styles.mainTitle}>{t('whbReportTitle')}</h1>
 
-      <Section title="1. Paramètres vapeur">
+      <Section title={`1. ${t('steamParameters')}`}>
         <div style={styles.twoCol}>
-          <SubSection title="Production de vapeur">
-            <KV label="Débit vapeur [kg/h]" value={fmt(innerData.Q_steam_kg_h || innerData['Débit_vapeur_kg_h'], 0)} />
-            <KV label="Pression vapeur [bar]" value={fmt(innerData.Pression_vapeur_bar, 1)} />
-            <KV label="Température vapeur [°C]" value={fmt(innerData.Temperature_vapeur_C, 1)} />
-            <KV label="Débit eau alimentation [kg/h]" value={fmt(innerData.Q_feedwater_kg_h, 0)} />
-            <KV label="Purge chaudière [kg/h]" value={fmt(innerData.Q_purge_kg_h || innerData.Eau_purge_kg_h, 0)} />
-            <KV label="Flash drum vapeur [kg/h]" value={fmt(innerData.Q_flash_drum_event_kg_h, 0)} />
+          <SubSection title={t('steamProduction')}>
+            <KV label={t('steamFlow')} value={fmt(innerData.Q_steam_kg_h || innerData['Débit_vapeur_kg_h'], 0)} />
+            <KV label={t('steamPressure')} value={fmt(innerData.Pression_vapeur_bar, 1)} />
+            <KV label={t('steamTemperature')} value={fmt(innerData.Temperature_vapeur_C, 1)} />
+            <KV label={t('feedwaterFlow')} value={fmt(innerData.Q_feedwater_kg_h, 0)} />
+            <KV label={t('boilerBlowdown')} value={fmt(innerData.Q_purge_kg_h || innerData.Eau_purge_kg_h, 0)} />
+            <KV label={t('flashDrumSteam')} value={fmt(innerData.Q_flash_drum_event_kg_h, 0)} />
           </SubSection>
-          <SubSection title="Températures">
-            <KV label="Température entrée fumées [°C]" value={fmt(T_IN, 0)} />
-            <KV label="Température sortie fumées [°C]" value={fmt(T_OUT, 0)} />
-            <KV label="O₂ mesuré (sec)" value={fmt(O2_calcule)} unit="%" />
+          <SubSection title={t('temperatures')}>
+            <KV label={t('flueGasInletTemp')} value={fmt(T_IN, 0)} />
+            <KV label={t('flueGasOutletTemp')} value={fmt(T_OUT, 0)} />
+            <KV label={t('o2Measured')} value={fmt(O2_calcule)} unit="%" />
           </SubSection>
         </div>
       </Section>
 
-      <Section title="2. Gaz de combustion">
+      <Section title={`2. ${t('flueGases')}`}>
         <div style={styles.twoCol}>
           <SubSection>
-            <KV label="Débit humide total [kg/h]" value={fmt(FG_wet_total)} />
-            <KV label="Débit sec [Nm³/h]" value={fmt(FG_OUT_Nm3_h.dry, 0)} />
-            <KV label="Débit humide [Nm³/h]" value={fmt(FG_OUT_Nm3_h.wet, 0)} />
+            <KV label={t('wetFlowTotal')} value={fmt(FG_wet_total)} />
+            <KV label={t('dryFlow')} value={fmt(FG_OUT_Nm3_h.dry, 0)} />
+            <KV label={t('wetFlow')} value={fmt(FG_OUT_Nm3_h.wet, 0)} />
           </SubSection>
-          <SubSection title="Composition gaz de sortie">
+          <SubSection title={t('outletGasComposition')}>
             <GasTable data={{ 'kg/h': FG_OUT_kg_h, 'Nm³/h': { CO2: FG_OUT_Nm3_h.CO2, H2O: FG_OUT_Nm3_h.H2O, O2: FG_OUT_Nm3_h.O2, N2: FG_OUT_Nm3_h.N2 } }} />
           </SubSection>
         </div>
       </Section>
 
-      <Section title="3. Émissions polluantes">
-        <SubSection title="Gaz en entrée [kg/h]"><PollutantTable masses={PInput} /></SubSection>
-        <SubSection title="Gaz en sortie [kg/h]"><PollutantTable masses={Poutput} /></SubSection>
+      <Section title={`3. ${t('pollutantEmissions')}`}>
+        <SubSection title={`${t('inputFlueGas')} [kg/h]`}><PollutantTable masses={PInput} /></SubSection>
+        <SubSection title={`${t('outputFlueGas')} [kg/h]`}><PollutantTable masses={Poutput} /></SubSection>
       </Section>
 
-      <Section title="4. Valorisation vapeur">
+      <Section title={`4. ${t('steamValorization')}`}>
         <div style={styles.twoCol}>
-          <SubSection title="Production nette">
-            <KV label="Vapeur nette produite [kg/h]" value={fmt(innerData.Q_steam_net_kg_h || innerData.Q_steam_kg_h || innerData['Débit_vapeur_kg_h'], 0)} />
-            <KV label="Puissance récupérée [kW]" value={fmt(innerData.P_recuperee_kW)} />
+          <SubSection title={t('netProduction')}>
+            <KV label={t('netSteamProduced')} value={fmt(innerData.Q_steam_net_kg_h || innerData.Q_steam_kg_h || innerData['Débit_vapeur_kg_h'], 0)} />
+            <KV label={t('recoveredPower')} value={fmt(innerData.P_recuperee_kW)} />
           </SubSection>
-          <SubSection title="Turbine / Valorisation">
-            <KV label="Type turbine" value={innerData.turbine_type || '—'} />
-            <KV label="Puissance électrique [kW]" value={fmt(innerData.puissance_electrique_kW || innerData.P_elec_turbine_kW)} />
-            <KV label="Rendement global [%]" value={fmt(innerData.rendement_global_pct || innerData.rendement_turbine, 1)} />
+          <SubSection title={t('turbineValorization')}>
+            <KV label={t('turbineType')} value={innerData.turbine_type || '—'} />
+            <KV label={t('electricPower')} value={fmt(innerData.puissance_electrique_kW || innerData.P_elec_turbine_kW)} />
+            <KV label={t('globalEfficiency')} value={fmt(innerData.rendement_global_pct || innerData.rendement_turbine, 1)} />
           </SubSection>
         </div>
       </Section>
 
-      <Section title="5. Design">
-        <SubSection title="Consommations électriques">
-          {elecRows.length > 0 ? <ElecTable rows={elecRows} /> : <span style={{ color: '#999', fontSize: 12 }}>Données non disponibles (ouvrir l'onglet Design)</span>}
+      <Section title={`5. ${t('whbDesign')}`}>
+        <SubSection title={t('electricConsumptions')}>
+          {elecRows.length > 0 ? <ElecTable rows={elecRows} tFn={t} /> : <span style={{ color: '#999', fontSize: 12 }}>{t('dataNotAvailableDesign')}</span>}
         </SubSection>
       </Section>
 
-      <Section title="6. OPEX — Coûts horaires">
+      <Section title={`6. ${t('opex')} — ${t('hourlyCosts')}`}>
         {opex.totalElec_kW === 0 && opex.coutEau === 0
-          ? <p style={{ color: '#999', fontSize: 12, padding: '10px 14px' }}>Coûts OPEX non disponibles — ouvrir les onglets Design et Opex.</p>
+          ? <p style={{ color: '#999', fontSize: 12, padding: '10px 14px' }}>{t('opexNotAvailable')}</p>
           : (
             <div>
               <div style={styles.subSection}>
                 <div style={styles.tagRow}>
-                  {[{ label: `Électricité [${opex.currency}/h]`, val: opex.coutElec, color: '#4a90e2' }, { label: `Eau [${opex.currency}/h]`, val: opex.coutEau, color: '#2ecc71' }].map(({ label, val, color }) => (
+                  {[{ label: `${t('electricity')} [${opex.currency}/h]`, val: opex.coutElec, color: '#4a90e2' }, { label: `${t('water')} [${opex.currency}/h]`, val: opex.coutEau, color: '#2ecc71' }].map(({ label, val, color }) => (
                     <div key={label} style={{ ...styles.tag, borderLeft: `4px solid ${color}`, minWidth: 130 }}><span style={styles.tagLabel}>{label}</span><span style={{ ...styles.tagValue, color }}>{fmt(val, 2)}</span></div>
                   ))}
                 </div>
               </div>
               <div style={styles.twoCol}>
                 <div style={{ ...styles.subSection, background: '#f0f5ff', margin: 8, borderRadius: 6 }}>
-                  <h3 style={{ ...styles.subTitle, color: '#1a3a6b', fontSize: 14 }}>Total coût</h3>
-                  <KV label={`Coût horaire [${opex.currency}/h]`} value={fmt(opex.totalCout_h, 2)} />
-                  <KV label={`Coût annuel (${opex.availability}h) [${opex.currency}/an]`} value={fmt(opex.totalCout_an, 0)} />
+                  <h3 style={{ ...styles.subTitle, color: '#1a3a6b', fontSize: 14 }}>{t('totalCost')}</h3>
+                  <KV label={`${t('hourlyCost')} [${opex.currency}/h]`} value={fmt(opex.totalCout_h, 2)} />
+                  <KV label={`${t('annualCost')} (${opex.availability}h) [${opex.currency}/an]`} value={fmt(opex.totalCout_an, 0)} />
                 </div>
                 <div style={{ ...styles.subSection, background: '#f5f0ff', margin: 8, borderRadius: 6 }}>
-                  <h3 style={{ ...styles.subTitle, color: '#6a1a6b', fontSize: 14 }}>Total CO₂ [kg/h]</h3>
-                  <KV label="CO₂ électricité" value={fmt(opex.co2Elec, 3)} />
-                  <KV label="Total CO₂" value={fmt(opex.totalCO2_kgh, 2)} />
+                  <h3 style={{ ...styles.subTitle, color: '#6a1a6b', fontSize: 14 }}>{t('totalCO2')}</h3>
+                  <KV label={t('co2Electricity')} value={fmt(opex.co2Elec, 3)} />
+                  <KV label={t('totalCO2kgh')} value={fmt(opex.totalCO2_kgh, 2)} />
                 </div>
               </div>
             </div>
@@ -158,7 +162,7 @@ const WHB_Report = ({ innerData = {} }) => {
         }
       </Section>
 
-      <div style={styles.footer}>Rapport généré automatiquement — {new Date().toLocaleDateString()}</div>
+      <div style={styles.footer}>{t('reportGenerated')} — {new Date().toLocaleDateString()}</div>
     </div>
   );
 };

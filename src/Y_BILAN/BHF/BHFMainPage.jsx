@@ -37,7 +37,7 @@ const BHFMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLa
     },
     {
       name: 'Rapport',
-      content: <BHF_Report innerData={innerData} />
+      content: <BHF_Report innerData={innerData} currentLanguage={currentLanguage} />
     },
   ];
 
