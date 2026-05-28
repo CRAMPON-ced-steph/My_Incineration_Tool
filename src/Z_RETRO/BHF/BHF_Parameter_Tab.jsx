@@ -16,7 +16,7 @@ const BHF_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLangua
   const [Qair_decolmatation, setQair_decolmatation] = useState(() => parseFloat(localStorage.getItem('Qair_decolmatation_BHF')) || 500);
   const [T_air_decolmatation, setT_air_decolmatation] = useState(() => parseFloat(localStorage.getItem('T_air_decolmatation_BHF')) || 15);
   const [T_amont_BHF, setT_amont_BHF] = useState(() => parseFloat(localStorage.getItem('T_amont_BHF')) || nodeData?.result?.dataFlow?.T || '10');
-  const [PDC_aero, setPDC_aero] = useState(() => localStorage.getItem('PDC_aero_BHF') || '50');
+  const [PDC_aero, setPDC_aero] = useState(() => localStorage.getItem('PDC_aero_BHF') || '200');
 
   const [CalculationResult_BHF, setCalculationResult] = useState(null);
   const [isSliderOpen, setIsSliderOpen] = useState(false);
@@ -84,7 +84,7 @@ const BHF_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLangua
     setQair_decolmatation(500);
     setT_air_decolmatation(15);
     setT_amont_BHF(nodeData?.result?.dataFlow?.T || '10');
-    setPDC_aero('50');
+    setPDC_aero('200');
     setCalculationResult(null);
     setIsSliderOpen(false);
     localStorage.removeItem('PDC_aero_BHF');
