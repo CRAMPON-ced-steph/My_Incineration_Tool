@@ -85,6 +85,11 @@ function Flow({
   const [headNode, setHeadNode] = useState(null);
   const [selectedNode, setSelectedNode] = useState(null);
   const { fitView } = useReactFlow();
+  const isFirstRender = useRef(true);
+  useEffect(() => {
+    if (isFirstRender.current) { isFirstRender.current = false; return; }
+    fitView({ padding: 0.2, duration: 300 });
+  }, [nodes.length]); // eslint-disable-line react-hooks/exhaustive-deps
   const [mode, setMode] = useState(() => localStorage.getItem('mode') || 'Bilan');
   const [showDataFlowDisplay, setShowDataFlowDisplay] = useState(false);
   const [showGraph, setShowGraph] = useState(false);
@@ -199,9 +204,8 @@ function Flow({
       }
 
       setHeadNode(newNode);
-      requestAnimationFrame(() => fitView({ padding: 0.2, duration: 300 }));
     },
-    [nodes, headNode, setNodes, setEdges, fitView]
+    [nodes, headNode, setNodes, setEdges]
   );
 
   const onSendData = useCallback(
