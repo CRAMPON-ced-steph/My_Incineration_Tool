@@ -413,5 +413,29 @@ BOUTON POUR LES AIRS PARASITES
   box-shadow: 0 0 0 3px rgba(239,68,68,0.25), 0 2px 6px rgba(239,68,68,0.15);
   outline: none;
 }
+
+.reset-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px 14px;
+  height: 2.2rem;
+  border-radius: 20px;
+  background: #ffffff;
+  color: #b45309;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: 1.5px solid #fcd34d;
+  box-shadow: 0 2px 6px rgba(180,83,9,0.12);
+  transition: opacity 0.15s, box-shadow 0.15s;
+  white-space: nowrap;
+}
+
+.reset-btn:hover {
+  background: #fffbeb;
+  opacity: 0.88;
+}
 }
 

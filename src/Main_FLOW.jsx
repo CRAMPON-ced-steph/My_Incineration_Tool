@@ -454,6 +454,13 @@ function Flow({
           <Controls />
           <Panel position="top-left">
             <button
+              className="reset-btn"
+              onClick={() => { if (window.confirm('Réinitialiser ? Toutes les données non sauvegardées seront perdues.')) window.location.reload(); }}
+              title="Reset — recharge la page"
+            >
+              ↺ Reset
+            </button>
+            <button
               className={`eraser-btn${isEraserActive ? ' active' : ''}`}
               onClick={() => setIsEraserActive((v) => !v)}
             >
