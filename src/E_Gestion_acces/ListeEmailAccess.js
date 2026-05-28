@@ -10,6 +10,13 @@ export const EMAILS_CONFIG = {
       permanent: true,
       addedBy: "system",
       addedDate: "2024-01-01"
+    },
+    {
+      email: "C_invit_cedric",
+      validUntil: "2099-12-31",
+      permanent: true,
+      addedBy: "system",
+      addedDate: "2026-05-28"
     }
   ],
 

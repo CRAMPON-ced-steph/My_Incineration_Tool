@@ -8,12 +8,14 @@ import { takeScreenshot } from './H_SaveAndLoad/screenshotUtils';
 import Toggle10choice from './F_Gestion_Langues/togglechoice';
 
 import {
-  STACK_Parameter_Tab, IDFAN_Parameter_Tab, QUENCH_Parameter_Tab, WHB_Parameter_Tab, 
+  STACK_Parameter_Tab, IDFAN_Parameter_Tab, QUENCH_Parameter_Tab, WHB_Parameter_Tab,
   DENOX_Parameter_Tab, BHF_Parameter_Tab, IACT_Parameter_Tab, COOLINGTOWER_Parameter_Tab, ELECTROFILTER_Parameter_Tab,
-  CYCLONE_Parameter_Tab, REACTOR_Parameter_Tab, RK_Parameter_Tab, SCRUBBER_Parameter_Tab,
-  CO2_Parameter_Tab, GF_Parameter_Tab, FB_Parameter_Tab,RKMainPage, FBMainPage, WHBMainPage,
-  CO2MainPage, QUENCHMainPage, CYCLONEMainPage, BHFMainPage, IACTMainPage, ELECTROFILTERMainPage,
+  CYCLONE_Parameter_Tab, AIRINJECTION_Parameter_Tab, REACTOR_Parameter_Tab, RK_Parameter_Tab, SCRUBBER_Parameter_Tab,
+  CO2_Parameter_Tab, GF_Parameter_Tab, FB_Parameter_Tab, WATER_INJECTION_Parameter_Tab,
+  RKMainPage, FBMainPage, WHBMainPage,
+  CO2MainPage, QUENCHMainPage, CYCLONEMainPage, AIRINJECTIONMainPage, BHFMainPage, IACTMainPage, ELECTROFILTERMainPage,
   REACTORMainPage, DENOXMainPage, STACKMainPage, SCRUBBERMainPage, IDFANMainPage, COOLINGTOWERMainPage,
+  WATER_INJECTIONMainPage,
 
   AIRCOOLERMainPage ,
   WATERCOOLERMainPage,
@@ -214,12 +216,12 @@ function Flow({
           setNodes((prevNodes) =>
             prevNodes.map((node) =>
               node.id === targetNode.id
-                ? { ...node, data: { ...node.data, result: data.result } }
+                ? { ...node, data: { ...node.data, result: { ...data.result } } }
                 : node
             )
           );
         }
-  
+
         // Mise à jour du nœud sélectionné avec result + consommationElec
         const elecValue = data.result?.activeNodes_Elec?.[0]?.data?.consommationElec;
         const eauValue = data.result?.activeNodes_Eau?.[0]?.data?.consommationEau;
@@ -235,7 +237,7 @@ function Flow({
                   ...node,
                   data: {
                     ...node.data,
-                    result: data.result,
+                    result: { ...data.result },
                     ...(data.inputData !== undefined && { inputData: data.inputData }),
                     ...(elecValue !== undefined && { consommationElec: elecValue }),
                     ...(eauValue !== undefined && { consommationEau: eauValue }),
@@ -265,6 +267,7 @@ function Flow({
       ...(mode === 'Bilan' ? { CO2: CO2MainPage } : { CO2: CO2_Parameter_Tab }),
       ...(mode === 'Bilan' ? { QUENCH: QUENCHMainPage } : { QUENCH: QUENCH_Parameter_Tab }),
       ...(mode === 'Bilan' ? { CYCLONE: CYCLONEMainPage } : { CYCLONE: CYCLONE_Parameter_Tab }),
+      ...(mode === 'Bilan' ? { AIRINJECTION: AIRINJECTIONMainPage } : { AIRINJECTION: AIRINJECTION_Parameter_Tab }),
       ...(mode === 'Bilan' ? { SCRUBBER: SCRUBBERMainPage } : { SCRUBBER: SCRUBBER_Parameter_Tab }),
       ...(mode === 'Bilan' ? { BHF: BHFMainPage } : { BHF: BHF_Parameter_Tab }),
       ...(mode === 'Bilan' ? { IACT: IACTMainPage } : { IACT: IACT_Parameter_Tab }),
@@ -274,6 +277,7 @@ function Flow({
       ...(mode === 'Bilan' ? { STACK: STACKMainPage } : { STACK: STACK_Parameter_Tab }),
       ...(mode === 'Bilan' ? { IDFAN: IDFANMainPage } : { IDFAN: IDFAN_Parameter_Tab }),
       ...(mode === 'Bilan' ? { COOLINGTOWER: COOLINGTOWERMainPage } : { COOLINGTOWER: COOLINGTOWER_Parameter_Tab }),
+      ...(mode === 'Bilan' ? { WATER_INJECTION: WATER_INJECTIONMainPage } : { WATER_INJECTION: WATER_INJECTION_Parameter_Tab }),
 
       /*
       ...(mode === 'Bilan' ? { Cooling_HX_air: AIRCOOLERMainPage } : { Cooling_HX_air: AIRCOOLER_Parameter_Tab }),
@@ -306,6 +310,7 @@ function Flow({
 
     return (
       <Component
+        key={selectedNode.id}
         title={selectedNode.data.label}
         nodeData={selectedNode.data}
         onSendData={onSendData}

@@ -135,6 +135,7 @@ All equipment-specific keys must include the equipment suffix to avoid cross-con
 
 - **`innerData` mutations in `C_Components/Traitement_fumées.jsx`** (lines 200, 248) — `innerData[row.pollutant] = {...}` inside `calculateValues()` and `innerData['Poutput'] = masses_pollutant_output` at body level are intentional. `innerData` is a plain mutable shared object (not React state), so synchronous body-level mutations are safe and read immediately by downstream body-level code in the same render cycle. This is the established pattern for shared FGT utility components.
 - **`niveaux[0/1/2]` in `Y_BILAN/WHB/6_WHB_ValoVapeur3_ML.jsx`** — Array is always constructed with exactly 3 hardcoded elements; fixed-index access is safe.
+- **`key={selectedNode.id}` on `<Component>` in `Main_FLOW.jsx`** — `renderParameterTab()` passes `key={selectedNode.id}` to force a full unmount/remount whenever the selected node changes. Without this, React reuses the same mounted component instance when two nodes share the same component type (e.g., two BHF nodes), causing `useState(nodeData?.result)` to retain the previous node's computed values instead of reinitialising from the new node's data. Do NOT remove this key.
 
 ---
 

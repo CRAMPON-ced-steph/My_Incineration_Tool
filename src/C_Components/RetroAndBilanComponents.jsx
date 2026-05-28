@@ -5,6 +5,7 @@
 import STACK_Parameter_Tab from '../Z_RETRO/STACK/STACK_Parameter_Tab';
 import IDFAN_Parameter_Tab from '../Z_RETRO/IDFAN/IDFAN_Parameter_Tab';
 import QUENCH_Parameter_Tab from '../Z_RETRO/QUENCH/QUENCH_Parameter_Tab';
+import WATER_INJECTION_Parameter_Tab from '../Z_RETRO/WATER_INJECTION/WATER_INJECTION_Parameter_Tab';
 import WHB_Parameter_Tab from '../Z_RETRO/WHB/WHB_Parameter_Tab';
 import DENOX_Parameter_Tab from '../Z_RETRO/DENOX/DENOX_Parameter_Tab';
 import BHF_Parameter_Tab from '../Z_RETRO/BHF/BHF_Parameter_Tab';
@@ -12,6 +13,7 @@ import IACT_Parameter_Tab from '../Z_RETRO/IACT/IACT_Parameter_Tab';
 import COOLINGTOWER_Parameter_Tab from '../Z_RETRO/COOLINGTOWER/COOLINGTOWER_Parameter_Tab';
 import ELECTROFILTER_Parameter_Tab from '../Z_RETRO/ELECTROFILTER/ELECTROFILTER_Parameter_Tab';
 import CYCLONE_Parameter_Tab from '../Z_RETRO/CYCLONE/CYCLONE_Parameter_Tab';
+import AIRINJECTION_Parameter_Tab from '../Z_RETRO/AIRINJECTION/AIRINJECTION_Parameter_Tab';
 import REACTOR_Parameter_Tab from '../Z_RETRO/REACTOR/REACTOR_Parameter_Tab';
 import RK_Parameter_Tab from '../Z_RETRO/RK/RK_Parameter_Tab';
 import SCRUBBER_Parameter_Tab from '../Z_RETRO/SCRUBBER/SCRUBBER_Parameter_Tab';
@@ -27,7 +29,9 @@ import FBMainPage from '../Y_BILAN/FB/FBMainPage';
 import WHBMainPage from '../Y_BILAN/WHB/WHBMainPage';
 import CO2MainPage from '../Y_BILAN/CO2/CO2MainPage';
 import QUENCHMainPage from '../Y_BILAN/QUENCH/QUENCHMainPage';
+import WATER_INJECTIONMainPage from '../Y_BILAN/WATER_INJECTION/WATER_INJECTIONMainPage';
 import CYCLONEMainPage from '../Y_BILAN/CYCLONE/CYCLONEMainPage';
+import AIRINJECTIONMainPage from '../Y_BILAN/AIRINJECTION/AIRINJECTIONMainPage';
 import BHFMainPage from '../Y_BILAN/BHF/BHFMainPage';
 import IACTMainPage from '../Y_BILAN/IACT/IACTMainPage';
 import ELECTROFILTERMainPage from '../Y_BILAN/ELECTROFILTER/ELECTROFILTERMainPage';
@@ -53,6 +57,7 @@ export {
   STACK_Parameter_Tab,
   IDFAN_Parameter_Tab,
   QUENCH_Parameter_Tab,
+  WATER_INJECTION_Parameter_Tab,
   WHB_Parameter_Tab,
   DENOX_Parameter_Tab,
   BHF_Parameter_Tab,
@@ -60,6 +65,7 @@ export {
   COOLINGTOWER_Parameter_Tab,
   ELECTROFILTER_Parameter_Tab,
   CYCLONE_Parameter_Tab,
+  AIRINJECTION_Parameter_Tab,
   REACTOR_Parameter_Tab,
   RK_Parameter_Tab,
   SCRUBBER_Parameter_Tab,
@@ -73,7 +79,9 @@ export {
   WHBMainPage,
   CO2MainPage,
   QUENCHMainPage,
+  WATER_INJECTIONMainPage,
   CYCLONEMainPage,
+  AIRINJECTIONMainPage,
   BHFMainPage,
   IACTMainPage,
   ELECTROFILTERMainPage,

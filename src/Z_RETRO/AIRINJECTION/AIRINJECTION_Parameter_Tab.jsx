@@ -1,0 +1,316 @@
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { performCalculation_AIRINJECTION } from './AIRINJECTION_calculations';
+
+import InputField from '../../C_Components/input_retro';
+import ClearButton from '../../C_Components/Clear_Button';
+import ShowResultButton from '../../C_Components/Show_result_retro';
+import CloseButton from '../../C_Components/OnCloseButton_retro';
+import CalculationResults from '../../C_Components/ShowCalculationResult_retro';
+
+import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
+import { translations } from './AIRINJECTION_traduction';
+
+import AIRINJECTION_Retro_Rapport from './AIRINJECTION_Retro_Rapport';
+import '../../index.css';
+
+// Constantes pour localStorage
+const STORAGE_KEYS = {
+  QAIR_PARASITE: 'Qair_parasite',
+  T_AIR_PARASITE: 'T_air_parasite',
+  T_AMONT_AIRINJECTION: 'T_amont_AIRINJECTION',
+  PDC_AERO: 'PDC_aero_AIRINJECTION',
+  CALCULATION_RESULT: 'CalculationResult_AIRINJECTION'
+};
+
+// Valeurs par défaut
+const DEFAULT_VALUES = {
+  Qair_parasite: '0',
+  T_air_parasite: '15',
+  T_amont_AIRINJECTION: '15',
+  PDC_aero: '10'
+};
+
+const AIRINJECTION_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage }) => {
+  // États principaux
+  const [Qair_parasite, setQair_parasite] = useState(() =>
+    localStorage.getItem(STORAGE_KEYS.QAIR_PARASITE) || DEFAULT_VALUES.Qair_parasite
+  );
+  const [T_air_parasite, setT_air_parasite] = useState(() =>
+    localStorage.getItem(STORAGE_KEYS.T_AIR_PARASITE) || DEFAULT_VALUES.T_air_parasite
+  );
+  const [T_amont_AIRINJECTION, setT_amont_AIRINJECTION] = useState(() =>
+    localStorage.getItem(STORAGE_KEYS.T_AMONT_AIRINJECTION) ||
+    nodeData?.result?.dataFlow?.T || DEFAULT_VALUES.T_amont_AIRINJECTION
+  );
+  const [PDC_aero, setPDC_aero] = useState(() =>
+    localStorage.getItem(STORAGE_KEYS.PDC_AERO) || DEFAULT_VALUES.PDC_aero
+  );
+
+  // États pour l'interface
+  const [CalculationResult_AIRINJECTION, setCalculationResult_AIRINJECTION] = useState(() => {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEYS.CALCULATION_RESULT);
+      return stored ? JSON.parse(stored) : null;
+    } catch (error) {
+      console.warn('Erreur lors du chargement des résultats:', error);
+      return null;
+    }
+  });
+  const [isSliderOpen, setIsSliderOpen] = useState(false);
+  const [isCalculating, setIsCalculating] = useState(false);
+  const [showReport, setShowReport] = useState(false);
+
+  // Récupération des traductions avec mémorisation
+  const { languageCode, t } = useMemo(() => {
+    const code = getLanguageCode(currentLanguage);
+    const translationsObj = translations[code] || translations['en'];
+    return { languageCode: code, t: translationsObj };
+  }, [currentLanguage]);
+
+  // Sauvegarde automatique dans localStorage
+  useEffect(() => {
+    const saveToLocalStorage = () => {
+      try {
+        const dataToSave = {
+          [STORAGE_KEYS.QAIR_PARASITE]: Qair_parasite,
+          [STORAGE_KEYS.T_AIR_PARASITE]: T_air_parasite,
+          [STORAGE_KEYS.T_AMONT_AIRINJECTION]: T_amont_AIRINJECTION,
+          [STORAGE_KEYS.PDC_AERO]: PDC_aero
+        };
+
+        Object.entries(dataToSave).forEach(([key, value]) => {
+          localStorage.setItem(key, value);
+        });
+      } catch (error) {
+        console.warn('Erreur lors de la sauvegarde dans localStorage:', error);
+      }
+    };
+
+    saveToLocalStorage();
+  }, [Qair_parasite, T_air_parasite, T_amont_AIRINJECTION, PDC_aero]);
+
+  // Sauvegarde des résultats de calcul
+  useEffect(() => {
+    if (CalculationResult_AIRINJECTION) {
+      try {
+        localStorage.setItem(STORAGE_KEYS.CALCULATION_RESULT, JSON.stringify(CalculationResult_AIRINJECTION));
+      } catch (error) {
+        console.warn('Erreur lors de la sauvegarde des résultats:', error);
+      }
+    }
+  }, [CalculationResult_AIRINJECTION]);
+
+  // Calcul automatique lors du changement des données d'entrée
+  useEffect(() => {
+    if (nodeData?.result && !isCalculating) {
+      try {
+        const validatedInputs = {
+          T_air_parasite: parseFloat(T_air_parasite) || 0,
+          Qair_parasite: parseFloat(Qair_parasite) || 0,
+          T_amont_AIRINJECTION: parseFloat(T_amont_AIRINJECTION) || 0,
+          PDC_aero: parseFloat(PDC_aero) || 0
+        };
+
+        const result = performCalculation_AIRINJECTION(
+          nodeData,
+          validatedInputs.T_air_parasite,
+          validatedInputs.Qair_parasite,
+          validatedInputs.T_amont_AIRINJECTION,
+          validatedInputs.PDC_aero
+        );
+        setCalculationResult_AIRINJECTION(result);
+      } catch (error) {
+        console.error('Erreur lors du recalcul automatique:', error);
+      }
+    }
+  }, [nodeData, T_air_parasite, Qair_parasite, T_amont_AIRINJECTION, PDC_aero, isCalculating]);
+
+  // Validation des entrées
+  const validateInputs = useCallback(() => {
+    const inputs = {
+      Qair_parasite: parseFloat(Qair_parasite),
+      T_air_parasite: parseFloat(T_air_parasite),
+      T_amont_AIRINJECTION: parseFloat(T_amont_AIRINJECTION),
+      PDC_aero: parseFloat(PDC_aero)
+    };
+
+    // Validation des valeurs numériques
+    for (const [key, value] of Object.entries(inputs)) {
+      if (isNaN(value)) {
+        throw new Error(`${t.InvalidInput}: ${key}`);
+      }
+    }
+
+    // Validations spécifiques aux contraintes physiques
+    if (inputs.Qair_parasite < 0) {
+      throw new Error(`${t.InvalidInput}: ${t.Qair_parasite} cannot be negative`);
+    }
+    if (inputs.PDC_aero < 0) {
+      throw new Error(`${t.InvalidInput}: ${t.PDC_aero} cannot be negative`);
+    }
+
+    return inputs;
+  }, [Qair_parasite, T_air_parasite, T_amont_AIRINJECTION, PDC_aero, t]);
+
+  // Gestion du calcul principal
+  const handleSendData = useCallback(async () => {
+    if (!nodeData?.result) {
+      alert(t.NoInputData);
+      return;
+    }
+
+    setIsCalculating(true);
+
+    try {
+      const validatedInputs = validateInputs();
+
+      const result = performCalculation_AIRINJECTION(
+        nodeData,
+        validatedInputs.T_air_parasite,
+        validatedInputs.Qair_parasite,
+        validatedInputs.T_amont_AIRINJECTION,
+        validatedInputs.PDC_aero
+      );
+
+      setCalculationResult_AIRINJECTION(result);
+      if (onSendData) {
+        onSendData({ result, inputData: { T_amont_AIRINJECTION, T_air_parasite, Qair_parasite, PDC_aero } });
+      }
+
+    } catch (error) {
+      console.error('Erreur lors du calcul:', error);
+      alert(`${t.ErrorInCalculation}: ${error.message}`);
+    } finally {
+      setIsCalculating(false);
+    }
+  }, [nodeData, validateInputs, onSendData, t]);
+
+  // Toggle du slider des résultats
+  const toggleSlider = useCallback(() => {
+    setIsSliderOpen(prev => !prev);
+  }, []);
+
+  // Effacement de la mémoire
+  const clearMemory = useCallback(() => {
+    try {
+      Object.values(STORAGE_KEYS).forEach(key => {
+        localStorage.removeItem(key);
+      });
+
+      setCalculationResult_AIRINJECTION(null);
+
+      // Réinitialisation aux valeurs par défaut
+      setQair_parasite(DEFAULT_VALUES.Qair_parasite);
+      setT_air_parasite(DEFAULT_VALUES.T_air_parasite);
+      setT_amont_AIRINJECTION(nodeData?.result?.dataFlow?.T || DEFAULT_VALUES.T_amont_AIRINJECTION);
+      setPDC_aero(DEFAULT_VALUES.PDC_aero);
+
+    } catch (error) {
+      console.warn('Erreur lors de l\'effacement:', error);
+    }
+  }, [nodeData]);
+
+  // Gestionnaires d'entrée optimisés
+  const createInputHandler = useCallback((setter, fallback = '0') =>
+    (e) => setter(e.target.value || fallback), []
+  );
+
+  return (
+    <div className="container-box">
+      <CloseButton onClose={onClose} />
+
+      <h3>{t.Parameters} {title}</h3>
+
+      <div className="inputs-container">
+        <InputField
+          label={t.Qair_parasite}
+          unit={`[${t.m3_h}]`}
+          value={Qair_parasite}
+          onChange={createInputHandler(setQair_parasite, DEFAULT_VALUES.Qair_parasite)}
+          disabled={isCalculating}
+        />
+        <InputField
+          label={t.Tair}
+          unit={`[${t.celsius}]`}
+          value={T_air_parasite}
+          onChange={createInputHandler(setT_air_parasite, DEFAULT_VALUES.T_air_parasite)}
+          disabled={isCalculating}
+        />
+        <InputField
+          label={t.T_fumees_amont}
+          unit={`[${t.celsius}]`}
+          value={T_amont_AIRINJECTION}
+          onChange={createInputHandler(setT_amont_AIRINJECTION, DEFAULT_VALUES.T_amont_AIRINJECTION)}
+          disabled={isCalculating}
+        />
+        <InputField
+          label={t.PDC_aero}
+          unit={`[${t.mmCE}]`}
+          value={PDC_aero}
+          onChange={createInputHandler(setPDC_aero, DEFAULT_VALUES.PDC_aero)}
+          disabled={isCalculating}
+        />
+      </div>
+
+      {/* Boutons d'action */}
+      <div className="prez-3-buttons">
+        <button
+          onClick={handleSendData}
+          disabled={isCalculating || !nodeData?.result}
+          className={isCalculating ? 'button-loading' : ''}
+        >
+          {isCalculating ? t.Calculating : t.CalculateAndSendData}
+        </button>
+
+        <ShowResultButton
+          isOpen={isSliderOpen}
+          onToggle={toggleSlider}
+          currentLanguage={currentLanguage}
+          disabled={!CalculationResult_AIRINJECTION}
+        />
+
+        <ClearButton
+          onClick={clearMemory}
+          currentLanguage={currentLanguage}
+          disabled={isCalculating}
+        />
+      </div>
+
+      {/* Affichage conditionnel des résultats */}
+      {isSliderOpen && CalculationResult_AIRINJECTION && (
+        <CalculationResults
+          isOpen={isSliderOpen}
+          results={CalculationResult_AIRINJECTION}
+          currentLanguage={currentLanguage}
+        />
+      )}
+
+      {/* Message si pas de résultats */}
+      {isSliderOpen && !CalculationResult_AIRINJECTION && (
+        <div className="no-results-message">
+          <p>{t.NoResults}</p>
+        </div>
+      )}
+
+      <div style={{ marginTop: '12px' }}>
+        <button
+          onClick={() => setShowReport(true)}
+          disabled={!CalculationResult_AIRINJECTION || isCalculating}
+          style={{ width: '100%', padding: '8px 16px', background: CalculationResult_AIRINJECTION ? '#1a3a6b' : '#ccc', color: '#fff', border: 'none', borderRadius: '4px', cursor: CalculationResult_AIRINJECTION ? 'pointer' : 'not-allowed', fontWeight: 'bold', fontSize: '13px' }}
+        >
+          Editer Rapport
+        </button>
+      </div>
+
+      {showReport && CalculationResult_AIRINJECTION && (
+        <AIRINJECTION_Retro_Rapport
+          calculationResult={CalculationResult_AIRINJECTION}
+          inputParams={{ T_amont_AIRINJECTION, T_air_parasite, Qair_parasite, PDC_aero }}
+          onClose={() => setShowReport(false)}
+        />
+      )}
+    </div>
+  );
+};
+
+export default React.memo(AIRINJECTION_Parameter_Tab);

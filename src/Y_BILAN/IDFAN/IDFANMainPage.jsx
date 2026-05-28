@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 //import IDFAN_Parameters from './1_IDFAN_Parameters';
 import IDFANFlueGasParameters from './1_IDFAN_Flue_gas1_ML';
 import IDFANFlueGasPollutantEmission  from './2_IDFAN_Pollutant_Emission_ML';
@@ -25,9 +25,22 @@ const IDFANMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, current
   const t = (key) => translations[languageCode]?.[key] || translations['fr']?.[key] || key;
 
   const [innerData, setInnerData] = useState(nodeData.result);
+
+  // Valeurs amont capturées une fois au montage — stables à travers les changements d'onglet
+  const T_IN_upstream  = useRef(nodeData?.result?.T_OUT ?? 200).current;
+  const FG_IN_upstream = useRef(nodeData?.result?.FG_OUT_kg_h || { CO2: 1, H2O: 1, O2: 1, N2: 1 }).current;
+  const P_IN_upstream  = useRef(nodeData?.result?.P_OUT ?? 0).current;
+
   const tabs = [
   //{name: 'Steam Parameters',content: (<IDFAN_Parameters innerData={innerData} />),},
-  {name: t('Flue gases'), content: < IDFANFlueGasParameters innerData={innerData}setInnerData={setInnerData}currentLanguage={currentLanguage}/> },
+  {name: t('Flue gases'), content: <IDFANFlueGasParameters
+    innerData={innerData}
+    setInnerData={setInnerData}
+    upstreamT_IN={T_IN_upstream}
+    upstreamFG_IN={FG_IN_upstream}
+    upstreamP_IN={P_IN_upstream}
+    currentLanguage={currentLanguage}
+  /> },
   {name: t('Pollutant Emissions'), content: <IDFANFlueGasPollutantEmission  innerData={innerData}setInnerData={setInnerData}currentLanguage={currentLanguage}/>,},
  // {name: 'Design', content: < IDFANDesign innerData={innerData}/> },
 

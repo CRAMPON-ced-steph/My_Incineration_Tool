@@ -12,7 +12,7 @@ const rho_air = 1.293;
 const O2_mass_frac = 0.233;
 const N2_mass_frac = 0.767;
 
-const IACTFlueGasParameters = ({ innerData, currentLanguage = 'fr' }) => {
+const IACTFlueGasParameters = ({ innerData, upstreamT_IN, upstreamFG_IN, upstreamP_IN, currentLanguage = 'fr' }) => {
   const initialEmissions_IACT = {
     'Flue gas temperature outlet [°C]': innerData?.T_OUT - 10,
     'Ambient air temperature [°C]': 20,
@@ -42,10 +42,10 @@ const IACTFlueGasParameters = ({ innerData, currentLanguage = 'fr' }) => {
     localStorage.setItem('emissions_IACT', JSON.stringify(emissions_IACT));
   }, [emissions_IACT]);
 
-  // Données amont
-  const T_IN = innerData?.T_OUT || 200;
-  const P_IN = innerData?.P_OUT || 0;
-  const FG_IN = innerData?.FG_OUT_kg_h || { CO2: 1, H2O: 1, O2: 1, N2: 1 };
+  // Données amont — transmises depuis IACTMainPage, stables à travers les changements d'onglet
+  const T_IN = upstreamT_IN ?? 200;
+  const FG_IN = upstreamFG_IN || { CO2: 1, H2O: 1, O2: 1, N2: 1 };
+  const P_IN = upstreamP_IN ?? 0;
 
   // Paramètres utilisateur
   const T_out     = emissions_IACT['Flue gas temperature outlet [°C]'];
@@ -130,7 +130,7 @@ const IACTFlueGasParameters = ({ innerData, currentLanguage = 'fr' }) => {
   if (innerData) {
     innerData.FG_humide_tot        = FG_humide_tot_m3_h;
     innerData.FG_sec_tot           = FG_sec_tot_m3_h;
-    innerData.T_sortie             = T_out;
+    innerData.T_OUT            = T_out;
     innerData.Pin_mmCE             = P_IN;
     innerData.P_out_mmCE           = P_out_mmCE;
     innerData.P_OUT                = P_out_mmCE;

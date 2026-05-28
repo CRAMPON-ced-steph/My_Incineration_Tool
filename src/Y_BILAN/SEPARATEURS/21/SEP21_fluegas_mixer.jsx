@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+/* eslint-disable react/prop-types */
+import React, { useState, useEffect, useMemo } from 'react';
 import MassCalculator from '../../../C_Components/Tableau_fumee_inverse';
 import TableGeneric from '../../../C_Components/Tableau_generique';
 import { H2O_kg_m3, CO2_kg_m3, O2_kg_m3, N2_kg_m3 } from '../../../A_Transverse_fonction/conv_calculation';
@@ -6,7 +7,7 @@ import { h_fumee } from '../../../A_Transverse_fonction/enthalpy_mix_gas';
 import { getLanguageCode } from '../../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './SEP21_traduction';
 
-const SEP21FlueGasMixer = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
+const SEP21FlueGasMixer = ({ innerData, setInnerData, upstreamT_IN, upstreamFG_IN, currentLanguage = 'fr' }) => {
 
   // État pour la composition manuelle à ajouter
   const [manualComposition_SEP21, setManualComposition_SEP21] = useState(() => {
@@ -29,9 +30,9 @@ const SEP21FlueGasMixer = ({ innerData, setInnerData, currentLanguage = 'fr' }) 
     localStorage.setItem('manualComposition_SEP21', JSON.stringify(manualComposition_SEP21));
   }, [manualComposition_SEP21]);
 
-  // Données d'entrée du nœud précédent - NE PAS DÉPENDRE DE innerData POUR LES CALCULS LOCAUX
-  const T_IN_1 = innerData?.T_OUT || 200;
-  const FG_IN_1 = innerData?.FG_OUT_kg_h || { CO2: 1, H2O: 1, O2: 1, N2: 1 };
+  // Données amont — transmises depuis SEP21MainPage, stables à travers les changements d'onglet
+  const T_IN_1 = upstreamT_IN ?? 200;
+  const FG_IN_1 = upstreamFG_IN || { CO2: 1, H2O: 1, O2: 1, N2: 1 };
 
   // Composition manuelle à ajouter - EXTRAIRE LES VALEURS SEULEMENT
   const T_IN_2 = manualComposition_SEP21['Temperature [°C]'];
@@ -158,17 +159,6 @@ const FG_wet_Nm3_h = FG_dry_Nm3_h+FG_H2O_Nm3_h;
     }));
   };
 
-  const clearMemory = useCallback(() => {
-    localStorage.removeItem('manualComposition_SEP21');
-    setManualComposition_SEP21({
-      'CO2 [kg/h]': 100,
-      'H2O [kg/h]': 50,
-      'O2 [kg/h]': 200,
-      'N2 [kg/h]': 1000,
-      'Temperature [°C]': 20,
-    });
-  }, []);
-
   return (
     <div className="cadre_pour_onglet">
       <h3>{t('SEP21 - Flue Gas Mixer')}</h3>
@@ -207,22 +197,6 @@ const FG_wet_Nm3_h = FG_dry_Nm3_h+FG_H2O_Nm3_h;
       {/* Section Flux 2 - Composition manuelle */}
       <h4>{t('Inlet Stream 2 (manual composition)')}</h4>
       <div className="cadre_param_bilan">
-        <button 
-          onClick={clearMemory}
-          style={{
-            padding: '8px 16px',
-            backgroundColor: '#ff6b6b',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer',
-            fontWeight: 'bold',
-            marginBottom: '15px'
-          }}
-        >
-          {t('Clear memory')}
-        </button>
-
         <div style={{ display: 'grid', gap: '12px' }}>
           {Object.entries(manualComposition_SEP21).map(([key, value]) => (
             <div

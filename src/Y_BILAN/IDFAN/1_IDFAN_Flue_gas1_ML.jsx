@@ -7,7 +7,7 @@ import { h_fumee } from '../../A_Transverse_fonction/enthalpy_mix_gas';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './IDFAN_traduction';
 
-const IDFANFlueGasParameters = ({ innerData, currentLanguage = 'fr' }) => {
+const IDFANFlueGasParameters = ({ innerData, upstreamT_IN, upstreamFG_IN, upstreamP_IN, currentLanguage = 'fr' }) => {
   const initialEmissions_IDFAN = {
     'Electrical yield [%]': 70,
     'Radiative losses [%]': 5,
@@ -54,11 +54,11 @@ const IDFANFlueGasParameters = ({ innerData, currentLanguage = 'fr' }) => {
     localStorage.setItem('emissions_IDFAN', JSON.stringify(emissions_IDFAN));
   }, [emissions_IDFAN]);
 
-  // Input data with fallback values
-  const T_IN = innerData?.T_OUT || 200;
+  // Données amont — transmises depuis IDFANMainPage, stables à travers les changements d'onglet
+  const T_IN = upstreamT_IN ?? 200;
   const T_in = T_IN;
-  const FG_IN = innerData?.FG_OUT_kg_h || { CO2: 1, H2O: 1, O2: 1, N2: 1 };
-  const P_inlet = innerData?.P_OUT || 1;
+  const FG_IN = upstreamFG_IN || { CO2: 1, H2O: 1, O2: 1, N2: 1 };
+  const P_inlet = upstreamP_IN ?? 1;
 
   // Extract parameters from state
   const Elec_yield = emissions_IDFAN['Electrical yield [%]'] / 100;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import SEP21FlueGasMixer from './SEP21_fluegas_mixer';
 import SEP21FlueGasPollutantEmission from './SEP21_Pollutant_Emission';
 
@@ -13,6 +13,11 @@ const SEP21MainPage = ({ nodeData, title, onSendData, onClose, onGoBack, current
   };
 
   const [innerData, setInnerData] = useState(nodeData?.result || {});
+
+  // Valeurs amont capturées une fois au montage — stables à travers les changements d'onglet
+  const T_IN_upstream  = useRef(nodeData?.result?.T_OUT ?? 200).current;
+  const FG_IN_upstream = useRef(nodeData?.result?.FG_OUT_kg_h || { CO2: 1, H2O: 1, O2: 1, N2: 1 }).current;
+
   const [activeTab, setActiveTab] = useState('flueGasMixer');
 
   // Mettre à jour automatiquement quand currentLanguage change
@@ -26,10 +31,12 @@ const SEP21MainPage = ({ nodeData, title, onSendData, onClose, onGoBack, current
       name: 'flueGasMixer',
       label: t('Flue Gas Mixer'),
       content: (
-        <SEP21FlueGasMixer 
-          innerData={innerData} 
+        <SEP21FlueGasMixer
+          innerData={innerData}
           setInnerData={setInnerData}
-          currentLanguage={currentLanguage} 
+          upstreamT_IN={T_IN_upstream}
+          upstreamFG_IN={FG_IN_upstream}
+          currentLanguage={currentLanguage}
         />
       ),
     },

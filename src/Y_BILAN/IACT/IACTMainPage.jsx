@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import IACTFlueGasParameters from './1_IACT_Flue_gas_ML';
 import IACT_Report from './IACT_Report';
 import '../../index.css';
@@ -14,10 +14,22 @@ const IACTMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentL
 
   const [innerData, setInnerData] = useState(nodeData.result);
 
+  // Valeurs amont capturées une fois au montage — stables à travers les changements d'onglet
+  const T_IN_upstream  = useRef(nodeData?.result?.T_OUT ?? 200).current;
+  const FG_IN_upstream = useRef(nodeData?.result?.FG_OUT_kg_h || { CO2: 1, H2O: 1, O2: 1, N2: 1 }).current;
+  const P_IN_upstream  = useRef(nodeData?.result?.P_OUT ?? 0).current;
+
   const tabs = [
     {
       name: t('Flue gases'),
-      content: <IACTFlueGasParameters innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} />
+      content: <IACTFlueGasParameters
+        innerData={innerData}
+        setInnerData={setInnerData}
+        upstreamT_IN={T_IN_upstream}
+        upstreamFG_IN={FG_IN_upstream}
+        upstreamP_IN={P_IN_upstream}
+        currentLanguage={currentLanguage}
+      />
     },
     {
       name: 'Rapport',
@@ -41,6 +53,7 @@ const IACTMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentL
         PollutantOutput: upstream['Poutput'] || upstream['PollutantOutput'] || {},
         ResidusOutput: upstream['Residus'] || upstream['ResidusOutput'] || {},
         MasseDechet: upstream['masse'] || upstream['MasseDechet'] || 0,
+        T_OUT: innerData?.T_OUT ?? 0,
         P_OUT: innerData?.P_out_mmCE || 0,
         activeNodes_Elec: upstream['activeNodes_Elec'] || [],
         activeNodes_Eau: upstream['activeNodes_Eau'] || [],

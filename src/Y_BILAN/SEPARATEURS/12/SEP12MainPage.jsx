@@ -1,62 +1,119 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
+import SEP12FluegasSep from './SEP12_fluegas_sep';
 import { getLanguageCode } from '../../../F_Gestion_Langues/Fonction_Traduction';
-//import { translations } from './SEP12_traduction';
-
 import { translations } from './SEP12_traduction';
 
-const SEP12MainPage = ({ innerData, currentLanguage = 'fr' }) => {
-  const initialData_SEP12 = {
-    // Add your initial state here
-  };
+const SEP12MainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLanguage = 'fr' }) => {
 
   const languageCode = getLanguageCode(currentLanguage);
   const t = (key) => {
     return translations[languageCode]?.[key] || translations['fr']?.[key] || key;
   };
 
-  const [data_SEP12, setData_SEP12] = useState(() => {
-    const savedData = localStorage.getItem('data_SEP12');
-    return savedData ? JSON.parse(savedData) : initialData_SEP12;
-  });
+  const [innerData, setInnerData] = useState(nodeData?.result || {});
 
   useEffect(() => {
-    localStorage.setItem('data_SEP12', JSON.stringify(data_SEP12));
-  }, [data_SEP12]);
+  }, [currentLanguage]);
 
-  const handleChange = (name, value) => {
-    setData_SEP12((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+  const sendAllData = () => {
+    if (!onSendData || typeof onSendData !== 'function') {
+      console.error('❌ ERROR: onSendData callback is not defined or is not a function!');
+      alert('Error: Cannot send data. onSendData callback is missing.');
+      return;
+    }
+
+    try {
+      const dataToSend = {
+        result: {
+          FG_OUT_kg_h: innerData['FG_OUT_kg_h'] || { CO2: 0, H2O: 0, O2: 0, N2: 0 },
+          T_OUT: innerData['T_OUT'] ?? 0,
+          FG_flux2: innerData['FG_flux2'] || { CO2: 0, H2O: 0, O2: 0, N2: 0 },
+          pct_flux1_SEP12: innerData['pct_flux1_SEP12'] ?? 50,
+          P_OUT: innerData['P_out_mmCE'] ?? 0,
+
+          PollutantInput: innerData['PInput'] || {},
+          PollutantOutput: innerData['Poutput'] || {},
+          ResidusOutput: innerData['Residus'] || {},
+          MasseDechet: innerData['masse'] || 0,
+
+          activeNodes_Elec: innerData['activeNodes_Elec'] || [],
+          activeNodes_Eau: innerData['activeNodes_Eau'] || [],
+          activeNodes_Reactifs: innerData['activeNodes_Reactifs'] || [],
+          activeNodes_Energie: innerData['activeNodes_Energie'] || [],
+          activeNodes_CO2: innerData['activeNodes_CO2'] || [],
+          activeNodes_cout: innerData['activeNodes_cout'] || [],
+        }
+      };
+
+      onSendData(dataToSend);
+    } catch (error) {
+      console.error('❌ Error sending data:', error);
+      alert('Error sending data: ' + error.message);
+    }
   };
 
-  const clearMemory = useCallback(() => {
-    localStorage.removeItem('data_SEP12');
-    setData_SEP12(initialData_SEP12);
-  }, []);
+  const handleBackToFlow = () => {
+    sendAllData();
+    if (onGoBack && typeof onGoBack === 'function') {
+      onGoBack(null);
+    }
+  };
 
   return (
-    <div className="cadre_pour_onglet">
-      <h3>{t('SEP12 Parameters')}</h3>
-      
-      <div className="cadre_param_bilan">
-        <button 
-          onClick={clearMemory}
-          style={{
-            padding: '8px 16px',
-            backgroundColor: '#ff6b6b',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer',
-            fontWeight: 'bold',
-            marginBottom: '15px'
-          }}
-        >
-          {t('Clear memory')}
-        </button>
+    <div className="cadre_pour_onglet_principal">
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: '20px',
+        }}
+      >
+        <h1>{t('SEP12 — 1 to 2 Separator')}</h1>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <button
+            onClick={handleBackToFlow}
+            style={{
+              padding: '8px 16px',
+              background: '#4a90e2',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: 'pointer',
+              fontWeight: 'bold',
+            }}
+          >
+            {t('Back to Flow')}
+          </button>
+          <button
+            onClick={sendAllData}
+            style={{
+              padding: '8px 16px',
+              background: '#28a745',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: 'pointer',
+              fontWeight: 'bold',
+            }}
+          >
+            {t('Send Data')}
+          </button>
+        </div>
+      </div>
 
-        {/* Add your content here */}
+      <div
+        style={{
+          padding: '20px',
+          background: '#f9f9f9',
+          borderRadius: '8px',
+          minHeight: '500px',
+        }}
+      >
+        <SEP12FluegasSep
+          innerData={innerData}
+          currentLanguage={currentLanguage}
+        />
       </div>
     </div>
   );

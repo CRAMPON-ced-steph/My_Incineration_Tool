@@ -106,6 +106,7 @@ const Sidebar = ({ onAddNode, currentLanguage = 'fr' }) => {
         { id: 'ELECTROFILTER', label: t.addElectrofilter },
         { id: 'CYCLONE', label: t.addCyclone },
         { id: 'REACTOR', label: t.addReactor },
+        { id: 'AIRINJECTION', label: t.addAIRINJECTION },
       ],
     },
     {
@@ -113,6 +114,7 @@ const Sidebar = ({ onAddNode, currentLanguage = 'fr' }) => {
       title: t.wetTreatment,
       items: [
         { id: 'QUENCH', label: t.addQuench },
+        { id: 'WATER_INJECTION', label: t.addWATER_INJECTION },
         { id: 'COOLINGTOWER', label: t.addCoolingTower },
         { id: 'DENOX', label: t.addDenoxCatalyst },
         { id: 'SCRUBBER', label: t.addScrubber },
