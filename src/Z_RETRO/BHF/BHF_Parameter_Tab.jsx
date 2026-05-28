@@ -13,7 +13,7 @@ import BHF_Retro_Rapport from './BHF_Retro_Rapport';
 import '../../index.css';
 
 const BHF_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage }) => {
-  const [Qair_decolmatation, setQair_decolmatation] = useState(() => parseFloat(localStorage.getItem('Qair_decolmatation_BHF')) || 0);
+  const [Qair_decolmatation, setQair_decolmatation] = useState(() => parseFloat(localStorage.getItem('Qair_decolmatation_BHF')) || 500);
   const [T_air_decolmatation, setT_air_decolmatation] = useState(() => parseFloat(localStorage.getItem('T_air_decolmatation_BHF')) || 15);
   const [T_amont_BHF, setT_amont_BHF] = useState(() => parseFloat(localStorage.getItem('T_amont_BHF')) || nodeData?.result?.dataFlow?.T || '10');
   const [PDC_aero, setPDC_aero] = useState(() => localStorage.getItem('PDC_aero_BHF') || '50');
@@ -81,7 +81,7 @@ const BHF_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLangua
 
   // Function to clear values
   const clearMemory = () => {
-    setQair_decolmatation(0);
+    setQair_decolmatation(500);
     setT_air_decolmatation(15);
     setT_amont_BHF(nodeData?.result?.dataFlow?.T || '10');
     setPDC_aero('50');
@@ -106,7 +106,7 @@ const BHF_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLangua
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
         <InputField label="Qair_decolmatation" unit="[m³/h]" value={Qair_decolmatation} onChange={(e) => setQair_decolmatation(parseFloat(e.target.value) || 0)}/>
-        <InputField label="Tair" unit="[°C]" value={T_air_decolmatation} onChange={(e) => setT_air_decolmatation(parseFloat(e.target.value) || 0)}/>
+        <InputField label="T air exterieur" unit="[°C]" value={T_air_decolmatation} onChange={(e) => setT_air_decolmatation(parseFloat(e.target.value) || 0)}/>
         <InputField label="T fumées amont" unit="[°C]" value={T_amont_BHF} onChange={(e) => setT_amont_BHF(parseFloat(e.target.value) || 0)}/>
         <InputField label="PDC aero" unit="[mmCE]" value={PDC_aero} onChange={(e) => setPDC_aero(e.target.value)} />
       </div>
