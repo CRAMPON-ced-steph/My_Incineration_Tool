@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { performCalculation_IDFAN } from './IDFAN_calculations';
 import { performCalculation_IDFAN2 } from './IDFAN_calculations2';
 
@@ -36,7 +36,7 @@ const DEFAULT_VALUES = {
   Rdt_elec: '70'
 };
 
-const IDFAN_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage }) => {
+const IDFAN_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage, autoTrigger = false }) => {
   // États principaux
   const [P_amont, setP_amont] = useState(() => 
     localStorage.getItem(STORAGE_KEYS.P_AMONT) || DEFAULT_VALUES.P_amont
@@ -236,6 +236,13 @@ const IDFAN_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLang
     );
   });
 
+  const hasAutoTriggered = useRef(false);
+  useEffect(() => {
+    if (!autoTrigger || hasAutoTriggered.current) return;
+    hasAutoTriggered.current = true;
+    handleSendData();
+  }, [autoTrigger]);
+
   return (
     <div className="container-box">
       <CloseButton onClose={onClose} />
@@ -282,6 +289,7 @@ const IDFAN_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLang
           disabled={isCalculating || !nodeData?.result}
           currentLanguage={currentLanguage}
           isCalculating={isCalculating}
+          storageKey={`calcSent_${title}`}
         />
         
         <ShowResultButton 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { performCalculation_FB_MS } from './FB_calculation_MS';
 import { performCalculation_FB_Qboue } from './FB_calculation_Qboue';
 
@@ -50,7 +50,7 @@ const DEFAULT_VALUES = {
   MV_percent: '70'
 };
 
-const FB_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage }) => {
+const FB_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage, autoTrigger = false }) => {
   // États principaux existants
   const [Tair_FB_C, setTair_FB_C] = useState(() => 
     localStorage.getItem('Tair_FB_C') || DEFAULT_VALUES.Tair_FB_C
@@ -370,6 +370,13 @@ const FB_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguag
     </div>
   ));
 
+  const hasAutoTriggered = useRef(false);
+  useEffect(() => {
+    if (!autoTrigger || hasAutoTriggered.current) return;
+    hasAutoTriggered.current = true;
+    handleSendData();
+  }, [autoTrigger]);
+
   return (
     <div className="container-box">
       <CloseButton onClose={onClose} />
@@ -479,6 +486,7 @@ const FB_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguag
           disabled={isCalculating}
           currentLanguage={currentLanguage}
           isCalculating={isCalculating}
+          storageKey={`calcSent_${title}`}
         />
         
         <ShowResultButton 

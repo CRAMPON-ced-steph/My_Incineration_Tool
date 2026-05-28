@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { getLanguageCode } from '../F_Gestion_Langues/Fonction_Traduction';
 
 const LABELS = {
@@ -14,8 +14,9 @@ const LABELS = {
   zh: { calculate: '计算并发送数据',               calculating: '计算中...' },
 };
 
-const CalculateSendButton = ({ onClick, disabled, currentLanguage, isCalculating }) => {
+const CalculateSendButton = ({ onClick, disabled, currentLanguage, isCalculating, storageKey, resetSignal }) => {
   const [sent, setSent] = useState(false);
+  useEffect(() => { setSent(false); }, [resetSignal]);
   const code = getLanguageCode(currentLanguage);
   const t = LABELS[code] || LABELS.en;
 

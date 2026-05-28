@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { performCalculation_WHB_option_T_Qair } from './WHB_calculation_option1';
 import { performCalculation_WHB_option_T_O2 } from './WHB_calculation_option2';
 import { performCalculation_WHB_option_Qeau_Qair } from './WHB_calculation_option3';
@@ -69,7 +69,7 @@ const DEFAULT_VALUES = {
   bilanTypeAir: AIR_BALANCE_TYPES.PARASITIC_AIR
 };
 
-const WHB_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage }) => {
+const WHB_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage, autoTrigger = false }) => {
   // États principaux
   const [T_eau_alimentation_C, setT_eau_alimentation_C] = useState(() => 
     localStorage.getItem(STORAGE_KEYS.T_EAU_ALIMENTATION) || DEFAULT_VALUES.T_eau_alimentation_C
@@ -394,6 +394,13 @@ const WHB_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLangua
     );
   });
 
+  const hasAutoTriggered = useRef(false);
+  useEffect(() => {
+    if (!autoTrigger || hasAutoTriggered.current) return;
+    hasAutoTriggered.current = true;
+    handleSendData();
+  }, [autoTrigger]);
+
   return (
     <div className="container-box">
       <CloseButton onClose={onClose} />
@@ -525,6 +532,7 @@ const WHB_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLangua
           disabled={isCalculating || !nodeData?.result}
           currentLanguage={currentLanguage}
           isCalculating={isCalculating}
+          storageKey={`calcSent_${title}`}
         />
         
         <ShowResultButton 

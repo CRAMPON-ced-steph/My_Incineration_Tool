@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { performCalculation_IACT } from './IACT_calculations';
 
 import InputField from '../../C_Components/input_retro';
@@ -12,7 +12,7 @@ import CalculateSendButton from '../../C_Components/CalculateSendButton';
 import IACT_Retro_Rapport from './IACT_Retro_Rapport';
 import '../../index.css';
 
-const IACT_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage }) => {
+const IACT_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage, autoTrigger = false }) => {
   const [T_air_ambiant, setT_air_ambiant]       = useState(() => parseFloat(localStorage.getItem('T_air_decolmatation_IACT')) || 15);
   const [T_air_chauffe, setT_air_chauffe]       = useState(() => parseFloat(localStorage.getItem('T_air_chauffe_IACT')) || 150);
   const [Rendement_echange, setRendement_echange] = useState(() => parseFloat(localStorage.getItem('Rendement_echange_IACT')) || 95);
@@ -94,6 +94,13 @@ const IACT_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLangu
     localStorage.removeItem('CalculationResult_IACT');
   };
 
+  const hasAutoTriggered = useRef(false);
+  useEffect(() => {
+    if (!autoTrigger || hasAutoTriggered.current) return;
+    hasAutoTriggered.current = true;
+    handleSendData();
+  }, [autoTrigger]);
+
   return (
     <div className="container-box">
       <CloseButton onClose={onClose} />
@@ -109,7 +116,7 @@ const IACT_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLangu
       </div>
 
       <div className="prez-3-buttons">
-        <CalculateSendButton onClick={handleSendData} currentLanguage={currentLanguage} />
+        <CalculateSendButton onClick={handleSendData} currentLanguage={currentLanguage} storageKey={`calcSent_${title}`} />
         <ShowResultButton isOpen={isSliderOpen} onToggle={() => setIsSliderOpen(!isSliderOpen)} currentLanguage={currentLanguage} />
         <ClearButton onClick={clearMemory} currentLanguage={currentLanguage} />
       </div>

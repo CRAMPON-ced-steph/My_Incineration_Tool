@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { performCalculation_AIRINJECTION } from './AIRINJECTION_calculations';
 
 import InputField from '../../C_Components/input_retro';
@@ -31,7 +31,7 @@ const DEFAULT_VALUES = {
   PDC_aero: '10'
 };
 
-const AIRINJECTION_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage }) => {
+const AIRINJECTION_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage, autoTrigger = false }) => {
   // États principaux
   const [Qair_parasite, setQair_parasite] = useState(() =>
     localStorage.getItem(STORAGE_KEYS.QAIR_PARASITE) || DEFAULT_VALUES.Qair_parasite
@@ -216,6 +216,13 @@ const AIRINJECTION_Parameter_Tab = ({ nodeData, title, onSendData, onClose, curr
     (e) => setter(e.target.value || fallback), []
   );
 
+  const hasAutoTriggered = useRef(false);
+  useEffect(() => {
+    if (!autoTrigger || hasAutoTriggered.current) return;
+    hasAutoTriggered.current = true;
+    handleSendData();
+  }, [autoTrigger]);
+
   return (
     <div className="container-box">
       <CloseButton onClose={onClose} />
@@ -260,6 +267,7 @@ const AIRINJECTION_Parameter_Tab = ({ nodeData, title, onSendData, onClose, curr
           disabled={isCalculating || !nodeData?.result}
           currentLanguage={currentLanguage}
           isCalculating={isCalculating}
+          storageKey={`calcSent_${title}`}
         />
 
         <ShowResultButton

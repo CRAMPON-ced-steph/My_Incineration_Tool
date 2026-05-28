@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { performCalculation_GF } from './GF_calculations';
 import InputField from '../../C_Components/input_retro';
 import ClearButton from '../../C_Components/Clear_Button';
@@ -100,7 +100,7 @@ const DEFAULT_VALUES = {
   diagramMode: 'NO'
 };
 
-const GF_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage }) => {
+const GF_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage, autoTrigger = false }) => {
   // États principaux - Paramètres de base
   const [Waste_flow_rate_kg_h, setWaste_flow_rate_kg_h] = useState(() => 
     localStorage.getItem(STORAGE_KEYS.WASTE_FLOW_RATE) || DEFAULT_VALUES.Waste_flow_rate_kg_h
@@ -561,6 +561,13 @@ const GF_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguag
     }
   }, []);
 
+  const hasAutoTriggered = useRef(false);
+  useEffect(() => {
+    if (!autoTrigger || hasAutoTriggered.current) return;
+    hasAutoTriggered.current = true;
+    handleSendData();
+  }, [autoTrigger]);
+
   return (
     <div className="container-box">
       <CloseButton onClose={onClose} />
@@ -854,6 +861,7 @@ const GF_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguag
           disabled={isCalculating || !nodeData?.result}
           currentLanguage={currentLanguage}
           isCalculating={isCalculating}
+          storageKey={`calcSent_${title}`}
         />
         
         <ShowResultButton 

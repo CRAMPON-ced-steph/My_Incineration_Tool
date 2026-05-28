@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { T_ref } from '../../A_Transverse_fonction/constantes';
 import { performCalculation_STACK } from './STACK_calculations';
 import InputField from '../../C_Components/input_retro';
@@ -43,7 +43,7 @@ const getStorageValue = (key, defaultValue, nodeData = null) => {
   return defaultValue;
 };
 
-const STACK_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage }) => {
+const STACK_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage, autoTrigger = false }) => {
   // États principaux avec initialisation optimisée
   const [Tstack, setTstack] = useState(() => 
     getStorageValue(STORAGE_KEYS.TSTACK, DEFAULT_VALUES.Tstack, nodeData)
@@ -229,6 +229,13 @@ const STACK_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLang
   const handleCO2Change = createInputHandler(setCO2_dry_pourcent, DEFAULT_VALUES.CO2_dry_pourcent);
   const handlePressureChange = createInputHandler(setP_out_mmCE, DEFAULT_VALUES.P_out_mmCE);
 
+  const hasAutoTriggered = useRef(false);
+  useEffect(() => {
+    if (!autoTrigger || hasAutoTriggered.current) return;
+    hasAutoTriggered.current = true;
+    handleSendData();
+  }, [autoTrigger]);
+
   return (
     <div className="container-box">
       <CloseButton onClose={onClose} />
@@ -296,6 +303,7 @@ const STACK_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLang
           disabled={isCalculating}
           currentLanguage={currentLanguage}
           isCalculating={isCalculating}
+          storageKey={`calcSent_${title}`}
         />
         
         <ShowResultButton 

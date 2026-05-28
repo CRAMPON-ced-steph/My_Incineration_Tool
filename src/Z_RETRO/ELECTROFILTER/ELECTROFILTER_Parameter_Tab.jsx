@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { performCalculation_ELECTROFILTER } from './ELECTROFILTER_calculations';
 
 import InputField from '../../C_Components/input_retro';
@@ -31,7 +31,7 @@ const DEFAULT_VALUES = {
   PDC_aero: '100'
 };
 
-const ELECTROFILTER_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage }) => {
+const ELECTROFILTER_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage, autoTrigger = false }) => {
   // États principaux
   const [Qair_decolmatation, setQair_decolmatation] = useState(() => 
     localStorage.getItem(STORAGE_KEYS.QAIR_DECOLMATATION) || DEFAULT_VALUES.Qair_decolmatation
@@ -187,9 +187,16 @@ const ELECTROFILTER_Parameter_Tab = ({ nodeData, title, onSendData, onClose, cur
   }, [nodeData]);
 
   // Gestionnaires d'entrée optimisés
-  const createInputHandler = useCallback((setter, fallback = '0') => 
+  const createInputHandler = useCallback((setter, fallback = '0') =>
     (e) => setter(e.target.value || fallback), []
   );
+
+  const hasAutoTriggered = useRef(false);
+  useEffect(() => {
+    if (!autoTrigger || hasAutoTriggered.current) return;
+    hasAutoTriggered.current = true;
+    handleSendData();
+  }, [autoTrigger]);
 
   return (
     <div className="container-box">
@@ -235,6 +242,7 @@ const ELECTROFILTER_Parameter_Tab = ({ nodeData, title, onSendData, onClose, cur
           disabled={isCalculating || !nodeData?.result}
           currentLanguage={currentLanguage}
           isCalculating={isCalculating}
+          storageKey={`calcSent_${title}`}
         />
         
         <ShowResultButton 

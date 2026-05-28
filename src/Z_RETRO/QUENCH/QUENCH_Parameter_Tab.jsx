@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { T_ref } from '../../A_Transverse_fonction/constantes';
 import { performCalculation_QUENCH_option_T } from './QUENCH_calculations';
 import { performCalculation_QUENCH_option_Qeau } from './QUENCH_calculations2';
@@ -41,7 +41,7 @@ const DEFAULT_VALUES = {
   bilanType: BALANCE_TYPES.TEMPERATURE
 };
 
-const QUENCH_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage }) => {
+const QUENCH_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage, autoTrigger = false }) => {
   // États principaux
   const [Teau, setTeau] = useState(() => 
     localStorage.getItem(STORAGE_KEYS.T_EAU) || DEFAULT_VALUES.Teau
@@ -264,6 +264,13 @@ const QUENCH_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLan
     );
   });
 
+  const hasAutoTriggered = useRef(false);
+  useEffect(() => {
+    if (!autoTrigger || hasAutoTriggered.current) return;
+    hasAutoTriggered.current = true;
+    handleSendData();
+  }, [autoTrigger]);
+
   return (
     <div className="container-box">
       <CloseButton onClose={onClose} />
@@ -330,6 +337,7 @@ const QUENCH_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLan
           disabled={isCalculating || !nodeData?.result}
           currentLanguage={currentLanguage}
           isCalculating={isCalculating}
+          storageKey={`calcSent_${title}`}
         />
         
         <ShowResultButton 

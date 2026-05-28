@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { T_ref } from '../../A_Transverse_fonction/constantes';
 import { performCalculation_REACTOR } from './REACTOR_calculations';
 
@@ -45,7 +45,7 @@ const DEFAULT_VALUES = {
   Concentration_cap_mg_cap_Nm3_FG: '0.1'
 };
 
-const REACTOR_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage }) => {
+const REACTOR_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage, autoTrigger = false }) => {
   // États principaux
   const [T_amont_REACTOR, setT_amont_REACTOR] = useState(() => 
     localStorage.getItem(STORAGE_KEYS.T_AMONT_REACTOR) || 
@@ -299,6 +299,13 @@ const REACTOR_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLa
     );
   });
 
+  const hasAutoTriggered = useRef(false);
+  useEffect(() => {
+    if (!autoTrigger || hasAutoTriggered.current) return;
+    hasAutoTriggered.current = true;
+    handleSendData();
+  }, [autoTrigger]);
+
   return (
     <div className="container-box">    
       <CloseButton onClose={onClose} />
@@ -393,6 +400,7 @@ const REACTOR_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLa
           disabled={isCalculating || !nodeData?.result}
           currentLanguage={currentLanguage}
           isCalculating={isCalculating}
+          storageKey={`calcSent_${title}`}
         />
         
         <ShowResultButton 

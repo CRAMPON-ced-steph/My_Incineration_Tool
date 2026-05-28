@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { performCalculation_DENOX_option_Qeau } from './DENOX_calculations';
 import InputField from '../../C_Components/input_retro';
 import ClearButton from '../../C_Components/Clear_Button';
@@ -36,7 +36,7 @@ const DEFAULT_VALUES = {
   pdc: '50'
 };
 
-const DENOX_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage }) => {
+const DENOX_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage, autoTrigger = false }) => {
   // États principaux
   const [targetNOx, setTargetNOx] = useState(() => 
     localStorage.getItem(STORAGE_KEYS.TARGET_NOX) || DEFAULT_VALUES.targetNOx
@@ -245,9 +245,16 @@ const DENOX_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLang
   }, []);
 
   // Gestionnaires d'entrée optimisés
-  const createInputHandler = useCallback((setter, fallback = '0') => 
+  const createInputHandler = useCallback((setter, fallback = '0') =>
     (e) => setter(e.target.value || fallback), []
   );
+
+  const hasAutoTriggered = useRef(false);
+  useEffect(() => {
+    if (!autoTrigger || hasAutoTriggered.current) return;
+    hasAutoTriggered.current = true;
+    handleSendData();
+  }, [autoTrigger]);
 
   return (
     <div className="container-box">
@@ -314,6 +321,7 @@ const DENOX_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLang
           disabled={isCalculating || (!nodeData?.result && !nodeData)}
           currentLanguage={currentLanguage}
           isCalculating={isCalculating}
+          storageKey={`calcSent_${title}`}
         />
         
         <ShowResultButton 

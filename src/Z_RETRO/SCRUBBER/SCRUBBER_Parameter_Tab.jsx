@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { T_ref } from '../../A_Transverse_fonction/constantes';
 import { performCalculation_SCRUBBER_option_TinTout } from './SCRUBBER_calculations';
 import { performCalculation_SCRUBBER_option_TinTsat } from './SCRUBBER_calculations2';
@@ -39,7 +39,7 @@ const DEFAULT_VALUES = {
   bilanType: BALANCE_TYPES.TIN_TOUT
 };
 
-const SCRUBBER_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage }) => {
+const SCRUBBER_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage, autoTrigger = false }) => {
   // États principaux
   const [Teau, setT_eau] = useState(() => 
     localStorage.getItem(STORAGE_KEYS.T_EAU) || DEFAULT_VALUES.Teau
@@ -250,6 +250,13 @@ const SCRUBBER_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentL
     );
   });
 
+  const hasAutoTriggered = useRef(false);
+  useEffect(() => {
+    if (!autoTrigger || hasAutoTriggered.current) return;
+    hasAutoTriggered.current = true;
+    handleSendData();
+  }, [autoTrigger]);
+
   return (
     <div className="container-box">
       <CloseButton onClose={onClose} />
@@ -306,6 +313,7 @@ const SCRUBBER_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentL
           disabled={isCalculating || !nodeData?.result}
           currentLanguage={currentLanguage}
           isCalculating={isCalculating}
+          storageKey={`calcSent_${title}`}
         />
         
         <ShowResultButton 

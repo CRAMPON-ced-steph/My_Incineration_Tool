@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { performCalculation_BHF } from './BHF_calculations';
 
 import InputField from '../../C_Components/input_retro';
@@ -12,7 +12,7 @@ import CalculateSendButton from '../../C_Components/CalculateSendButton';
 import BHF_Retro_Rapport from './BHF_Retro_Rapport';
 import '../../index.css';
 
-const BHF_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage }) => {
+const BHF_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage, autoTrigger = false }) => {
   const [Qair_decolmatation, setQair_decolmatation] = useState(() => parseFloat(localStorage.getItem('Qair_decolmatation_BHF')) || 500);
   const [T_air_decolmatation, setT_air_decolmatation] = useState(() => parseFloat(localStorage.getItem('T_air_decolmatation_BHF')) || 15);
   const [T_amont_BHF, setT_amont_BHF] = useState(() => parseFloat(localStorage.getItem('T_amont_BHF')) || nodeData?.result?.dataFlow?.T || '10');
@@ -94,6 +94,13 @@ const BHF_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLangua
     localStorage.removeItem('CalculationResult_BHF');
   };
 
+  const hasAutoTriggered = useRef(false);
+  useEffect(() => {
+    if (!autoTrigger || hasAutoTriggered.current) return;
+    hasAutoTriggered.current = true;
+    handleSendData();
+  }, [autoTrigger]);
+
   return (
     <div className="container-box">
       <CloseButton onClose={onClose} />
@@ -112,7 +119,7 @@ const BHF_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLangua
       </div>
 
       <div className="prez-3-buttons">
-        <CalculateSendButton onClick={handleSendData} currentLanguage={currentLanguage} />
+        <CalculateSendButton onClick={handleSendData} currentLanguage={currentLanguage} storageKey={`calcSent_${title}`} />
         <ShowResultButton isOpen={isSliderOpen} onToggle={toggleSlider} currentLanguage={currentLanguage} />
         <ClearButton onClick={clearMemory} currentLanguage={currentLanguage} />
       </div>

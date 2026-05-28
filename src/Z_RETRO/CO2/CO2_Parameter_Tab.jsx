@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import CalculateSendButton from '../../C_Components/CalculateSendButton';
 // CO2_calculations.js non implémenté — stub local
 const performCalculation_CO2 = () => null;
 
-const CO2_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage }) => {
+const CO2_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage, autoTrigger = false }) => {
     // Initialiser les états avec les données reçues ou des valeurs par défaut
     const [calculationResult_CO2, setCalculationResult] = useState(nodeData?.calculationResult || null);
     const [isSliderOpen, setIsSliderOpen] = useState(false);
@@ -30,6 +30,13 @@ const CO2_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLangua
     const toggleSlider = () => {
         setIsSliderOpen(!isSliderOpen);
     };
+
+    const hasAutoTriggered = useRef(false);
+    useEffect(() => {
+      if (!autoTrigger || hasAutoTriggered.current) return;
+      hasAutoTriggered.current = true;
+      handleSendData();
+    }, [autoTrigger]);
 
     return (
         <div
@@ -60,7 +67,7 @@ const CO2_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLangua
             <h3>{title} Parameters</h3>
 
             <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
-                <CalculateSendButton onClick={handleSendData} currentLanguage={currentLanguage} />
+                <CalculateSendButton onClick={handleSendData} currentLanguage={currentLanguage} storageKey={`calcSent_${title}`} />
                 <button onClick={toggleSlider} style={{ background: '#4CAF50', color: 'white', border: 'none', borderRadius: '4px', padding: '8px 16px', cursor: 'pointer' }}>
                     {isSliderOpen ? 'Hide Results' : 'Show Results'}
                 </button>

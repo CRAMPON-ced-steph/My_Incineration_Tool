@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 import { performCalculation_COOLINGTOWER_option_Qeau } from './COOLINGTOWER_calculations';
 
@@ -13,7 +13,7 @@ import CalculateSendButton from '../../C_Components/CalculateSendButton';
 import COOLINGTOWER_Retro_Rapport from './COOLINGTOWER_Retro_Rapport';
 import '../../index.css';
 
-const COOLINGTOWER_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage }) => {
+const COOLINGTOWER_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage, autoTrigger = false }) => {
   
   const [Teau, setTeau] = useState(() => parseFloat(localStorage.getItem('Teau_COOLINGTOWER')) || 15);
   const [T_steam_C, setT_steam_C] = useState(() => parseFloat(localStorage.getItem('T_steam_C')) || (nodeData?.result?.dataFlow?.T || 120));
@@ -90,6 +90,13 @@ const COOLINGTOWER_Parameter_Tab = ({ nodeData, title, onSendData, onClose, curr
     setCalculationResult(null);
   };
 
+  const hasAutoTriggered = useRef(false);
+  useEffect(() => {
+    if (!autoTrigger || hasAutoTriggered.current) return;
+    hasAutoTriggered.current = true;
+    handleSendData();
+  }, [autoTrigger]);
+
   return (
     <div className="container-box">
       <CloseButton onClose={onClose} />
@@ -106,7 +113,7 @@ const COOLINGTOWER_Parameter_Tab = ({ nodeData, title, onSendData, onClose, curr
       </div>
 
       <div className="prez-3-buttons">
-        <CalculateSendButton onClick={handleSendData} currentLanguage={currentLanguage} />
+        <CalculateSendButton onClick={handleSendData} currentLanguage={currentLanguage} storageKey={`calcSent_${title}`} />
         <ShowResultButton isOpen={isSliderOpen} onToggle={toggleSlider} currentLanguage={currentLanguage} />
         <ClearButton onClick={clearMemory} currentLanguage={currentLanguage} />
       </div>

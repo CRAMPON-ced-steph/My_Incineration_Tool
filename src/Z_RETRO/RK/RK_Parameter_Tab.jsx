@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { performCalculation_RK } from './RK_calculations1';
 import { performCalculation_RK_with_WHB } from './RK_calculations2';
 import InputField from '../../C_Components/input_retro';
@@ -41,7 +41,7 @@ const DEFAULT_VALUES = {
   diagramMode: DIAGRAM_MODES.NO
 };
 
-const RK_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage }) => {
+const RK_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage, autoTrigger = false }) => {
   // États principaux
   const [Tair_RK_C, setTair_RK_C] = useState(() => 
     localStorage.getItem('Tair_RK_C') || DEFAULT_VALUES.Tair_RK_C
@@ -68,7 +68,14 @@ const RK_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguag
   );
 
   // États pour l'interface
-  const [calculationResult_RK, setCalculationResult_RK] = useState(null);
+  const [calculationResult_RK, setCalculationResult_RK] = useState(() => {
+    try {
+      const stored = localStorage.getItem('calculationResult_RK');
+      return stored ? JSON.parse(stored) : null;
+    } catch {
+      return null;
+    }
+  });
   const [isSliderOpen, setIsSliderOpen] = useState(false);
   const [isCalculating, setIsCalculating] = useState(false);
   const [showReport, setShowReport] = useState(false);
@@ -294,6 +301,13 @@ const RK_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguag
     );
   });
 
+  const hasAutoTriggered = useRef(false);
+  useEffect(() => {
+    if (!autoTrigger || hasAutoTriggered.current) return;
+    hasAutoTriggered.current = true;
+    handleSendData();
+  }, [autoTrigger]);
+
   return (
     <div className="container-box">
       <CloseButton onClose={onClose} />
@@ -378,6 +392,7 @@ const RK_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguag
           disabled={isCalculating}
           currentLanguage={currentLanguage}
           isCalculating={isCalculating}
+          storageKey={`calcSent_${title}`}
         />
         
         <ShowResultButton 

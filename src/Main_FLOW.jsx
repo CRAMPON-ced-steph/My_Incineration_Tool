@@ -38,6 +38,50 @@ import GlobalRetroReport from './D_BILAN_Rapports/GlobalRetroReport';
 const initialNodes = [];
 const initialEdges = [];
 
+// Map: node label → Retro Parameter_Tab component (used by batch calculation)
+const retroComponentMap = {
+  'RK+SCC': RK_Parameter_Tab,
+  FB: FB_Parameter_Tab,
+  GF: GF_Parameter_Tab,
+  WHB: WHB_Parameter_Tab,
+  CO2: CO2_Parameter_Tab,
+  QUENCH: QUENCH_Parameter_Tab,
+  CYCLONE: CYCLONE_Parameter_Tab,
+  AIRINJECTION: AIRINJECTION_Parameter_Tab,
+  SCRUBBER: SCRUBBER_Parameter_Tab,
+  BHF: BHF_Parameter_Tab,
+  IACT: IACT_Parameter_Tab,
+  ELECTROFILTER: ELECTROFILTER_Parameter_Tab,
+  DENOX: DENOX_Parameter_Tab,
+  REACTOR: REACTOR_Parameter_Tab,
+  STACK: STACK_Parameter_Tab,
+  IDFAN: IDFAN_Parameter_Tab,
+  COOLINGTOWER: COOLINGTOWER_Parameter_Tab,
+  WATER_INJECTION: WATER_INJECTION_Parameter_Tab,
+};
+
+// Maps node labels to the localStorage key each Parameter_Tab uses for its calculationResult.
+// Used by onBatchSendData to persist batch results so visible panels read fresh data.
+const batchResultStorageKeys = {
+  'RK+SCC': 'calculationResult_RK',
+  FB: 'calculationResult_FB',
+  GF: 'calculationResult_GF',
+  WHB: 'calculationResult_WHB',
+  QUENCH: 'calculationResult_QUENCH',
+  DENOX: 'calculationResult_DENOX',
+  BHF: 'CalculationResult_BHF',
+  IACT: 'CalculationResult_IACT',
+  COOLINGTOWER: 'calculationResult_COOLINGTOWER',
+  ELECTROFILTER: 'CalculationResult_ELECTROFILTER',
+  CYCLONE: 'CalculationResult_CYCLONE',
+  REACTOR: 'calculationResult_REACTOR',
+  SCRUBBER: 'calculationResult_SCRUBBER',
+  STACK: 'calculationResult_STACK',
+  IDFAN: 'calculationResult_IDFAN',
+  WATER_INJECTION: 'calculationResult_WATER_INJECTION',
+  AIRINJECTION: 'CalculationResult_AIRINJECTION',
+};
+
 function FitViewButton() {
   const { fitView } = useReactFlow();
   return (
@@ -97,6 +141,14 @@ function Flow({
   const [showOPEX, setShowOPEX] = useState(false);
   const [showDashboard, setShowDashboard] = useState(false);
   const [isEraserActive, setIsEraserActive] = useState(false);
+
+  // Batch calculation state
+  const [batchCalcIndex, setBatchCalcIndex] = useState(-1);
+  const batchCalcIndexRef = useRef(-1);   // mirror ref — readable in callbacks without stale closure
+  const batchQueueRef = useRef([]);
+  const batchTimeoutRef = useRef(null);
+  const edgesAtBatchStart = useRef([]);
+  const modeAtBatchStart = useRef('');
 
   // Language management state
   const [currentLanguage, setCurrentLanguage] = useState(() => 
@@ -209,6 +261,29 @@ function Flow({
     [nodes, headNode, setNodes, setEdges]
   );
 
+  // Kahn's algorithm — returns nodes in topological order (source → sink)
+  const getTopologicalOrder = useCallback((nodesList, edgesList) => {
+    const inDegree = {};
+    const adj = {};
+    nodesList.forEach(n => { inDegree[n.id] = 0; adj[n.id] = []; });
+    edgesList.forEach(e => {
+      if (adj[e.source] !== undefined) adj[e.source].push(e.target);
+      if (inDegree[e.target] !== undefined) inDegree[e.target]++;
+    });
+    const queue = nodesList.filter(n => inDegree[n.id] === 0).map(n => n.id);
+    const order = [];
+    while (queue.length) {
+      const id = queue.shift();
+      const node = nodesList.find(n => n.id === id);
+      if (node) order.push(node);
+      (adj[id] || []).forEach(targetId => {
+        inDegree[targetId]--;
+        if (inDegree[targetId] === 0) queue.push(targetId);
+      });
+    }
+    return order;
+  }, []);
+
   const onSendData = useCallback(
     (data) => {
       if (selectedNode) {
@@ -262,6 +337,81 @@ function Flow({
     },
     [selectedNode, nodes, edges, mode, setNodes]
   );
+
+  // Helper to advance the batch index atomically (ref + state in sync)
+  const advanceBatch = useCallback((fromIdx) => {
+    const nextIdx = fromIdx + 1;
+    const newIdx = nextIdx >= batchQueueRef.current.length ? -1 : nextIdx;
+    batchCalcIndexRef.current = newIdx;
+    setBatchCalcIndex(newIdx);
+  }, []);
+
+  // Start batch calculation of all nodes in topological order (reversed for Retro)
+  const handleCalculateAll = useCallback(() => {
+    if (mode === 'Bilan') return;
+    const topoOrder = getTopologicalOrder(nodes, edges);
+    const orderedNodes = [...topoOrder].reverse(); // Retro: STACK first, furnace last
+    const filtered = orderedNodes.filter(n => retroComponentMap[n.data.label]);
+    batchQueueRef.current = filtered;
+    edgesAtBatchStart.current = edges;
+    modeAtBatchStart.current = mode;
+    if (filtered.length > 0) {
+      batchCalcIndexRef.current = 0;
+      setBatchCalcIndex(0);
+    }
+  }, [nodes, edges, mode, getTopologicalOrder]);
+
+  // Called by each batch-mounted component after it finishes calculation.
+  // setNodes + setBatchCalcIndex are called at top level (not inside an updater) so React 18
+  // batches them in one commit — the next BatchComponent always sees updated nodeData on mount.
+  const onBatchSendData = useCallback((data) => {
+    if (batchTimeoutRef.current) clearTimeout(batchTimeoutRef.current);
+    const currentIdx = batchCalcIndexRef.current;
+    if (currentIdx < 0) return;
+    const queue = batchQueueRef.current;
+    const currentNode = queue[currentIdx];
+    if (!currentNode) return;
+    const currentEdges = edgesAtBatchStart.current;
+
+    // 1. Update current node's result + propagate to its upstream neighbour
+    setNodes(prevNodes => prevNodes.map(n => {
+      if (n.id === currentNode.id) {
+        return { ...n, data: { ...n.data, result: { ...data.result }, isActive: true } };
+      }
+      // Retro: upstream node = the one whose edge TARGET is the current node
+      const isUpstream = currentEdges.some(e => e.target === currentNode.id && e.source === n.id);
+      if (isUpstream) {
+        return { ...n, data: { ...n.data, result: { ...data.result } } };
+      }
+      return n;
+    }));
+
+    // 2. Persist result to localStorage so visible panels show fresh data on next open.
+    // (The batch component unmounts in the same React commit as setBatchCalcIndex, so its
+    //  internal useEffect never fires — we must save here instead.)
+    const resultStorageKey = batchResultStorageKeys[currentNode.data.label];
+    if (resultStorageKey && data.result) {
+      try { localStorage.setItem(resultStorageKey, JSON.stringify(data.result)); } catch {}
+    }
+
+    // 3. Mark button green persistently
+    localStorage.setItem(`calcSent_${currentNode.data.label}`, 'true');
+
+    // 4. Advance index (ref + state in same synchronous block → batched by React 18)
+    advanceBatch(currentIdx);
+  }, [setNodes, advanceBatch]);
+
+  // 3-second timeout fallback — advances batch if a node never calls onBatchSendData
+  useEffect(() => {
+    if (batchCalcIndex < 0) {
+      if (batchTimeoutRef.current) clearTimeout(batchTimeoutRef.current);
+      return;
+    }
+    batchTimeoutRef.current = setTimeout(() => {
+      advanceBatch(batchCalcIndexRef.current);
+    }, 3000);
+    return () => { if (batchTimeoutRef.current) clearTimeout(batchTimeoutRef.current); };
+  }, [batchCalcIndex, advanceBatch]);
 
   const renderParameterTab = () => {
     if (!selectedNode) return null;
@@ -473,6 +623,16 @@ function Flow({
             </button>
             <FitViewButton />
             <LockScrollButton />
+            {mode !== 'Bilan' && (
+              <button
+                className="reset-btn"
+                onClick={handleCalculateAll}
+                disabled={batchCalcIndex >= 0}
+                title="Calculer et envoyer données de tous les nœuds"
+              >
+                {batchCalcIndex >= 0 ? '⏳ Calcul…' : '⚙ Calc. All'}
+              </button>
+            )}
           </Panel>
           {isEraserActive && <Eraser />}
         </ReactFlow>
@@ -523,6 +683,29 @@ function Flow({
           onClose={() => setShowRetroRapportEditor(false)}
         />
       )}
+
+      {/* Hidden batch mount — sequentially mounts one Parameter_Tab at a time to auto-calculate */}
+      {batchCalcIndex >= 0 && (() => {
+        const batchNodeId = batchQueueRef.current[batchCalcIndex]?.id;
+        if (!batchNodeId) return null;
+        const batchNode = nodes.find(n => n.id === batchNodeId);
+        if (!batchNode) return null;
+        const BatchComponent = retroComponentMap[batchNode.data.label];
+        if (!BatchComponent) return null;
+        return (
+          <div style={{ position: 'fixed', left: '-9999px', visibility: 'hidden', pointerEvents: 'none' }}>
+            <BatchComponent
+              key={`batch-${batchNode.id}-${batchCalcIndex}`}
+              title={batchNode.data.label}
+              nodeData={batchNode.data}
+              onSendData={onBatchSendData}
+              onClose={() => {}}
+              currentLanguage={currentLanguage}
+              autoTrigger={true}
+            />
+          </div>
+        );
+      })()}
     </div>
     </>
   );

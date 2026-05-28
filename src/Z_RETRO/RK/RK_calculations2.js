@@ -39,21 +39,15 @@ export const performCalculation_RK_with_WHB = (
 
     const P_out_mmCE = nodeData.result.dataFlow.P_mmCE;
 
-let P_incinerateur_MWH;
+
 
 const Energy_recuperee_kW = nodeData.result.data_Air_WHB.Energie_recuperee_WHB_kW ;
-
 
   //  let P_mmCE = P_out_mmCE;
   //  let Qv_wet_m3_h = coeff_Nm3_to_m3(P_mmCE,T)*Qv_wet_Nm3_h;
 
 
-
-
-
-        P_incinerateur_MWH = Energy_recuperee_kW+Pth_MW;
-
-
+     let    P_incinerateur_MWH = (Energy_recuperee_kW/1000)+Pth_MW;
 
 
     // Calculs basés sur bilanType_NCV_Masse

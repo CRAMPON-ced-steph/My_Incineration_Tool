@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "Bash(npm run:*)",
-      "Bash(npx eslint:*)"
+      "Bash(npx eslint:*)",
+      "Bash(grep -l \"useRef\" c:/Users/Parent/260408_Incineration_tool/src/Z_RETRO/*/[A-Z]*_Parameter_Tab.jsx)",
+      "Bash(grep -l \"autoTrigger\" c:/Users/Parent/260408_Incineration_tool/src/Z_RETRO/*/[A-Z]*_Parameter_Tab.jsx)"
     ]
   }
 }
