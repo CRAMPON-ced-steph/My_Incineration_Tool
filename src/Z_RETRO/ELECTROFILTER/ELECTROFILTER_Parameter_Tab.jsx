@@ -6,6 +6,7 @@ import ClearButton from '../../C_Components/Clear_Button';
 import ShowResultButton from '../../C_Components/Show_result_retro';
 import CloseButton from '../../C_Components/OnCloseButton_retro';
 import CalculationResults from '../../C_Components/ShowCalculationResult_retro';
+import CalculateSendButton from '../../C_Components/CalculateSendButton';
 
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './ELECTROFILTER_traduction';
@@ -229,13 +230,12 @@ const ELECTROFILTER_Parameter_Tab = ({ nodeData, title, onSendData, onClose, cur
 
       {/* Boutons d'action */}
       <div className="prez-3-buttons">
-        <button 
+        <CalculateSendButton
           onClick={handleSendData}
           disabled={isCalculating || !nodeData?.result}
-          className={isCalculating ? 'button-loading' : ''}
-        >
-          {isCalculating ? t.Calculating : t.CalculateAndSendData}
-        </button>
+          currentLanguage={currentLanguage}
+          isCalculating={isCalculating}
+        />
         
         <ShowResultButton 
           isOpen={isSliderOpen} 

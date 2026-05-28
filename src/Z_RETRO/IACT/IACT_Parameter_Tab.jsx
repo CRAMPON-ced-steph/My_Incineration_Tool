@@ -7,6 +7,7 @@ import ClearButton from '../../C_Components/Clear_Button';
 import ShowResultButton from '../../C_Components/Show_result_retro';
 import CloseButton from '../../C_Components/OnCloseButton_retro';
 import CalculationResults from '../../C_Components/ShowCalculationResult_retro';
+import CalculateSendButton from '../../C_Components/CalculateSendButton';
 
 import IACT_Retro_Rapport from './IACT_Retro_Rapport';
 import '../../index.css';
@@ -108,9 +109,9 @@ const IACT_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLangu
       </div>
 
       <div className="prez-3-buttons">
-        <button onClick={handleSendData}>Calculate and Send Data</button>
-        <ShowResultButton isOpen={isSliderOpen} onToggle={() => setIsSliderOpen(!isSliderOpen)} />
-        <ClearButton onClick={clearMemory} />
+        <CalculateSendButton onClick={handleSendData} currentLanguage={currentLanguage} />
+        <ShowResultButton isOpen={isSliderOpen} onToggle={() => setIsSliderOpen(!isSliderOpen)} currentLanguage={currentLanguage} />
+        <ClearButton onClick={clearMemory} currentLanguage={currentLanguage} />
       </div>
 
       {isSliderOpen && CalculationResult_IACT && (

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import CalculateSendButton from '../../C_Components/CalculateSendButton';
 // CO2_calculations.js non implémenté — stub local
 const performCalculation_CO2 = () => null;
 
@@ -59,7 +60,7 @@ const CO2_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLangua
             <h3>{title} Parameters</h3>
 
             <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
-                <button onClick={handleSendData}>Calculate and Send Data</button>
+                <CalculateSendButton onClick={handleSendData} currentLanguage={currentLanguage} />
                 <button onClick={toggleSlider} style={{ background: '#4CAF50', color: 'white', border: 'none', borderRadius: '4px', padding: '8px 16px', cursor: 'pointer' }}>
                     {isSliderOpen ? 'Hide Results' : 'Show Results'}
                 </button>

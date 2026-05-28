@@ -8,6 +8,7 @@ import ShowResultButton from '../../C_Components/Show_result_retro';
 import ToggleButton from '../../C_Components/toggle_button_retro';
 import CloseButton from '../../C_Components/OnCloseButton_retro';
 import CalculationResults from '../../C_Components/ShowCalculationResult_retro';
+import CalculateSendButton from '../../C_Components/CalculateSendButton';
 
 import COOLINGTOWER_Retro_Rapport from './COOLINGTOWER_Retro_Rapport';
 import '../../index.css';
@@ -105,9 +106,9 @@ const COOLINGTOWER_Parameter_Tab = ({ nodeData, title, onSendData, onClose, curr
       </div>
 
       <div className="prez-3-buttons">
-        <button onClick={handleSendData}>Calculate and Send Data</button>
-        <ShowResultButton isOpen={isSliderOpen} onToggle={toggleSlider} />
-        <ClearButton onClick={clearMemory} />
+        <CalculateSendButton onClick={handleSendData} currentLanguage={currentLanguage} />
+        <ShowResultButton isOpen={isSliderOpen} onToggle={toggleSlider} currentLanguage={currentLanguage} />
+        <ClearButton onClick={clearMemory} currentLanguage={currentLanguage} />
       </div>
 
       {isSliderOpen && calculationResult_COOLINGTOWER && (

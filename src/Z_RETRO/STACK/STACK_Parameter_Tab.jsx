@@ -5,6 +5,7 @@ import InputField from '../../C_Components/input_retro';
 import ShowResultButton from '../../C_Components/Show_result_retro';
 import CloseButton from '../../C_Components/OnCloseButton_retro';
 import CalculationResults from '../../C_Components/ShowCalculationResult_retro';
+import CalculateSendButton from '../../C_Components/CalculateSendButton';
 import ClearButton from '../../C_Components/Clear_Button';
 
 import { getTranslatedParameter, getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
@@ -290,13 +291,12 @@ const STACK_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLang
       </div>
 
       <div className="prez-3-buttons">
-        <button 
+        <CalculateSendButton
           onClick={handleSendData}
           disabled={isCalculating}
-          className={isCalculating ? 'button-loading' : ''}
-        >
-          {isCalculating ? t.Calculating : t.calculer_et_envoyer_data}
-        </button>
+          currentLanguage={currentLanguage}
+          isCalculating={isCalculating}
+        />
         
         <ShowResultButton 
           isOpen={isSliderOpen} 
