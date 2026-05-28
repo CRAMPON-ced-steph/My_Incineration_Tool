@@ -88,7 +88,8 @@ function Flow({
   const isFirstRender = useRef(true);
   useEffect(() => {
     if (isFirstRender.current) { isFirstRender.current = false; return; }
-    fitView({ padding: 0.2, duration: 300 });
+    const id = setTimeout(() => fitView({ padding: 0.2, duration: 300 }), 50);
+    return () => clearTimeout(id);
   }, [nodes.length]); // eslint-disable-line react-hooks/exhaustive-deps
   const [mode, setMode] = useState(() => localStorage.getItem('mode') || 'Bilan');
   const [showDataFlowDisplay, setShowDataFlowDisplay] = useState(false);
