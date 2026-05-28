@@ -84,7 +84,7 @@ const Sidebar = ({ onAddNode, currentLanguage = 'fr' }) => {
       key: 'Furnace',
       title: t.furnace,
       items: [
-        { id: 'RK', label: t.addRotaryKiln },
+        { id: 'RK+SCC', label: t.addRotaryKiln },
         { id: 'GF', label: t.addGrateFurnace },
         { id: 'FB', label: t.addFluidizedBed },
       ],

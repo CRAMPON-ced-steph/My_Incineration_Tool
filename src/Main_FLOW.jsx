@@ -180,7 +180,7 @@ function Flow({
         position: { x: headNode ? headNode.position.x + 200 : 0, y: 100 },
         sourcePosition: 'right',
         targetPosition: 'left',
-        type: label === 'STACK' ? 'output' : ['RK', 'GF', 'FB'].includes(label) ? 'input' : undefined,
+        type: label === 'STACK' ? 'output' : ['RK+SCC', 'GF', 'FB'].includes(label) ? 'input' : undefined,
       };
       setNodes((prevNodes) => [...prevNodes, newNode]);
 
@@ -260,7 +260,7 @@ function Flow({
     if (!selectedNode) return null;
 
     const componentMap = {
-      ...(mode === 'Bilan' ? { RK: RKMainPage } : { RK: RK_Parameter_Tab }),
+      ...(mode === 'Bilan' ? { 'RK+SCC': RKMainPage } : { 'RK+SCC': RK_Parameter_Tab }),
       ...(mode === 'Bilan' ? { FB: FBMainPage } : { FB: FB_Parameter_Tab }),
       ...(mode === 'Bilan' ? { GF: GF_Parameter_Tab} : { GF: GF_Parameter_Tab }),
       ...(mode === 'Bilan' ? { WHB: WHBMainPage } : { WHB: WHB_Parameter_Tab }),
