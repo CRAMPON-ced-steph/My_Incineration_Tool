@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { performCalculation_RK } from './RK_calculations1';
 import { performCalculation_RK_with_WHB } from './RK_calculations2';
@@ -135,6 +136,9 @@ const RK_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguag
       let result;
       
       if (bilanType_whb === CALCULATION_MODES.WITH_WHB) {
+        if (!nodeData?.result?.data_Air_WHB) {
+          throw new Error('Données WHB manquantes — calculez d\'abord le nœud WHB puis renvoyez ses données avant de calculer RK en mode WITH_WHB.');
+        }
         result = performCalculation_RK_with_WHB(
           nodeData,
           validatedInputs.Tair_RK_C,
