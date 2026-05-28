@@ -402,6 +402,11 @@ function Flow({
   }, [mode]);
 
   return (
+    <>
+    <div className="app-banner">
+      <span>INCINERATION TOOL</span>
+      <span className="app-banner-mode">{mode === 'Bilan' ? 'Bilan' : 'Rétro Bilan'}</span>
+    </div>
     <div className="Zone-fond-blanc">
       <Sidebar onAddNode={onAddNode} currentLanguage={currentLanguage} />
       
@@ -519,6 +524,7 @@ function Flow({
         />
       )}
     </div>
+    </>
   );
 }
 

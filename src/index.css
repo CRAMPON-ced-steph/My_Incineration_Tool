@@ -21,21 +21,32 @@ body {
 }
 
 /*définit la bannière bleue*/
-body::before {
-  content: 'INCINERATION TOOL'; /* Ajoutez votre texte ici */
+.app-banner {
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 16px;
   width: 100%;
-  height: 60px; /* Augmentez cette valeur pour un header plus grand */
+  height: 60px;
   background: linear-gradient(to bottom, #003d7a 0%, #0066cc 50%, #3399ff 100%);
-  color: white; /* Couleur du texte en blanc */
-  font-size: 22px; /* Taille de la police */
-  font-weight: bold; /* Gras */
-  position: fixed; /* Fixe le header en haut de la page */
+  color: white;
+  font-size: 22px;
+  font-weight: bold;
+  position: fixed;
   top: 0;
   left: 0;
-  z-index: 1000; /* Assure que le header est au-dessus des autres éléments */
+  z-index: 1000;
+}
+
+.app-banner-mode {
+  font-size: 13px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
 }
 
 /*Bordure cadre rouge entourant la zone de travail*/
