@@ -305,6 +305,7 @@ const WHB_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLangua
       const result = calculationFunction(...params);
       
       setCalculationResult_WHB(result);
+      hasCalculatedOnce.current = true;
       onSendData({ result, inputData: { T_eau_alimentation_C, Q_air_parasite_Nm3_h, Q_eau_purge_pourcent, T_air_exterieur_C, P_th_pourcent, P_vapeur_bar, T_vapeur_surchauffee_C, T_amont_WHB_C, Q_eau_alimentation, O2_mesure, bilanTypeVapeur, bilanType, bilanTypeAir } });
 
     } catch (error) {
@@ -394,12 +395,18 @@ const WHB_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLangua
     );
   });
 
+  const hasCalculatedOnce = useRef(false);
   const hasAutoTriggered = useRef(false);
   useEffect(() => {
     if (!autoTrigger || hasAutoTriggered.current) return;
     hasAutoTriggered.current = true;
     handleSendData();
   }, [autoTrigger]);
+
+  useEffect(() => {
+    if (!hasCalculatedOnce.current) return;
+    handleSendData();
+  }, [handleSendData]);
 
   return (
     <div className="container-box">

@@ -430,6 +430,7 @@ const GF_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguag
       );
 
       setCalculationResult_GF(result);
+      hasCalculatedOnce.current = true;
       if (diagramMode === 'YES') {
         const pointE = { x: result.Waste_flow_rate_kg_h || 0, y: result.P_incinerateur_MWH || 0 };
         localStorage.setItem('pointE', JSON.stringify(pointE));
@@ -561,12 +562,18 @@ const GF_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguag
     }
   }, []);
 
+  const hasCalculatedOnce = useRef(false);
   const hasAutoTriggered = useRef(false);
   useEffect(() => {
     if (!autoTrigger || hasAutoTriggered.current) return;
     hasAutoTriggered.current = true;
     handleSendData();
   }, [autoTrigger]);
+
+  useEffect(() => {
+    if (!hasCalculatedOnce.current) return;
+    handleSendData();
+  }, [handleSendData]);
 
   return (
     <div className="container-box">

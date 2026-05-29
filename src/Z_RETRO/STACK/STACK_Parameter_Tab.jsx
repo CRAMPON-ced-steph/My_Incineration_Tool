@@ -175,6 +175,7 @@ const STACK_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLang
       );
 
       setCalculationResult(result);
+      hasCalculatedOnce.current = true;
 
       onSendData({
         result,
@@ -229,12 +230,18 @@ const STACK_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLang
   const handleCO2Change = createInputHandler(setCO2_dry_pourcent, DEFAULT_VALUES.CO2_dry_pourcent);
   const handlePressureChange = createInputHandler(setP_out_mmCE, DEFAULT_VALUES.P_out_mmCE);
 
+  const hasCalculatedOnce = useRef(false);
   const hasAutoTriggered = useRef(false);
   useEffect(() => {
     if (!autoTrigger || hasAutoTriggered.current) return;
     hasAutoTriggered.current = true;
     handleSendData();
   }, [autoTrigger]);
+
+  useEffect(() => {
+    if (!hasCalculatedOnce.current) return;
+    handleSendData();
+  }, [handleSendData]);
 
   return (
     <div className="container-box">

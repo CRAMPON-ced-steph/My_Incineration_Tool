@@ -120,6 +120,9 @@ const CYCLONE_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLa
           validatedInputs.PDC_aero
         );
         setCalculationResult_CYCLONE(result);
+        if (hasCalculatedOnce.current) {
+          onSendData({ result, inputData: { T_amont_CYCLONE, T_air_parasite, Qair_parasite, PDC_aero } });
+        }
       } catch (error) {
         console.error('Erreur lors du recalcul automatique:', error);
       }
@@ -174,6 +177,7 @@ const CYCLONE_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLa
       );
 
       setCalculationResult_CYCLONE(result);
+      hasCalculatedOnce.current = true;
       if (onSendData) {
         onSendData({ result, inputData: { T_amont_CYCLONE, T_air_parasite, Qair_parasite, PDC_aero } });
       }
@@ -216,6 +220,7 @@ const CYCLONE_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLa
     (e) => setter(e.target.value || fallback), []
   );
 
+  const hasCalculatedOnce = useRef(false);
   const hasAutoTriggered = useRef(false);
   useEffect(() => {
     if (!autoTrigger || hasAutoTriggered.current) return;

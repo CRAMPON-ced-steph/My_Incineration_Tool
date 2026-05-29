@@ -219,6 +219,7 @@ const REACTOR_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLa
       );
 
       setCalculationResult_REACTOR(result);
+      hasCalculatedOnce.current = true;
       onSendData({ result, inputData: { T_amont_REACTOR, T_air, PDC_aero, reagentType, Besoin_air_pulverisation_lime_Nm3_kg, Concentration_Lime_kg_lime_Nm3_FG, Besoin_air_pulverisation_cap_Nm3_kg, Concentration_cap_mg_cap_Nm3_FG } });
 
     } catch (error) {
@@ -299,12 +300,18 @@ const REACTOR_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLa
     );
   });
 
+  const hasCalculatedOnce = useRef(false);
   const hasAutoTriggered = useRef(false);
   useEffect(() => {
     if (!autoTrigger || hasAutoTriggered.current) return;
     hasAutoTriggered.current = true;
     handleSendData();
   }, [autoTrigger]);
+
+  useEffect(() => {
+    if (!hasCalculatedOnce.current) return;
+    handleSendData();
+  }, [handleSendData]);
 
   return (
     <div className="container-box">    

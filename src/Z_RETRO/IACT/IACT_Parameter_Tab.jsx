@@ -47,6 +47,9 @@ const IACT_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLangu
           parseFloat(PDC_aero)
         );
         setCalculationResult(result);
+        if (hasCalculatedOnce.current) {
+          onSendData({ result, inputData: { T_amont_IACT, T_air_ambiant, T_air_chauffe, Rendement_echange, PDC_aero } });
+        }
       } catch (error) {
         console.error('Error recalculating with updated nodeData:', error);
       }
@@ -68,6 +71,7 @@ const IACT_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLangu
         parseFloat(PDC_aero)
       );
       setCalculationResult(result);
+      hasCalculatedOnce.current = true;
       onSendData({
         result,
         inputData: { T_amont_IACT, T_air_ambiant, T_air_chauffe, Rendement_echange, PDC_aero },
@@ -94,6 +98,7 @@ const IACT_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLangu
     localStorage.removeItem('CalculationResult_IACT');
   };
 
+  const hasCalculatedOnce = useRef(false);
   const hasAutoTriggered = useRef(false);
   useEffect(() => {
     if (!autoTrigger || hasAutoTriggered.current) return;

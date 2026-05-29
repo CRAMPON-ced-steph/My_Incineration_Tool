@@ -200,6 +200,7 @@ const FB_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguag
 
 
       setCalculationResult_FB(result);
+      hasCalculatedOnce.current = true;
       if (diagramMode === DIAGRAM_MODES.YES) {
         const pointE = { x: result.MasseDechet || 0, y: result.P_incinerateur_MWH || 0 };
         localStorage.setItem('pointE', JSON.stringify(pointE));
@@ -370,12 +371,18 @@ const FB_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguag
     </div>
   ));
 
+  const hasCalculatedOnce = useRef(false);
   const hasAutoTriggered = useRef(false);
   useEffect(() => {
     if (!autoTrigger || hasAutoTriggered.current) return;
     hasAutoTriggered.current = true;
     handleSendData();
   }, [autoTrigger]);
+
+  useEffect(() => {
+    if (!hasCalculatedOnce.current) return;
+    handleSendData();
+  }, [handleSendData]);
 
   return (
     <div className="container-box">

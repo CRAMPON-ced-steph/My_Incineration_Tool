@@ -458,18 +458,21 @@ const CombustionParameters = ({ innerData, currentLanguage = 'fr' }) => {
           borderRadius: '8px',
           boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
           marginBottom: '20px',
+          overflowX: 'auto',
         }}
       >
         <div style={{ display: 'flex', marginBottom: '10px' }}>
-          <div style={{ width: '100px' }}></div>
+          <div style={{ width: '100px', flexShrink: 0 }}></div>
           {columns.map((col, colIndex) => (
             <div
               key={colIndex}
               style={{
                 width: '80px',
+                flexShrink: 0,
                 textAlign: 'center',
                 fontWeight: 'bold',
                 fontSize: '12px',
+                wordBreak: 'break-word',
               }}
             >
               {col}
@@ -485,7 +488,7 @@ const CombustionParameters = ({ innerData, currentLanguage = 'fr' }) => {
               marginBottom: '2px',
             }}
           >
-            <div style={{ width: '100px', textAlign: 'left' }}>
+            <div style={{ width: '100px', flexShrink: 0, textAlign: 'left' }}>
               <h3 style={{ margin: '0', fontSize: '14px' }}>{row.name}</h3>
             </div>
             {columns.map((col, colIndex) => (
@@ -493,6 +496,7 @@ const CombustionParameters = ({ innerData, currentLanguage = 'fr' }) => {
                 key={colIndex}
                 style={{
                   width: '80px',
+                  flexShrink: 0,
                   textAlign: 'center',
                 }}
               >
@@ -505,6 +509,7 @@ const CombustionParameters = ({ innerData, currentLanguage = 'fr' }) => {
                   max={col === 'Masse [kg/h]' ? undefined : '100'}
                   style={{
                     width: '100%',
+                    boxSizing: 'border-box',
                     padding: '6px',
                     border: '1px solid #ddd',
                     borderRadius: '4px',
@@ -526,18 +531,21 @@ const CombustionParameters = ({ innerData, currentLanguage = 'fr' }) => {
           borderRadius: '8px',
           boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
           marginBottom: '20px',
+          overflowX: 'auto',
         }}
       >
         <div style={{ display: 'flex', marginBottom: '10px' }}>
-          <div style={{ width: '100px' }}></div>
+          <div style={{ width: '100px', flexShrink: 0 }}></div>
           {columns2.map((col, colIndex) => (
             <div
               key={colIndex}
               style={{
                 width: '80px',
+                flexShrink: 0,
                 textAlign: 'center',
                 fontWeight: 'bold',
                 fontSize: '12px',
+                wordBreak: 'break-word',
               }}
             >
               {col}
@@ -553,7 +561,7 @@ const CombustionParameters = ({ innerData, currentLanguage = 'fr' }) => {
               marginBottom: '2px',
             }}
           >
-            <div style={{ width: '100px', textAlign: 'left' }}>
+            <div style={{ width: '100px', flexShrink: 0, textAlign: 'left' }}>
               <h3 style={{ margin: '0', fontSize: '14px' }}>{row.name}</h3>
             </div>
             {columns2.map((col, colIndex) => (
@@ -561,6 +569,7 @@ const CombustionParameters = ({ innerData, currentLanguage = 'fr' }) => {
                 key={colIndex}
                 style={{
                   width: '80px',
+                  flexShrink: 0,
                   textAlign: 'center',
                 }}
               >
@@ -570,6 +579,7 @@ const CombustionParameters = ({ innerData, currentLanguage = 'fr' }) => {
                   readOnly
                   style={{
                     width: '100%',
+                    boxSizing: 'border-box',
                     padding: '6px',
                     border: '1px solid #ddd',
                     borderRadius: '4px',

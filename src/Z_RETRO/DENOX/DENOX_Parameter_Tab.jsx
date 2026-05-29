@@ -204,6 +204,7 @@ const DENOX_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLang
       );
 
       setCalculationResult_DENOX(result);
+      hasCalculatedOnce.current = true;
       if (onSendData) {
         onSendData({ result, inputData: { targetNOx, sprayWaterTemp, coeffStoech, solutionConc, solutionDensity, sprayFlowrate, pdc } });
       }
@@ -249,12 +250,18 @@ const DENOX_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLang
     (e) => setter(e.target.value || fallback), []
   );
 
+  const hasCalculatedOnce = useRef(false);
   const hasAutoTriggered = useRef(false);
   useEffect(() => {
     if (!autoTrigger || hasAutoTriggered.current) return;
     hasAutoTriggered.current = true;
     handleSendData();
   }, [autoTrigger]);
+
+  useEffect(() => {
+    if (!hasCalculatedOnce.current) return;
+    handleSendData();
+  }, [handleSendData]);
 
   return (
     <div className="container-box">

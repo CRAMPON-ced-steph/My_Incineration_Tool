@@ -178,6 +178,7 @@ const SCRUBBER_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentL
       }
 
       setCalculationResult_SCRUBBER(result);
+      hasCalculatedOnce.current = true;
       onSendData({ result, inputData: { Teau, T_amont_SCRUBBER, PDC_aero, bilanType } });
 
     } catch (error) {
@@ -250,12 +251,18 @@ const SCRUBBER_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentL
     );
   });
 
+  const hasCalculatedOnce = useRef(false);
   const hasAutoTriggered = useRef(false);
   useEffect(() => {
     if (!autoTrigger || hasAutoTriggered.current) return;
     hasAutoTriggered.current = true;
     handleSendData();
   }, [autoTrigger]);
+
+  useEffect(() => {
+    if (!hasCalculatedOnce.current) return;
+    handleSendData();
+  }, [handleSendData]);
 
   return (
     <div className="container-box">

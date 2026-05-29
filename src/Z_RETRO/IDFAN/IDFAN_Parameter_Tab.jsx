@@ -166,6 +166,7 @@ const IDFAN_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLang
       }
 
       setCalculationResult_IDFAN(result);
+      hasCalculatedOnce.current = true;
       onSendData({ result, inputData: { P_amont, Rdt_elec, Type } });
 
     } catch (error) {
@@ -236,12 +237,18 @@ const IDFAN_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLang
     );
   });
 
+  const hasCalculatedOnce = useRef(false);
   const hasAutoTriggered = useRef(false);
   useEffect(() => {
     if (!autoTrigger || hasAutoTriggered.current) return;
     hasAutoTriggered.current = true;
     handleSendData();
   }, [autoTrigger]);
+
+  useEffect(() => {
+    if (!hasCalculatedOnce.current) return;
+    handleSendData();
+  }, [handleSendData]);
 
   return (
     <div className="container-box">

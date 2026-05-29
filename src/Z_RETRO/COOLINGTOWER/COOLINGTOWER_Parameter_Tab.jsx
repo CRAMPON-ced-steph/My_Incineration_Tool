@@ -42,7 +42,10 @@ const COOLINGTOWER_Parameter_Tab = ({ nodeData, title, onSendData, onClose, curr
 
           const result = performCalculation_COOLINGTOWER_option_Qeau(nodeData, parseFloat(Teau),parseFloat(T_steam_C),parseFloat(Qeau_kg_h), parseFloat(Qsteam_kg_h), parseFloat(PDC_aero));
           setCalculationResult(result);
-        
+          if (hasCalculatedOnce.current) {
+            onSendData({ result, inputData: { Teau, T_steam_C, Qeau_kg_h, Qsteam_kg_h, PDC_aero } });
+          }
+
       } catch (error) {
         console.error('Error recalculating with updated nodeData:', error);
       }
@@ -60,6 +63,7 @@ const COOLINGTOWER_Parameter_Tab = ({ nodeData, title, onSendData, onClose, curr
         result = performCalculation_COOLINGTOWER_option_Qeau(nodeData, parseFloat(Teau),parseFloat(T_steam_C),parseFloat(Qeau_kg_h), parseFloat(Qsteam_kg_h), parseFloat(PDC_aero));
   
       setCalculationResult(result);
+      hasCalculatedOnce.current = true;
       onSendData({ result, inputData: { Teau, T_steam_C, Qeau_kg_h, Qsteam_kg_h, PDC_aero } });
     } catch (error) {
       console.error('Calculation error:', error);
@@ -90,6 +94,7 @@ const COOLINGTOWER_Parameter_Tab = ({ nodeData, title, onSendData, onClose, curr
     setCalculationResult(null);
   };
 
+  const hasCalculatedOnce = useRef(false);
   const hasAutoTriggered = useRef(false);
   useEffect(() => {
     if (!autoTrigger || hasAutoTriggered.current) return;

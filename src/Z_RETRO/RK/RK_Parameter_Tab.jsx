@@ -170,6 +170,7 @@ const RK_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguag
         dataFlow: nodeData?.result?.dataFlow || {},
       };
       setCalculationResult_RK(resultWithFlow);
+      hasCalculatedOnce.current = true;
       onSendData({
         result: resultWithFlow,
         inputData: {
@@ -301,12 +302,18 @@ const RK_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguag
     );
   });
 
+  const hasCalculatedOnce = useRef(false);
   const hasAutoTriggered = useRef(false);
   useEffect(() => {
     if (!autoTrigger || hasAutoTriggered.current) return;
     hasAutoTriggered.current = true;
     handleSendData();
   }, [autoTrigger]);
+
+  useEffect(() => {
+    if (!hasCalculatedOnce.current) return;
+    handleSendData();
+  }, [handleSendData]);
 
   return (
     <div className="container-box">

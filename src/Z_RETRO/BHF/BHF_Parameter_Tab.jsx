@@ -44,6 +44,9 @@ const BHF_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLangua
           parseFloat(PDC_aero)
         );
         setCalculationResult(result);
+        if (hasCalculatedOnce.current) {
+          onSendData({ result, inputData: { T_amont_BHF, T_air_decolmatation, Qair_decolmatation, PDC_aero } });
+        }
       } catch (error) {
         console.error('Error recalculating with updated nodeData:', error);
       }
@@ -65,6 +68,7 @@ const BHF_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLangua
         parseFloat(PDC_aero)
       );
       setCalculationResult(result);
+      hasCalculatedOnce.current = true;
       onSendData({
         result,
         inputData: { T_amont_BHF, T_air_decolmatation, Qair_decolmatation, PDC_aero },
@@ -94,6 +98,7 @@ const BHF_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLangua
     localStorage.removeItem('CalculationResult_BHF');
   };
 
+  const hasCalculatedOnce = useRef(false);
   const hasAutoTriggered = useRef(false);
   useEffect(() => {
     if (!autoTrigger || hasAutoTriggered.current) return;

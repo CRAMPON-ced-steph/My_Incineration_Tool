@@ -190,6 +190,7 @@ const QUENCH_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLan
       }
 
       setCalculationResult_QUENCH(result);
+      hasCalculatedOnce.current = true;
       onSendData && onSendData({ result, inputData: { Teau, T_amont_QUENCH, Qeau, PDC_aero, bilanType } });
 
     } catch (error) {
@@ -264,12 +265,18 @@ const QUENCH_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLan
     );
   });
 
+  const hasCalculatedOnce = useRef(false);
   const hasAutoTriggered = useRef(false);
   useEffect(() => {
     if (!autoTrigger || hasAutoTriggered.current) return;
     hasAutoTriggered.current = true;
     handleSendData();
   }, [autoTrigger]);
+
+  useEffect(() => {
+    if (!hasCalculatedOnce.current) return;
+    handleSendData();
+  }, [handleSendData]);
 
   return (
     <div className="container-box">

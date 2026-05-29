@@ -149,6 +149,7 @@ const ELECTROFILTER_Parameter_Tab = ({ nodeData, title, onSendData, onClose, cur
       );
 
       setCalculationResult_ELECTROFILTER(result);
+      hasCalculatedOnce.current = true;
       if (onSendData) {
         onSendData({ result, inputData: { T_amont_ELECTROFILTER, T_air_decolmatation, Qair_decolmatation, PDC_aero } });
       }
@@ -191,12 +192,18 @@ const ELECTROFILTER_Parameter_Tab = ({ nodeData, title, onSendData, onClose, cur
     (e) => setter(e.target.value || fallback), []
   );
 
+  const hasCalculatedOnce = useRef(false);
   const hasAutoTriggered = useRef(false);
   useEffect(() => {
     if (!autoTrigger || hasAutoTriggered.current) return;
     hasAutoTriggered.current = true;
     handleSendData();
   }, [autoTrigger]);
+
+  useEffect(() => {
+    if (!hasCalculatedOnce.current) return;
+    handleSendData();
+  }, [handleSendData]);
 
   return (
     <div className="container-box">
