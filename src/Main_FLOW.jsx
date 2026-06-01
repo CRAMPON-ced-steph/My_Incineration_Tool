@@ -34,34 +34,12 @@ import DataFlowDisplay from './C_Components/DataFlowDisplay';
 import DashboardWindow from './G_Graphiques/Dashboard/Dashboard';
 import GlobalReport from './D_BILAN_Rapports/GlobalReport';
 import GlobalRetroReport from './D_BILAN_Rapports/GlobalRetroReport';
+import { batchCalcMap } from './Z_RETRO/batchCalculators';
 
 const initialNodes = [];
 const initialEdges = [];
 
-// Map: node label → Retro Parameter_Tab component (used by batch calculation)
-const retroComponentMap = {
-  'RK+SCC': RK_Parameter_Tab,
-  FB: FB_Parameter_Tab,
-  GF: GF_Parameter_Tab,
-  WHB: WHB_Parameter_Tab,
-  CO2: CO2_Parameter_Tab,
-  QUENCH: QUENCH_Parameter_Tab,
-  CYCLONE: CYCLONE_Parameter_Tab,
-  AIRINJECTION: AIRINJECTION_Parameter_Tab,
-  SCRUBBER: SCRUBBER_Parameter_Tab,
-  BHF: BHF_Parameter_Tab,
-  IACT: IACT_Parameter_Tab,
-  ELECTROFILTER: ELECTROFILTER_Parameter_Tab,
-  DENOX: DENOX_Parameter_Tab,
-  REACTOR: REACTOR_Parameter_Tab,
-  STACK: STACK_Parameter_Tab,
-  IDFAN: IDFAN_Parameter_Tab,
-  COOLINGTOWER: COOLINGTOWER_Parameter_Tab,
-  WATER_INJECTION: WATER_INJECTION_Parameter_Tab,
-};
-
 // Maps node labels to the localStorage key each Parameter_Tab uses for its calculationResult.
-// Used by onBatchSendData to persist batch results so visible panels read fresh data.
 const batchResultStorageKeys = {
   'RK+SCC': 'calculationResult_RK',
   FB: 'calculationResult_FB',
@@ -141,14 +119,15 @@ function Flow({
   const [showOPEX, setShowOPEX] = useState(false);
   const [showDashboard, setShowDashboard] = useState(false);
   const [isEraserActive, setIsEraserActive] = useState(false);
+  const [showSaveDialog, setShowSaveDialog] = useState(false);
+  const [saveProjectTitle, setSaveProjectTitle] = useState('');
 
   // Batch calculation state
   const [batchCalcIndex, setBatchCalcIndex] = useState(-1);
-  const batchCalcIndexRef = useRef(-1);   // mirror ref — readable in callbacks without stale closure
-  const batchQueueRef = useRef([]);
-  const batchTimeoutRef = useRef(null);
-  const edgesAtBatchStart = useRef([]);
-  const modeAtBatchStart = useRef('');
+  const batchCalcIndexRef = useRef(-1);
+  const [batchDoneCount, setBatchDoneCount] = useState(0);
+  const [batchTotalCount, setBatchTotalCount] = useState(0);
+  const [batchFinishedMsg, setBatchFinishedMsg] = useState(false);
 
   // Language management state
   const [currentLanguage, setCurrentLanguage] = useState(() => 
@@ -231,8 +210,35 @@ function Flow({
     [nodes]
   );
 
+  const NODE_COLORS = {
+    // Four — rouge
+    'RK+SCC': { background: '#e53935', color: '#fff' },
+    'GF':     { background: '#e53935', color: '#fff' },
+    'FB':     { background: '#e53935', color: '#fff' },
+    // Récupération d'énergie — orange
+    'WHB':             { background: '#fb8c00', color: '#fff' },
+    'HX_TubeAndShell': { background: '#fb8c00', color: '#fff' },
+    'IACT':            { background: '#fb8c00', color: '#fff' },
+    // Traitement sec — gris foncé
+    'BHF':          { background: '#757575', color: '#fff' },
+    'ELECTROFILTER':{ background: '#757575', color: '#fff' },
+    'CYCLONE':      { background: '#757575', color: '#fff' },
+    'REACTOR':      { background: '#757575', color: '#fff' },
+    'AIRINJECTION': { background: '#757575', color: '#fff' },
+    // Traitement humide — bleu
+    'QUENCH':          { background: '#1e88e5', color: '#fff' },
+    'WATER_INJECTION': { background: '#1e88e5', color: '#fff' },
+    'COOLINGTOWER':    { background: '#1e88e5', color: '#fff' },
+    'DENOX':           { background: '#1e88e5', color: '#fff' },
+    'SCRUBBER':        { background: '#1e88e5', color: '#fff' },
+    // Échangeurs — rouge clair
+    'Cooling_HX_air': { background: '#ffcdd2', color: '#000' },
+    'Cooling_HX_eau': { background: '#ffcdd2', color: '#000' },
+  };
+
   const onAddNode = useCallback(
     (label) => {
+      const nodeStyle = NODE_COLORS[label] || {};
       const newNode = {
         id: `${nodes.length + 1}`,
         data: { label },
@@ -240,6 +246,7 @@ function Flow({
         sourcePosition: 'right',
         targetPosition: 'left',
         type: label === 'STACK' ? 'output' : ['RK+SCC', 'GF', 'FB'].includes(label) ? 'input' : undefined,
+        style: nodeStyle.background ? { backgroundColor: nodeStyle.background, color: nodeStyle.color, border: '1px solid rgba(0,0,0,0.15)', borderRadius: '4px' } : undefined,
       };
       setNodes((prevNodes) => [...prevNodes, newNode]);
 
@@ -338,80 +345,93 @@ function Flow({
     [selectedNode, nodes, edges, mode, setNodes]
   );
 
-  // Helper to advance the batch index atomically (ref + state in sync)
-  const advanceBatch = useCallback((fromIdx) => {
-    const nextIdx = fromIdx + 1;
-    const newIdx = nextIdx >= batchQueueRef.current.length ? -1 : nextIdx;
-    batchCalcIndexRef.current = newIdx;
-    setBatchCalcIndex(newIdx);
+  // BFS helper: starting from a node that just produced a result, propagate that result
+  // upstream (Retro direction = Bilan source side) through any non-batch intermediate nodes
+  // (CO2, DivConv, …) until reaching the next batch-calculable node. All traversed nodes
+  // receive the result so the next batch node has fresh input when its turn arrives.
+  const propagateResultUpstream = useCallback((startNodeId, result, allEdges, allNodes) => {
+    const toUpdate = new Set();
+    const queue = [startNodeId];
+    while (queue.length > 0) {
+      const currentId = queue.shift();
+      // Find all nodes whose Bilan-edge points TO currentId (= upstream in Retro)
+      const upstreamIds = allEdges
+        .filter(e => e.target === currentId)
+        .map(e => e.source);
+      for (const upId of upstreamIds) {
+        if (toUpdate.has(upId)) continue;
+        toUpdate.add(upId);
+        const upNode = allNodes.find(n => n.id === upId);
+        // If this upstream node is NOT a batch node, keep traversing through it
+        if (upNode && !batchCalcMap[upNode.data.label]) {
+          queue.push(upId);
+        }
+      }
+    }
+    return allNodes.map(n => {
+      if (n.id === startNodeId) return { ...n, data: { ...n.data, result, isActive: true } };
+      if (toUpdate.has(n.id)) return { ...n, data: { ...n.data, result } };
+      return n;
+    });
   }, []);
 
-  // Start batch calculation of all nodes in topological order (reversed for Retro)
-  const handleCalculateAll = useCallback(() => {
+  // Batch calculation: direct async loop — calls calculation functions directly (no hidden components)
+  const handleCalculateAll = useCallback(async () => {
     if (mode === 'Bilan') return;
+    if (batchCalcIndexRef.current >= 0) return; // already running
+    batchCalcIndexRef.current = 0; // lock immediately to prevent double-click
+
     const topoOrder = getTopologicalOrder(nodes, edges);
     const orderedNodes = [...topoOrder].reverse(); // Retro: STACK first, furnace last
-    const filtered = orderedNodes.filter(n => retroComponentMap[n.data.label]);
-    batchQueueRef.current = filtered;
-    edgesAtBatchStart.current = edges;
-    modeAtBatchStart.current = mode;
-    if (filtered.length > 0) {
-      batchCalcIndexRef.current = 0;
-      setBatchCalcIndex(0);
-    }
-  }, [nodes, edges, mode, getTopologicalOrder]);
+    const filtered = orderedNodes.filter(n => batchCalcMap[n.data.label]);
+    if (filtered.length === 0) { batchCalcIndexRef.current = -1; return; }
 
-  // Called by each batch-mounted component after it finishes calculation.
-  // setNodes + setBatchCalcIndex are called at top level (not inside an updater) so React 18
-  // batches them in one commit — the next BatchComponent always sees updated nodeData on mount.
-  const onBatchSendData = useCallback((data) => {
-    if (batchTimeoutRef.current) clearTimeout(batchTimeoutRef.current);
-    const currentIdx = batchCalcIndexRef.current;
-    if (currentIdx < 0) return;
-    const queue = batchQueueRef.current;
-    const currentNode = queue[currentIdx];
-    if (!currentNode) return;
-    const currentEdges = edgesAtBatchStart.current;
+    setBatchDoneCount(0);
+    setBatchTotalCount(filtered.length);
+    setBatchFinishedMsg(false);
 
-    // 1. Update current node's result + propagate to its upstream neighbour
-    setNodes(prevNodes => prevNodes.map(n => {
-      if (n.id === currentNode.id) {
-        return { ...n, data: { ...n.data, result: { ...data.result }, isActive: true } };
+    const currentEdges = edges;
+    // Local snapshot: propagate results immediately without waiting for React state commits
+    let currentNodes = nodes;
+
+    for (let i = 0; i < filtered.length; i++) {
+      const node = filtered[i];
+      batchCalcIndexRef.current = i;
+      setBatchCalcIndex(i);
+
+      // Read latest nodeData from local snapshot (always up-to-date)
+      const nodeData = currentNodes.find(n => n.id === node.id)?.data || node.data;
+
+      let result = null;
+      try {
+        result = batchCalcMap[node.data.label](nodeData);
+      } catch (e) {
+        console.error(`[Calc. All] Erreur pour ${node.data.label}:`, e);
       }
-      // Retro: upstream node = the one whose edge TARGET is the current node
-      const isUpstream = currentEdges.some(e => e.target === currentNode.id && e.source === n.id);
-      if (isUpstream) {
-        return { ...n, data: { ...n.data, result: { ...data.result } } };
+
+      if (result) {
+        // BFS propagation: traverse through non-batch intermediates (CO2, DivConv, …)
+        currentNodes = propagateResultUpstream(node.id, result, currentEdges, currentNodes);
+        setNodes([...currentNodes]);
+
+        // Persist result to localStorage so visible panels show fresh data
+        const storageKey = batchResultStorageKeys[node.data.label];
+        if (storageKey) {
+          try { localStorage.setItem(storageKey, JSON.stringify(result)); } catch {}
+        }
+        localStorage.setItem(`calcSent_${node.data.label}`, 'true');
       }
-      return n;
-    }));
 
-    // 2. Persist result to localStorage so visible panels show fresh data on next open.
-    // (The batch component unmounts in the same React commit as setBatchCalcIndex, so its
-    //  internal useEffect never fires — we must save here instead.)
-    const resultStorageKey = batchResultStorageKeys[currentNode.data.label];
-    if (resultStorageKey && data.result) {
-      try { localStorage.setItem(resultStorageKey, JSON.stringify(data.result)); } catch {}
+      setBatchDoneCount(i + 1);
+      // Small yield so React can commit state updates and show progress
+      await new Promise(r => setTimeout(r, 20));
     }
 
-    // 3. Mark button green persistently
-    localStorage.setItem(`calcSent_${currentNode.data.label}`, 'true');
-
-    // 4. Advance index (ref + state in same synchronous block → batched by React 18)
-    advanceBatch(currentIdx);
-  }, [setNodes, advanceBatch]);
-
-  // 3-second timeout fallback — advances batch if a node never calls onBatchSendData
-  useEffect(() => {
-    if (batchCalcIndex < 0) {
-      if (batchTimeoutRef.current) clearTimeout(batchTimeoutRef.current);
-      return;
-    }
-    batchTimeoutRef.current = setTimeout(() => {
-      advanceBatch(batchCalcIndexRef.current);
-    }, 3000);
-    return () => { if (batchTimeoutRef.current) clearTimeout(batchTimeoutRef.current); };
-  }, [batchCalcIndex, advanceBatch]);
+    batchCalcIndexRef.current = -1;
+    setBatchCalcIndex(-1);
+    setBatchFinishedMsg(true);
+    setTimeout(() => setBatchFinishedMsg(false), 3000);
+  }, [nodes, edges, mode, getTopologicalOrder, setNodes, propagateResultUpstream]);
 
   const renderParameterTab = () => {
     if (!selectedNode) return null;
@@ -480,22 +500,44 @@ function Flow({
 
   // Function to save the project
   const handleSaveProject = () => {
-    const projectData = {
-      nodes,
-      edges,
-      selectedNode,
-      mode,
-      currentLanguage
-    };
+    setSaveProjectTitle('');
+    setShowSaveDialog(true);
+  };
 
-    const blob = new Blob([JSON.stringify(projectData, null, 2)], { type: 'application/json' });
-   
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = 'project-config.json';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const confirmSaveProject = async () => {
+    const projectData = { nodes, edges, selectedNode, mode, currentLanguage };
+    const json = JSON.stringify(projectData, null, 2);
+    const now = new Date();
+    const yyyy = now.getFullYear();
+    const mm = String(now.getMonth() + 1).padStart(2, '0');
+    const dd = String(now.getDate()).padStart(2, '0');
+    const safeName = saveProjectTitle.trim().replace(/[^a-zA-Z0-9_\-\.]/g, '_') || 'projet';
+    const filename = `${yyyy}_${mm}_${dd}_${safeName}.json`;
+
+    if (window.showSaveFilePicker) {
+      try {
+        const fileHandle = await window.showSaveFilePicker({
+          suggestedName: filename,
+          types: [{ description: 'JSON', accept: { 'application/json': ['.json'] } }],
+        });
+        const writable = await fileHandle.createWritable();
+        await writable.write(json);
+        await writable.close();
+        setShowSaveDialog(false);
+      } catch (err) {
+        if (err.name !== 'AbortError') console.error(err);
+      }
+    } else {
+      // Fallback navigateurs sans File System Access API
+      const blob = new Blob([json], { type: 'application/json' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      setShowSaveDialog(false);
+    }
   };
 
   // Function to load the project
@@ -511,7 +553,13 @@ function Flow({
         reader.onload = (event) => {
           try {
             const projectData = JSON.parse(event.target.result);
-            setNodes(projectData.nodes || []);
+            const restoredNodes = (projectData.nodes || []).map(n => {
+              const nodeStyle = NODE_COLORS[n.data?.label] || {};
+              return nodeStyle.background
+                ? { ...n, style: { ...n.style, backgroundColor: nodeStyle.background, color: nodeStyle.color, border: '1px solid rgba(0,0,0,0.15)', borderRadius: '4px' } }
+                : n;
+            });
+            setNodes(restoredNodes);
             setEdges(projectData.edges || []);
             setSelectedNode(projectData.selectedNode);
             setMode(projectData.mode || 'Bilan');
@@ -624,14 +672,27 @@ function Flow({
             <FitViewButton />
             <LockScrollButton />
             {mode !== 'Bilan' && (
-              <button
-                className="reset-btn"
-                onClick={handleCalculateAll}
-                disabled={batchCalcIndex >= 0}
-                title="Calculer et envoyer données de tous les nœuds"
-              >
-                {batchCalcIndex >= 0 ? '⏳ Calcul…' : '⚙ Calc. All'}
-              </button>
+              <>
+                <button
+                  className="reset-btn"
+                  onClick={handleCalculateAll}
+                  disabled={batchCalcIndex >= 0}
+                  title="Calculer et envoyer données de tous les nœuds (STACK → four)"
+                >
+                  {batchCalcIndex >= 0
+                    ? `⏳ ${batchDoneCount + 1}/${batchTotalCount}`
+                    : '⚙ Calc. All'}
+                </button>
+                {batchFinishedMsg && (
+                  <span style={{
+                    fontSize: '12px', fontWeight: 600, color: '#16a34a',
+                    background: '#dcfce7', border: '1px solid #86efac',
+                    borderRadius: 12, padding: '3px 10px', whiteSpace: 'nowrap',
+                  }}>
+                    ✓ {batchTotalCount} nœuds calculés
+                  </span>
+                )}
+              </>
             )}
           </Panel>
           {isEraserActive && <Eraser />}
@@ -643,13 +704,15 @@ function Flow({
           <DataFlowDisplay
             nodes={nodes}
             currentLanguage={currentLanguage}
+            onClose={() => setShowDataFlowDisplay(false)}
           />
         </div>
       )}
       
       {showGraph && (
-        <LinearGraph 
-          currentLanguage={currentLanguage} 
+        <LinearGraph
+          currentLanguage={currentLanguage}
+          onClose={() => setShowGraph(false)}
         />
       )}
       
@@ -684,28 +747,62 @@ function Flow({
         />
       )}
 
-      {/* Hidden batch mount — sequentially mounts one Parameter_Tab at a time to auto-calculate */}
-      {batchCalcIndex >= 0 && (() => {
-        const batchNodeId = batchQueueRef.current[batchCalcIndex]?.id;
-        if (!batchNodeId) return null;
-        const batchNode = nodes.find(n => n.id === batchNodeId);
-        if (!batchNode) return null;
-        const BatchComponent = retroComponentMap[batchNode.data.label];
-        if (!BatchComponent) return null;
-        return (
-          <div style={{ position: 'fixed', left: '-9999px', visibility: 'hidden', pointerEvents: 'none' }}>
-            <BatchComponent
-              key={`batch-${batchNode.id}-${batchCalcIndex}`}
-              title={batchNode.data.label}
-              nodeData={batchNode.data}
-              onSendData={onBatchSendData}
-              onClose={() => {}}
-              currentLanguage={currentLanguage}
-              autoTrigger={true}
+      {/* Modal sauvegarde projet */}
+      {showSaveDialog && (
+        <div style={{
+          position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.4)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2000,
+        }}>
+          <div style={{
+            background: 'white', borderRadius: '8px', padding: '28px 32px',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.2)', minWidth: '340px',
+          }}>
+            <h3 style={{ margin: '0 0 16px 0', fontSize: '16px', color: '#1a3a6b' }}>
+              Sauvegarder le projet
+            </h3>
+            <label style={{ fontSize: '13px', color: '#555', display: 'block', marginBottom: '6px' }}>
+              Titre du projet
+            </label>
+            <input
+              type="text"
+              value={saveProjectTitle}
+              onChange={(e) => setSaveProjectTitle(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter') confirmSaveProject(); if (e.key === 'Escape') setShowSaveDialog(false); }}
+              placeholder="ex : four_RK_site_A"
+              autoFocus
+              style={{
+                width: '100%', boxSizing: 'border-box', padding: '8px 10px',
+                border: '1px solid #ccc', borderRadius: '4px', fontSize: '14px',
+                marginBottom: '8px',
+              }}
             />
+            <div style={{ fontSize: '12px', color: '#888', marginBottom: '18px' }}>
+              {(() => {
+                const now = new Date();
+                const yyyy = now.getFullYear();
+                const mm = String(now.getMonth() + 1).padStart(2, '0');
+                const dd = String(now.getDate()).padStart(2, '0');
+                const safe = saveProjectTitle.trim().replace(/[^a-zA-Z0-9_\-\.]/g, '_') || 'projet';
+                return `Fichier : ${yyyy}_${mm}_${dd}_${safe}.json`;
+              })()}
+            </div>
+            <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+              <button
+                onClick={() => setShowSaveDialog(false)}
+                style={{ padding: '7px 16px', border: '1px solid #ccc', borderRadius: '4px', background: 'white', cursor: 'pointer', fontSize: '13px' }}
+              >
+                Annuler
+              </button>
+              <button
+                onClick={confirmSaveProject}
+                style={{ padding: '7px 16px', border: 'none', borderRadius: '4px', background: '#1a3a6b', color: 'white', cursor: 'pointer', fontSize: '13px', fontWeight: 'bold' }}
+              >
+                Sauvegarder
+              </button>
+            </div>
           </div>
-        );
-      })()}
+        </div>
+      )}
     </div>
     </>
   );

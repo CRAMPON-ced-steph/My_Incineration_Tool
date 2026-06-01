@@ -1,6 +1,11 @@
 // linearGraphTranslations.js
 export const linearGraphTranslations = {
   fr: {
+    legendTitle: 'Signification des points',
+    legendA: 'Q déchet min, P min',
+    legendB: 'Q déchet min, P max',
+    legendC: 'Q déchet max, P max',
+    legendD: 'Q déchet max, P min',
     title: 'Configuration du domaine de fonctionnement',
     chartTitle: 'Masse de déchets vs Puissance du four',
     xAxisLabel: 'Masse de déchets (kg/h)',
@@ -22,7 +27,12 @@ export const linearGraphTranslations = {
     warningMessage: '⚠️ The minimum furnace power cannot be less than 40% of its maximum.',
     xLabel: 'X (kg/h):',
     yLabel: 'Y (MW):',
-    point: 'Point'
+    point: 'Point',
+    legendTitle: 'Point meanings',
+    legendA: 'Min waste flow, Min power',
+    legendB: 'Min waste flow, Max power',
+    legendC: 'Max waste flow, Max power',
+    legendD: 'Max waste flow, Min power',
   },
   es: {
     title: 'Configuración del dominio de operación',
@@ -34,7 +44,12 @@ export const linearGraphTranslations = {
     warningMessage: '⚠️ La potencia mínima del horno no puede ser inferior al 40% de su máximo.',
     xLabel: 'X (kg/h):',
     yLabel: 'Y (MW):',
-    point: 'Punto'
+    point: 'Punto',
+    legendTitle: 'Significado de los puntos',
+    legendA: 'Caudal residuos mín, P mín',
+    legendB: 'Caudal residuos mín, P máx',
+    legendC: 'Caudal residuos máx, P máx',
+    legendD: 'Caudal residuos máx, P mín',
   },
   de: {
     title: 'Konfiguration des Betriebsbereichs',
@@ -46,7 +61,12 @@ export const linearGraphTranslations = {
     warningMessage: '⚠️ Die minimale Ofenleistung darf nicht weniger als 40% des Maximums betragen.',
     xLabel: 'X (kg/h):',
     yLabel: 'Y (MW):',
-    point: 'Punkt'
+    point: 'Punkt',
+    legendTitle: 'Bedeutung der Punkte',
+    legendA: 'Min. Abfallmenge, Min. Leistung',
+    legendB: 'Min. Abfallmenge, Max. Leistung',
+    legendC: 'Max. Abfallmenge, Max. Leistung',
+    legendD: 'Max. Abfallmenge, Min. Leistung',
   },
   it: {
     title: 'Configurazione del dominio operativo',
@@ -58,7 +78,12 @@ export const linearGraphTranslations = {
     warningMessage: '⚠️ La potenza minima del forno non può essere inferiore al 40% del massimo.',
     xLabel: 'X (kg/h):',
     yLabel: 'Y (MW):',
-    point: 'Punto'
+    point: 'Punto',
+    legendTitle: 'Significato dei punti',
+    legendA: 'Port. rifiuti min, P min',
+    legendB: 'Port. rifiuti min, P max',
+    legendC: 'Port. rifiuti max, P max',
+    legendD: 'Port. rifiuti max, P min',
   },
   pt: {
     title: 'Configuração do domínio operacional',
@@ -70,7 +95,12 @@ export const linearGraphTranslations = {
     warningMessage: '⚠️ A potência mínima do forno não pode ser inferior a 40% do máximo.',
     xLabel: 'X (kg/h):',
     yLabel: 'Y (MW):',
-    point: 'Ponto'
+    point: 'Ponto',
+    legendTitle: 'Significado dos pontos',
+    legendA: 'Caudal resíduos mín, P mín',
+    legendB: 'Caudal resíduos mín, P máx',
+    legendC: 'Caudal resíduos máx, P máx',
+    legendD: 'Caudal resíduos máx, P mín',
   },
   ru: {
     title: 'Конфигурация рабочей области',
@@ -82,7 +112,12 @@ export const linearGraphTranslations = {
     warningMessage: '⚠️ Минимальная мощность печи не может быть менее 40% от максимальной.',
     xLabel: 'X (кг/ч):',
     yLabel: 'Y (МВт):',
-    point: 'Точка'
+    point: 'Точка',
+    legendTitle: 'Значение точек',
+    legendA: 'Мин. расход отходов, мин. мощность',
+    legendB: 'Мин. расход отходов, макс. мощность',
+    legendC: 'Макс. расход отходов, макс. мощность',
+    legendD: 'Макс. расход отходов, мин. мощность',
   },
   ja: {
     title: '動作領域の設定',
@@ -94,7 +129,12 @@ export const linearGraphTranslations = {
     warningMessage: '⚠️ 炉の最小出力は最大出力の40%未満にできません。',
     xLabel: 'X (kg/h):',
     yLabel: 'Y (MW):',
-    point: 'ポイント'
+    point: 'ポイント',
+    legendTitle: 'ポイントの意味',
+    legendA: '廃棄物最小流量、最小出力',
+    legendB: '廃棄物最小流量、最大出力',
+    legendC: '廃棄物最大流量、最大出力',
+    legendD: '廃棄物最大流量、最小出力',
   },
   zh: {
     title: '操作域配置',
@@ -106,7 +146,12 @@ export const linearGraphTranslations = {
     warningMessage: '⚠️ 炉的最小功率不能低于最大功率的40%。',
     xLabel: 'X (kg/h):',
     yLabel: 'Y (MW):',
-    point: '点'
+    point: '点',
+    legendTitle: '点的含义',
+    legendA: '废料最小流量，最小功率',
+    legendB: '废料最小流量，最大功率',
+    legendC: '废料最大流量，最大功率',
+    legendD: '废料最大流量，最小功率',
   },
   ar: {
     title: 'تكوين نطاق التشغيل',
@@ -118,7 +163,12 @@ export const linearGraphTranslations = {
     warningMessage: '⚠️ الحد الأدنى لقوة الفرن لا يمكن أن يكون أقل من 40% من الحد الأقصى.',
     xLabel: 'X (كغ/ساعة):',
     yLabel: 'Y (ميجاواط):',
-    point: 'نقطة'
+    point: 'نقطة',
+    legendTitle: 'معنى النقاط',
+    legendA: 'تدفق نفايات أدنى، طاقة دنيا',
+    legendB: 'تدفق نفايات أدنى، طاقة قصوى',
+    legendC: 'تدفق نفايات أقصى، طاقة قصوى',
+    legendD: 'تدفق نفايات أقصى، طاقة دنيا',
   }
 };
 

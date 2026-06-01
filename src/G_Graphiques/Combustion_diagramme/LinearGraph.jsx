@@ -26,7 +26,7 @@ ChartJS.register(
   Legend
 );
 
-const LinearGraph = ({ currentLanguage = 'fr' }) => {
+const LinearGraph = ({ currentLanguage = 'fr', onClose }) => {
   // Get current language code and translations
   const languageCode = getLanguageCode(currentLanguage);
   const t = getLinearGraphTranslations(languageCode);
@@ -38,10 +38,11 @@ const LinearGraph = ({ currentLanguage = 'fr' }) => {
   };
 
   // Points coordinates with saved or default values
+  // A = bas-gauche, B = haut-gauche, C = haut-droite, D = bas-droite
   const [pointA, setPointA] = useState(loadPoint('pointA', { x: 100, y: 2 }));
-  const [pointB, setPointB] = useState(loadPoint('pointB', { x: 150, y: 10 }));
+  const [pointB, setPointB] = useState(loadPoint('pointB', { x: 100, y: 10 }));
   const [pointC, setPointC] = useState(loadPoint('pointC', { x: 800, y: 10 }));
-  const [pointD, setPointD] = useState(loadPoint('pointD', { x: 300, y: 2 }));
+  const [pointD, setPointD] = useState(loadPoint('pointD', { x: 800, y: 2 }));
   const [pointE, setPointE] = useState(loadPoint('pointE', { x: 500, y: 8 }));
 
   // Save points to localStorage whenever they change
@@ -196,6 +197,33 @@ const LinearGraph = ({ currentLanguage = 'fr' }) => {
       overflowY: 'auto',
       zIndex: 1000,
     }}>
+      {onClose && (
+        <button
+          onClick={onClose}
+          title="Fermer"
+          style={{
+            position: 'absolute',
+            top: '10px',
+            right: '12px',
+            width: '26px',
+            height: '26px',
+            lineHeight: '24px',
+            textAlign: 'center',
+            padding: 0,
+            background: 'rgba(0,0,0,0.08)',
+            color: '#555',
+            border: 'none',
+            borderRadius: '50%',
+            cursor: 'pointer',
+            fontSize: '16px',
+            fontWeight: 'bold',
+          }}
+          onMouseEnter={(e) => (e.target.style.background = 'rgba(0,0,0,0.2)')}
+          onMouseLeave={(e) => (e.target.style.background = 'rgba(0,0,0,0.08)')}
+        >
+          ×
+        </button>
+      )}
       <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>{t.title}</h2>
       
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px', marginBottom: '20px', justifyContent: 'center' }}>
@@ -322,6 +350,14 @@ const LinearGraph = ({ currentLanguage = 'fr' }) => {
               />
             </label>
           </div>
+        </div>
+
+        {/* Légende des points */}
+        <div style={{ border: '1px solid #bbb', padding: '6px 10px', borderRadius: '5px', backgroundColor: '#f9f9f9', fontSize: '10px', lineHeight: '1.5', alignSelf: 'center' }}>
+<div><span style={{ color: 'red', fontWeight: 'bold' }}>A</span> — {t.legendA}</div>
+          <div><span style={{ color: 'blue', fontWeight: 'bold' }}>B</span> — {t.legendB}</div>
+          <div><span style={{ color: 'green', fontWeight: 'bold' }}>C</span> — {t.legendC}</div>
+          <div><span style={{ color: 'purple', fontWeight: 'bold' }}>D</span> — {t.legendD}</div>
         </div>
       </div>
       

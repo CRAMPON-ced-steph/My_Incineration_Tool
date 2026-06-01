@@ -131,6 +131,33 @@ All equipment-specific keys must include the equipment suffix to avoid cross-con
 **Intentionally shared keys** (do NOT add suffixes):
 - `'pointE'` — Written by `Z_RETRO/FB/FB_Parameter_Tab.jsx`, `Z_RETRO/RK/RK_Parameter_Tab.jsx`, and `Z_RETRO/GF/GF_Parameter_Tab.jsx`; read by `G_Graphiques/Combustion_diagramme/LinearGraph.jsx` and `D_BILAN_Rapports/GlobalRetroReport.jsx` to display the current operating point on the combustion diagram. Only one furnace type is active per process flow, so last-write-wins is correct behavior.
 
+### Node colors on canvas
+
+Each sidebar section has a defined background color applied to nodes when placed on the canvas (and restored on project load). The color mapping lives in `NODE_COLORS` in `Main_FLOW.jsx` (defined just before `onAddNode`). The same colors are used for sidebar buttons via `nodeColor`/`nodeHoverColor`/`nodeTextColor` props on each section in `SidebarV1.jsx`.
+
+| Section (`key`) | Node background | Text |
+|---|---|---|
+| `Furnace` (RK+SCC, GF, FB) | `#e53935` rouge | blanc |
+| `Energy_recovery` (WHB, HX_TubeAndShell, IACT) | `#fb8c00` orange | blanc |
+| `Dry_treatment` (BHF, ELECTROFILTER, CYCLONE, REACTOR, AIRINJECTION) | `#757575` gris foncé | blanc |
+| `Wet_treatment` (QUENCH, WATER_INJECTION, COOLINGTOWER, DENOX, SCRUBBER) | `#1e88e5` bleu | blanc |
+| `Echangeurs` (Cooling_HX_air, Cooling_HX_eau) | `#ffcdd2` rouge clair | noir |
+| `Exit`, `DivConv` | inchangé (défaut ReactFlow) | — |
+
+When adding a new node type, add its label → color entry to `NODE_COLORS` in `Main_FLOW.jsx` and set `nodeColor`/`nodeHoverColor`/`nodeTextColor` on its section in `SidebarV1.jsx`.
+
+### Selected node outline
+
+The selected-node outline thickness is overridden in `src/index.css`:
+
+```css
+.react-flow__node.selected {
+  --xy-node-boxshadow-selected: 0 0 0 1.5px #1a192b;
+}
+```
+
+ReactFlow's default is `0 0 0 0.5px`. Adjust the third value (`1.5px`) to change thickness.
+
 ### Known Patterns (not bugs)
 
 - **`innerData` mutations in `C_Components/Traitement_fumées.jsx`** (lines 200, 248) — `innerData[row.pollutant] = {...}` inside `calculateValues()` and `innerData['Poutput'] = masses_pollutant_output` at body level are intentional. `innerData` is a plain mutable shared object (not React state), so synchronous body-level mutations are safe and read immediately by downstream body-level code in the same render cycle. This is the established pattern for shared FGT utility components.
@@ -237,3 +264,46 @@ All equipment-specific keys must include the equipment suffix to avoid cross-con
 
 - `Y_BILAN/FB/4_Recuperator.jsx`: removed redundant `tempSortieFumees` dichotomy; `T_fumee_sortie_HX_C` now taken from `Tf_voute_ap_HX_C` (CombustionTab col. 11). Added second `useEffect` writing fan/airside variables to `innerData`. Fixed variable hoisting bug (declarations moved before `useEffect` calls).
 - `Y_BILAN/FB/FB_Report.jsx`: HX section split into 4 SubSections — "HX côté fumées", "HX côté air", "Dimensionnement de l'échangeur", "Ventilateur" — each with 32px column gap.
+
+---
+
+## Calc. All button — Retro mode (2026-06-01)
+
+### Overview
+
+The **⚙ Calc. All** button (Retro mode only, `Main_FLOW.jsx`) triggers an automated sequential recalculation of every batch-calculable node on the canvas, in topological order from STACK to furnace. It replaces the previous approach of mounting hidden React components.
+
+### Files involved
+
+| File | Role |
+|------|------|
+| `src/Z_RETRO/batchCalculators.js` | `batchCalcMap`: maps each node label to a direct calculation function `(nodeData) => result \| null`. Reads its own parameters from `localStorage`. |
+| `src/Main_FLOW.jsx` | `handleCalculateAll` async loop + `propagateResultUpstream` BFS helper. |
+
+### How it works
+
+1. `getTopologicalOrder(nodes, edges)` returns nodes in Bilan direction (furnace → STACK); `.reverse()` gives Retro order (STACK → furnace).
+2. Only nodes present in `batchCalcMap` are calculated (`filtered`).
+3. A **local snapshot** `let currentNodes = nodes` is maintained and updated each iteration — avoids stale React state between async yields.
+4. For each node: `batchCalcMap[label](nodeData)` is called directly (no React mounting). On success, `propagateResultUpstream` runs.
+5. `propagateResultUpstream` does a **BFS upstream** (Retro direction = Bilan source side: `e.target === id`): traverses through non-batch intermediate nodes (CO2, DivConv, …) until it reaches the next batch node. All traversed nodes receive the result so the next batch node has fresh input.
+6. Result is persisted to `localStorage` via `batchResultStorageKeys` and `calcSent_<label>` flag.
+7. Progress shown as `⏳ N/total` on the button; green `✓ N nœuds calculés` badge on completion.
+
+### Adding a new equipment to Calc. All
+
+Add an entry to `batchCalcMap` in `src/Z_RETRO/batchCalculators.js`:
+```js
+'MY_EQ': (nodeData) => {
+  if (!nodeData?.result) return null;
+  return performCalculation_MY_EQ(nodeData, f('param1_MY_EQ', '0'), ...);
+},
+```
+No changes to `Main_FLOW.jsx` needed — any label present in `batchCalcMap` is automatically included.
+
+### Key implementation details
+
+- `batchCalcIndexRef.current = 0` is set **immediately** after the guard check (before the loop) to prevent a double-click race between guard evaluation and first iteration.
+- Non-batch nodes (CO2, DivConv) are skipped in `filtered` but their `data.result` is still updated by `propagateResultUpstream` so they act as transparent pass-throughs.
+- STACK has no upstream input requirement; its `batchCalcMap` entry ignores `nodeData`.
+- `RK+SCC` with `bilanType_whb === 'WITH_WHB'` returns `null` if `nodeData?.result?.data_Air_WHB` is absent (WHB must be calculated first).
