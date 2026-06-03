@@ -151,7 +151,7 @@ function DropdownMenu({
   const menuItems = [
     {
       id: 'mode',
-      label: translate(mode),
+      label: translate(mode === 'Bilan' ? 'Retro bilan' : 'Bilan'),
       onClick: onToggleMode,
       backgroundColor: mode === 'Bilan' ? '#4CAF50' : '#2196F3',
     },

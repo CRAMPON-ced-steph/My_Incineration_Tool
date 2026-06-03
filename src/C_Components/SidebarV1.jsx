@@ -50,7 +50,7 @@ const Sidebar = ({ onAddNode, currentLanguage = 'fr' }) => {
     },
   };
 
-  const SectionComponent = ({ sectionKey, title, items }) => (
+  const SectionComponent = ({ sectionKey, title, items, nodeColor = '#f5f5f5', nodeHoverColor = '#e8e8e8', nodeTextColor = '#000' }) => (
     <div style={sidebarStyle.section}>
       <h3
         onClick={() => toggleSection(sectionKey)}
@@ -67,9 +67,9 @@ const Sidebar = ({ onAddNode, currentLanguage = 'fr' }) => {
             <button
               key={item.id}
               onClick={() => onAddNode(item.id)}
-              style={sidebarStyle.button}
-              onMouseEnter={(e) => (e.target.style.backgroundColor = '#e8e8e8')}
-              onMouseLeave={(e) => (e.target.style.backgroundColor = '#f5f5f5')}
+              style={{ ...sidebarStyle.button, backgroundColor: nodeColor, color: nodeTextColor }}
+              onMouseEnter={(e) => { e.target.style.backgroundColor = nodeHoverColor; }}
+              onMouseLeave={(e) => { e.target.style.backgroundColor = nodeColor; }}
             >
               {item.label}
             </button>
@@ -83,6 +83,9 @@ const Sidebar = ({ onAddNode, currentLanguage = 'fr' }) => {
     {
       key: 'Furnace',
       title: t.furnace,
+      nodeColor: '#e53935',
+      nodeHoverColor: '#b71c1c',
+      nodeTextColor: '#fff',
       items: [
         { id: 'RK+SCC', label: t.addRotaryKiln },
         { id: 'GF', label: t.addGrateFurnace },
@@ -92,6 +95,9 @@ const Sidebar = ({ onAddNode, currentLanguage = 'fr' }) => {
     {
       key: 'Energy_recovery',
       title: t.energyRecovery,
+      nodeColor: '#fb8c00',
+      nodeHoverColor: '#e65100',
+      nodeTextColor: '#fff',
       items: [
         { id: 'WHB', label: t.addWasteHeatBoiler },
         { id: 'HX_TubeAndShell', label: t.TubeAndShell },
@@ -101,6 +107,9 @@ const Sidebar = ({ onAddNode, currentLanguage = 'fr' }) => {
     {
       key: 'Dry_treatment',
       title: t.dryTreatment,
+      nodeColor: '#757575',
+      nodeHoverColor: '#9e9e9e',
+      nodeTextColor: '#fff',
       items: [
         { id: 'BHF', label: t.addBHF },
         { id: 'ELECTROFILTER', label: t.addElectrofilter },
@@ -112,6 +121,9 @@ const Sidebar = ({ onAddNode, currentLanguage = 'fr' }) => {
     {
       key: 'Wet_treatment',
       title: t.wetTreatment,
+      nodeColor: '#1e88e5',
+      nodeHoverColor: '#0d47a1',
+      nodeTextColor: '#fff',
       items: [
         { id: 'QUENCH', label: t.addQuench },
         { id: 'WATER_INJECTION', label: t.addWATER_INJECTION },
@@ -132,10 +144,11 @@ const Sidebar = ({ onAddNode, currentLanguage = 'fr' }) => {
     {
       key: 'Echangeurs',
       title: t.Echangeurs,
+      nodeColor: '#ffcdd2',
+      nodeHoverColor: '#ef9a9a',
       items: [
         { id: 'Cooling_HX_air', label: t.Cooling_HX_air },
         { id: 'Cooling_HX_eau', label: t.Cooling_HX_eau },
-     
       ],
     },
     {
@@ -156,6 +169,9 @@ const Sidebar = ({ onAddNode, currentLanguage = 'fr' }) => {
           sectionKey={section.key}
           title={section.title}
           items={section.items}
+          nodeColor={section.nodeColor}
+          nodeHoverColor={section.nodeHoverColor}
+          nodeTextColor={section.nodeTextColor}
         />
       ))}
     </div>

@@ -337,7 +337,7 @@ const OPEX_form = ({ onClose, currentLanguage = 'fr' }) => {
   };
 
   return (
-    <div style={styles.container}>
+    <div style={{ ...styles.container, position: 'relative' }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Sohne:wght@400;500;600&display=swap');
         
@@ -479,6 +479,34 @@ const OPEX_form = ({ onClose, currentLanguage = 'fr' }) => {
       `}</style>
 
       {/* Header */}
+      {onClose && (
+        <button
+          onClick={onClose}
+          title="Fermer"
+          style={{
+            position: 'absolute',
+            top: '16px',
+            right: '16px',
+            width: '28px',
+            height: '28px',
+            lineHeight: '26px',
+            textAlign: 'center',
+            padding: 0,
+            background: 'rgba(0,0,0,0.08)',
+            color: '#555',
+            border: 'none',
+            borderRadius: '50%',
+            cursor: 'pointer',
+            fontSize: '18px',
+            fontWeight: 'bold',
+            zIndex: 10,
+          }}
+          onMouseEnter={(e) => (e.target.style.background = 'rgba(0,0,0,0.2)')}
+          onMouseLeave={(e) => (e.target.style.background = 'rgba(0,0,0,0.08)')}
+        >
+          ×
+        </button>
+      )}
       <div style={styles.header}>
         <h1 style={styles.title}>{t.opexParameters || "Paramètres OPEX"}</h1>
         <p style={styles.subtitle}>Gérez tous vos paramètres opérationnels en un seul endroit</p>

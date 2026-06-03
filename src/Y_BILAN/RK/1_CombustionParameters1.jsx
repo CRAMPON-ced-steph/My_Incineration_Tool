@@ -479,48 +479,60 @@ const CombustionParameters = ({ innerData, currentLanguage = 'fr' }) => {
             </div>
           ))}
         </div>
-        {parameters.map((row, rowIndex) => (
-          <div
-            key={rowIndex}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              marginBottom: '2px',
-            }}
-          >
-            <div style={{ width: '100px', flexShrink: 0, textAlign: 'left' }}>
-              <h3 style={{ margin: '0', fontSize: '14px' }}>{row.name}</h3>
-            </div>
-            {columns.map((col, colIndex) => (
-              <div
-                key={colIndex}
-                style={{
-                  width: '80px',
-                  flexShrink: 0,
-                  textAlign: 'center',
-                }}
-              >
-                <input
-                  type="number"
-                  value={row.data[col] !== undefined ? row.data[col] : 0}
-                  onChange={(e) => updateCell(rowIndex, col, e.target.value)}
-                  disabled={col === 'SUM1' || col === 'SUM2' || col === 'Comb CV [kJ/kg]' || col === 'Waste CV [kJ/kg]' || col === 'Waste CV [kcal/kg]'}
-                  min={col === 'Masse [kg/h]' ? '0' : '0'}
-                  max={col === 'Masse [kg/h]' ? undefined : '100'}
-                  style={{
-                    width: '100%',
-                    boxSizing: 'border-box',
-                    padding: '6px',
-                    border: '1px solid #ddd',
-                    borderRadius: '4px',
-                    fontSize: '12px',
-                    backgroundColor: (col === 'SUM1' || col === 'SUM2' || col === 'Comb CV [kJ/kg]' || col === 'Waste CV [kJ/kg]' || col === 'Waste CV [kcal/kg]') ? '#f9f9f9' : 'white',
-                  }}
-                />
+        {parameters.map((row, rowIndex) => {
+          const rowBg = rowIndex % 2 === 1 ? '#e0f7fa' : 'transparent';
+          return (
+            <div
+              key={rowIndex}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                marginBottom: '2px',
+                backgroundColor: rowBg,
+                borderRadius: '3px',
+              }}
+            >
+              <div style={{ width: '100px', flexShrink: 0, textAlign: 'left' }}>
+                <h3 style={{ margin: '0', fontSize: '14px' }}>{row.name}</h3>
               </div>
-            ))}
-          </div>
-        ))}
+              {columns.map((col, colIndex) => {
+                const isSum = col === 'SUM1' || col === 'SUM2';
+                const isCalc = isSum || col === 'Comb CV [kJ/kg]' || col === 'Waste CV [kJ/kg]' || col === 'Waste CV [kcal/kg]';
+                const val = row.data[col] !== undefined ? row.data[col] : 0;
+                const sumInvalid = isSum && Math.abs(parseFloat(val) - 100) > 0.01;
+                let cellBg;
+                if (sumInvalid) cellBg = '#ef9a9a';
+                else if (isCalc) cellBg = '#f9f9f9';
+                else cellBg = 'transparent';
+                return (
+                  <div
+                    key={colIndex}
+                    style={{ width: '80px', flexShrink: 0, textAlign: 'center' }}
+                  >
+                    <input
+                      type="number"
+                      value={val}
+                      onChange={(e) => updateCell(rowIndex, col, e.target.value)}
+                      disabled={isCalc}
+                      min="0"
+                      max={col === 'Masse [kg/h]' ? undefined : '100'}
+                      style={{
+                        width: '100%',
+                        boxSizing: 'border-box',
+                        padding: '6px',
+                        border: sumInvalid ? '1px solid #e53935' : '1px solid #ddd',
+                        borderRadius: '4px',
+                        fontSize: '12px',
+                        backgroundColor: cellBg,
+                        fontWeight: sumInvalid ? 'bold' : 'normal',
+                      }}
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          );
+        })}
       </div>
   
       {/* Deuxième tableau */}

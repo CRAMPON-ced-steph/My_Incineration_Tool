@@ -1,6 +1,6 @@
 import React from 'react';
 
-const DataFlowDisplay = ({ nodes }) => {
+const DataFlowDisplay = ({ nodes, onClose }) => {
   // Filter nodes that have dataFlow in their result
   const nodesWithDataFlow = nodes.filter(node => node.data?.result?.dataFlow);
 
@@ -17,7 +17,34 @@ nodeId: node.id,
   
   //              {data.nodeName} (ID: {data.nodeId})
   return (
-    <div style={{ padding: '20px', maxWidth: '100%', overflowX: 'auto' }}>
+    <div style={{ padding: '20px', maxWidth: '100%', overflowX: 'auto', position: 'relative' }}>
+      {onClose && (
+        <button
+          onClick={onClose}
+          title="Fermer"
+          style={{
+            position: 'absolute',
+            top: '16px',
+            right: '16px',
+            width: '26px',
+            height: '26px',
+            lineHeight: '24px',
+            textAlign: 'center',
+            padding: 0,
+            background: 'rgba(0,0,0,0.08)',
+            color: '#555',
+            border: 'none',
+            borderRadius: '50%',
+            cursor: 'pointer',
+            fontSize: '16px',
+            fontWeight: 'bold',
+          }}
+          onMouseEnter={(e) => (e.target.style.background = 'rgba(0,0,0,0.2)')}
+          onMouseLeave={(e) => (e.target.style.background = 'rgba(0,0,0,0.08)')}
+        >
+          ×
+        </button>
+      )}
       <h2>Combined DataFlow Information</h2>
       <table style={{ 
         width: '100%', 

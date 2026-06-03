@@ -5,6 +5,11 @@ body {
   background-color: #e1dfeb; /* Light Cyan */
 }
 
+/* Selected node outline — override ReactFlow default (0 0 0 0.5px) */
+.react-flow__node.selected {
+  --xy-node-boxshadow-selected: 0 0 0 1.5px #1a192b;
+}
+
 /* présentation des 3 boutons calulate show et clear*/
 .prez-3-buttons {
   display: flex;
