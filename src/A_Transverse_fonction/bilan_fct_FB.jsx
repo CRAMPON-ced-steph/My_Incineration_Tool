@@ -102,6 +102,9 @@ export const cp_air = (T) => {
   return cp * 4.1868 / 3600;
 };
 
+// Cp volumique de l'air [kWh/(Nm³·°C)]
+export const cp_air_kWh_m3_degree = (T) => 0.000336 + 0.00000003 * T;
+
 export const cp_dt_co = (T) => {
   const cp = 0.2473 * T + 42.84 / 2000000 * T ** 2;
   return cp * 4.1868 / 3600;
@@ -178,6 +181,14 @@ export const Fact_U_Encrasse = (FactU, EncrasseEchg) => {
 export const Fact_UA = (QFumees, D_TLM) => {
   const F = 1;
   return D_TLM !== 0 ? QFumees / (F * D_TLM) : 0;
+};
+
+// Surface d'échange [m²]
+// FactU_list : coefficient global U (kW/(m²·K)) — 66 pour eau, 39 pour air
+// Encrassement : en % (ex: 25 pour 25%)
+export const Surface_echange = (FactUA, FactU_list, Encrassement) => {
+  if (FactU_list === 0) return 0;
+  return (FactUA / FactU_list / 1.25) * (1 + Encrassement / 100);
 };
 
 // ============================================

@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
 import React, { useState, useRef } from 'react';
 import TubeAndShellParameters from './1_TUBEANDSHELL_Parameters';
+import TUBEANDSHELL_Report from './TUBEANDSHELL_Report';
 import '../../../index.css';
 import { getLanguageCode } from '../../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './TubeShell_traduction';
@@ -12,8 +13,8 @@ const TUBEANDSHELLMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, 
   const [innerData] = useState(nodeData?.result || {});
 
   // Valeurs amont capturées une fois au montage — stables à travers les changements d'onglet
-  const T_IN_upstream  = useRef(nodeData?.result?.T_OUT ?? 200).current;
-  const FG_IN_upstream = useRef(nodeData?.result?.FG_OUT_kg_h || { CO2: 1, H2O: 1, O2: 1, N2: 1 }).current;
+  const T_IN_upstream  = useRef(nodeData?.result?.T_OUT ?? 580).current;
+  const FG_IN_upstream = useRef(nodeData?.result?.FG_OUT_kg_h || { CO2: 3467, H2O: 3193, O2: 3151, N2: 17658 }).current;
   const P_IN_upstream  = useRef(nodeData?.result?.P_OUT ?? 0).current;
 
   const tabs = [
@@ -25,6 +26,15 @@ const TUBEANDSHELLMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, 
           upstreamT_IN={T_IN_upstream}
           upstreamFG_IN={FG_IN_upstream}
           upstreamP_IN={P_IN_upstream}
+          currentLanguage={currentLanguage}
+        />
+      ),
+    },
+    {
+      name: t('Rapport'),
+      content: (
+        <TUBEANDSHELL_Report
+          innerData={innerData}
           currentLanguage={currentLanguage}
         />
       ),
