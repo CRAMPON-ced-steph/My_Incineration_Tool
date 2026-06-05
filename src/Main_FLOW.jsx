@@ -19,7 +19,8 @@ import {
 
   AIRCOOLERMainPage ,
   WATERCOOLERMainPage,
- TUBEANDSHELLMainPage ,
+ TUBEANDSHELLMainPage,
+ TUBEANDSHELL_Parameter_Tab,
  
  
  SEP12MainPage,
@@ -468,7 +469,7 @@ function Flow({
 
       ...(mode === 'Bilan' ? { Cooling_HX_air: AIRCOOLERMainPage } : {}),
       ...(mode === 'Bilan' ? { Cooling_HX_eau: WATERCOOLERMainPage } : {}),
-      ...(mode === 'Bilan' ? { HX_TubeAndShell: TUBEANDSHELLMainPage } : {}),
+      ...(mode === 'Bilan' ? { HX_TubeAndShell: TUBEANDSHELLMainPage } : { HX_TubeAndShell: TUBEANDSHELL_Parameter_Tab }),
       
       ...(mode === 'Bilan' ? { '2to1': SEP21MainPage } : {}),
       ...(mode === 'Bilan' ? { '1to2': SEP12MainPage } : {}),
