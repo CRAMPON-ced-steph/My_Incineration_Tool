@@ -8,6 +8,7 @@ import ShowResultButton from '../../C_Components/Show_result_retro';
 import CloseButton from '../../C_Components/OnCloseButton_retro';
 import CalculationResults from '../../C_Components/ShowCalculationResult_retro';
 import CalculateSendButton from '../../C_Components/CalculateSendButton';
+import TUBEANDSHELL_Retro_Rapport from './TUBEANDSHELL_Retro_Rapport';
 
 import '../../index.css';
 
@@ -25,7 +26,11 @@ const TUBEANDSHELL_Parameter_Tab = ({ nodeData, title, onSendData, onClose, curr
   // ── Paramètres persistés ──────────────────────────────────────────────────
   const [fluide,       setFluide]       = useState(() => localStorage.getItem('fluide_TUBEANDSHELL')       || 'eau');
   const [bilanType,    setBilanType]    = useState(() => localStorage.getItem('bilanType_TUBEANDSHELL')    || 'T_sortie');
-  const [T_fumee_out,  setT_fumee_out]  = useState(() => parseFloat(localStorage.getItem('T_fumee_out_TUBEANDSHELL'))  || (nodeData?.result?.dataFlow?.T ?? 200) - 200);
+  const [T_fumee_in,   setT_fumee_in]   = useState(() => {
+    const saved = localStorage.getItem('T_fumee_in_TUBEANDSHELL');
+    const defaultT = (nodeData?.result?.dataFlow?.T ?? 200) + 200;
+    return saved != null ? parseFloat(saved) : defaultT;
+  });
   const [T_fluide_in,  setT_fluide_in]  = useState(() => parseFloat(localStorage.getItem('T_fluide_in_TUBEANDSHELL'))  || 15);
   const [T_fluide_out, setT_fluide_out] = useState(() => parseFloat(localStorage.getItem('T_fluide_out_TUBEANDSHELL')) || 50);
   const [m_eau,        setM_eau]        = useState(() => parseFloat(localStorage.getItem('m_eau_TUBEANDSHELL'))        || 1000);
@@ -36,11 +41,12 @@ const TUBEANDSHELL_Parameter_Tab = ({ nodeData, title, onSendData, onClose, curr
 
   const [calculationResult, setCalculationResult] = useState(null);
   const [isSliderOpen, setIsSliderOpen] = useState(false);
+  const [showReport, setShowReport] = useState(false);
 
   // ── Persistance localStorage ──────────────────────────────────────────────
   useEffect(() => { localStorage.setItem('fluide_TUBEANDSHELL',       fluide);            }, [fluide]);
   useEffect(() => { localStorage.setItem('bilanType_TUBEANDSHELL',    bilanType);         }, [bilanType]);
-  useEffect(() => { localStorage.setItem('T_fumee_out_TUBEANDSHELL',  T_fumee_out);       }, [T_fumee_out]);
+  useEffect(() => { localStorage.setItem('T_fumee_in_TUBEANDSHELL',   T_fumee_in);        }, [T_fumee_in]);
   useEffect(() => { localStorage.setItem('T_fluide_in_TUBEANDSHELL',  T_fluide_in);       }, [T_fluide_in]);
   useEffect(() => { localStorage.setItem('T_fluide_out_TUBEANDSHELL', T_fluide_out);      }, [T_fluide_out]);
   useEffect(() => { localStorage.setItem('m_eau_TUBEANDSHELL',        m_eau);             }, [m_eau]);
@@ -61,7 +67,7 @@ const TUBEANDSHELL_Parameter_Tab = ({ nodeData, title, onSendData, onClose, curr
     try {
       const result = performCalculation_TUBEANDSHELL(
         nodeData, fluide, bilanType,
-        T_fumee_out, T_fluide_in, T_fluide_out,
+        T_fumee_in, T_fluide_in, T_fluide_out,
         m_eau, V_air, Rendement, Encrassement, PDC_econo
       );
       setCalculationResult(result);
@@ -71,7 +77,7 @@ const TUBEANDSHELL_Parameter_Tab = ({ nodeData, title, onSendData, onClose, curr
     } catch (error) {
       console.error('TUBEANDSHELL recalc error:', error);
     }
-  }, [nodeData, fluide, bilanType, T_fumee_out, T_fluide_in, T_fluide_out, m_eau, V_air, Rendement, Encrassement, PDC_econo]);
+  }, [nodeData, fluide, bilanType, T_fumee_in, T_fluide_in, T_fluide_out, m_eau, V_air, Rendement, Encrassement, PDC_econo]);
 
   // ── Calcul manuel (bouton) ────────────────────────────────────────────────
   const handleSendData = () => {
@@ -82,7 +88,7 @@ const TUBEANDSHELL_Parameter_Tab = ({ nodeData, title, onSendData, onClose, curr
     try {
       const result = performCalculation_TUBEANDSHELL(
         nodeData, fluide, bilanType,
-        T_fumee_out, T_fluide_in, T_fluide_out,
+        T_fumee_in, T_fluide_in, T_fluide_out,
         m_eau, V_air, Rendement, Encrassement, PDC_econo
       );
       setCalculationResult(result);
@@ -98,7 +104,7 @@ const TUBEANDSHELL_Parameter_Tab = ({ nodeData, title, onSendData, onClose, curr
   const clearMemory = () => {
     const keys = [
       'fluide_TUBEANDSHELL', 'bilanType_TUBEANDSHELL',
-      'T_fumee_out_TUBEANDSHELL', 'T_fluide_in_TUBEANDSHELL', 'T_fluide_out_TUBEANDSHELL',
+      'T_fumee_in_TUBEANDSHELL', 'T_fluide_in_TUBEANDSHELL', 'T_fluide_out_TUBEANDSHELL',
       'm_eau_TUBEANDSHELL', 'V_air_TUBEANDSHELL',
       'Rendement_TUBEANDSHELL', 'Encrassement_TUBEANDSHELL', 'PDC_econo_TUBEANDSHELL',
       'CalculationResult_TUBEANDSHELL',
@@ -106,7 +112,7 @@ const TUBEANDSHELL_Parameter_Tab = ({ nodeData, title, onSendData, onClose, curr
     keys.forEach(k => localStorage.removeItem(k));
     setFluide('eau');
     setBilanType('T_sortie');
-    setT_fumee_out((nodeData?.result?.dataFlow?.T ?? 200) - 200);
+    setT_fumee_in((nodeData?.result?.dataFlow?.T ?? 200) + 200);
     setT_fluide_in(15);
     setT_fluide_out(50);
     setM_eau(1000);
@@ -149,7 +155,6 @@ const TUBEANDSHELL_Parameter_Tab = ({ nodeData, title, onSendData, onClose, curr
           <div style={labelStyle}>Bilan par</div>
           <select style={selectStyle} value={bilanType} onChange={(e) => setBilanType(e.target.value)}>
             <option value="T_sortie">T sortie fluide</option>
-            <option value="T_entree">T entrée fluide</option>
             <option value="debit">{fluide === 'eau' ? 'Débit eau' : 'Débit air'}</option>
           </select>
         </div>
@@ -157,8 +162,17 @@ const TUBEANDSHELL_Parameter_Tab = ({ nodeData, title, onSendData, onClose, curr
 
       {/* Paramètres côté fumées */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '10px' }}>
-        <InputField label="T fumées sortie"     unit="[°C]"   value={T_fumee_out}  onChange={(e) => setT_fumee_out(parseFloat(e.target.value) || 0)} />
-        <InputField label="PDC échangeur"        unit="[mmCE]" value={PDC_econo}    onChange={(e) => setPDC_econo(parseFloat(e.target.value) || 0)} />
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <label style={{ color: 'black', width: '300px' }}>T fumées sortie [°C] :</label>
+          <input
+            type="number"
+            value={nodeData?.result?.dataFlow?.T ?? '—'}
+            disabled
+            style={{ width: 'auto', minWidth: '60px', maxWidth: '1000px', backgroundColor: '#f0f0f0', color: 'black', cursor: 'not-allowed' }}
+          />
+        </div>
+        <InputField label="T fumées entrée"  unit="[°C]"   value={T_fumee_in} onChange={(e) => setT_fumee_in(parseFloat(e.target.value) || 0)} />
+        <InputField label="PDC échangeur"    unit="[mmCE]" value={PDC_econo}  onChange={(e) => setPDC_econo(parseFloat(e.target.value) || 0)} />
       </div>
 
       {/* Paramètres côté fluide */}
@@ -188,6 +202,13 @@ const TUBEANDSHELL_Parameter_Tab = ({ nodeData, title, onSendData, onClose, curr
         <InputField label="Encrassement échangeur" unit="[%]" value={Encrassement} onChange={(e) => setEncrassement(parseFloat(e.target.value) || 0)} />
       </div>
 
+      {/* Alerte incohérence thermique */}
+      {r?.T_fluide_out > T_fumee_in && (
+        <div style={{ marginBottom: '10px', padding: '6px 10px', background: '#fff3cd', border: '1px solid #ffc107', borderRadius: '4px', color: '#856404', fontWeight: '600', fontSize: '12px' }}>
+          ⚠ T sortie {fluide} ({fmt(r.T_fluide_out)} °C) &gt; T fumées entrée ({fmt(T_fumee_in)} °C) — bilan incohérent
+        </div>
+      )}
+
       {/* Boutons */}
       <div className="prez-3-buttons">
         <CalculateSendButton onClick={handleSendData} currentLanguage={currentLanguage} storageKey={`calcSent_${title}`} />
@@ -200,19 +221,39 @@ const TUBEANDSHELL_Parameter_Tab = ({ nodeData, title, onSendData, onClose, curr
         <CalculationResults isOpen={isSliderOpen} results={calculationResult} />
       )}
 
+      {/* Bouton rapport */}
+      <div style={{ marginTop: '12px' }}>
+        <button
+          onClick={() => setShowReport(true)}
+          disabled={!calculationResult}
+          style={{ width: '100%', padding: '8px 16px', background: calculationResult ? '#1a3a6b' : '#ccc', color: '#fff', border: 'none', borderRadius: '4px', cursor: calculationResult ? 'pointer' : 'not-allowed', fontWeight: 'bold', fontSize: '13px' }}
+        >
+          Editer Rapport
+        </button>
+      </div>
+
+      {showReport && calculationResult && (
+        <TUBEANDSHELL_Retro_Rapport
+          calculationResult={calculationResult}
+          inputParams={{ fluide, bilanType, T_fumee_in, T_fluide_in, T_fluide_out, m_eau, V_air, Rendement, Encrassement, PDC_econo }}
+          onClose={() => setShowReport(false)}
+        />
+      )}
+
       {/* Résumé calculé affiché inline */}
       {r && (
         <div style={{ marginTop: '14px', padding: '10px 14px', background: '#f0f4fb', borderRadius: '6px', fontSize: '12px', lineHeight: '1.8' }}>
           <div style={{ fontWeight: 'bold', color: '#1a3a6b', marginBottom: '6px' }}>Résultats calculés</div>
           <div>Enthalpie cédée fumées : <b>{fmt(r.Q_FG_kWh)}</b> kWh</div>
-          <div>Enthalpie transmise au {r.fluide} : <b>{fmt(r.Q_utile_eau_kWh)}</b> kWh</div>
-          {r.fluide === 'eau'
-            ? <div>Débit eau calculé : <b>{fmt(r.m_eau_kg_h, 0)}</b> kg/h</div>
-            : <div>Débit air calculé : <b>{fmt(r.m_eau_kg_h, 0)}</b> Nm³/h</div>
+          <div>Enthalpie transmise au {fluide} : <b>{fmt(r.Q_utile_eau_kWh)}</b> kWh</div>
+          <div>T sortie {fluide} {bilanType === 'T_sortie' ? '(calculée)' : ''} : <b>{fmt(r.T_fluide_out)}</b> °C</div>
+          {fluide === 'eau'
+            ? <div>Débit eau {bilanType === 'debit' ? '(calculé)' : ''} : <b>{fmt(r.m_eau_kg_h, 0)}</b> kg/h</div>
+            : <div>Débit air {bilanType === 'debit' ? '(calculé)' : ''} : <b>{fmt(r.m_eau_kg_h, 0)}</b> Nm³/h</div>
           }
           <div>ΔT log. moyen : <b>{fmt(r.D_TLM)}</b> °C</div>
           <div>Facteur UA : <b>{fmt(r.Fact_UA, 2)}</b> kW/K</div>
-          <div>U liste ({r.fluide}) : <b>{fmt(r.Fact_U_list, 0)}</b> kW/(m²·K)</div>
+          <div>U liste ({fluide}) : <b>{fmt(r.Fact_U_list, 0)}</b> kW/(m²·K)</div>
           <div>Surface d&apos;échange : <b>{fmt(r.Surface_m2, 2)}</b> m²</div>
         </div>
       )}

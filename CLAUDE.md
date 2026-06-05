@@ -92,6 +92,28 @@ Pour **chaque langue** présente (`fr`, `en`, `es`, `de`, `it`, `pt`, `ar`, `ru`
 add<NEW_EQ>: 'Ajouter <NEW_EQ>',  // adapter selon la langue
 ```
 
+#### 8. Enregistrer les rapports dans GlobalReport.jsx et GlobalRetroReport.jsx
+
+**Chaque nouveau rapport doit être enregistré dans les deux fichiers de rapport global** (`src/D_BILAN_Rapports/`), sinon l'équipement n'apparaît pas dans le PDF.
+
+**`GlobalReport.jsx`** (mode Bilan) :
+1. Ajouter l'import : `import <NEW_EQ>_Report from '../Y_BILAN/<NEW_EQ>/<NEW_EQ>_Report';`
+   - Si le fichier est dans un sous-dossier (ex. `ECHANGEURS/`), adapter le chemin en conséquence.
+2. Ajouter dans `REPORT_MAP` : `<NODE_LABEL>: <NEW_EQ>_Report,`
+   - `<NODE_LABEL>` est le label du nœud React Flow (ex. `HX_TubeAndShell`), pas forcément le nom du dossier.
+3. Ajouter dans `EQUIPMENT_ORDER` : `'<NODE_LABEL>'`
+
+**`GlobalRetroReport.jsx`** (mode Retro) :
+1. Ajouter dans `RETRO_REPORT_MAP` : `<NODE_LABEL>: true,`
+2. Ajouter dans la fonction `ReportBody` :
+   ```js
+   if (label === '<NODE_LABEL>') return <NEW_EQReportBody calculationResult={result} inputParams={inputData} />;
+   ```
+3. Ajouter le composant inline `<NEW_EQ>ReportBody` juste avant le bloc `// ── Styles ──`.
+   - Ce composant reprend le contenu du fichier `Z_RETRO/<NEW_EQ>/<NEW_EQ>_Retro_Rapport.jsx` **sans le chrome modal** (pas d'overlay, pas de header, pas de bouton Fermer) — uniquement les sections de données.
+   - Utiliser `bodyStyles` (et non `styles`) pour tous les éléments.
+   - Utiliser les composants `Section`, `Sub`, `KV` déjà définis dans le fichier.
+
 ### Source Directory Structure
 
 | Folder | Purpose |

@@ -1,5 +1,6 @@
 import { CO2_kg_m3, H2O_kg_m3, O2_kg_m3, N2_kg_m3, coeff_Nm3_to_m3 } from '../../A_Transverse_fonction/conv_calculation';
 import { h_fumee, TEMP_FUMEE } from '../../A_Transverse_fonction/enthalpy_mix_gas';
+import { fh_CO2, fh_H2O, fh_O2, fh_N2 } from '../../A_Transverse_fonction/enthalpy_gas';
 import { CpL_T } from '../../A_Transverse_fonction/steam_table3';
 import { cp_air_kWh_m3_degree, D_TLM, Fact_UA, Surface_echange } from '../../A_Transverse_fonction/bilan_fct_FB';
 
@@ -31,7 +32,7 @@ export const performCalculation_TUBEANDSHELL = (
   nodeData,
   fluide,
   bilanType,
-  T_fumee_out,
+  T_fumee_in,
   T_fluide_in,
   T_fluide_out,
   m_eau,
@@ -40,8 +41,9 @@ export const performCalculation_TUBEANDSHELL = (
   Encrassement,
   PDC_econo
 ) => {
-  // ── Lecture des données amont ──────────────────────────────────────────────
-  const T_FG_in = nodeData?.result?.dataFlow?.T        ?? 200;
+  // ── Lecture des données aval (Retro : nodeData vient du nœud en aval) ────────
+  const T_FG_out_node = nodeData?.result?.dataFlow?.T        ?? 200;  // T fumées sortie (imposée par l'aval)
+  const T_FG_in       = num(T_fumee_in);                               // T fumées entrée (imposée par l'utilisateur)
   const Qm_CO2  = nodeData?.result?.dataFlow?.Qm_CO2_kg_h ?? 0;
   const Qm_H2O  = nodeData?.result?.dataFlow?.Qm_H2O_kg_h ?? 0;
   const Qm_O2   = nodeData?.result?.dataFlow?.Qm_O2_kg_h  ?? 0;
@@ -76,11 +78,12 @@ export const performCalculation_TUBEANDSHELL = (
 
   const H_FG_in_kJh = h_fumee(T_FG_in, Qm_CO2, Qm_H2O, Qm_N2, Qm_O2);
 
-  let T_FG_out_calc    = num(T_fumee_out);
+  // T_FG_out est fixée par le nœud aval — non modifiable
+  const T_FG_out_calc   = T_FG_out_node;
   let T_fluide_in_calc  = num(T_fluide_in);
   let T_fluide_out_calc = num(T_fluide_out);
-  let m_eau_calc       = num(m_eau);
-  let V_air_calc       = num(V_air);
+  let m_eau_calc        = num(m_eau);
+  let V_air_calc        = num(V_air);
 
   if (bilanType === 'T_sortie') {
     const H_FG_out_kJh = h_fumee(T_FG_out_calc, Qm_CO2, Qm_H2O, Qm_N2, Qm_O2);
@@ -120,7 +123,7 @@ export const performCalculation_TUBEANDSHELL = (
   const H_FG_in_kWh  = H_FG_in_kJh  / 3600;
   const H_FG_out_kWh = H_FG_out_kJh / 3600;
   const Q_FG_kWh     = H_FG_in_kWh - H_FG_out_kWh;
-  const P_out_mmCE   = P_IN - num(PDC_econo);
+  const P_out_mmCE   = P_IN + num(PDC_econo);   // Retro : pression remonte vers l'amont
 
   const Q_utile_eau_kWh = Q_FG_kWh * Rdt;
   const T_moyen_eau     = (T_fluide_in_calc + T_fluide_out_calc) / 2;
@@ -152,36 +155,32 @@ export const performCalculation_TUBEANDSHELL = (
   const Fact_U_list = fluide === 'eau' ? 66 : 39;
   const surface     = Surface_echange(fact_ua, Fact_U_list, num(Encrassement));
 
-  // ── dataFlow de sortie (fumées refroidies, composition inchangée) ──────────
+  // ── Enthalpies fumées à T_FG_in ───────────────────────────────────────────
+  const H_CO2_kj = fh_CO2(T_FG_in) * Qm_CO2;
+  const H_H2O_kj = (fh_H2O(T_FG_in) + 540 * 4.18) * Qm_H2O;
+  const H_O2_kj  = fh_O2(T_FG_in)  * Qm_O2;
+  const H_N2_kj  = fh_N2(T_FG_in)  * Qm_N2;
+  const H_tot_kj = H_CO2_kj + H_H2O_kj + H_O2_kj + H_N2_kj;
+  const H_tot_kW = H_tot_kj / 3600;
+
+  // ── dataFlow ───────────────────────────────────────────────────────────────
   const Qv_wet_m3_h = coeff_Nm3_to_m3(P_out_mmCE, T_FG_out_calc) * Qv_wet_Nm3_h;
 
   const dataTUBEANDSHELL = {
-    T_IN:            T_FG_in,
-    T_OUT:           T_FG_out_calc,
-    P_IN,
-    P_OUT:           P_out_mmCE,
-    H_FG_in_kWh,
-    H_FG_out_kWh,
     Q_FG_kWh,
     Q_utile_eau_kWh,
+    T_fluide_out:    T_fluide_out_calc,
     T_moyen_eau,
-    cp_fluide:       cp_fluide_val,
     m_eau_kg_h:      fluide === 'eau' ? m_eau_CpL : V_air_CpL,
     D_TLM:           d_tlm,
     Fact_UA:         fact_ua,
     Fact_U_list,
     Surface_m2:      surface,
-    PDC_mmCE:        num(PDC_econo),
-    FG_OUT_kg_h:     { CO2: Qm_CO2, H2O: Qm_H2O, O2: Qm_O2, N2: Qm_N2 },
-    FG_humide_tot:   Qv_wet_Nm3_h,
-    FG_sec_tot:      Qv_sec_Nm3_h,
-    fluide,
-    bilanType,
   };
 
   const dataFlow = {
-    T:                    T_FG_out_calc,
-    P_mmCE:               P_out_mmCE,
+    T:               T_FG_in,
+    P_mmCE:          P_out_mmCE,
     Qv_wet_m3_h,
     Qv_wet_Nm3_h,
     O2_dry_pourcent,
@@ -195,12 +194,20 @@ export const performCalculation_TUBEANDSHELL = (
     Qv_O2_Nm3_h,
     Qv_N2_Nm3_h,
     Qv_sec_Nm3_h,
-    Qm_CO2_kg_h:  Qm_CO2,
-    Qm_H2O_kg_h:  Qm_H2O,
-    Qm_O2_kg_h:   Qm_O2,
-    Qm_N2_kg_h:   Qm_N2,
+    Qm_CO2_kg_h:     Qm_CO2,
+    Qm_H2O_kg_h:     Qm_H2O,
+    Qm_O2_kg_h:      Qm_O2,
+    Qm_N2_kg_h:      Qm_N2,
     Qm_tot_kg_h,
+    H_CO2_kj,
+    H_H2O_kj,
+    H_O2_kj,
+    H_N2_kj,
+    H_tot_kj,
+    H_tot_kW,
   };
+
+
 
   return { dataTUBEANDSHELL, dataFlow };
 };

@@ -16,6 +16,10 @@ import REACTOR_Report from '../Y_BILAN/REACTOR/REACTOR_Report';
 import SCRUBBER_Report from '../Y_BILAN/SCRUBBER/SCRUBBER_Report';
 import STACK_Report from '../Y_BILAN/STACK/STACK_Report';
 import WHB_Report from '../Y_BILAN/WHB/WHB_Report';
+import AIRINJECTION_Report from '../Y_BILAN/AIRINJECTION/AIRINJECTION_Report';
+import IACT_Report from '../Y_BILAN/IACT/IACT_Report';
+import TUBEANDSHELL_Report from '../Y_BILAN/ECHANGEURS/TUBEANDSHELL/TUBEANDSHELL_Report';
+import WATER_INJECTION_Report from '../Y_BILAN/WATER_INJECTION/WATER_INJECTION_Report';
 
 const REPORT_MAP = {
   RK: RK_Report,
@@ -31,9 +35,13 @@ const REPORT_MAP = {
   SCRUBBER: SCRUBBER_Report,
   STACK: STACK_Report,
   WHB: WHB_Report,
+  AIRINJECTION: AIRINJECTION_Report,
+  IACT: IACT_Report,
+  HX_TubeAndShell: TUBEANDSHELL_Report,
+  WATER_INJECTION: WATER_INJECTION_Report,
 };
 
-const EQUIPMENT_ORDER = ['RK', 'FB', 'WHB', 'QUENCH', 'DENOX', 'BHF', 'REACTOR', 'SCRUBBER', 'ELECTROFILTER', 'CYCLONE', 'COOLINGTOWER', 'IDFAN', 'STACK'];
+const EQUIPMENT_ORDER = ['RK', 'FB', 'WHB', 'QUENCH', 'DENOX', 'BHF', 'REACTOR', 'SCRUBBER', 'ELECTROFILTER', 'CYCLONE', 'COOLINGTOWER', 'IDFAN', 'STACK', 'AIRINJECTION', 'IACT', 'HX_TubeAndShell', 'WATER_INJECTION'];
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 

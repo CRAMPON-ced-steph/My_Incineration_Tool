@@ -18,20 +18,24 @@ ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, ScatterC
 
 // Map node label → truthy = has a retro report available
 const RETRO_REPORT_MAP = {
-  RK:           true,
-  STACK:        true,
-  BHF:          true,
-  COOLINGTOWER: true,
-  CYCLONE:      true,
-  DENOX:        true,
-  ELECTROFILTER:true,
-  FB:           true,
-  GF:           true,
-  IDFAN:        true,
-  QUENCH:       true,
-  SCRUBBER:     true,
-  REACTOR:      true,
-  WHB:          true,
+  RK:             true,
+  STACK:          true,
+  BHF:            true,
+  COOLINGTOWER:   true,
+  CYCLONE:        true,
+  DENOX:          true,
+  ELECTROFILTER:  true,
+  FB:             true,
+  GF:             true,
+  IDFAN:          true,
+  QUENCH:         true,
+  SCRUBBER:       true,
+  REACTOR:        true,
+  WHB:            true,
+  AIRINJECTION:   true,
+  IACT:           true,
+  HX_TubeAndShell:true,
+  WATER_INJECTION:true,
 };
 
 
@@ -410,8 +414,12 @@ const ReportBody = ({ node }) => {
   if (label === 'IDFAN')        return <IDFANReportBody        calculationResult={result} inputParams={inputData} />;
   if (label === 'QUENCH')       return <QUENCHReportBody       calculationResult={result} inputParams={inputData} />;
   if (label === 'SCRUBBER')     return <SCRUBBERReportBody     calculationResult={result} inputParams={inputData} />;
-  if (label === 'REACTOR')      return <REACTORReportBody      calculationResult={result} inputParams={inputData} />;
-  if (label === 'WHB')          return <WHBReportBody          calculationResult={result} inputParams={inputData} />;
+  if (label === 'REACTOR')        return <REACTORReportBody        calculationResult={result} inputParams={inputData} />;
+  if (label === 'WHB')            return <WHBReportBody            calculationResult={result} inputParams={inputData} />;
+  if (label === 'AIRINJECTION')   return <AIRINJECTIONReportBody   calculationResult={result} inputParams={inputData} />;
+  if (label === 'IACT')           return <IACTReportBody           calculationResult={result} inputParams={inputData} />;
+  if (label === 'HX_TubeAndShell')return <TUBEANDSHELLReportBody  calculationResult={result} inputParams={inputData} />;
+  if (label === 'WATER_INJECTION')return <WATER_INJECTIONReportBody calculationResult={result} inputParams={inputData} />;
   return null;
 };
 
@@ -1462,6 +1470,291 @@ const WHBReportBody = ({ calculationResult, inputParams }) => {
             { label:'Q vapeur [kg/h]',        val:fmt(vap.Q_vapeur_calculee_kg_h,0),   color:'#4a90e2' },
             { label:'T aval [°C]',            val:fmt(air.Taval_WHB,1),                color:'#f39c12' },
             { label:'P vapeur [bar]',         val:fmt(p.P_vapeur_bar,1),               color:'#2ecc71' },
+          ].map(({ label, val, color }) => (
+            <div key={label} style={{ ...bodyStyles.tag, borderLeft:`4px solid ${color}` }}>
+              <span style={bodyStyles.tagLabel}>{label}</span>
+              <span style={{ ...bodyStyles.tagValue, color }}>{val}</span>
+            </div>
+          ))}
+        </div>
+      </Section>
+    </div>
+  );
+};
+
+// ── AIRINJECTION ──────────────────────────────────────────────────────────────
+const AIRINJECTIONReportBody = ({ calculationResult, inputParams }) => {
+  const r  = calculationResult || {};
+  const df = r.dataFlow || {};
+  const d  = r.dataAIRINJECTION || {};
+  const p  = inputParams || {};
+  return (
+    <div style={bodyStyles.body}>
+      <h1 style={bodyStyles.mainTitle}>Air injection — Rétro-calcul</h1>
+      <Section title="1. Paramètres d'entrée">
+        <div style={bodyStyles.twoCol}>
+          <Sub title="Conditions">
+            <KV label="T fumées amont"    value={fmt(p.T_amont_AIRINJECTION, 1)} unit="°C"   />
+            <KV label="T air parasite"    value={fmt(p.T_air_parasite, 1)}        unit="°C"   />
+            <KV label="Q air parasite"    value={fmt(p.Qair_parasite, 0)}         unit="m³/h" />
+            <KV label="PDC aérodynamique" value={fmt(p.PDC_aero, 0)}              unit="mmCE" />
+          </Sub>
+          <Sub title="Gaz entrant">
+            <KV label="Débit humide amont" value={fmt(df.Qv_wet_Nm3_h, 0)} unit="Nm³/h" />
+            <KV label="Débit sec amont"    value={fmt(df.Qv_sec_Nm3_h, 0)} unit="Nm³/h" />
+            <KV label="T amont"            value={fmt(df.T, 1)}             unit="°C"    />
+          </Sub>
+        </div>
+      </Section>
+      <Section title="2. Air parasite">
+        <div style={bodyStyles.twoCol}>
+          <Sub title="Débits volumiques">
+            <KV label="Q air entrant"  value={fmt(d.Qv_air_entrant_Nm3_h, 0)}   unit="Nm³/h" />
+            <KV label="Q air parasite" value={fmt(d.Qair_parasite, 0)}            unit="Nm³/h" />
+            <KV label="Q O₂ air (vol)" value={fmt(d.Qv_O2_air_entrant_Nm3_h, 0)} unit="Nm³/h" />
+            <KV label="Q N₂ air (vol)" value={fmt(d.Qv_N2_air_entrant_Nm3_h, 0)} unit="Nm³/h" />
+          </Sub>
+          <Sub title="Débits massiques">
+            <KV label="Q air entrant" value={fmt(d.Qm_air_entrant_kg_h, 0)}    unit="kg/h" />
+            <KV label="Q O₂ air"      value={fmt(d.Qm_O2_air_entrant_kg_h, 0)} unit="kg/h" />
+            <KV label="Q N₂ air"      value={fmt(d.Qm_N2_air_entrant_kg_h, 0)} unit="kg/h" />
+          </Sub>
+        </div>
+      </Section>
+      <Section title="3. Gaz de sortie">
+        <div style={bodyStyles.twoCol}>
+          <Sub title="Débits sortie">
+            <KV label="Débit humide" value={fmt(df.Qv_wet_Nm3_h, 0)} unit="Nm³/h" />
+            <KV label="Débit sec"    value={fmt(df.Qv_sec_Nm3_h, 0)} unit="Nm³/h" />
+          </Sub>
+          <Sub title="Conditions sortie">
+            <KV label="Température sortie" value={fmt(df.T, 1)}        unit="°C"   />
+            <KV label="Pression sortie"    value={fmt(df.P_mmCE, 0)}   unit="mmCE" />
+          </Sub>
+        </div>
+      </Section>
+      <Section title="4. Synthèse">
+        <div style={bodyStyles.tagRow}>
+          {[
+            { label:'Q air entrant [Nm³/h]', val:fmt(d.Qv_air_entrant_Nm3_h,0), color:'#4a90e2' },
+            { label:'Q air parasite [Nm³/h]', val:fmt(d.Qair_parasite,0),        color:'#e74c3c' },
+            { label:'PDC aéro [mmCE]',         val:fmt(p.PDC_aero,0),            color:'#2ecc71' },
+            { label:'T amont [°C]',            val:fmt(df.T,1),                  color:'#f39c12' },
+          ].map(({ label, val, color }) => (
+            <div key={label} style={{ ...bodyStyles.tag, borderLeft:`4px solid ${color}` }}>
+              <span style={bodyStyles.tagLabel}>{label}</span>
+              <span style={{ ...bodyStyles.tagValue, color }}>{val}</span>
+            </div>
+          ))}
+        </div>
+      </Section>
+    </div>
+  );
+};
+
+// ── IACT ──────────────────────────────────────────────────────────────────────
+const IACTReportBody = ({ calculationResult, inputParams }) => {
+  const r  = calculationResult || {};
+  const df = r.dataFlow || {};
+  const d  = r.dataIACT || {};
+  const p  = inputParams || {};
+  return (
+    <div style={bodyStyles.body}>
+      <h1 style={bodyStyles.mainTitle}>IACT — Rétro-calcul</h1>
+      <Section title="1. Paramètres d'entrée">
+        <div style={bodyStyles.twoCol}>
+          <Sub title="Conditions amont">
+            <KV label="T fumées amont"      value={fmt(p.T_amont_IACT, 1)}         unit="°C"   />
+            <KV label="T air décolmatage"   value={fmt(p.T_air_decolmatation, 1)}   unit="°C"   />
+            <KV label="Q air décolmatage"   value={fmt(p.Qair_decolmatation, 0)}    unit="m³/h" />
+            <KV label="PDC aérodynamique"   value={fmt(p.PDC_aero, 0)}              unit="mmCE" />
+          </Sub>
+          <Sub title="Gaz entrant">
+            <KV label="Débit humide amont" value={fmt(df.Qv_wet_Nm3_h, 0)} unit="Nm³/h" />
+            <KV label="Débit sec amont"    value={fmt(df.Qv_sec_Nm3_h, 0)} unit="Nm³/h" />
+            <KV label="T amont"            value={fmt(df.T, 1)}             unit="°C"    />
+          </Sub>
+        </div>
+      </Section>
+      <Section title="2. Air de décolmatage">
+        <div style={bodyStyles.twoCol}>
+          <Sub title="Débits">
+            <KV label="Q air entrant"  value={fmt(d.Qv_air_entrant_Nm3_h, 0)} unit="Nm³/h" />
+            <KV label="Q air entrant"  value={fmt(d.Qm_air_entrant_kg_h, 0)}  unit="kg/h"  />
+            <KV label="Q air parasite" value={fmt(d.Qair_parasite, 0)}         unit="Nm³/h" />
+          </Sub>
+          <Sub title="Composition air">
+            <KV label="Q O₂ air entrant" value={fmt(d.Qm_O2_air_entrant_kg_h, 0)}  unit="kg/h"  />
+            <KV label="Q N₂ air entrant" value={fmt(d.Qm_N2_air_entrant_kg_h, 0)}  unit="kg/h"  />
+            <KV label="Q O₂ (vol)"       value={fmt(d.Qv_O2_air_entrant_Nm3_h, 0)} unit="Nm³/h" />
+            <KV label="Q N₂ (vol)"       value={fmt(d.Qv_N2_air_entrant_Nm3_h, 0)} unit="Nm³/h" />
+          </Sub>
+        </div>
+      </Section>
+      <Section title="3. Gaz de sortie">
+        <div style={bodyStyles.twoCol}>
+          <Sub title="Débits sortie">
+            <KV label="Débit humide sortie" value={fmt(df.Qv_wet_Nm3_h, 0)} unit="Nm³/h" />
+            <KV label="Débit sec sortie"    value={fmt(df.Qv_sec_Nm3_h, 0)} unit="Nm³/h" />
+            <KV label="Pression sortie"     value={fmt(d.PDC_aero, 0)}       unit="mmCE"  />
+          </Sub>
+          <Sub title="Température">
+            <KV label="Température sortie" value={fmt(df.T, 1)} unit="°C" />
+          </Sub>
+        </div>
+      </Section>
+      <Section title="4. Synthèse">
+        <div style={bodyStyles.tagRow}>
+          {[
+            { label:'Q air décolmatage [Nm³/h]', val:fmt(d.Qv_air_entrant_Nm3_h,0), color:'#4a90e2' },
+            { label:'Q air parasite [Nm³/h]',    val:fmt(d.Qair_parasite,0),          color:'#e74c3c' },
+            { label:'PDC aéro [mmCE]',            val:fmt(d.PDC_aero,0),               color:'#2ecc71' },
+            { label:'T amont [°C]',               val:fmt(df.T,1),                     color:'#f39c12' },
+          ].map(({ label, val, color }) => (
+            <div key={label} style={{ ...bodyStyles.tag, borderLeft:`4px solid ${color}` }}>
+              <span style={bodyStyles.tagLabel}>{label}</span>
+              <span style={{ ...bodyStyles.tagValue, color }}>{val}</span>
+            </div>
+          ))}
+        </div>
+      </Section>
+    </div>
+  );
+};
+
+// ── TUBEANDSHELL ──────────────────────────────────────────────────────────────
+const TUBEANDSHELLReportBody = ({ calculationResult, inputParams }) => {
+  const r  = calculationResult || {};
+  const df = r.dataFlow || {};
+  const d  = r.dataTUBEANDSHELL || {};
+  const p  = inputParams || {};
+  const fluide = p.fluide || 'eau';
+  const isEau  = fluide === 'eau';
+  return (
+    <div style={bodyStyles.body}>
+      <h1 style={bodyStyles.mainTitle}>Tube &amp; Shell — Rétro-calcul</h1>
+      <Section title="1. Paramètres d'entrée">
+        <div style={bodyStyles.twoCol}>
+          <Sub title="Côté fumées">
+            <KV label="T fumées sortie (aval)"  value={fmt(df.T_FG_out ?? p.T_fumee_out_node, 1)} unit="°C"    />
+            <KV label="T fumées entrée"          value={fmt(p.T_fumee_in, 1)}                       unit="°C"    />
+            <KV label="PDC échangeur"            value={fmt(p.PDC_econo, 0)}                        unit="mmCE"  />
+          </Sub>
+          <Sub title={`Côté ${fluide}`}>
+            <KV label={`T entrée ${fluide}`}     value={fmt(p.T_fluide_in, 1)}                      unit="°C"    />
+            <KV label={`T sortie ${fluide}`}     value={fmt(d.T_fluide_out, 1)}                     unit="°C"    />
+            {isEau
+              ? <KV label="Débit eau"            value={fmt(p.m_eau, 0)}                            unit="kg/h"  />
+              : <KV label="Débit air"            value={fmt(p.V_air, 0)}                            unit="Nm³/h" />
+            }
+            <KV label="Rendement échangeur"      value={fmt(p.Rendement, 1)}                        unit="%"     />
+          </Sub>
+        </div>
+      </Section>
+      <Section title="2. Bilan thermique">
+        <div style={bodyStyles.twoCol}>
+          <Sub title="Côté fumées">
+            <KV label="Enthalpie fumées entrée" value={fmt(df.H_tot_kW, 1)}  unit="kW"   />
+            <KV label="Chaleur cédée fumées"    value={fmt(d.Q_FG_kWh, 1)}   unit="kWh"  />
+          </Sub>
+          <Sub title={`Côté ${fluide}`}>
+            <KV label="Chaleur utile fluide"    value={fmt(d.Q_utile_eau_kWh, 1)} unit="kWh"  />
+            <KV label={`T sortie ${fluide}`}    value={fmt(d.T_fluide_out, 1)}    unit="°C"   />
+            <KV label="T moyenne fluide"        value={fmt(d.T_moyen_eau, 1)}     unit="°C"   />
+            <KV label={isEau ? 'Débit eau' : 'Débit air'}
+                            value={fmt(d.m_eau_kg_h, 0)} unit={isEau ? 'kg/h' : 'Nm³/h'} />
+          </Sub>
+        </div>
+      </Section>
+      <Section title="3. Dimensionnement échangeur">
+        <div style={bodyStyles.twoCol}>
+          <Sub title="Facteurs thermiques">
+            <KV label="ΔT log. moyen"       value={fmt(d.D_TLM, 1)}       unit="°C"        />
+            <KV label="Facteur UA"           value={fmt(d.Fact_UA, 3)}     unit="kW/K"      />
+            <KV label="Coefficient U liste"  value={fmt(d.Fact_U_list, 0)} unit="W/(m²·K)"  />
+          </Sub>
+          <Sub title="Surface">
+            <KV label="Surface d'échange"   value={fmt(d.Surface_m2, 2)}  unit="m²"   />
+            <KV label="PDC échangeur"        value={fmt(p.PDC_econo, 0)}   unit="mmCE" />
+          </Sub>
+        </div>
+      </Section>
+      <Section title="4. Synthèse">
+        <div style={bodyStyles.tagRow}>
+          {[
+            { label:'Q cédé fumées [kWh]',                          val:fmt(d.Q_FG_kWh,1),        color:'#e74c3c' },
+            { label:`Q utile ${fluide} [kWh]`,                      val:fmt(d.Q_utile_eau_kWh,1), color:'#2ecc71' },
+            { label:`T sortie ${fluide} [°C]`,                      val:fmt(d.T_fluide_out,1),    color:'#4a90e2' },
+            { label:isEau?'Débit eau [kg/h]':'Débit air [Nm³/h]',   val:fmt(d.m_eau_kg_h,0),      color:'#9b59b6' },
+            { label:'ΔT log. moyen [°C]',                           val:fmt(d.D_TLM,1),           color:'#f39c12' },
+            { label:'Surface échange [m²]',                         val:fmt(d.Surface_m2,2),      color:'#1abc9c' },
+          ].map(({ label, val, color }) => (
+            <div key={label} style={{ ...bodyStyles.tag, borderLeft:`4px solid ${color}` }}>
+              <span style={bodyStyles.tagLabel}>{label}</span>
+              <span style={{ ...bodyStyles.tagValue, color }}>{val}</span>
+            </div>
+          ))}
+        </div>
+      </Section>
+    </div>
+  );
+};
+
+// ── WATER_INJECTION ───────────────────────────────────────────────────────────
+const WATER_INJECTIONReportBody = ({ calculationResult, inputParams }) => {
+  const r  = calculationResult || {};
+  const df = r.dataFlow || {};
+  const d  = r.dataWATER_INJECTION || {};
+  const p  = inputParams || {};
+  return (
+    <div style={bodyStyles.body}>
+      <h1 style={bodyStyles.mainTitle}>Water injection — Rétro-calcul</h1>
+      <Section title="1. Paramètres d'entrée">
+        <div style={bodyStyles.twoCol}>
+          <Sub title="Conditions">
+            <KV label="Type de bilan"          value={p.bilanType || '—'}                      />
+            <KV label="T eau injectée"          value={fmt(p.Teau, 1)}                         unit="°C"   />
+            <KV label="T fumées amont"          value={fmt(p.T_amont_WATER_INJECTION, 1)}      unit="°C"   />
+            <KV label="Q eau (si bilan Qeau)"  value={fmt(p.Qeau, 1)}                         unit="kg/h" />
+            <KV label="PDC aérodynamique"       value={fmt(p.PDC_aero, 0)}                     unit="mmCE" />
+          </Sub>
+          <Sub title="Gaz entrant">
+            <KV label="Débit humide" value={fmt(df.Qv_wet_Nm3_h, 0)} unit="Nm³/h" />
+            <KV label="Débit sec"    value={fmt(df.Qv_sec_Nm3_h, 0)} unit="Nm³/h" />
+            <KV label="T amont"      value={fmt(df.T, 1)}             unit="°C"    />
+          </Sub>
+        </div>
+      </Section>
+      <Section title="2. Résultats refroidissement">
+        <div style={bodyStyles.twoCol}>
+          <Sub title="Eau injectée">
+            <KV label="Q eau calculé" value={fmt(d.Qeau, 1)}    unit="kg/h" />
+            <KV label="PDC aéro"      value={fmt(d.PDC_aero, 0)} unit="mmCE" />
+          </Sub>
+          <Sub title="Pression sortie">
+            <KV label="P sortie" value={fmt(d.P_out_mmCE, 0)} unit="mmCE" />
+          </Sub>
+        </div>
+      </Section>
+      <Section title="3. Gaz de sortie">
+        <div style={bodyStyles.twoCol}>
+          <Sub title="Débits">
+            <KV label="Débit humide" value={fmt(df.Qv_wet_Nm3_h, 0)} unit="Nm³/h" />
+            <KV label="Débit sec"    value={fmt(df.Qv_sec_Nm3_h, 0)} unit="Nm³/h" />
+          </Sub>
+          <Sub title="Conditions sortie">
+            <KV label="Température sortie" value={fmt(df.T, 1)}        unit="°C"   />
+            <KV label="Pression sortie"    value={fmt(d.P_out_mmCE, 0)} unit="mmCE" />
+          </Sub>
+        </div>
+      </Section>
+      <Section title="4. Synthèse">
+        <div style={bodyStyles.tagRow}>
+          {[
+            { label:'Q eau [kg/h]',    val:fmt(d.Qeau,1),       color:'#4a90e2' },
+            { label:'T sortie [°C]',   val:fmt(df.T,1),          color:'#e74c3c' },
+            { label:'PDC aéro [mmCE]', val:fmt(d.PDC_aero,0),   color:'#2ecc71' },
+            { label:'P sortie [mmCE]', val:fmt(d.P_out_mmCE,0), color:'#f39c12' },
           ].map(({ label, val, color }) => (
             <div key={label} style={{ ...bodyStyles.tag, borderLeft:`4px solid ${color}` }}>
               <span style={bodyStyles.tagLabel}>{label}</span>

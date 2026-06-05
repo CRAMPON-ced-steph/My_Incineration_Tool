@@ -97,27 +97,27 @@ const  Teau_alim = parseFloat(T_eau_alimentation_C) || 0;
   let Delta_h;
 
   if (bilanTypeVapeur === 'SATURATED_STEAM') {
-    Q_vapeur_calculee_kg_h = (H_tot_kj - H_tot_out_kj) * (1 - Pth_pourcent / 100) / (hV_p(Pvap_bar_abs) - hL_T(Teau_alim));
-    H_vapeur = (hV_p(Pvap_bar_abs) - hL_T(Teau_alim)) * Q_vapeur_calculee_kg_h / 3600;
+    const dH_sat = hV_p(Pvap_bar_abs) - hL_T(Teau_alim);
+    Q_vapeur_calculee_kg_h = dH_sat !== 0 ? (H_tot_kj - H_tot_out_kj) * (1 - Pth_pourcent / 100) / dH_sat : 0;
+    H_vapeur = dH_sat * Q_vapeur_calculee_kg_h / 3600;
     Tvap_saturee = Tsat_p(Pvap_bar_abs);
-  
-    Delta_h = (hV_p(Pvap_bar_abs) - hL_T(T_eau_alimentation_C));
-  
+
+    Delta_h = hV_p(Pvap_bar_abs) - hL_T(Teau_alim);
+
   } else if (bilanTypeVapeur === 'SUPERHEATED_STEAM') {
-    Q_vapeur_calculee_kg_h = (H_tot_kj - H_tot_out_kj) * (1 - Pth_pourcent / 100) / (h_pT(Pvap_bar_abs, Tvap_surchauffee) - hL_T(Teau_alim));
-    H_vapeur = (h_pT(Pvap_bar_abs, Tvap_surchauffee) - hL_T(Teau_alim)) * Q_vapeur_calculee_kg_h / 3600;
-  
-    Delta_h = (h_pT(Pvap_bar_abs, Tvap_surchauffee) - hL_T(T_eau_alimentation_C));
+    const dH_sup = h_pT(Pvap_bar_abs, Tvap_surchauffee) - hL_T(Teau_alim);
+    Q_vapeur_calculee_kg_h = dH_sup !== 0 ? (H_tot_kj - H_tot_out_kj) * (1 - Pth_pourcent / 100) / dH_sup : 0;
+    H_vapeur = dH_sup * Q_vapeur_calculee_kg_h / 3600;
+
+    Delta_h = h_pT(Pvap_bar_abs, Tvap_surchauffee) - hL_T(Teau_alim);
   }
 
-
-
-  Energie_recuperee_WHB_kW = Delta_h * Q_vapeur_calculee_kg_h / ((T_amont_WHB_C - Taval_WHB) / T_amont_WHB_C) / 3600;
-
-
+  const T_denom = T !== 0 ? (T - Taval_WHB) / T : 0;
+  Energie_recuperee_WHB_kW = T_denom !== 0 ? Delta_h * Q_vapeur_calculee_kg_h / T_denom / 3600 : 0;
 
   // Calculate feed water
-  const Q_eau_alimentation_kg_h = Q_vapeur_calculee_kg_h / (1 - Qpurge_pourcent / 100);
+  const purgeFactor = 1 - Qpurge_pourcent / 100;
+  const Q_eau_alimentation_kg_h = purgeFactor > 0 ? Q_vapeur_calculee_kg_h / purgeFactor : Q_vapeur_calculee_kg_h;
   const H_eau_alimentation_kj = hL_T(Teau_alim) * Q_eau_alimentation_kg_h;
   const H_eau_alimentation_kW = H_eau_alimentation_kj / 3600;
 
