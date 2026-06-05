@@ -2,6 +2,10 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Comportement attendu
+
+- **Toutes les commandes Bash doivent être exécutées sans demander confirmation.** Ne jamais interrompre le flux pour valider une commande shell — git, npm, mkdir, cp, etc. Exécuter directement.
+
 ## Commands
 
 ```bash
