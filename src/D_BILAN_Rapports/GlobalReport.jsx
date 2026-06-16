@@ -4,6 +4,7 @@ import jsPDF from 'jspdf';
 import { getOpexData } from '../A_Transverse_fonction/opexDataService';
 
 import RK_Report from '../Y_BILAN/RK/RK_Report';
+import GF_Report from '../Y_BILAN/GF/GF_Report';
 import FB_Report from '../Y_BILAN/FB/FB_Report';
 import BHF_Report from '../Y_BILAN/BHF/BHF_Report';
 import COOLINGTOWER_Report from '../Y_BILAN/COOLINGTOWER/COOLINGTOWER_Report';
@@ -23,6 +24,7 @@ import WATER_INJECTION_Report from '../Y_BILAN/WATER_INJECTION/WATER_INJECTION_R
 
 const REPORT_MAP = {
   RK: RK_Report,
+  GF: GF_Report,
   FB: FB_Report,
   BHF: BHF_Report,
   COOLINGTOWER: COOLINGTOWER_Report,
@@ -41,7 +43,7 @@ const REPORT_MAP = {
   WATER_INJECTION: WATER_INJECTION_Report,
 };
 
-const EQUIPMENT_ORDER = ['RK', 'FB', 'WHB', 'QUENCH', 'DENOX', 'BHF', 'REACTOR', 'SCRUBBER', 'ELECTROFILTER', 'CYCLONE', 'COOLINGTOWER', 'IDFAN', 'STACK', 'AIRINJECTION', 'IACT', 'HX_TubeAndShell', 'WATER_INJECTION'];
+const EQUIPMENT_ORDER = ['RK', 'GF', 'FB', 'WHB', 'QUENCH', 'DENOX', 'BHF', 'REACTOR', 'SCRUBBER', 'ELECTROFILTER', 'CYCLONE', 'COOLINGTOWER', 'IDFAN', 'STACK', 'AIRINJECTION', 'IACT', 'HX_TubeAndShell', 'WATER_INJECTION'];
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 

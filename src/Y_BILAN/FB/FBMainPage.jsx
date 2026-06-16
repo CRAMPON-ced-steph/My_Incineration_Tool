@@ -349,8 +349,6 @@ const FBMainPage = ({ innerData, nodeData, title, onSendData, onClose, onGoBack,
     // Afficher l'alerte
     alert(summary);
 
-    // Sauvegarder dans localStorage
-    localStorage.setItem('bouesData', JSON.stringify(d));
     console.log('innerData complet sauvegardé:', d);
   }, []);
 

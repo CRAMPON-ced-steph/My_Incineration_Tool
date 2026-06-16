@@ -352,40 +352,14 @@ const WATER_INJECTIONDesign = ({ innerData, setInnerData, currentLanguage = 'fr'
 
   return (
     <div className="cadre_pour_onglet">
-      {/* PDC aéraulique */}
-      <Section title={t('Pertes de charge aéraulique')} results={elements_PDC}>
-        <ParameterInput translationKey="Pression aéraulique [mmCE]" value={PDC_calcul['Pression aéraulique [mmCE]']}
-          onChange={(v) => handleParametresChange('Pression aéraulique [mmCE]', v)} />
-        <ParameterInput translationKey="PDC [mmCE]" value={PDC_calcul['PDC [mmCE]']}
-          onChange={(v) => handleParametresChange('PDC [mmCE]', v)} />
-      </Section>
-
       {/* Dimensionnement du WATER_INJECTION */}
       <Section
         title={t('Dimensionnement du Quench')}
-        results={elementsGeneric}
       >
-        <div style={{ display: 'flex', gap: '30px', marginBottom: '20px' }}>
-          <div style={{ flex: 1 }}>
-            <img src={reactImage} alt="Water Injection" style={{ width: '100%', maxWidth: '300px', objectFit: 'contain' }} />
-          </div>
-          <div style={{ flex: 1, display: 'grid', gap: '15px' }}>
-            <ParameterInputWithSpinner translationKey="Quench diameter [m]" value={DiameterQuench}
-              onChange={(v) => handleParametresChange('Quench diameter [m]', v)} increment={0.1} />
-            <ParameterInputWithSpinner translationKey="Pression pulverisation [bar]" value={P_pulverisation}
-              onChange={(v) => handleParametresChange('Pression pulverisation [bar]', v)} increment={0.5} />
-            <ParameterInput translationKey="Type de buse" value={nozzleType}
-              onChange={(v) => handleParametresChange('Type de buse', v)}
-              options={Object.keys(nozzleTypes)} />
-            <ParameterInput translationKey="Type d'eau" value={waterType}
-              onChange={(v) => handleParametresChange('Type d\'eau', v)}
-              options={Object.keys(waterTypeLabels)} />
-          </div>
-        </div>
+        <ParameterInput translationKey="Type d'eau" value={waterType}
+          onChange={(v) => handleParametresChange('Type d\'eau', v)}
+          options={Object.keys(waterTypeLabels)} />
       </Section>
-
-      {/* Résultats du WATER_INJECTION */}
-      <Section title={t('Résultats du Quench')} results={quenchResultsElements} />
 
       {/* Consommation électrique de la pompe */}
       <Section title={t('Consommation électrique de la pompe')} results={elements_conso_pompe}>

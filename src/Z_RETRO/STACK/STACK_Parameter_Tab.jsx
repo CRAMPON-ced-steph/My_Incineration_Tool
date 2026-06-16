@@ -8,7 +8,7 @@ import CalculationResults from '../../C_Components/ShowCalculationResult_retro';
 import CalculateSendButton from '../../C_Components/CalculateSendButton';
 import ClearButton from '../../C_Components/Clear_Button';
 
-import { getTranslatedParameter, getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
+import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './STACK_traduction';
 import STACK_Retro_Rapport from './STACK_Retro_Rapport';
 

@@ -5,8 +5,6 @@ import WATER_INJECTIONDesign from './4_WATER_INJECTION_Design1_ML';
 import WATER_INJECTIONOpex from './5_WATER_INJECTION_Opex';
 import WATER_INJECTION_Report from './WATER_INJECTION_Report';
 
-import PrintButton from '../../C_Components/Windows_print';
-import Input_bilan from '../../C_Components/MiseEnFormeInputParamBilan';
 import '../../index.css';
 
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';

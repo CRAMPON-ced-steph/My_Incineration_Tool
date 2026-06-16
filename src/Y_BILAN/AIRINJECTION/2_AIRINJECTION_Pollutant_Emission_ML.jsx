@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import PollutantCalculator from '../../C_Components/Tableau_polluants';
 import TableGeneric from '../../C_Components/Tableau_generique';
-import PrintButton from '../../C_Components/Windows_print';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './AIRINJECTION_traduction';
 import '../../index.css';

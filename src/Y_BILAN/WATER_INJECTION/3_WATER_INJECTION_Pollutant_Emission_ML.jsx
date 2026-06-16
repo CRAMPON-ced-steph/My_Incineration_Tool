@@ -27,33 +27,33 @@ const WATER_INJECTIONFlueGasPollutantEmission = ({ innerData, currentLanguage = 
     'HF stoechiométrie': 1.2,
   };
 
-  const [emissionsWATER_INJECTION, setEmissions2] = useState(() => {
-    const savedEmissions = localStorage.getItem('emissionsWATER_INJECTION');
+  const [emissions2_WATER_INJECTION, setEmissions2] = useState(() => {
+    const savedEmissions = localStorage.getItem('emissions2_WATER_INJECTION');
     return savedEmissions ? JSON.parse(savedEmissions) : initialEmissions_WATER_INJECTION;
   });
 
   const { reagentsTypes } = getOpexData();
 
   useEffect(() => {
-    localStorage.setItem('emissionsWATER_INJECTION', JSON.stringify(emissionsWATER_INJECTION));
-  }, [emissionsWATER_INJECTION]);
+    localStorage.setItem('emissions2_WATER_INJECTION', JSON.stringify(emissions2_WATER_INJECTION));
+  }, [emissions2_WATER_INJECTION]);
 
   // Extract parameters from state
-  const FlyAsh_g_Nm3 = emissionsWATER_INJECTION['Fly ashes content [g/Nm3]'];
-  const Bottom_Ash_Siccity = emissionsWATER_INJECTION['siccity bottom ash [%]'];
-  const O2ref = emissionsWATER_INJECTION['O2 ref [%]'];
+  const FlyAsh_g_Nm3 = emissions2_WATER_INJECTION['Fly ashes content [g/Nm3]'];
+  const Bottom_Ash_Siccity = emissions2_WATER_INJECTION['siccity bottom ash [%]'];
+  const O2ref = emissions2_WATER_INJECTION['O2 ref [%]'];
 
-  const SOx_reactif = emissionsWATER_INJECTION['SOx reactif'];
-  const HCl_reactif = emissionsWATER_INJECTION['HCl reactif'];
-  const HF_reactif = emissionsWATER_INJECTION['HF reactif'];
+  const SOx_reactif = emissions2_WATER_INJECTION['SOx reactif'];
+  const HCl_reactif = emissions2_WATER_INJECTION['HCl reactif'];
+  const HF_reactif = emissions2_WATER_INJECTION['HF reactif'];
 
-  const efficacite_SOx = emissionsWATER_INJECTION['efficacite_SOx'];
-  const HCl_efficacité = emissionsWATER_INJECTION['HCl efficacité'];
-  const HF_efficacité = emissionsWATER_INJECTION['HF efficacité'];
+  const efficacite_SOx = emissions2_WATER_INJECTION['efficacite_SOx'];
+  const HCl_efficacité = emissions2_WATER_INJECTION['HCl efficacité'];
+  const HF_efficacité = emissions2_WATER_INJECTION['HF efficacité'];
 
-  const SOx_stoechiométrie = emissionsWATER_INJECTION['SOx stoechiométrie'];
-  const HCl_stoechiométrie = emissionsWATER_INJECTION['HCl stoechiométrie'];
-  const HF_stoechiométrie = emissionsWATER_INJECTION['HF stoechiométrie'];
+  const SOx_stoechiométrie = emissions2_WATER_INJECTION['SOx stoechiométrie'];
+  const HCl_stoechiométrie = emissions2_WATER_INJECTION['HCl stoechiométrie'];
+  const HF_stoechiométrie = emissions2_WATER_INJECTION['HF stoechiométrie'];
 
   // Input data with fallback values
   const Debit_fumees_sec_Nm3_h = innerData?.FG_RK_OUT_Nm3_h?.dry || 10000;
@@ -259,7 +259,7 @@ const WATER_INJECTIONFlueGasPollutantEmission = ({ innerData, currentLanguage = 
   };
 
   const clearMemory = useCallback(() => {
-    localStorage.removeItem('emissionsWATER_INJECTION');
+    localStorage.removeItem('emissions2_WATER_INJECTION');
     setEmissions2(initialEmissions_WATER_INJECTION);
   }, []);
 
@@ -285,7 +285,7 @@ const WATER_INJECTIONFlueGasPollutantEmission = ({ innerData, currentLanguage = 
 
         {/* Inline parameters form */}
         <div style={{ display: 'grid', gap: '12px' }}>
-          {Object.entries(emissionsWATER_INJECTION).map(([key, value]) => (
+          {Object.entries(emissions2_WATER_INJECTION).map(([key, value]) => (
             <div
               key={key}
               style={{

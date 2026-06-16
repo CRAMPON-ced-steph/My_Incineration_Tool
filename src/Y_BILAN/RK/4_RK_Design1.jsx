@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { T_ref } from '../../A_Transverse_fonction/constantes';
 import TableGeneric from '../../C_Components/Tableau_generique';
 import DisplayDesignComponent from '../../C_Components/Display_design';
-import Input_bilan from '../../C_Components/MiseEnFormeInputParamBilan';
 
 import { coeff_Nm3_to_m3 } from '../../A_Transverse_fonction/conv_calculation';
 

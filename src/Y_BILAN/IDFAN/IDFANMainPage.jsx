@@ -14,8 +14,6 @@ import IDFAN_Report from './IDFAN_Report';
 
 
 
-import PrintButton from '../../C_Components/Windows_print';
-import Input_bilan from '../../C_Components/MiseEnFormeInputParamBilan';
 import '../../index.css';
 
 

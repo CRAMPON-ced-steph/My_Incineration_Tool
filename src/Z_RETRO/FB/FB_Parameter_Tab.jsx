@@ -11,7 +11,7 @@ import CalculateSendButton from '../../C_Components/CalculateSendButton';
 import FB_Retro_Rapport from './FB_Retro_Rapport';
 import '../../index.css';
 
-import { getTranslatedParameter, getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
+import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './FB_traduction';
 
 // Constantes pour les valeurs logiques (ne changent pas avec la langue)

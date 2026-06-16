@@ -24,7 +24,8 @@ import FB_Parameter_Tab from '../Z_RETRO/FB/FB_Parameter_Tab';
 // Imports BILAN
 import RKMainPage from '../Y_BILAN/RK/RKMainPage';
 import FBMainPage from '../Y_BILAN/FB/FBMainPage';
-//import GFMainPage from '../Z_RETRO/GF/GF_Parameter_Tab';
+import GFMainPage from '../Y_BILAN/GF/GFMainPage';
+
 
 import WHBMainPage from '../Y_BILAN/WHB/WHBMainPage';
 import CO2MainPage from '../Y_BILAN/CO2/CO2MainPage';
@@ -43,8 +44,6 @@ import IDFANMainPage from '../Y_BILAN/IDFAN/IDFANMainPage';
 import COOLINGTOWERMainPage from '../Y_BILAN/COOLINGTOWER/COOLINGTOWERMainPage';
 
 
-import AIRCOOLERMainPage from '../Y_BILAN/ECHANGEURS/AIRCOOLER/AIRCOOLERMainPage';
-import WATERCOOLERMainPage from '../Y_BILAN/ECHANGEURS/WATERCOOLER/WATERCOOLERMainPage';
 import TUBEANDSHELLMainPage from '../Y_BILAN/ECHANGEURS/TUBEANDSHELL/TUBEANDSHELLMainPage';
 import TUBEANDSHELL_Parameter_Tab from '../Z_RETRO/TUBEANDSHELL/TUBEANDSHELL_Parameter_Tab';
 
@@ -77,6 +76,7 @@ export {
   // BILAN
   RKMainPage,
   FBMainPage,
+  GFMainPage,
   WHBMainPage,
   CO2MainPage,
   QUENCHMainPage,
@@ -94,8 +94,6 @@ export {
   COOLINGTOWERMainPage,
 
 //HX
- AIRCOOLERMainPage ,
- WATERCOOLERMainPage,
 TUBEANDSHELLMainPage ,
 TUBEANDSHELL_Parameter_Tab,
 

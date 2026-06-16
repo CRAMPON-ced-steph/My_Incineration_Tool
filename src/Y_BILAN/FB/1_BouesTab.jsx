@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 
-import { getTranslatedParameter, getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
+import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './FB_traduction';
 
 // ✅ Hook personnalisé pour traductions dynamiques
@@ -22,7 +22,6 @@ import {
   PCI_Dulong,
 } from '../../A_Transverse_fonction/bilan_fct_FB';
 
-import { molarMasses } from '../../A_Transverse_fonction/constantes';
 
 // ============================================================
 // CONSTANTES

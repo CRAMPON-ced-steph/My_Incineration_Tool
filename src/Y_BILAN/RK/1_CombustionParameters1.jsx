@@ -185,11 +185,11 @@ const CombustionParameters = ({ innerData, currentLanguage = 'fr' }) => {
   ];
 
   const saveToLocalStorage = (data) => {
-    localStorage.setItem('combustionParameters', JSON.stringify(data));
+    localStorage.setItem('combustionParameters_RK', JSON.stringify(data));
   };
 
   const loadFromLocalStorage = () => {
-    const savedData = localStorage.getItem('combustionParameters');
+    const savedData = localStorage.getItem('combustionParameters_RK');
     return savedData ? JSON.parse(savedData) : null;
   };
 

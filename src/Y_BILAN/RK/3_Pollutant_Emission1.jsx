@@ -7,7 +7,6 @@ import SCC_NOxAndMercuryCalculator from '../../C_Components/Traitement_fumées_S
 import TableGeneric from '../../C_Components/Tableau_generique';
 import { getOpexData } from '../../A_Transverse_fonction/opexDataService';
 
-import PrintButton from '../../C_Components/Windows_print';
 import Input_bilan from '../../C_Components/MiseEnFormeInputParamBilan';
 
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';

@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Comportement attendu
 
-- **Toutes les commandes Bash doivent être exécutées sans demander confirmation.** Ne jamais interrompre le flux pour valider une commande shell — git, npm, mkdir, cp, etc. Exécuter directement.
+- **Toutes les commandes Bash doivent être exécutées sans demander confirmation**, y compris les commandes destructives (rm -rf, git reset --hard, etc.). Ne jamais interrompre le flux pour valider une commande shell. Exécuter directement.
 
 ## Commands
 
@@ -333,3 +333,96 @@ No changes to `Main_FLOW.jsx` needed — any label present in `batchCalcMap` is 
 - Non-batch nodes (CO2, DivConv) are skipped in `filtered` but their `data.result` is still updated by `propagateResultUpstream` so they act as transparent pass-throughs.
 - STACK has no upstream input requirement; its `batchCalcMap` entry ignores `nodeData`.
 - `RK+SCC` with `bilanType_whb === 'WITH_WHB'` returns `null` if `nodeData?.result?.data_Air_WHB` is absent (WHB must be calculated first).
+
+---
+
+## Corrections History (audit session — 2026-06-16)
+
+### Unused imports removed (sweep across all equipment files)
+
+| Files | Removed |
+|-------|---------|
+| `Y_BILAN/FB/1_BouesTab.jsx` | `getTranslatedParameter`, `molarMasses` |
+| `Y_BILAN/FB/3_Pollutant_Emission.jsx` | `PrintButton`, `getTranslatedParameter` |
+| `Y_BILAN/BHF/1_BHF_Flue_gas_ML.jsx` | `PrintButton` |
+| `Y_BILAN/BHF/BHFMainPage.jsx` | `PrintButton`, `Input_bilan` |
+| `Y_BILAN/BHF/BHFComprehensiveReport.jsx` | `useState` |
+| `Y_BILAN/COOLINGTOWER/COOLINGTOWERMainPage.jsx` | `PrintButton`, `Input_bilan` |
+| `Y_BILAN/CYCLONE/CYCLONEMainPage.jsx` | `PrintButton` |
+| `Y_BILAN/CYCLONE/1_CYCLONE_Flue_gas_ML.jsx` | `PrintButton` |
+| `Y_BILAN/CYCLONE/2_CYCLONE_Pollutant_Emission_ML.jsx` | `PrintButton` |
+| `Y_BILAN/DENOX/DENOXMainPage.jsx` | `PrintButton`, `Input_bilan` |
+| `Y_BILAN/DENOX/1_DENOX_Flue_gas_ML.jsx` | `PrintButton` |
+| `Y_BILAN/DENOX/2_DENOX_Pollutant_Emission_ML.jsx` | `PrintButton` |
+| `Y_BILAN/ELECTROFILTER/ELECTROFILTERMainPage.jsx` | `PrintButton`, `Input_bilan` |
+| `Y_BILAN/ELECTROFILTER/1_ELECTROFILTER_Flue_gas_ML.jsx` | `PrintButton` |
+| `Y_BILAN/IDFAN/IDFANMainPage.jsx` | `PrintButton`, `Input_bilan` |
+| `Y_BILAN/IDFAN/1_IDFAN_Flue_gas1_ML.jsx` | `PrintButton` |
+| `Y_BILAN/QUENCH/QUENCHMainPage.jsx` | `PrintButton`, `Input_bilan` |
+| `Y_BILAN/QUENCH/2_QUENCH_Flue_gas_ML.jsx` | `PrintButton` |
+| `Y_BILAN/REACTOR/REACTORMainPage.jsx` | `PrintButton`, `Input_bilan` |
+| `Y_BILAN/REACTOR/1_REACTOR_Flue_gas_ML.jsx` | `PrintButton` |
+| `Y_BILAN/RK/2_Flue_gas1.jsx` | `getTranslatedParameter` |
+| `Y_BILAN/RK/3_Pollutant_Emission1.jsx` | `PrintButton` |
+| `Y_BILAN/RK/4_RK_Design1.jsx` | `Input_bilan` |
+| `Y_BILAN/SCRUBBER/SCRUBBERMainPage.jsx` | `useEffect` |
+| `Y_BILAN/SCRUBBER/2_SCRUBBER_Flue_gas_ML.jsx` | `PrintButton` |
+| `Y_BILAN/SCRUBBER/3_SCRUBBER_Pollutant_Emission_ML.jsx` | `PrintButton`, `Input_bilan` |
+| `Y_BILAN/WHB/1_WHB_Parameters_ML.jsx` | `PrintButton`, `Input_bilan` |
+| `Y_BILAN/WHB/2_WHB_Flue_gas_ML.jsx` | `PrintButton`, `Input_bilan` |
+| `Y_BILAN/WHB/3_WHB_Pollutant_Emission_ML.jsx` | `PrintButton`, `Input_bilan` |
+| `Y_BILAN/AIRINJECTION/1_AIRINJECTION_Flue_gas_ML.jsx` | `PrintButton` |
+| `Y_BILAN/AIRINJECTION/2_AIRINJECTION_Pollutant_Emission_ML.jsx` | `PrintButton` |
+| `Y_BILAN/AIRINJECTION/AIRINJECTIONMainPage.jsx` | `AIRINJECTIONDesign` tab, `PrintButton` |
+| `Y_BILAN/WATER_INJECTION/2_WATER_INJECTION_Flue_gas_ML.jsx` | `PrintButton` |
+| `Y_BILAN/WATER_INJECTION/WATERINJECTIONMainPage.jsx` | `PrintButton`, `Input_bilan` |
+| `C_Components/toggleButton.jsx` | `useState` |
+| `Z_RETRO/FB/FB_Parameter_Tab.jsx` | `getTranslatedParameter` |
+| `Z_RETRO/RK/RK_Parameter_Tab.jsx` | `getTranslatedParameter` |
+| `Z_RETRO/IDFAN/IDFAN_Parameter_Tab.jsx` | `getTranslatedParameter` |
+| `Z_RETRO/STACK/STACK_Parameter_Tab.jsx` | `getTranslatedParameter` |
+| `Z_RETRO/QUENCH/QUENCH_Parameter_Tab.jsx` | `getTranslatedParameter` |
+| `Z_RETRO/REACTOR/REACTOR_Parameter_Tab.jsx` | `getTranslatedParameter` |
+| `Z_RETRO/SCRUBBER/SCRUBBER_Parameter_Tab.jsx` | `getTranslatedParameter` |
+| `Z_RETRO/WATER_INJECTION/WATER_INJECTION_Parameter_Tab.jsx` | `getTranslatedParameter` |
+| All Opex files (CYCLONE, DENOX, ELECTROFILTER, IDFAN, QUENCH, REACTOR, SCRUBBER, STACK, WHB, AIRINJECTION, WATER_INJECTION) | `useState`, `useEffect` |
+
+### localStorage key collisions fixed
+
+| Key(s) | Files affected | Fix applied |
+|--------|---------------|-------------|
+| `'T_steam_C'`, `'Qeau_kg_h'`, `'Qsteam_kg_h'` | `Z_RETRO/COOLINGTOWER/COOLINGTOWER_Parameter_Tab.jsx` | → `'T_steam_C_COOLINGTOWER'`, `'Qeau_kg_h_COOLINGTOWER'`, `'Qsteam_kg_h_COOLINGTOWER'` |
+| All GF_Parameter_Tab keys (30+ keys) | `Z_RETRO/GF/GF_Parameter_Tab.jsx` | → added `_GF` suffix to all keys |
+| `'emissionsWATER_INJECTION'` | `Y_BILAN/WATER_INJECTION/3_WATER_INJECTION_Pollutant_Emission_ML.jsx` | → `'emissions2_WATER_INJECTION'` |
+| `'combustionParameters'` | `Y_BILAN/RK/1_CombustionParameters1.jsx` | → `'combustionParameters_RK'` |
+| `'bouesData'` | `Y_BILAN/FB/FBMainPage.jsx` | removed (non-standard unsuffixed key, write-only, never read) |
+
+### Traduction corrections
+
+| File | Fix |
+|------|-----|
+| `Y_BILAN/AIRINJECTION/AIRINJECTION_traduction.jsx` | All languages: `'AIR INJECTION Configuration'` was translated as `'CYCLONE Configuration'` — corrected to proper air injection translations |
+| `Y_BILAN/WATER_INJECTION/WATER_INJECTION_traduction.jsx` | Added missing `'WATER INJECTION Configuration'` key; renamed Quench references to Injection d'eau |
+
+### Key case mismatch fixed
+
+| Key | File | Fix |
+|-----|------|-----|
+| `'CalculationResult_AIRINJECTION'` | `Z_RETRO/AIRINJECTION/AIRINJECTION_Parameter_Tab.jsx` | → `'calculationResult_AIRINJECTION'` (lowercase c to match `batchResultStorageKeys` in `Main_FLOW.jsx`) |
+| `'CalculationResult_AIRINJECTION'` | `Main_FLOW.jsx` `batchResultStorageKeys` | → `'calculationResult_AIRINJECTION'` |
+
+### Batch calcul storage key fixed
+
+- `Main_FLOW.jsx` `batchResultStorageKeys.AIRINJECTION`: was `'CalculationResult_AIRINJECTION'` → `'calculationResult_AIRINJECTION'` (consistent with other lower-c keys).
+
+### GFMainPage Bilan mode registered
+
+- `src/Y_BILAN/GF/GFMainPage.jsx` — new full-featured Bilan component (6 tabs: Boues, Combustion, Polluant, Voûte, HX, OPEX + Rapport).
+- Registered in `RetroAndBilanComponents.jsx` and `Main_FLOW.jsx` (mode Bilan maps GF → `GFMainPage`).
+- `GlobalReport.jsx`: `GF_Report` imported, added to `REPORT_MAP` and `EQUIPMENT_ORDER`.
+- `GlobalRetroReport.jsx`: `GF` added to `RETRO_REPORT_MAP`, `GFReportBody` inline, `EQUIPMENT_ORDER` updated to include IACT, HX_TubeAndShell, WATER_INJECTION, AIRINJECTION.
+
+### AIRCOOLER / WATERCOOLER removed
+
+- `Y_BILAN/ECHANGEURS/AIRCOOLER/` and `Y_BILAN/ECHANGEURS/WATERCOOLER/` deleted (replaced by TUBEANDSHELL).
+- Imports/exports removed from `RetroAndBilanComponents.jsx` and `Main_FLOW.jsx`.

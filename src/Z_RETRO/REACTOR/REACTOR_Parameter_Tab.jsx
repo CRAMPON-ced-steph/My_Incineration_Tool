@@ -11,7 +11,7 @@ import InputField from '../../C_Components/input_retro';
 import REACTOR_Retro_Rapport from './REACTOR_Retro_Rapport';
 import '../../index.css';
 
-import { getTranslatedParameter, getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
+import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './REACTOR_traduction';
 
 // Constantes pour les types de réactifs

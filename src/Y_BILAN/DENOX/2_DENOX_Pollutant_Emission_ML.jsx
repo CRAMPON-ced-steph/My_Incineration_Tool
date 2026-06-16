@@ -7,7 +7,6 @@ import TableGeneric from '../../C_Components/Tableau_generique';
 import { getOpexData } from '../../A_Transverse_fonction/opexDataService';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './DENOX_traduction';
-import PrintButton from '../../C_Components/Windows_print';
 
 const FlueGasPollutantEmission = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
   // ============ ÉTATS PRINCIPAUX ============

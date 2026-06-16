@@ -4,8 +4,6 @@ import BHFFlueGasPollutantEmission from './2_BHF_Pollutant_Emission_ML';
 import BHFDesign from './3_BHF_Design_ML';
 import BHFOpex from './4_BHF_Opex';
 import BHF_Report from './BHF_Report';
-import PrintButton from '../../C_Components/Windows_print';
-import Input_bilan from '../../C_Components/MiseEnFormeInputParamBilan';
 import '../../index.css';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './BHF_traduction';

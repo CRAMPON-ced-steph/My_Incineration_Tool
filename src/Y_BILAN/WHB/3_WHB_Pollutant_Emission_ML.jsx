@@ -3,8 +3,6 @@ import PollutantCalculator from '../../C_Components/Tableau_polluants';
 import FGT from '../../C_Components/Traitement_fumées';
 import TableGeneric from '../../C_Components/Tableau_generique';
 import { getOpexData } from '../../A_Transverse_fonction/opexDataService';
-import PrintButton from '../../C_Components/Windows_print';
-import Input_bilan from '../../C_Components/MiseEnFormeInputParamBilan';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './WHB_traduction';
 

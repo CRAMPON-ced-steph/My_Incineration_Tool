@@ -12,13 +12,11 @@ import {
   DENOX_Parameter_Tab, BHF_Parameter_Tab, IACT_Parameter_Tab, COOLINGTOWER_Parameter_Tab, ELECTROFILTER_Parameter_Tab,
   CYCLONE_Parameter_Tab, AIRINJECTION_Parameter_Tab, REACTOR_Parameter_Tab, RK_Parameter_Tab, SCRUBBER_Parameter_Tab,
   CO2_Parameter_Tab, GF_Parameter_Tab, FB_Parameter_Tab, WATER_INJECTION_Parameter_Tab,
-  RKMainPage, FBMainPage, WHBMainPage,
+  RKMainPage, FBMainPage, GFMainPage, WHBMainPage,
   CO2MainPage, QUENCHMainPage, CYCLONEMainPage, AIRINJECTIONMainPage, BHFMainPage, IACTMainPage, ELECTROFILTERMainPage,
   REACTORMainPage, DENOXMainPage, STACKMainPage, SCRUBBERMainPage, IDFANMainPage, COOLINGTOWERMainPage,
   WATER_INJECTIONMainPage,
 
-  AIRCOOLERMainPage ,
-  WATERCOOLERMainPage,
  TUBEANDSHELLMainPage,
  TUBEANDSHELL_Parameter_Tab,
  
@@ -58,7 +56,7 @@ const batchResultStorageKeys = {
   STACK: 'calculationResult_STACK',
   IDFAN: 'calculationResult_IDFAN',
   WATER_INJECTION: 'calculationResult_WATER_INJECTION',
-  AIRINJECTION: 'CalculationResult_AIRINJECTION',
+  AIRINJECTION: 'calculationResult_AIRINJECTION',
 };
 
 function FitViewButton() {
@@ -440,7 +438,7 @@ function Flow({
     const componentMap = {
       ...(mode === 'Bilan' ? { 'RK+SCC': RKMainPage } : { 'RK+SCC': RK_Parameter_Tab }),
       ...(mode === 'Bilan' ? { FB: FBMainPage } : { FB: FB_Parameter_Tab }),
-      ...(mode === 'Bilan' ? { GF: GF_Parameter_Tab} : { GF: GF_Parameter_Tab }),
+      ...(mode === 'Bilan' ? { GF: GFMainPage } : { GF: GF_Parameter_Tab }),
       ...(mode === 'Bilan' ? { WHB: WHBMainPage } : { WHB: WHB_Parameter_Tab }),
       ...(mode === 'Bilan' ? { CO2: CO2MainPage } : { CO2: CO2_Parameter_Tab }),
       ...(mode === 'Bilan' ? { QUENCH: QUENCHMainPage } : { QUENCH: QUENCH_Parameter_Tab }),
@@ -467,8 +465,6 @@ function Flow({
 */
 
 
-      ...(mode === 'Bilan' ? { Cooling_HX_air: AIRCOOLERMainPage } : {}),
-      ...(mode === 'Bilan' ? { Cooling_HX_eau: WATERCOOLERMainPage } : {}),
       ...(mode === 'Bilan' ? { HX_TubeAndShell: TUBEANDSHELLMainPage } : { HX_TubeAndShell: TUBEANDSHELL_Parameter_Tab }),
       
       ...(mode === 'Bilan' ? { '2to1': SEP21MainPage } : {}),

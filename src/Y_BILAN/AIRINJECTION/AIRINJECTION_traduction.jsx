@@ -1,7 +1,7 @@
 export const translations = {
   fr: {
     // Navigation et structure
-    'AIR INJECTION Configuration': 'Configuration CYCLONE',
+    'AIR INJECTION Configuration': "Configuration Injection d'air",
     'Flue gases': 'Gaz de combustion',
     'Pollutant Emissions': 'Émissions de polluants',
     'Design': 'Dimensionnement',
@@ -379,7 +379,7 @@ export const translations = {
 
   de: {
     // Navigation und Struktur
-    'AIR INJECTION Configuration': 'CYCLONE-Konfiguration',
+    'AIR INJECTION Configuration': 'Lufteinspritzungs-Konfiguration',
     'Flue gases': 'Rauchgase',
     'Pollutant Emissions': 'Schadstoffemissionen',
     'Design': 'Auslegung',
@@ -568,7 +568,7 @@ export const translations = {
 
   es: {
     // Navegación y estructura
-    'AIR INJECTION Configuration': 'Configuración CYCLONE',
+    'AIR INJECTION Configuration': 'Configuración Inyección de aire',
     'Flue gases': 'Gases de combustión',
     'Pollutant Emissions': 'Emisiones de contaminantes',
     'Design': 'Diseño',
@@ -714,7 +714,7 @@ export const translations = {
 
   it: {
     // Navigazione e struttura
-    'AIR INJECTION Configuration': 'Configurazione CYCLONE',
+    'AIR INJECTION Configuration': "Configurazione Iniezione d'aria",
     'Flue gases': 'Gas di combustione',
     'Pollutant Emissions': 'Emissioni di inquinanti',
     'Design': 'Progettazione',
@@ -860,7 +860,7 @@ export const translations = {
 
   pt: {
     // Navegação e estrutura
-    'AIR INJECTION Configuration': 'Configuração CYCLONE',
+    'AIR INJECTION Configuration': 'Configuração Injeção de ar',
     'Flue gases': 'Gases de combustão',
     'Pollutant Emissions': 'Emissões de poluentes',
     'Design': 'Projeto',
@@ -1006,7 +1006,7 @@ export const translations = {
 
   zh: {
     // 导航和结构
-    'AIR INJECTION Configuration': 'CYCLONE 配置',
+    'AIR INJECTION Configuration': '空气注入配置',
     'Flue gases': '烟气',
     'Pollutant Emissions': '污染物排放',
     'Design': '设计',
@@ -1152,7 +1152,7 @@ export const translations = {
 
   ja: {
     // ナビゲーションと構造
-    'AIR INJECTION Configuration': 'CYCLONE設定',
+    'AIR INJECTION Configuration': '空気注入設定',
     'Flue gases': '煙道ガス',
     'Pollutant Emissions': '汚染物質排出',
     'Design': '設計',
@@ -1298,7 +1298,7 @@ export const translations = {
 
   ru: {
     // Навигация и структура
-    'AIR INJECTION Configuration': 'Конфигурация CYCLONE',
+    'AIR INJECTION Configuration': 'Конфигурация впрыска воздуха',
     'Flue gases': 'Дымовые газы',
     'Pollutant Emissions': 'Выбросы загрязняющих веществ',
     'Design': 'Конструкция',
@@ -1444,7 +1444,7 @@ export const translations = {
 
   ar: {
     // الملاحة والهيكل
-    'AIR INJECTION Configuration': 'تكوين CYCLONE',
+    'AIR INJECTION Configuration': 'تكوين حقن الهواء',
     'Flue gases': 'غازات العادم',
     'Pollutant Emissions': 'انبعاثات الملوثات',
     'Design': 'التصميم',

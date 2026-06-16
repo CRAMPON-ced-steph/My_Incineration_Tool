@@ -5,8 +5,6 @@ import QUENCHDesign from './4_QUENCH_Design1_ML';
 import QUENCHOpex from './5_QUENCH_Opex';
 import QUENCH_Report from './QUENCH_Report';
 
-import PrintButton from '../../C_Components/Windows_print';
-import Input_bilan from '../../C_Components/MiseEnFormeInputParamBilan';
 import '../../index.css';
 
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';

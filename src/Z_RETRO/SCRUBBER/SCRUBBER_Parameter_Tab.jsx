@@ -13,7 +13,7 @@ import CalculateSendButton from '../../C_Components/CalculateSendButton';
 import SCRUBBER_Retro_Rapport from './SCRUBBER_Retro_Rapport';
 import '../../index.css';
 
-import { getTranslatedParameter, getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
+import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './SCRUBBER_traduction';
 
 // Constantes pour les modes de calcul

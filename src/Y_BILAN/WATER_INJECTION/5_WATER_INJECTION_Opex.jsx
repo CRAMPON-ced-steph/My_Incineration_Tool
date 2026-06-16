@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import OpexDashboard from '../../G_Graphiques/Dashboard/OpexDashboard';
 
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';

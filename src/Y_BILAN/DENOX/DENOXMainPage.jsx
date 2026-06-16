@@ -4,8 +4,6 @@ import DENOXFlueGasPollutantEmission from './2_DENOX_Pollutant_Emission_ML';
 import DENOXDesign from './3_DENOX_Design1_ML';
 import DENOXOpex from './4_DENOX_Opex';
 import DENOX_Report from './DENOX_Report';
-import PrintButton from '../../C_Components/Windows_print';
-import Input_bilan from '../../C_Components/MiseEnFormeInputParamBilan';
 import '../../index.css';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './DENOX_traduction';

@@ -20,7 +20,7 @@ const STORAGE_KEYS = {
   T_AIR_PARASITE: 'T_air_parasite',
   T_AMONT_AIRINJECTION: 'T_amont_AIRINJECTION',
   PDC_AERO: 'PDC_aero_AIRINJECTION',
-  CALCULATION_RESULT: 'CalculationResult_AIRINJECTION'
+  CALCULATION_RESULT: 'calculationResult_AIRINJECTION'
 };
 
 // Valeurs par défaut

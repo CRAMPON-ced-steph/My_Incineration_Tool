@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import AIRINJECTIONFlueGasParameters from './1_AIRINJECTION_Flue_gas_ML';
 import AIRINJECTIONFlueGasPollutantEmission from './2_AIRINJECTION_Pollutant_Emission_ML';
-import AIRINJECTIONDesign from './3_AIRINJECTION_Design_ML';
 import AIRINJECTIONOpex from './4_AIRINJECTION_Opex';
 import AIRINJECTION_Report from './AIRINJECTION_Report';
-import PrintButton from '../../C_Components/Windows_print';
 import '../../index.css';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './AIRINJECTION_traduction';
@@ -32,10 +30,6 @@ const AIRINJECTIONMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, 
     {
       name: t('Pollutant Emissions'),
       content: <AIRINJECTIONFlueGasPollutantEmission innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} />
-    },
-    {
-      name: t('Design'),
-      content: <AIRINJECTIONDesign innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} />
     },
     {
       name: t('Opex'),

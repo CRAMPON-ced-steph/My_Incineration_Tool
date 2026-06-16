@@ -6,7 +6,7 @@ import GasTable from '../../C_Components/Tableau_air';
 import PrintButton from '../../C_Components/Windows_print';
 import Input_bilan from '../../C_Components/MiseEnFormeInputParamBilan';
 
-import { getTranslatedParameter, getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
+import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './RK_traduction';
 
 import { calculateWaterContent } from '../../A_Transverse_fonction/bilan_fct_combustion';

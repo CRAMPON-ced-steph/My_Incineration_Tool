@@ -1,3 +1,4 @@
+// UNUSED — dead code, kept for reference
 import React, { createContext, useState, useEffect } from 'react';
 
 // Créer le contexte

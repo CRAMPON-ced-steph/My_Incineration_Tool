@@ -4,7 +4,6 @@ import CYCLONEFlueGasPollutantEmission from './2_CYCLONE_Pollutant_Emission_ML';
 import CYCLONEDesign from './3_CYCLONE_Design_ML';
 import CYCLONEOpex from './4_CYCLONE_Opex';
 import CYCLONE_Report from './CYCLONE_Report';
-import PrintButton from '../../C_Components/Windows_print';
 import '../../index.css';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './CYCLONE_traduction';

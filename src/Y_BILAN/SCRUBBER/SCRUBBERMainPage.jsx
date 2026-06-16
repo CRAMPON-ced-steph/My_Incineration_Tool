@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import SCRUBBERFlueGasParameters from './2_SCRUBBER_Flue_gas_ML';
 import SCRUBBERFlueGasPollutantEmission from './3_SCRUBBER_Pollutant_Emission_ML';
 import HClScrubberCalculator from './Laveur_acid';

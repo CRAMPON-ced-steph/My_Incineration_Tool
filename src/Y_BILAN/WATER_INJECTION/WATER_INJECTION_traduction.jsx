@@ -1,6 +1,7 @@
 export const translations = {
   fr: {
     // ========== SECTIONS PRINCIPALES ==========
+    'WATER INJECTION Configuration': 'Configuration Injection d\'eau',
     'Calculation parameters': 'Paramètres de calcul',
     'Calculated parameters': 'Paramètres calculés',
     'Flue gas composition': 'Composition des gaz de combustion',
@@ -29,7 +30,7 @@ export const translations = {
     'Cooling water temperature [°C]': 'Température de l\'eau de refroidissement [°C]',
 
     // ========== PARAMETRES AFFICHES ==========
-    'Temperature inlet WATER_INJECTION [°C]': 'Température d\'entrée QUENCH [°C]',
+    'Temperature inlet WATER_INJECTION [°C]': 'Température d\'entrée Injection d\'eau [°C]',
     'Temperature outlet WATER_INJECTION [°C]': 'Température de sortie WATER INJECTION [°C]',
     'Delta enthalpies [kJ/kg]': 'Delta enthalpies [kJ/kg]',
     'Sprayed/cooling water [kg/h]': 'Eau pulvérisée/refroidissement [kg/h]',
@@ -68,8 +69,8 @@ export const translations = {
     'Pression aéraulique [mmCE]': 'Pression aéraulique [mmCE]',
     'PDC [mmCE]': 'PDC [mmCE]',
     'Pression de sortie [mmCE]': 'Pression de sortie [mmCE]',
-    'Dimensionnement du Quench': 'Dimensionnement du Quench',
-    'Quench diameter [m]': 'Diamètre du Quench [m]',
+    'Dimensionnement du Quench': 'Dimensionnement de l\'Injection d\'eau',
+    'Quench diameter [m]': 'Diamètre de l\'Injection d\'eau [m]',
     'Pression pulverisation [bar]': 'Pression de pulvérisation [bar]',
     'Type de buse': 'Type de buse',
     'Type d\'eau': 'Type d\'eau',
@@ -97,8 +98,8 @@ export const translations = {
     'Eau de rivière': 'Eau de rivière',
 
     // ========== CARACTERISTIQUES SPRAY ==========
-    'Résultats du Quench': 'Résultats du Quench',
-    'Hauteur minimale du quench [m]': 'Hauteur minimale du Quench [m]',
+    'Résultats du Quench': 'Résultats de l\'Injection d\'eau',
+    'Hauteur minimale du quench [m]': 'Hauteur minimale de l\'Injection d\'eau [m]',
     'SMD (Sauter Mean Diameter) [µm]': 'SMD (Sauter Mean Diameter) [µm]',
     'Vitesse des gouttes [m/s]': 'Vitesse des gouttes [m/s]',
     'Angle du spray [°]': 'Angle du spray [°]',
@@ -125,7 +126,7 @@ export const translations = {
     'Outlet temperature [K]': 'Température de sortie [K]',
     'Flue gas flow rate [m3/h]': 'Débit des gaz de combustion [m3/h]',
     'Water vapor in flue gas [m3/h]': 'Vapeur d\'eau dans les gaz de combustion [m3/h]',
-    'Quench surface area [m2]': 'Surface du Quench [m2]',
+    'Quench surface area [m2]': 'Surface de l\'Injection d\'eau [m2]',
     'Spray pressure [bar]': 'Pression du spray [bar]',
     'Débit eau [L/min]': 'Débit eau [L/min]',
     'Vitesse des gaz [m/s]': 'Vitesse des gaz [m/s]',
@@ -146,10 +147,10 @@ export const translations = {
     'O2 calculated [%]': 'O2 calculé [%]',
 
     // ========== RESUME ==========
-    'Diamètre quench': 'Diamètre du Quench',
+    'Diamètre quench': 'Diamètre de l\'Injection d\'eau',
     'Pression pulvérisation': 'Pression de pulvérisation',
-    'Surface quench [m²]': 'Surface du Quench [m²]',
-    'Hauteur quench [m]': 'Hauteur du Quench [m]',
+    'Surface quench [m²]': 'Surface de l\'Injection d\'eau [m²]',
+    'Hauteur quench [m]': 'Hauteur de l\'Injection d\'eau [m]',
     'Puissance pompe': 'Puissance de la pompe',
     'Consommation eau': 'Consommation d\'eau',
     'Surface des manches [m²]': 'Surface des manches [m²]',
@@ -160,7 +161,7 @@ export const translations = {
     'Coût transport total [€]': 'Coût transport total [€]',
 
     // ========== POMPE ET CONSOMMATION ==========
-    'pompe quench': 'Pompe quench',
+    'pompe quench': 'Pompe injection d\'eau',
     'Nombre de cycles [Nb]': 'Nombre de cycles [Nb]',
     'Air comprime par cycle [Nm3/cycle]': 'Air comprimé par cycle [Nm3/cycle]',
     'Conso élec air comprimé [kW]': 'Conso élec air comprimé [kW]',
@@ -236,8 +237,8 @@ export const translations = {
     'Pression aéraulique [mmCE]': 'Aeraulic pressure [mmCE]',
     'PDC [mmCE]': 'Pressure drop [mmCE]',
     'Pression de sortie [mmCE]': 'Outlet pressure [mmCE]',
-    'Dimensionnement du Quench': 'Quench dimensioning',
-    'Quench diameter [m]': 'Quench diameter [m]',
+    'Dimensionnement du Quench': 'Water Injection dimensioning',
+    'Quench diameter [m]': 'Water Injection diameter [m]',
     'Pression pulverisation [bar]': 'Spray pressure [bar]',
     'Type de buse': 'Nozzle type',
     'Type d\'eau': 'Water type',
@@ -265,8 +266,8 @@ export const translations = {
     'Eau de rivière': 'River water',
 
     // ========== SPRAY CHARACTERISTICS ==========
-    'Résultats du Quench': 'Quench Results',
-    'Hauteur minimale du quench [m]': 'Minimum quench height [m]',
+    'Résultats du Quench': 'Water Injection Results',
+    'Hauteur minimale du quench [m]': 'Minimum water injection height [m]',
     'SMD (Sauter Mean Diameter) [µm]': 'SMD (Sauter Mean Diameter) [µm]',
     'Vitesse des gouttes [m/s]': 'Droplet velocity [m/s]',
     'Angle du spray [°]': 'Spray angle [°]',
@@ -293,7 +294,7 @@ export const translations = {
     'Outlet temperature [K]': 'Outlet temperature [K]',
     'Flue gas flow rate [m3/h]': 'Flue gas flow rate [m3/h]',
     'Water vapor in flue gas [m3/h]': 'Water vapor in flue gas [m3/h]',
-    'Quench surface area [m2]': 'Quench surface area [m2]',
+    'Quench surface area [m2]': 'Water Injection surface area [m2]',
     'Spray pressure [bar]': 'Spray pressure [bar]',
     'Débit eau [L/min]': 'Water flow [L/min]',
     'Vitesse des gaz [m/s]': 'Gas velocity [m/s]',
@@ -314,10 +315,10 @@ export const translations = {
     'O2 calculated [%]': 'O2 calculated [%]',
 
     // ========== SUMMARY ==========
-    'Diamètre quench': 'Quench diameter',
+    'Diamètre quench': 'Water Injection diameter',
     'Pression pulvérisation': 'Spray pressure',
-    'Surface quench [m²]': 'Quench surface [m²]',
-    'Hauteur quench [m]': 'Quench height [m]',
+    'Surface quench [m²]': 'Water Injection surface [m²]',
+    'Hauteur quench [m]': 'Water Injection height [m]',
     'Puissance pompe': 'Pump power',
     'Consommation eau': 'Water consumption',
     'Surface des manches [m²]': 'Sleeve surface [m²]',
@@ -328,7 +329,7 @@ export const translations = {
     'Coût transport total [€]': 'Total transport cost [€]',
 
     // ========== PUMP AND CONSUMPTION ==========
-    'pompe quench': 'Quench pump',
+    'pompe quench': 'Water Injection pump',
     'Nombre de cycles [Nb]': 'Number of cycles [Nb]',
     'Air comprime par cycle [Nm3/cycle]': 'Compressed air per cycle [Nm3/cycle]',
     'Conso élec air comprimé [kW]': 'Compressed air electrical consumption [kW]',
@@ -341,7 +342,7 @@ export const translations = {
     'Calculation parameters': 'Berechnungsparameter',
     'Calculated parameters': 'Berechnete Parameter',
     'Flue gas composition': 'Rauchgaszusammensetzung',
-    'Quench Configuration': 'QUENCH-Konfiguration',
+    'Quench Configuration': 'Wassereinspritzung-Konfiguration',
     'Back to Flow': 'Zurück zum Fluss',
     'Flue gases': 'Rauchgase',
     'Pollutant Emissions': 'Schadstoffemissionen',
@@ -411,8 +412,8 @@ export const translations = {
     'Pression aéraulique [mmCE]': 'Aerodynamischer Druck [mmCE]',
     'PDC [mmCE]': 'Druckabfall [mmCE]',
     'Pression de sortie [mmCE]': 'Auslassdruck [mmCE]',
-    'Dimensionnement du Quench': 'QUENCH-Dimensionierung',
-    'Quench diameter [m]': 'QUENCH-Durchmesser [m]',
+    'Dimensionnement du Quench': 'Wassereinspritzung-Dimensionierung',
+    'Quench diameter [m]': 'Wassereinspritzung-Durchmesser [m]',
     'Pression pulverisation [bar]': 'Sprühdrück [bar]',
     'Type de buse': 'Düsentyp',
     'Type d\'eau': 'Wassertyp',
@@ -440,8 +441,8 @@ export const translations = {
     'Eau de rivière': 'Flusswasser',
 
     // ========== SPRAYMERKALE ==========
-    'Résultats du Quench': 'QUENCH-Ergebnisse',
-    'Hauteur minimale du quench [m]': 'Minimale QUENCH-Höhe [m]',
+    'Résultats du Quench': 'Wassereinspritzung-Ergebnisse',
+    'Hauteur minimale du quench [m]': 'Minimale Wassereinspritzung-Höhe [m]',
     'SMD (Sauter Mean Diameter) [µm]': 'SMD (Sauter Mean Diameter) [µm]',
     'Vitesse des gouttes [m/s]': 'Tropfengeschwindigkeit [m/s]',
     'Angle du spray [°]': 'Sprühwinkel [°]',
@@ -468,7 +469,7 @@ export const translations = {
     'Outlet temperature [K]': 'Austrittstemperatur [K]',
     'Flue gas flow rate [m3/h]': 'Rauchgasdurchsatz [m³/h]',
     'Water vapor in flue gas [m3/h]': 'Wasserdampf in Rauchgas [m³/h]',
-    'Quench surface area [m2]': 'QUENCH-Oberfläche [m²]',
+    'Quench surface area [m2]': 'Wassereinspritzung-Oberfläche [m²]',
     'Spray pressure [bar]': 'Sprühdruck [bar]',
     'Débit eau [L/min]': 'Wasserdurchfluss [L/min]',
     'Vitesse des gaz [m/s]': 'Gasgeschwindigkeit [m/s]',
@@ -489,10 +490,10 @@ export const translations = {
     'O2 calculated [%]': 'Berechnetes O2 [%]',
 
     // ========== ZUSAMMENFASSUNG ==========
-    'Diamètre quench': 'QUENCH-Durchmesser',
+    'Diamètre quench': 'Wassereinspritzung-Durchmesser',
     'Pression pulvérisation': 'Sprühdruck',
-    'Surface quench [m²]': 'QUENCH-Oberfläche [m²]',
-    'Hauteur quench [m]': 'QUENCH-Höhe [m]',
+    'Surface quench [m²]': 'Wassereinspritzung-Oberfläche [m²]',
+    'Hauteur quench [m]': 'Wassereinspritzung-Höhe [m]',
     'Puissance pompe': 'Pumpenleistung',
     'Consommation eau': 'Wasserverbrauch',
     'Surface des manches [m²]': 'Schlauchfläche [m²]',
@@ -503,7 +504,7 @@ export const translations = {
     'Coût transport total [€]': 'Gesamttransportkosten [€]',
 
     // ========== PUMPE UND VERBRAUCH ==========
-    'pompe quench': 'QUENCH-Pumpe',
+    'pompe quench': 'Wassereinspritzung-Pumpe',
     'Nombre de cycles [Nb]': 'Anzahl der Zyklen [Nb]',
     'Air comprime par cycle [Nm3/cycle]': 'Druckluft pro Zyklus [Nm³/Zyklus]',
     'Conso élec air comprimé [kW]': 'Stromverbrauch Druckluft [kW]',
@@ -515,7 +516,7 @@ export const translations = {
     'Calculation parameters': 'Parametri di calcolo',
     'Calculated parameters': 'Parametri calcolati',
     'Flue gas composition': 'Composizione dei gas di combustione',
-    'Quench Configuration': 'Configurazione QUENCH',
+    'Quench Configuration': 'Configurazione Iniezione d\'acqua',
     'Back to Flow': 'Torna al flusso',
     'Flue gases': 'Gas di combustione',
     'Pollutant Emissions': 'Emissioni di inquinanti',
@@ -585,8 +586,8 @@ export const translations = {
     'Pression aéraulique [mmCE]': 'Pressione aerodinamica [mmCE]',
     'PDC [mmCE]': 'Perdita carico [mmCE]',
     'Pression de sortie [mmCE]': 'Pressione uscita [mmCE]',
-    'Dimensionnement du Quench': 'Dimensionamento QUENCH',
-    'Quench diameter [m]': 'Diametro QUENCH [m]',
+    'Dimensionnement du Quench': 'Dimensionamento Iniezione d\'acqua',
+    'Quench diameter [m]': 'Diametro Iniezione d\'acqua [m]',
     'Pression pulverisation [bar]': 'Pressione nebulizzazione [bar]',
     'Type de buse': 'Tipo ugello',
     'Type d\'eau': 'Tipo acqua',
@@ -614,8 +615,8 @@ export const translations = {
     'Eau de rivière': 'Acqua di fiume',
 
     // ========== CARATTERISTICHE SPRAY ==========
-    'Résultats du Quench': 'Risultati QUENCH',
-    'Hauteur minimale du quench [m]': 'Altezza minima QUENCH [m]',
+    'Résultats du Quench': 'Risultati Iniezione d\'acqua',
+    'Hauteur minimale du quench [m]': 'Altezza minima Iniezione d\'acqua [m]',
     'SMD (Sauter Mean Diameter) [µm]': 'SMD (Sauter Mean Diameter) [µm]',
     'Vitesse des gouttes [m/s]': 'Velocità goccioline [m/s]',
     'Angle du spray [°]': 'Angolo spray [°]',
@@ -642,7 +643,7 @@ export const translations = {
     'Outlet temperature [K]': 'Temperatura uscita [K]',
     'Flue gas flow rate [m3/h]': 'Portata gas di combustione [m³/h]',
     'Water vapor in flue gas [m3/h]': 'Vapore acqueo in gas di combustione [m³/h]',
-    'Quench surface area [m2]': 'Area superficiale QUENCH [m²]',
+    'Quench surface area [m2]': 'Area superficiale Iniezione d\'acqua [m²]',
     'Spray pressure [bar]': 'Pressione spray [bar]',
     'Débit eau [L/min]': 'Portata acqua [L/min]',
     'Vitesse des gaz [m/s]': 'Velocità gas [m/s]',
@@ -663,10 +664,10 @@ export const translations = {
     'O2 calculated [%]': 'O2 calcolato [%]',
 
     // ========== RIEPILOGO ==========
-    'Diamètre quench': 'Diametro QUENCH',
+    'Diamètre quench': 'Diametro Iniezione d\'acqua',
     'Pression pulvérisation': 'Pressione nebulizzazione',
-    'Surface quench [m²]': 'Area superficiale QUENCH [m²]',
-    'Hauteur quench [m]': 'Altezza QUENCH [m]',
+    'Surface quench [m²]': 'Area superficiale Iniezione d\'acqua [m²]',
+    'Hauteur quench [m]': 'Altezza Iniezione d\'acqua [m]',
     'Puissance pompe': 'Potenza pompa',
     'Consommation eau': 'Consumo acqua',
     'Surface des manches [m²]': 'Area manica [m²]',
@@ -677,7 +678,7 @@ export const translations = {
     'Coût transport total [€]': 'Costo totale trasporto [€]',
 
     // ========== POMPA E CONSUMO ==========
-    'pompe quench': 'Pompa QUENCH',
+    'pompe quench': 'Pompa Iniezione d\'acqua',
     'Nombre de cycles [Nb]': 'Numero cicli [Nb]',
     'Air comprime par cycle [Nm3/cycle]': 'Aria compressa per ciclo [Nm³/ciclo]',
     'Conso élec air comprimé [kW]': 'Consumo elettrico aria compressa [kW]',
@@ -689,7 +690,7 @@ export const translations = {
     'Calculation parameters': 'Parâmetros de cálculo',
     'Calculated parameters': 'Parâmetros calculados',
     'Flue gas composition': 'Composição dos gases de combustão',
-    'Quench Configuration': 'Configuração QUENCH',
+    'Quench Configuration': 'Configuração Injeção de água',
     'Back to Flow': 'Voltar ao fluxo',
     'Flue gases': 'Gases de combustão',
     'Pollutant Emissions': 'Emissões de poluentes',
@@ -759,8 +760,8 @@ export const translations = {
     'Pression aéraulique [mmCE]': 'Pressão aerodinâmica [mmCE]',
     'PDC [mmCE]': 'Queda de pressão [mmCE]',
     'Pression de sortie [mmCE]': 'Pressão de saída [mmCE]',
-    'Dimensionnement du Quench': 'Dimensionamento do QUENCH',
-    'Quench diameter [m]': 'Diâmetro QUENCH [m]',
+    'Dimensionnement du Quench': 'Dimensionamento da Injeção de água',
+    'Quench diameter [m]': 'Diâmetro Injeção de água [m]',
     'Pression pulverisation [bar]': 'Pressão de pulverização [bar]',
     'Type de buse': 'Tipo de bocal',
     'Type d\'eau': 'Tipo de água',
@@ -788,8 +789,8 @@ export const translations = {
     'Eau de rivière': 'Água de rio',
 
     // ========== CARACTERÍSTICAS DO SPRAY ==========
-    'Résultats du Quench': 'Resultados QUENCH',
-    'Hauteur minimale du quench [m]': 'Altura mínima QUENCH [m]',
+    'Résultats du Quench': 'Resultados Injeção de água',
+    'Hauteur minimale du quench [m]': 'Altura mínima Injeção de água [m]',
     'SMD (Sauter Mean Diameter) [µm]': 'SMD (Sauter Mean Diameter) [µm]',
     'Vitesse des gouttes [m/s]': 'Velocidade das gotículas [m/s]',
     'Angle du spray [°]': 'Ângulo do spray [°]',
@@ -816,7 +817,7 @@ export const translations = {
     'Outlet temperature [K]': 'Temperatura de saída [K]',
     'Flue gas flow rate [m3/h]': 'Taxa de fluxo de gás de combustão [m³/h]',
     'Water vapor in flue gas [m3/h]': 'Vapor de água em gás de combustão [m³/h]',
-    'Quench surface area [m2]': 'Área de superfície QUENCH [m²]',
+    'Quench surface area [m2]': 'Área de superfície Injeção de água [m²]',
     'Spray pressure [bar]': 'Pressão do spray [bar]',
     'Débit eau [L/min]': 'Fluxo de água [L/min]',
     'Vitesse des gaz [m/s]': 'Velocidade do gás [m/s]',
@@ -837,10 +838,10 @@ export const translations = {
     'O2 calculated [%]': 'O2 calculado [%]',
 
     // ========== RESUMO ==========
-    'Diamètre quench': 'Diâmetro QUENCH',
+    'Diamètre quench': 'Diâmetro Injeção de água',
     'Pression pulvérisation': 'Pressão de pulverização',
-    'Surface quench [m²]': 'Área de superfície QUENCH [m²]',
-    'Hauteur quench [m]': 'Altura QUENCH [m]',
+    'Surface quench [m²]': 'Área de superfície Injeção de água [m²]',
+    'Hauteur quench [m]': 'Altura Injeção de água [m]',
     'Puissance pompe': 'Potência da bomba',
     'Consommation eau': 'Consumo de água',
     'Surface des manches [m²]': 'Área da manga [m²]',
@@ -851,7 +852,7 @@ export const translations = {
     'Coût transport total [€]': 'Custo total de transporte [€]',
 
     // ========== BOMBA E CONSUMO ==========
-    'pompe quench': 'Bomba QUENCH',
+    'pompe quench': 'Bomba Injeção de água',
     'Nombre de cycles [Nb]': 'Número de ciclos [Nb]',
     'Air comprime par cycle [Nm3/cycle]': 'Ar comprimido por ciclo [Nm³/ciclo]',
     'Conso élec air comprimé [kW]': 'Consumo elétrico de ar comprimido [kW]',
@@ -863,7 +864,7 @@ export const translations = {
     'Calculation parameters': 'Parámetros de cálculo',
     'Calculated parameters': 'Parámetros calculados',
     'Flue gas composition': 'Composición de gases de combustión',
-    'Quench Configuration': 'Configuración QUENCH',
+    'Quench Configuration': 'Configuración Inyección de agua',
     'Back to Flow': 'Volver al flujo',
     'Flue gases': 'Gases de combustión',
     'Pollutant Emissions': 'Emisiones de contaminantes',
@@ -895,7 +896,7 @@ export const translations = {
 
     // ========== PARÁMETROS MOSTRADOS ==========
     'Temperature inlet WATER_INJECTION [°C]': 'Temperatura de entrada WATER INJECTION [°C]',
-    'Temperature outlet WATER_INJECTION [°C]': 'Temperatura de salida QUENCH [°C]',
+    'Temperature outlet WATER_INJECTION [°C]': 'Temperatura de salida Inyección de agua [°C]',
     'Delta enthalpies [kJ/kg]': 'Delta entalpías [kJ/kg]',
     'Sprayed/cooling water [kg/h]': 'Agua pulverizada/enfriamiento [kg/h]',
     'Outlet flue gas volume [Nm3/h]': 'Volumen de gas de salida [Nm³/h]',
@@ -933,8 +934,8 @@ export const translations = {
     'Pression aéraulique [mmCE]': 'Presión aerodinámica [mmCE]',
     'PDC [mmCE]': 'Caída de presión [mmCE]',
     'Pression de sortie [mmCE]': 'Presión de salida [mmCE]',
-    'Dimensionnement du Quench': 'Dimensionamiento de QUENCH',
-    'Quench diameter [m]': 'Diámetro QUENCH [m]',
+    'Dimensionnement du Quench': 'Dimensionamiento de Inyección de agua',
+    'Quench diameter [m]': 'Diámetro Inyección de agua [m]',
     'Pression pulverisation [bar]': 'Presión de pulverización [bar]',
     'Type de buse': 'Tipo de boquilla',
     'Type d\'eau': 'Tipo de agua',
@@ -962,8 +963,8 @@ export const translations = {
     'Eau de rivière': 'Agua de río',
 
     // ========== CARACTERÍSTICAS DEL SPRAY ==========
-    'Résultats du Quench': 'Resultados QUENCH',
-    'Hauteur minimale du quench [m]': 'Altura mínima QUENCH [m]',
+    'Résultats du Quench': 'Resultados Injeção de água',
+    'Hauteur minimale du quench [m]': 'Altura mínima Injeção de água [m]',
     'SMD (Sauter Mean Diameter) [µm]': 'SMD (Diámetro medio de Sauter) [µm]',
     'Vitesse des gouttes [m/s]': 'Velocidad de gotitas [m/s]',
     'Angle du spray [°]': 'Ángulo del spray [°]',
@@ -990,7 +991,7 @@ export const translations = {
     'Outlet temperature [K]': 'Temperatura de salida [K]',
     'Flue gas flow rate [m3/h]': 'Tasa de flujo de gas de combustión [m³/h]',
     'Water vapor in flue gas [m3/h]': 'Vapor de agua en gas de combustión [m³/h]',
-    'Quench surface area [m2]': 'Área de superficie QUENCH [m²]',
+    'Quench surface area [m2]': 'Área de superficie Inyección de agua [m²]',
     'Spray pressure [bar]': 'Presión del spray [bar]',
     'Débit eau [L/min]': 'Caudal de agua [L/min]',
     'Vitesse des gaz [m/s]': 'Velocidad del gas [m/s]',
@@ -1011,10 +1012,10 @@ export const translations = {
     'O2 calculated [%]': 'O2 calculado [%]',
 
     // ========== RESUMEN ==========
-    'Diamètre quench': 'Diámetro QUENCH',
+    'Diamètre quench': 'Diámetro Inyección de agua',
     'Pression pulvérisation': 'Presión de pulverización',
-    'Surface quench [m²]': 'Área de superficie QUENCH [m²]',
-    'Hauteur quench [m]': 'Altura QUENCH [m]',
+    'Surface quench [m²]': 'Área de superficie Inyección de agua [m²]',
+    'Hauteur quench [m]': 'Altura Injeção de água [m]',
     'Puissance pompe': 'Potencia de la bomba',
     'Consommation eau': 'Consumo de agua',
     'Surface des manches [m²]': 'Área de manga [m²]',
@@ -1025,7 +1026,7 @@ export const translations = {
     'Coût transport total [€]': 'Costo total de transporte [€]',
 
     // ========== BOMBA Y CONSUMO ==========
-    'pompe quench': 'Bomba QUENCH',
+    'pompe quench': 'Bomba Injeção de água',
     'Nombre de cycles [Nb]': 'Número de ciclos [Nb]',
     'Air comprime par cycle [Nm3/cycle]': 'Aire comprimido por ciclo [Nm³/ciclo]',
     'Conso élec air comprimé [kW]': 'Consumo eléctrico de aire comprimido [kW]',

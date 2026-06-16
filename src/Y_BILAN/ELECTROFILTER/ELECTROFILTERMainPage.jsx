@@ -7,8 +7,6 @@ import ELECTROFILTEROpex from './4_ELECTROFILTER_Opex';
 import ELECTROFILTER_Report from './ELECTROFILTER_Report';
 import '../../index.css';
 
-import PrintButton from '../../C_Components/Windows_print';
-import Input_bilan from '../../C_Components/MiseEnFormeInputParamBilan';
 import '../../index.css';
 
 

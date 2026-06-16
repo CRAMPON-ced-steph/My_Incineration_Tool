@@ -6,8 +6,6 @@ import COOLINGTOWERDesign from './4_COOLINGTOWER_Design_ML';
 import COOLINGTOWEROpex from './5_COOLINGTOWER_Opex';
 import COOLINGTOWER_Report from './COOLINGTOWER_Report';
 
-import PrintButton from '../../C_Components/Windows_print';
-import Input_bilan from '../../C_Components/MiseEnFormeInputParamBilan';
 import '../../index.css';
 
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';

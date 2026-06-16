@@ -11,49 +11,49 @@ import ToggleButton from '../../C_Components/toggleButton';
 import GF_Retro_Rapport from './GF_Retro_Rapport';
 import '../../index.css';
 
-import { getTranslatedParameter, getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
+import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './GF_traduction';
 
 // Constantes pour localStorage
 const STORAGE_KEYS = {
   // Paramètres principaux
-  WASTE_FLOW_RATE: 'Waste_flow_rate_kg_h',
-  PRESSURE_LOSS: 'Pressure_losse_mmCE',
-  COMBUSTION_AIR_FLOWRATE: 'Combustion_air_flowrate_Nm3_h',
-  MEASURED_AIR_TEMPERATURE: 'Measured_air_temperature_C',
-  FEED_WATER_FLOW: 'Q_feed_water_kg_h',
-  FEED_WATER_TEMP: 'T_feed_water_C',
-  BLOWDOWN_PERCENT: 'Blowdown_pourcent',
-  
+  WASTE_FLOW_RATE: 'Waste_flow_rate_kg_h_GF',
+  PRESSURE_LOSS: 'Pressure_losse_mmCE_GF',
+  COMBUSTION_AIR_FLOWRATE: 'Combustion_air_flowrate_Nm3_h_GF',
+  MEASURED_AIR_TEMPERATURE: 'Measured_air_temperature_C_GF',
+  FEED_WATER_FLOW: 'Q_feed_water_kg_h_GF',
+  FEED_WATER_TEMP: 'T_feed_water_C_GF',
+  BLOWDOWN_PERCENT: 'Blowdown_pourcent_GF',
+
   // Paramètres conditionnels
-  Q_AIR_INGRESS: 'Q_air_ingress_Nm3_h',
-  T_AIR_INGRESS: 'T_air_ingress_C',
-  Q_SATURATED_STEAM: 'Q_saturated_steam',
-  STEAM_PRESSURE: 'Steam_pressure_gauge_bar',
-  SUPERHEATED_STEAM_TEMP: 'super_heated_steam_temperature_C',
-  Q_SUPERHEATED_STEAM: 'Q_superheated_steam_kg_h',
-  P_SUPERHEATED_STEAM: 'P_superheated_steam_bar',
-  T_SUPERHEATED_WATER: 'T_superheated_water_boiler_C',
-  Q_SUPERHEATED_WATER: 'Q_superheated_water_kg_h',
-  Q_RECYCLED_FLUE_GAS: 'Q_recycled_flue_gas_Nm3_h',
-  T_RECYCLED_FLUE_GAS: 'T_recycled_flue_gas_C',
-  INJECTED_WATER_TEMP: 'Injected_water_temperature_C',
-  Q_TREATMENT_INJECTED_WATER: 'Q_treatment_injected_water_kg_h',
-  AUXILIARY_FUEL: 'Auxiliary_fuel_kWh',
-  BOTTOM_ASH_PERCENT: 'Bottom_ash_pourcent',
-  BOTTOM_ASH_TEMP: 'Bottom_ash_temperature_C',
-  UNBURNT_BOTTOM_ASH: 'Unburnt_bottom_ash_pourcent',
-  UNBURNT_LCV: 'Unburnt_LCV_kcal_kg',
-  REFERENCE_TEMP: 'Reference_temperature_C',
-  
+  Q_AIR_INGRESS: 'Q_air_ingress_Nm3_h_GF',
+  T_AIR_INGRESS: 'T_air_ingress_C_GF',
+  Q_SATURATED_STEAM: 'Q_saturated_steam_GF',
+  STEAM_PRESSURE: 'Steam_pressure_gauge_bar_GF',
+  SUPERHEATED_STEAM_TEMP: 'super_heated_steam_temperature_C_GF',
+  Q_SUPERHEATED_STEAM: 'Q_superheated_steam_kg_h_GF',
+  P_SUPERHEATED_STEAM: 'P_superheated_steam_bar_GF',
+  T_SUPERHEATED_WATER: 'T_superheated_water_boiler_C_GF',
+  Q_SUPERHEATED_WATER: 'Q_superheated_water_kg_h_GF',
+  Q_RECYCLED_FLUE_GAS: 'Q_recycled_flue_gas_Nm3_h_GF',
+  T_RECYCLED_FLUE_GAS: 'T_recycled_flue_gas_C_GF',
+  INJECTED_WATER_TEMP: 'Injected_water_temperature_C_GF',
+  Q_TREATMENT_INJECTED_WATER: 'Q_treatment_injected_water_kg_h_GF',
+  AUXILIARY_FUEL: 'Auxiliary_fuel_kWh_GF',
+  BOTTOM_ASH_PERCENT: 'Bottom_ash_pourcent_GF',
+  BOTTOM_ASH_TEMP: 'Bottom_ash_temperature_C_GF',
+  UNBURNT_BOTTOM_ASH: 'Unburnt_bottom_ash_pourcent_GF',
+  UNBURNT_LCV: 'Unburnt_LCV_kcal_kg_GF',
+  REFERENCE_TEMP: 'Reference_temperature_C_GF',
+
   // États des toggles
-  SATURATED_STEAM_ENABLED: 'saturatedSteamEnabled',
-  SUPERHEATED_STEAM_ENABLED: 'superheatedSteamEnabled',
-  SUPERHEATED_WATER_ENABLED: 'superheatedWaterEnabled',
-  RECYCLED_FLUE_GAS_ENABLED: 'recycledFlueGasEnabled',
-  INJECTED_WATER_ENABLED: 'injectedWaterEnabled',
-  AIR_INGRESS_ENABLED: 'AirIngressEnabled',
-  
+  SATURATED_STEAM_ENABLED: 'saturatedSteamEnabled_GF',
+  SUPERHEATED_STEAM_ENABLED: 'superheatedSteamEnabled_GF',
+  SUPERHEATED_WATER_ENABLED: 'superheatedWaterEnabled_GF',
+  RECYCLED_FLUE_GAS_ENABLED: 'recycledFlueGasEnabled_GF',
+  INJECTED_WATER_ENABLED: 'injectedWaterEnabled_GF',
+  AIR_INGRESS_ENABLED: 'AirIngressEnabled_GF',
+
   CALCULATION_RESULT: 'calculationResult_GF',
   DIAGRAM_MODE: 'GF_diagramMode'
 };

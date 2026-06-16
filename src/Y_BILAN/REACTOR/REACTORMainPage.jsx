@@ -11,8 +11,6 @@ import { translations } from './REACTOR_traduction';
 
 import '../../index.css';
 
-import PrintButton from '../../C_Components/Windows_print';
-import Input_bilan from '../../C_Components/MiseEnFormeInputParamBilan';
 import '../../index.css';
 
 const REACTORMainPage = ({ nodeData, title, onSendData, onClose, onGoBack,  currentLanguage = 'fr' }) => {

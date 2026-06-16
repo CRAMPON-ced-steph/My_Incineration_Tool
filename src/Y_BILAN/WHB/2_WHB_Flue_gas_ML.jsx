@@ -2,8 +2,6 @@ import React, { useState, useEffect, useCallback } from 'react';
 import MassCalculator from '../../C_Components/Tableau_fumee_inverse';
 import TableGeneric from '../../C_Components/Tableau_generique';
 import GasTable from '../../C_Components/Tableau_air';
-import PrintButton from '../../C_Components/Windows_print';
-import Input_bilan from '../../C_Components/MiseEnFormeInputParamBilan';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './WHB_traduction';
 import { H2O_kg_m3, CO2_kg_m3, O2_kg_m3, N2_kg_m3, CO2_m3_kg, H2O_m3_kg, N2_m3_kg, O2_m3_kg } from '../../A_Transverse_fonction/conv_calculation';
