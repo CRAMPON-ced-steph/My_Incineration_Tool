@@ -2537,7 +2537,8 @@ const x4_ph = (P, H) => {
   } else if (H < h4l) {
     return 0;
   } else {
-    return (H - h4l) / (h4v - h4l);
+    const denom_ph = h4v - h4l;
+    return denom_ph !== 0 ? (H - h4l) / denom_ph : 0; // guard point critique (374.14°C, 220.64 bar)
   }
 };
 
@@ -2555,7 +2556,8 @@ const x4_ps = (P, S) => {
   } else if (S > ssV) {
     return 1;
   } else {
-    return (S - ssL) / (ssV - ssL);
+    const denom_ps = ssV - ssL;
+    return denom_ps !== 0 ? (S - ssL) / denom_ps : 0; // guard point critique
   }
 };
 

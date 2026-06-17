@@ -422,6 +422,31 @@ No changes to `Main_FLOW.jsx` needed — any label present in `batchCalcMap` is 
 - `GlobalReport.jsx`: `GF_Report` imported, added to `REPORT_MAP` and `EQUIPMENT_ORDER`.
 - `GlobalRetroReport.jsx`: `GF` added to `RETRO_REPORT_MAP`, `GFReportBody` inline, `EQUIPMENT_ORDER` updated to include IACT, HX_TubeAndShell, WATER_INJECTION, AIRINJECTION.
 
+---
+
+## Décisions d'audit — steam_table3.js (2026-06-17)
+
+### Boucles while/do-while — décision : NE PAS ajouter de gardes max-itérations
+
+`src/A_Transverse_fonction/steam_table3.js` contient 12 boucles de bisection sans garde max-itérations. **Décision délibérée de ne pas les modifier.**
+
+Raisons :
+- Ce fichier est une implémentation standard **IAPWS-IF97** (standard international des tables de vapeur d'eau), éprouvée depuis des décennies.
+- Toutes les boucles sont des **bisections sur intervalles physiquement bornés** (ex: `[273.15, 1073.15]` K, `[0.000611657, 100]` MPa). Elles convergent géométriquement en ~50 itérations par construction mathématique.
+- Un `NaN` ne peut entrer que si les fonctions appelantes passent des valeurs hors domaine — ce serait un bug en amont, pas dans ces boucles.
+- Ajouter des gardes masquerait des erreurs d'appel sans résoudre leur cause.
+
+### Divisions par zéro — 2 fixes appliqués, 2 non
+
+| Fonction | Ligne | Décision | Raison |
+|----------|-------|----------|--------|
+| `x4_ph` | ~2540 | **CORRIGÉ** — guard `denom_ph !== 0` | `h4v = h4l` au point critique (374.14°C, 220.64 bar) |
+| `x4_ps` | ~2558 | **CORRIGÉ** — guard `denom_ps !== 0` | `ssV = ssL` au point critique |
+| `Kappa_pT` | ~1240 | Non modifié | `cv > 0` garanti dans tout le domaine IAPWS-IF97 |
+| `Kappa_ph` | ~1246 | Non modifié | Idem |
+
+---
+
 ### AIRCOOLER / WATERCOOLER removed
 
 - `Y_BILAN/ECHANGEURS/AIRCOOLER/` and `Y_BILAN/ECHANGEURS/WATERCOOLER/` deleted (replaced by TUBEANDSHELL).
