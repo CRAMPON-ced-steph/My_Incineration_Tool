@@ -154,9 +154,11 @@ export const Qeau_added_to_be_at_T = (T_in, T_eau, T_out, Pth, m_CO2, m_H2O, M_N
   let qeau_ajout = 0;
   let T_quench = temp_after_add_wat(qeau_ajout, T_eau, T_in, m_CO2, m_H2O, M_N2, M_O2);
 
-  while (T_quench > T_out) {
+  let _iter5 = 0;
+  while (T_quench > T_out && _iter5 < 100000) {
     qeau_ajout += 1;
     T_quench = temp_after_add_wat(qeau_ajout, T_eau, T_in, m_CO2, m_H2O, M_N2, M_O2);
+    _iter5++;
   }
 
   Delta_H = H_in_quench * (1 - Pth / 100) - H_out_quench;

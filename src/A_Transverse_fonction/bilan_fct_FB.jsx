@@ -392,9 +392,11 @@ export const Tair_fluide_FB = (H1, H2, H3, rdt, masse_sec, masse_humide) =>{
   let Tair_fluide_FB = 1;
   let Htarget2 = cp_air(Tair_fluide_FB) * masse_sec + cp_dt_h2o(Tair_fluide_FB) * masse_humide;
   
-  while (Htarget2 < Htarget1) {
+  let _iter1 = 0;
+  while (Htarget2 < Htarget1 && _iter1 < 10000) {
       Tair_fluide_FB = Tair_fluide_FB + 0.1;
       Htarget2 = cp_air(Tair_fluide_FB) * masse_sec + cp_dt_h2o(Tair_fluide_FB) * masse_humide;
+      _iter1++;
   }
   
   return Tair_fluide_FB;
@@ -449,10 +451,12 @@ export const DP_RecupAir = (Pvoute, Volairtot, TempAirMoy, VitesseAir, Npasse, F
   let valeur = H_Fumees(MFCOTot, MFCO2Tot, MFH2OTot, MFH2Tot, MFN2Tot, MFO2Tot, MFSO2Reel, MFHClTot, x);
 
   // Phase 1 : Trouver les bornes
-  while (valeur < hTarget) {
+  let _iter2 = 0;
+  while (valeur < hTarget && _iter2 < 1024) {
       xAmont = x;
       x = x * 2;
       valeur = H_Fumees(MFCOTot, MFCO2Tot, MFH2OTot, MFH2Tot, MFN2Tot, MFO2Tot, MFSO2Reel, MFHClTot, x);
+      _iter2++;
   }
   xAval = x;
 

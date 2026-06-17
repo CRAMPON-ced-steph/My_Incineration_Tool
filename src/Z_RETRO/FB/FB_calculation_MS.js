@@ -59,12 +59,14 @@ export const performCalculation_FB_MS = (
     let Hboue_kW = Hboue_kcal * 4.1868/3600;
 
     // Boucle corrigée
+    let _iter4 = 0;
     do {
         calculatePCIkcalkg = calculatePCI_kcal_kg(MS, MV, PCIkcalkgMV);
         Hboue_kcal = calculatePCIkcalkg * Q_boue_kg_h;
         Hboue_kW = Hboue_kcal * 4.1868/3600;
         MS = MS + 1;
-    } while (Hboue_kW < P_incinerateur_MWH * 1000); // Conversion MW en kW
+        _iter4++;
+    } while (Hboue_kW < P_incinerateur_MWH * 1000 && _iter4 < 100000); // Conversion MW en kW
 
     return {
         H_out_kW,
