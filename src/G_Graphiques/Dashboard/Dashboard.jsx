@@ -113,17 +113,6 @@ const DashboardWindow = ({ onClose, nodes }) => {
   // Filtrer les nœuds actifs
   const activeNodes = nodes.filter(node => node.data && node.data.isActive);
   
-  /*
-  // Log pour débogage - afficher les données disponibles
-  useEffect(() => {
-    console.log('Active Nodes:', activeNodes);
-    activeNodes.forEach(node => {
-      console.log(`Node ${node.id} (${node.data.label}):`, {
-        consommationElec: node.data.consommationElec,
-        consommationEau: node.data.consommationEau
-      });
-    });
-  }, [activeNodes]);*/
 
   return (
     <div style={{

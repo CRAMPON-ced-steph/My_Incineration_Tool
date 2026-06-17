@@ -15,7 +15,7 @@ import CaptureParameters from './1_Capture_Parameters';
 //const Emissions = () => <div>Emissions Content</div>;
 //const Results = () => <div>Results Content</div>;
 
-const CO2MainPage = ({ nodeData, title, onSendData, onClose, onGoBack }) => {
+const CO2MainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLanguage }) => {
   const [innerData, setInnerData] = useState({});
   const tabs = [
     {name: 'Capture Parameters',content: (<CaptureParameters innerData={innerData} />),},
