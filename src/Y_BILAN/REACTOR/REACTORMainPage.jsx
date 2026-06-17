@@ -48,8 +48,6 @@ const REACTORMainPage = ({ nodeData, title, onSendData, onClose, onGoBack,  curr
     },
   ], [currentLanguage, innerData, t]);
 
-  const [isActive, setIsActive] = useState(true);
-
   const renderTabContent = () => {
     return tabs[activeTab]?.content || null;
   };

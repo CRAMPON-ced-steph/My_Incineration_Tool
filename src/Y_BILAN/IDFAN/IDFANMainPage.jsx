@@ -48,7 +48,6 @@ const IDFANMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, current
 
   ];
 
-  const [isActive, setIsActive] = useState(true);
   const [activeTab, setActiveTab] = useState(tabs[0].name); // Onglet actif par défaut
 
   const renderTabContent = () => {

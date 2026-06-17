@@ -25,7 +25,6 @@ const CO2MainPage = ({ nodeData, title, onSendData, onClose, onGoBack }) => {
    // { name: 'Results', content: < Results innerData={innerData}/> },
   ];
 
-  const [isActive, setIsActive] = useState(true);
   const [activeTab, setActiveTab] = useState(tabs[0].name); // Onglet actif par défaut
 
   const renderTabContent = () => {

@@ -92,7 +92,6 @@ const WHBMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLa
     },
   ];
 
-  const [isActive, setIsActive] = useState(true);
   const [activeTab, setActiveTab] = useState(tabs[0].name);
 
   const renderTabContent = () => {

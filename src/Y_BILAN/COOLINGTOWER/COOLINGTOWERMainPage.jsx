@@ -29,7 +29,6 @@ const COOLINGTOWERMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, 
   {name: 'Rapport', content: <COOLINGTOWER_Report innerData={innerData} currentLanguage={currentLanguage} />},
   ];
 
-  const [isActive, setIsActive] = useState(true);
   const [activeTab, setActiveTab] = useState(tabs[0].name); // Onglet actif par défaut
 
   const renderTabContent = () => {
