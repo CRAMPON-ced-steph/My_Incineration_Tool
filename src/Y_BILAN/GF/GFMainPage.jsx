@@ -14,7 +14,7 @@ import GFCalcOpex from './5_1_GF_calcul_Opex';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './GF_traduction';
 
-const GFMainPage = ({ innerData, nodeData, title, onSendData, onClose, onGoBack, currentLanguage = 'fr' }) => {
+const GFMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLanguage = 'fr' }) => {
   // ============================================================
   // LANGUAGE MANAGEMENT
   // ============================================================

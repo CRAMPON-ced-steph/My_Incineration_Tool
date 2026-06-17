@@ -14,7 +14,7 @@ import FBCalcOpex from './5_1_FB_calcul_Opex';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './FB_traduction';
 
-const FBMainPage = ({ innerData, nodeData, title, onSendData, onClose, onGoBack, currentLanguage = 'fr' }) => {
+const FBMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLanguage = 'fr' }) => {
   // ============================================================
   // LANGUAGE MANAGEMENT
   // ============================================================
