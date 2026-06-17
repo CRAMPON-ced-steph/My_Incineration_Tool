@@ -1,5 +1,4 @@
 import { fh_CO2, fh_H2O, fh_O2, fh_N2 } from '../../A_Transverse_fonction/enthalpy_gas';
-import { hV_p, hL_T, h_pT, Tsat_p } from '../../A_Transverse_fonction/steam_table3';
 import { coeff_Nm3_to_m3 } from '../../A_Transverse_fonction/conv_calculation';
 import { PCI_kcal_kgMV, calculatePCI_kcal_kg } from '../../A_Transverse_fonction/FB_fonctions';
 

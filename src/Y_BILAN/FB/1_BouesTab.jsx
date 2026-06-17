@@ -145,12 +145,12 @@ const BouesTab = ({ innerData, currentLanguage  }) => {
   // ============================================================
 
   const [fonctionnement, setFonctionnement] = useState(() =>
-    lsGet('bouesTab_fonctionnement', defaultFonctionnement())
+    lsGet('bouesTab_fonctionnement_FB', defaultFonctionnement())
   );
-  const [boue, setBoue] = useState(() => lsGet('bouesTab_boue', defaultBoue()));
-  const [chons, setChons] = useState(() => lsGet('bouesTab_chons', defaultChons()));
+  const [boue, setBoue] = useState(() => lsGet('bouesTab_boue_FB', defaultBoue()));
+  const [chons, setChons] = useState(() => lsGet('bouesTab_chons_FB', defaultChons()));
   const [heavyMetals, setHeavyMetals] = useState(() => {
-    const stored = lsGet('bouesTab_heavyMetals', {});
+    const stored = lsGet('bouesTab_heavyMetals_FB', {});
     return { ...DEFAULT_HEAVY_METALS, ...stored };
   });
 
@@ -159,19 +159,19 @@ const BouesTab = ({ innerData, currentLanguage  }) => {
   // ============================================================
 
   useEffect(() => {
-    lsSet('bouesTab_fonctionnement', fonctionnement);
+    lsSet('bouesTab_fonctionnement_FB', fonctionnement);
   }, [fonctionnement]);
 
   useEffect(() => {
-    lsSet('bouesTab_boue', boue);
+    lsSet('bouesTab_boue_FB', boue);
   }, [boue]);
 
   useEffect(() => {
-    lsSet('bouesTab_chons', chons);
+    lsSet('bouesTab_chons_FB', chons);
   }, [chons]);
 
   useEffect(() => {
-    lsSet('bouesTab_heavyMetals', heavyMetals);
+    lsSet('bouesTab_heavyMetals_FB', heavyMetals);
   }, [heavyMetals]);
 
   // ============================================================
@@ -376,7 +376,7 @@ const BouesTab = ({ innerData, currentLanguage  }) => {
   }, []);
 
   const resetToDefault = useCallback(() => {
-    const keys = ['bouesTab_fonctionnement', 'bouesTab_boue', 'bouesTab_chons', 'bouesTab_heavyMetals'];
+    const keys = ['bouesTab_fonctionnement_FB', 'bouesTab_boue_FB', 'bouesTab_chons_FB', 'bouesTab_heavyMetals_FB'];
     keys.forEach((k) => {
       try {
         localStorage.removeItem(k);

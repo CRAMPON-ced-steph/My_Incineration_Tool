@@ -58,10 +58,10 @@ const RK_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguag
 
   // États pour les types de calcul (utilisation des constantes)
   const [bilanType_NCV_Masse, setBilanType_NCV_Masse] = useState(() =>
-    localStorage.getItem('bilanType_NCV_Masse') || DEFAULT_VALUES.bilanType_NCV_Masse
+    localStorage.getItem('bilanType_NCV_Masse_RK') || DEFAULT_VALUES.bilanType_NCV_Masse
   );
   const [bilanType_whb, setBilanType_whb] = useState(() =>
-    localStorage.getItem('bilanType_whb') || DEFAULT_VALUES.bilanType_whb
+    localStorage.getItem('bilanType_whb_RK') || DEFAULT_VALUES.bilanType_whb
   );
   const [diagramMode, setDiagramMode] = useState(() =>
     localStorage.getItem('RK_diagramMode') || DEFAULT_VALUES.diagramMode
@@ -95,8 +95,8 @@ const RK_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguag
         localStorage.setItem('Thermal_losses_MW_RK', Thermal_losses_MW);
         localStorage.setItem('NCV_kcal_kg_RK', NCV_kcal_kg);
         localStorage.setItem('Masse_dechet_kg_h_RK', Masse_dechet_kg_h);
-        localStorage.setItem('bilanType_NCV_Masse', bilanType_NCV_Masse);
-        localStorage.setItem('bilanType_whb', bilanType_whb);
+        localStorage.setItem('bilanType_NCV_Masse_RK', bilanType_NCV_Masse);
+        localStorage.setItem('bilanType_whb_RK', bilanType_whb);
         localStorage.setItem('RK_diagramMode', diagramMode);
       } catch (error) {
         console.warn('Erreur lors de la sauvegarde dans localStorage:', error);

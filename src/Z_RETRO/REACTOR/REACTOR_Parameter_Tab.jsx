@@ -23,9 +23,9 @@ const REAGENT_TYPES = {
 // Constantes pour localStorage
 const STORAGE_KEYS = {
   T_AMONT_REACTOR: 'T_amont_REACTOR',
-  T_AIR: 'T_air',
+  T_AIR: 'T_air_REACTOR',
   PDC_AERO: 'PDC_aero_REACTOR',
-  REAGENT_TYPE: 'reagentType',
+  REAGENT_TYPE: 'reagentType_REACTOR',
   BESOIN_AIR_LIME: 'Besoin_air_pulverisation_lime_Nm3_kg',
   CONCENTRATION_LIME: 'Concentration_Lime_kg_lime_Nm3_FG',
   BESOIN_AIR_CAP: 'Besoin_air_pulverisation_cap_Nm3_kg',

@@ -105,7 +105,8 @@ export const Q_AIR_DILUTION = (T_air, tfum1, tfum2, m_CO2, m_H2O, M_N2, M_O2, M_
   const H2 = h_fumee(tfum2, m_CO2, m_H2O, M_N2, M_O2); // + M_inert * 0.25 * 4.186 * tfum2
   const ha1 = fh_AIR(T_air);
   const ha2 = fh_AIR(tfum2);
-  const qc = (H1 - H2) / (ha2 - ha1);
+  const denom = ha2 - ha1;
+  const qc = denom !== 0 ? (H1 - H2) / denom : 0;
 
   return qc;
 };

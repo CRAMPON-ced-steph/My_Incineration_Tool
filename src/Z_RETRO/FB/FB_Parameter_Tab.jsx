@@ -71,17 +71,17 @@ const FB_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguag
   );
 
   // Nouveaux états pour les paramètres ajoutés
-  const [wasteType, setWasteType] = useState(() => 
-    localStorage.getItem('wasteType') || DEFAULT_VALUES.wasteType
+  const [wasteType, setWasteType] = useState(() =>
+    localStorage.getItem('wasteType_FB') || DEFAULT_VALUES.wasteType
   );
-  const [Q_boue_kg_h, setQ_boue_kg_h] = useState(() => 
-    localStorage.getItem('Q_boue_kg_h') || DEFAULT_VALUES.Q_boue_kg_h
+  const [Q_boue_kg_h, setQ_boue_kg_h] = useState(() =>
+    localStorage.getItem('Q_boue_kg_h_FB') || DEFAULT_VALUES.Q_boue_kg_h
   );
-  const [MS_percent, setMS_percent] = useState(() => 
-    localStorage.getItem('MS_percent') || DEFAULT_VALUES.MS_percent
+  const [MS_percent, setMS_percent] = useState(() =>
+    localStorage.getItem('MS_percent_FB') || DEFAULT_VALUES.MS_percent
   );
   const [MV_percent, setMV_percent] = useState(() =>
-    localStorage.getItem('MV_percent') || DEFAULT_VALUES.MV_percent
+    localStorage.getItem('MV_percent_FB') || DEFAULT_VALUES.MV_percent
   );
   const [diagramMode, setDiagramMode] = useState(() =>
     localStorage.getItem('FB_diagramMode') || DEFAULT_VALUES.diagramMode
@@ -111,10 +111,10 @@ const FB_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguag
         localStorage.setItem('FB_bilanType', bilanType);
         localStorage.setItem('FB_diagramMode', diagramMode);
         // Nouveaux paramètres
-        localStorage.setItem('wasteType', wasteType);
-        localStorage.setItem('Q_boue_kg_h', Q_boue_kg_h);
-        localStorage.setItem('MS_percent', MS_percent);
-        localStorage.setItem('MV_percent', MV_percent);
+        localStorage.setItem('wasteType_FB', wasteType);
+        localStorage.setItem('Q_boue_kg_h_FB', Q_boue_kg_h);
+        localStorage.setItem('MS_percent_FB', MS_percent);
+        localStorage.setItem('MV_percent_FB', MV_percent);
       } catch (error) {
         console.warn('Erreur lors de la sauvegarde dans localStorage:', error);
       }

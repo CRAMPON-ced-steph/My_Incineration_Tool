@@ -28,7 +28,7 @@ const SCC_NOxAndMercuryCalculator = ({ masses, Debit_fumees_sec_Nm3_h,innerData 
   }, [sncr, noxTarget, coefStoechio, mercuryTreatment, brHgRatio]);
 
   const calculateConsumptions = () => {
-    const noxInitial = parseFloat(masses.NOx) * 1e6 /Debit_fumees_sec_Nm3_h || 0;
+    const noxInitial = Debit_fumees_sec_Nm3_h !== 0 ? parseFloat(masses.NOx) * 1e6 / Debit_fumees_sec_Nm3_h : 0;
 
     if (sncr === "oui") {
       const noxReduction = (noxInitial - noxTarget) * Debit_fumees_sec_Nm3_h / 1e6;

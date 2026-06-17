@@ -23,9 +23,9 @@ const DISSIPATION_TYPES = {
 
 // Constantes pour localStorage
 const STORAGE_KEYS = {
-  TYPE: 'Type',
-  P_AMONT: 'P_amont',
-  RDT_ELEC: 'Rdt_elec',
+  TYPE: 'Type_IDFAN',
+  P_AMONT: 'P_amont_IDFAN',
+  RDT_ELEC: 'Rdt_elec_IDFAN',
   CALCULATION_RESULT: 'calculationResult_IDFAN'
 };
 

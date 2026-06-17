@@ -16,8 +16,8 @@ import '../../index.css';
 
 // Constantes pour localStorage
 const STORAGE_KEYS = {
-  QAIR_PARASITE: 'Qair_parasite',
-  T_AIR_PARASITE: 'T_air_parasite',
+  QAIR_PARASITE: 'Qair_parasite_AIRINJECTION',
+  T_AIR_PARASITE: 'T_air_parasite_AIRINJECTION',
   T_AMONT_AIRINJECTION: 'T_amont_AIRINJECTION',
   PDC_AERO: 'PDC_aero_AIRINJECTION',
   CALCULATION_RESULT: 'calculationResult_AIRINJECTION'

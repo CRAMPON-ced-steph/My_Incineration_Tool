@@ -71,7 +71,7 @@ const FlueGasPollutantEmission = ({ innerData, currentLanguage = 'fr' }) => {
   const CdTi_g_Nm3 = emissions2.cdTi;
   const SdAsPbCrCoCuMnNi_mg_Nm3 = emissions2.heavyMetals;
   const FlyAsh_g_Nm3 = emissions2.flyAshesContent;
-  const Bottom_Ash_Siccity = emissions2.siccityBottomAsh;
+  const Bottom_Ash_Siccity = emissions2.siccityBottomAsh ?? 66;
   const O2ref = emissions2.o2Ref;
 
   // Paramètres SNCR
@@ -245,7 +245,7 @@ const FlueGasPollutantEmission = ({ innerData, currentLanguage = 'fr' }) => {
   if (Inert_kg_h !== 0) {
     FlyAsh_kg_h = FlyAsh_g_Nm3 * Debit_fumees_sec_Nm3_h / 1000;
     DryBottomAsh_kg_h = Inert_kg_h - FlyAsh_kg_h + mass_residus_tot;
-    WetBottomAsh_kg_h = DryBottomAsh_kg_h / (Bottom_Ash_Siccity / 100);
+    WetBottomAsh_kg_h = Bottom_Ash_Siccity !== 0 ? DryBottomAsh_kg_h / (Bottom_Ash_Siccity / 100) : 0;
     
     // Vérifications à l'intérieur du bloc
     if (FlyAsh_kg_h < 0) FlyAsh_kg_h = 0;

@@ -34,20 +34,20 @@ const AIR_BALANCE_TYPES = {
 
 // Constantes pour localStorage
 const STORAGE_KEYS = {
-  T_EAU_ALIMENTATION: 'T_eau_alimentation_C',
-  Q_AIR_PARASITE: 'Q_air_parasite_Nm3_h',
-  Q_EAU_PURGE: 'Q_eau_purge_pourcent',
-  T_AIR_EXTERIEUR: 'T_air_exterieur_C',
-  P_TH: 'P_th_pourcent',
-  P_VAPEUR: 'P_vapeur_bar',
-  T_VAPEUR: 'T_vapeur',
-  T_VAPEUR_SURCHAUFFEE: 'T_vapeur_surchauffee_C',
+  T_EAU_ALIMENTATION: 'T_eau_alimentation_C_WHB',
+  Q_AIR_PARASITE: 'Q_air_parasite_Nm3_h_WHB',
+  Q_EAU_PURGE: 'Q_eau_purge_pourcent_WHB',
+  T_AIR_EXTERIEUR: 'T_air_exterieur_C_WHB',
+  P_TH: 'P_th_pourcent_WHB',
+  P_VAPEUR: 'P_vapeur_bar_WHB',
+  T_VAPEUR: 'T_vapeur_WHB',
+  T_VAPEUR_SURCHAUFFEE: 'T_vapeur_surchauffee_C_WHB',
   T_AMONT_WHB: 'T_amont_WHB_C',
-  Q_EAU_ALIMENTATION: 'Q_eau_alimentation',
-  O2_MESURE: 'O2_mesure',
-  BILAN_TYPE_VAPEUR: 'bilanTypeVapeur',
+  Q_EAU_ALIMENTATION: 'Q_eau_alimentation_WHB',
+  O2_MESURE: 'O2_mesure_WHB',
+  BILAN_TYPE_VAPEUR: 'bilanTypeVapeur_WHB',
   BILAN_TYPE: 'WHB_bilanType',
-  BILAN_TYPE_AIR: 'bilanTypeAir',
+  BILAN_TYPE_AIR: 'bilanTypeAir_WHB',
   CALCULATION_RESULT: 'calculationResult_WHB'
 };
 

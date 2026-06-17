@@ -68,10 +68,10 @@ const WHB_Parameters = ({ innerData, setInnerData, currentLanguage = 'fr' }) => 
   const H_steam = steamType === "saturated" 
     ? hV_p(boilerPressure + 1) 
     : h_pT(boilerPressure + 1, superheatedSteamTemp);
-  const Q_steam_kg_h = H_diff / (H_steam - H_feedwater);
+  const Q_steam_kg_h = (H_steam - H_feedwater) !== 0 ? H_diff / (H_steam - H_feedwater) : 0;
   const Q_purge_kg_h = Q_steam_kg_h * (blowdownRate / 100);
   const Q_feedwater_kg_h = Q_steam_kg_h * (1 + (blowdownRate / 100));
-  const Q_flash_drum_event_kg_h = Q_purge_kg_h * (hL_p(boilerPressure + 1) - hL_p(1)) / (hV_p(1) - hL_p(1));
+  const Q_flash_drum_event_kg_h = (hV_p(1) - hL_p(1)) !== 0 ? Q_purge_kg_h * (hL_p(boilerPressure + 1) - hL_p(1)) / (hV_p(1) - hL_p(1)) : 0;
   const Q_rejet_liquide_kg_h = Q_purge_kg_h - Q_flash_drum_event_kg_h;
   const saturationSteamTemp = Tsat_p(boilerPressure + 1);
 

@@ -36,7 +36,6 @@ const QUENCHMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, curren
     }
 
     // Si rien n'est trouvé, retourner la clé elle-même
-    console.warn(`Translation missing for key: "${key}" in language: ${languageCode}`);
     return key;
   };
 

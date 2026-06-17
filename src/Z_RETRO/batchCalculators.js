@@ -38,20 +38,20 @@ export const batchCalcMap = {
 
   'STACK': (_nodeData) => {
     return performCalculation_STACK(
-      f('Tstack', '80'),
-      f('Qv_wet_Nm3_h', '50000'),
-      f('O2_dry_pourcent', '10'),
-      f('H2O_pourcent', '30'),
-      f('CO2_dry_pourcent', '10'),
-      f('P_out_mmCE', '100')
+      f('Tstack_STACK', '80'),
+      f('Qv_wet_Nm3_h_STACK', '50000'),
+      f('O2_dry_pourcent_STACK', '10'),
+      f('H2O_pourcent_STACK', '30'),
+      f('CO2_dry_pourcent_STACK', '10'),
+      f('P_out_mmCE_STACK', '100')
     );
   },
 
   'IDFAN': (nodeData) => {
     if (!nodeData?.result) return null;
-    const Type    = ls('Type', 'OFF');
-    const P_amont = f('P_amont', '-250');
-    const Rdt     = f('Rdt_elec', '70');
+    const Type    = ls('Type_IDFAN', 'OFF');
+    const P_amont = f('P_amont_IDFAN', '-250');
+    const Rdt     = f('Rdt_elec_IDFAN', '70');
     return Type === 'ON'
       ? performCalculation_IDFAN2(nodeData, P_amont, Rdt)
       : performCalculation_IDFAN(nodeData, P_amont, Rdt);
@@ -83,8 +83,8 @@ export const batchCalcMap = {
     if (!nodeData?.result) return null;
     return performCalculation_CYCLONE(
       nodeData,
-      f('T_air_parasite', '15'),
-      f('Qair_parasite', '0'),
+      f('T_air_parasite_CYCLONE', '15'),
+      f('Qair_parasite_CYCLONE', '0'),
       parseFloat(nodeData?.result?.dataFlow?.T ?? ls('T_amont_CYCLONE', '15')),
       f('PDC_aero_CYCLONE', '10')
     );
@@ -95,9 +95,9 @@ export const batchCalcMap = {
     return performCalculation_REACTOR(
       nodeData,
       parseFloat(nodeData?.result?.dataFlow?.T ?? ls('T_amont_REACTOR', '200')),
-      f('T_air', '20'),
+      f('T_air_REACTOR', '20'),
       f('PDC_aero_REACTOR', '20'),
-      ls('reagentType', 'CAP'),
+      ls('reagentType_REACTOR', 'CAP'),
       f('Besoin_air_pulverisation_lime_Nm3_kg', '0.5'),
       f('Besoin_air_pulverisation_cap_Nm3_kg', '0.5'),
       f('Concentration_cap_mg_cap_Nm3_FG', '0.1')
@@ -138,13 +138,13 @@ export const batchCalcMap = {
     if (!nodeData?.result) return null;
     return performCalculation_DENOX_option_Qeau(
       nodeData,
-      f('targetNOx', '150'),
-      f('sprayWaterTemp', '15'),
-      f('coeffStoech', '1.2'),
-      f('solutionConc', '25'),
-      f('solutionDensity', '908'),
-      f('sprayFlowrate', '15'),
-      f('pdc', '50')
+      f('targetNOx_DENOX', '150'),
+      f('sprayWaterTemp_DENOX', '15'),
+      f('coeffStoech_DENOX', '1.2'),
+      f('solutionConc_DENOX', '25'),
+      f('solutionDensity_DENOX', '908'),
+      f('sprayFlowrate_DENOX', '15'),
+      f('pdc_DENOX', '50')
     );
   },
 
@@ -181,8 +181,8 @@ export const batchCalcMap = {
     if (!nodeData?.result) return null;
     return performCalculation_AIRINJECTION(
       nodeData,
-      f('T_air_parasite', '15'),
-      f('Qair_parasite', '0'),
+      f('T_air_parasite_AIRINJECTION', '15'),
+      f('Qair_parasite_AIRINJECTION', '0'),
       parseFloat(nodeData?.result?.dataFlow?.T ?? ls('T_amont_AIRINJECTION', '15')),
       f('PDC_aero_AIRINJECTION', '10')
     );
@@ -191,29 +191,29 @@ export const batchCalcMap = {
   'WHB': (nodeData) => {
     if (!nodeData?.result) return null;
     const bilanType    = ls('WHB_bilanType', 'TEMPERATURE_BALANCE');
-    const bilanTypeAir = ls('bilanTypeAir', 'PARASITIC_AIR_FLOW');
-    const bilanTypeVap = ls('bilanTypeVapeur', 'SATURATED_STEAM');
+    const bilanTypeAir = ls('bilanTypeAir_WHB', 'PARASITIC_AIR_FLOW');
+    const bilanTypeVap = ls('bilanTypeVapeur_WHB', 'SATURATED_STEAM');
 
     // Shared params (same order as getCalculationParams in WHB_Parameter_Tab)
     // signature: fn(nodeData, T_eau_alim, Q_purge, T_air_ext, P_th, P_vap, bilanTypeVap, T_vap_sur, T_amont_or_Qeau, Qair_or_O2)
     const base = [
       nodeData,
-      f('T_eau_alimentation_C', '130'),
-      f('Q_eau_purge_pourcent', '1.5'),
-      f('T_air_exterieur_C', '15'),
-      f('P_th_pourcent', '2'),
-      f('P_vapeur_bar', '30'),
+      f('T_eau_alimentation_C_WHB', '130'),
+      f('Q_eau_purge_pourcent_WHB', '1.5'),
+      f('T_air_exterieur_C_WHB', '15'),
+      f('P_th_pourcent_WHB', '2'),
+      f('P_vapeur_bar_WHB', '30'),
       bilanTypeVap,
-      f('T_vapeur_surchauffee_C', '250'),
+      f('T_vapeur_surchauffee_C_WHB', '250'),
     ];
 
     const lastTemp = bilanType === 'TEMPERATURE_BALANCE'
       ? f('T_amont_WHB_C', '950')
-      : f('Q_eau_alimentation', '0');
+      : f('Q_eau_alimentation_WHB', '0');
 
     const lastAir = bilanTypeAir === 'PARASITIC_AIR_FLOW'
-      ? f('Q_air_parasite_Nm3_h', '1000')
-      : parseFloat(nodeData?.result?.dataFlow?.O2_dry_pourcent ?? ls('O2_mesure', '0'));
+      ? f('Q_air_parasite_Nm3_h_WHB', '1000')
+      : parseFloat(nodeData?.result?.dataFlow?.O2_dry_pourcent ?? ls('O2_mesure_WHB', '0'));
 
     const params = [...base, lastTemp, lastAir];
 
@@ -239,8 +239,8 @@ export const batchCalcMap = {
   },
 
   'RK+SCC': (nodeData) => {
-    const bilanType_whb      = ls('bilanType_whb', 'WITH_WHB');
-    const bilanType_NCV_Masse = ls('bilanType_NCV_Masse', 'NCV_MODE');
+    const bilanType_whb      = ls('bilanType_whb_RK', 'WITH_WHB');
+    const bilanType_NCV_Masse = ls('bilanType_NCV_Masse_RK', 'NCV_MODE');
     const Tair    = f('Tair_RK_C', '20');
     const Thermal = f('Thermal_losses_MW_RK', '1');
     const NCV     = f('NCV_kcal_kg_RK', '2200');
@@ -257,13 +257,13 @@ export const batchCalcMap = {
     const bilanType = ls('FB_bilanType', 'DRY SOLIDS');
     const Tair      = f('Tair_FB_C', '15');
     const Thermal   = f('Thermal_losses_MW_FB', '1');
-    const wasteType = ls('wasteType', 'PRIMAIRE');
-    const MV        = f('MV_percent', '70');
+    const wasteType = ls('wasteType_FB', 'PRIMAIRE');
+    const MV        = f('MV_percent_FB', '70');
 
     if (bilanType === 'DRY SOLIDS') {
-      return performCalculation_FB_MS(nodeData, Tair, Thermal, f('Q_boue_kg_h', '1000'), wasteType, MV);
+      return performCalculation_FB_MS(nodeData, Tair, Thermal, f('Q_boue_kg_h_FB', '1000'), wasteType, MV);
     }
-    return performCalculation_FB_Qboue(nodeData, Tair, Thermal, wasteType, f('MS_percent', '25'), MV);
+    return performCalculation_FB_Qboue(nodeData, Tair, Thermal, wasteType, f('MS_percent_FB', '25'), MV);
   },
 
   'GF': (nodeData) => {

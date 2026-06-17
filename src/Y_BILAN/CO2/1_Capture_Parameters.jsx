@@ -139,7 +139,7 @@ const CaptureParameters = ({ innerData }) => {
   const Air_comb_sec_tot_m3_h = Air_comb_CO2_m3_h + Air_comb_O2_m3_h + Air_comb_N2_m3_h;
   const Air_comb_humide_tot_m3_h = Air_comb_sec_tot_m3_h + Air_comb_H2O_m3_h;
 
-  const Air_factor_calculated = (Air_combustion_stoechio_sec_tot_Nm3_h + Air_adia_sec_tot_m3_h) / Air_combustion_stoechio_sec_tot_Nm3_h;
+  const Air_factor_calculated = Air_combustion_stoechio_sec_tot_Nm3_h !== 0 ? (Air_combustion_stoechio_sec_tot_Nm3_h + Air_adia_sec_tot_m3_h) / Air_combustion_stoechio_sec_tot_Nm3_h : 0;
 
   const FG_CO2_Nm3_h = FG_CO2_stoechio_Nm3_h;
   const FG_H2O_Nm3_h = FG_H2O_stoechio_Nm3_h + Air_adia_H2O_m3_h;
@@ -163,7 +163,7 @@ const CaptureParameters = ({ innerData }) => {
   const FG_dry_extractor_Nm3_h = FG_CO2_extractor_Nm3_h + FG_O2_extractor_Nm3_h + FG_N2_extractor_Nm3_h;
   const FG_wet_extractor_Nm3_h = FG_dry_extractor_Nm3_h + FG_H2O_extractor_Nm3_h;
 
-  const O2_sec_pourcent = FG_O2_extractor_Nm3_h / FG_dry_extractor_Nm3_h * 100;
+  const O2_sec_pourcent = FG_dry_extractor_Nm3_h !== 0 ? FG_O2_extractor_Nm3_h / FG_dry_extractor_Nm3_h * 100 : 0;
 
   const elementsGeneric = [
     { text: 'Air Stoechio [Kmole]', value: Air_stoechio_kmole.toFixed(2) },

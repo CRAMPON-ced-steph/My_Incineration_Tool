@@ -16,12 +16,12 @@ import '../../index.css';
 
 // Constantes pour les clés localStorage (cohérence et maintenabilité)
 const STORAGE_KEYS = {
-  TSTACK: 'Tstack',
-  QV_WET: 'Qv_wet_Nm3_h',
-  O2_DRY: 'O2_dry_pourcent',
-  H2O: 'H2O_pourcent',
-  CO2_DRY: 'CO2_dry_pourcent',
-  P_OUT: 'P_out_mmCE',
+  TSTACK: 'Tstack_STACK',
+  QV_WET: 'Qv_wet_Nm3_h_STACK',
+  O2_DRY: 'O2_dry_pourcent_STACK',
+  H2O: 'H2O_pourcent_STACK',
+  CO2_DRY: 'CO2_dry_pourcent_STACK',
+  P_OUT: 'P_out_mmCE_STACK',
   CALCULATION_RESULT: 'calculationResult_STACK'
 };
 

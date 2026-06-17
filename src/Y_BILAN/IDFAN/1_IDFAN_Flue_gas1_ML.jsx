@@ -135,7 +135,6 @@ const IDFANFlueGasParameters = ({ innerData, upstreamT_IN, upstreamFG_IN, upstre
     T_out += 0.01;
     
     if (T_out > 500) {
-      console.warn('Température maximale atteinte');
       break;
     }
   }

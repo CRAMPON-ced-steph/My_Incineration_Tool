@@ -116,13 +116,13 @@ const RKdesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
   const Qm_dechet_solides_kg_h = Parametres_dimensionnement.debitDechetsSolides;
 
   // Calculations
-  const L_D = Longueur_four_m / Diametre_interne_m;
+  const L_D = Diametre_interne_m !== 0 ? Longueur_four_m / Diametre_interne_m : 0;
   const P = Diametre_interne_m ** 2 * Longueur_four_m * 0.21;
   const vitesse_m_s = Debit_fumee_humide_Nm3_h / ((Math.PI * Diametre_interne_m ** 2) / 4) / 3600;
   const pente_mm_m = Math.tan((pente * Math.PI) / 180) * 1000;
   const R_m = Diametre_interne_m / 2;
   const Theta = pente;
-  const Temps_sejour_sullivan_min = (1.77 * Longueur_four_m * Math.sqrt(Beta)) / (2 * R_m * n * Theta);
+  const Temps_sejour_sullivan_min = (2 * R_m * n * Theta) !== 0 ? (1.77 * Longueur_four_m * Math.sqrt(Beta)) / (2 * R_m * n * Theta) : 0;
   const Taux_remplissage_Freeman_pourcent = ((Qm_dechet_solides_kg_h / rho_dechets_kg_m3) / 60) / ((Longueur_four_m / Temps_sejour_sullivan_min) * (Math.PI * Math.pow(Diametre_interne_m, 2)) / 4) * 100;
 
   const P_elec_mise_en_rotation_du_RK_kW = 0.167 * Math.pow(Diametre_externe_m, 2) * Longueur_four_m * 2.25;
@@ -247,7 +247,7 @@ const RKdesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
   const pertesConv_MW = (9 * surfaceParoi_m2 * (Temperature_peau_C - 10)) / 1e6;
   const pertesTotales_MW = pertesRad_MW + pertesConv_MW;
 
-  const part_PertesThermiques = pertesTotales_MW / P * 100;
+  const part_PertesThermiques = P !== 0 ? pertesTotales_MW / P * 100 : 0;
 
   const elements_Pertes_Radiatives = [
     { text: 'Surface extérieure du four [m2]', value: surfaceParoi_m2.toFixed(2) },
@@ -432,7 +432,7 @@ const RKdesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
 
   const Qv_air_comb_Nm3_h = Estimation_conso_ventilateur_air_combustion.debitVentilateur;
   const Rdt_elec = Estimation_conso_ventilateur_air_combustion.rendementVentilateur;
-  const P_elec_ventilo_air_combustion_kW = (Math.abs(100) * Qv_air_comb_Nm3_h * 9.81) / (3600 * 1000 * Rdt_elec);
+  const P_elec_ventilo_air_combustion_kW = Rdt_elec !== 0 ? (Math.abs(100) * Qv_air_comb_Nm3_h * 9.81) / (3600 * 1000 * Rdt_elec) : 0;
 
   const elements_Conso_ventilateur_air_combustion = [
     { text: 'Consommation électrique ventilateur combustion [kW]', value: P_elec_ventilo_air_combustion_kW.toFixed(2) },
@@ -460,7 +460,8 @@ const RKdesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
   const coeff_C = coeff_c / coeff_a;
   const F = (1 + coeff_B ** 2 + coeff_C ** 2 - ((1 + coeff_B ** 2 + coeff_C ** 2) ** 2 - 4 * coeff_B ** 2 * coeff_C ** 2) ** 0.5) / (2 * coeff_B ** 2);
   const FLux_radiatif_kW = F * emissivitefume * 5.67e-8 * ((Tfum_provisoire + T_ref) ** 4 - (Teau_extracteur + T_ref) ** 4) * S_echange / 1000;
-  const Eau_evap_extracteur_kg_h = FLux_radiatif_kW / (((hV_T(Teau_extracteur) - hL_T(Teau_extracteur))) / 3600);
+  const _denom_eau_evap = (hV_T(Teau_extracteur) - hL_T(Teau_extracteur)) / 3600;
+  const Eau_evap_extracteur_kg_h = _denom_eau_evap !== 0 ? FLux_radiatif_kW / _denom_eau_evap : 0;
   const Eau_evap_elements = [
     { text: 'H20pourcent', value: H20pourcent.toFixed(2) },
     { text: 'CO2pourcent', value: CO2pourcent.toFixed(2) },

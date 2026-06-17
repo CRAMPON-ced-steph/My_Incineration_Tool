@@ -985,7 +985,6 @@ export const SUPPORTED_LANGUAGES = ['fr', 'en', 'es', 'de', 'it', 'pt', 'zh', 'j
 export const getOPEXTranslations = (languageCode) => {
   // Validate language code
   if (!languageCode || typeof languageCode !== 'string') {
-    console.warn('Invalid language code provided, falling back to English');
     return translations.en;
   }
 

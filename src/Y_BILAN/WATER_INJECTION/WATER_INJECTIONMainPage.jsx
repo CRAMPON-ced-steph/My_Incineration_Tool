@@ -36,7 +36,6 @@ const WATER_INJECTIONMainPage = ({ nodeData, title, onSendData, onClose, onGoBac
     }
 
     // Si rien n'est trouvé, retourner la clé elle-même
-    console.warn(`Translation missing for key: "${key}" in language: ${languageCode}`);
     return key;
   };
 

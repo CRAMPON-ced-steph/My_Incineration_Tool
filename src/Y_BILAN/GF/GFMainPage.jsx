@@ -21,9 +21,6 @@ const GFMainPage = ({ innerData, nodeData, title, onSendData, onClose, onGoBack,
   const languageCode = getLanguageCode(currentLanguage);
   const t = (key) => translations[languageCode]?.[key] || translations['fr']?.[key] || key;
 
-  console.log(currentLanguage);
-  console.log(languageCode);
-
   // ============================================================
   // STATE & REFS
   // ============================================================
@@ -71,12 +68,7 @@ const GFMainPage = ({ innerData, nodeData, title, onSendData, onClose, onGoBack,
   // ============================================================
 
   const sendAllData = useCallback(() => {
-    console.log('=== GF SEND DATA DEBUG ===');
-    console.log('innerDataRef.current:', innerDataRef.current);
-    console.log('onSendData type:', typeof onSendData);
-
     if (!onSendData || typeof onSendData !== 'function') {
-      console.error('❌ ERROR: onSendData callback is not defined or is not a function!');
       alert('Erreur : Le callback onSendData n\'est pas défini.');
       return;
     }
@@ -232,42 +224,7 @@ const GFMainPage = ({ innerData, nodeData, title, onSendData, onClose, onGoBack,
         },
       };
 
-      console.log('✅ Data to send:', dataToSend);
-
-      // ✅ CONSOLE LOG DÉTAILLÉ POUR VÉRIFICATION
-      console.group('📤 === GFMAINPAGE SEND DATA — VÉRIFICATION COMPLÈTE ===');
-
-      console.group('🔥 COMBUSTION');
-      console.log('FG_OUT_kg_h:', dataToSend.result.FG_OUT_kg_h);
-      console.log('FG_OUT_Nm3_h:', dataToSend.result.FG_OUT_Nm3_h);
-      console.log('FG_pollutant_OUT_kg_h:', dataToSend.result.FG_pollutant_OUT_kg_h);
-      console.log('O2_calcule:', dataToSend.result.O2_calcule);
-      console.log('T_OUT (T_fumee_sortie_HX_C):', dataToSend.result.T_OUT);
-      console.log('P_out_mmCE (P_sortie_HX_mmCE):', dataToSend.result.P_out_mmCE);
-      console.groupEnd();
-
-      console.group('💨 POLLUANT');
-      console.log('PollutantInput (PInput):', dataToSend.result.PollutantInput);
-      console.log('PollutantOutput (Poutput):', dataToSend.result.PollutantOutput);
-      console.log('Residus:', dataToSend.result.Residus);
-      console.log('REFIDIS (mass_residus_tot):', dataToSend.result.REFIDIS);
-      console.log('Conso_reactifs:', dataToSend.result.Conso_reactifs);
-      console.groupEnd();
-
-      console.group('🧪 BOUES');
-      console.log('MasseBoueBrute:', dataToSend.result.MasseBoueBrute);
-      console.log('masse_dechets:', dataToSend.result.masse_dechets);
-      console.groupEnd();
-
-      console.group('📋 INNERDATA SUMMARY');
-      console.log('innerDataRef.current keys:', Object.keys(innerDataRef.current));
-      console.log('Full innerDataRef.current:', innerDataRef.current);
-      console.groupEnd();
-
-      console.groupEnd();
-
       onSendData(dataToSend);
-      console.log('✅ Data sent successfully!');
     } catch (error) {
       console.error('❌ Error sending data:', error);
       alert('Erreur lors de l\'envoi des données : ' + error.message);
@@ -275,7 +232,6 @@ const GFMainPage = ({ innerData, nodeData, title, onSendData, onClose, onGoBack,
   }, [onSendData]);
 
   const handleBackToFlow = useCallback(() => {
-    console.log('Going back to flow...');
     sendAllData();
     if (onGoBack && typeof onGoBack === 'function') {
       onGoBack(null);
@@ -293,10 +249,10 @@ const GFMainPage = ({ innerData, nodeData, title, onSendData, onClose, onGoBack,
 
     // Supprimer les données du localStorage
     const keys = [
-      'bouesTab_fonctionnement',
-      'bouesTab_boue',
-      'bouesTab_chons',
-      'bouesTab_heavyMetals',
+      'bouesTab_fonctionnement_GF',
+      'bouesTab_boue_GF',
+      'bouesTab_chons_GF',
+      'bouesTab_heavyMetals_GF',
       'emissions_GF',
       'Temperatures_imposees',
       'thermalParams_GF',
@@ -349,7 +305,6 @@ const GFMainPage = ({ innerData, nodeData, title, onSendData, onClose, onGoBack,
     // Afficher l'alerte
     alert(summary);
 
-    console.log('innerData complet sauvegardé:', d);
   }, []);
 
   const isSaveBtnDisabled = () => {

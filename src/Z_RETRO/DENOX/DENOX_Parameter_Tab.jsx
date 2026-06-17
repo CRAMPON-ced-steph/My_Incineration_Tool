@@ -15,13 +15,13 @@ import '../../index.css';
 
 // Constantes pour localStorage
 const STORAGE_KEYS = {
-  TARGET_NOX: 'targetNOx',
-  SPRAY_WATER_TEMP: 'sprayWaterTemp',
-  COEFF_STOECH: 'coeffStoech',
-  SOLUTION_CONC: 'solutionConc',
-  SOLUTION_DENSITY: 'solutionDensity',
-  SPRAY_FLOWRATE: 'sprayFlowrate',
-  PDC: 'pdc',
+  TARGET_NOX: 'targetNOx_DENOX',
+  SPRAY_WATER_TEMP: 'sprayWaterTemp_DENOX',
+  COEFF_STOECH: 'coeffStoech_DENOX',
+  SOLUTION_CONC: 'solutionConc_DENOX',
+  SOLUTION_DENSITY: 'solutionDensity_DENOX',
+  SPRAY_FLOWRATE: 'sprayFlowrate_DENOX',
+  PDC: 'pdc_DENOX',
   CALCULATION_RESULT: 'calculationResult_DENOX'
 };
 

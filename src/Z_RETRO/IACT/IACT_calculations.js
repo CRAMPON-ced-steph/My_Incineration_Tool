@@ -84,8 +84,6 @@ export const performCalculation_IACT = (
     : 0;
   const Qv_air_Nm3_h = Qm_air_kg_h / rho_air;
 
-  console.log('H_in_IACT:', H_in_IACT, 'H_out_IACT:', H_out_IACT, 'Qv_air_Nm3_h:', Qv_air_Nm3_h);
-
   // ── Pression et débit volumique réel ────────────────────────────────────
   const T          = T_amont_IACT;
   const P_mmCE     = parseFloat(P_out_mmCE) - parseFloat(PDC_aero);

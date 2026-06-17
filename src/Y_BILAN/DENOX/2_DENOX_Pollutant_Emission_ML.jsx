@@ -164,7 +164,7 @@ const FlueGasPollutantEmission = ({ innerData, setInnerData, currentLanguage = '
   const scrCalculations = useMemo(() => {
     try {
       const NOx_input_kg_h = masses_pollutant_input.NOx || 0;
-      const NOx_input_mg_Nm3 = (NOx_input_kg_h * 1e6) / Debit_fumees_sec_Nm3_h;
+      const NOx_input_mg_Nm3 = Debit_fumees_sec_Nm3_h !== 0 ? (NOx_input_kg_h * 1e6) / Debit_fumees_sec_Nm3_h : 0;
       const NOx_to_reduce = SCR_enabled ? Math.max(0, NOx_input_mg_Nm3 - NOx_limit_mg_Nm3) : 0;
       const NOx_mass_to_reduce = NOx_to_reduce * Debit_fumees_sec_Nm3_h / 1e6;
 

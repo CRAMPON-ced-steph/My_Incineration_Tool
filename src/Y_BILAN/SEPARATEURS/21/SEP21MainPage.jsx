@@ -60,7 +60,6 @@ const SEP21MainPage = ({ nodeData, title, onSendData, onClose, onGoBack, current
 
   const sendAllData = () => {
     if (!onSendData || typeof onSendData !== 'function') {
-      console.error('❌ ERROR: onSendData callback is not defined or is not a function!');
       alert('Error: Cannot send data. onSendData callback is missing.');
       return;
     }

@@ -252,9 +252,9 @@ H_air_comb_kW
 
 const Energie_recuperee_chaudiere_kW = H_saturated_steam_kW+H_superheated_steam_kW+H_superheated_water_kW+H_blowdown_kW-H_feed_water_kW;
 
-const PCI_kCal_kg = P_incinerateur_kWH/Waste_flow_rate_kg_h*3600/4.1868;
+const PCI_kCal_kg = Waste_flow_rate_kg_h !== 0 ? P_incinerateur_kWH/Waste_flow_rate_kg_h*3600/4.1868 : 0;
 const Energie_du_dechet_kW = PCI_kCal_kg * Waste_flow_rate_kg_h*4.1868/3600;
-const WHB_yield_pourcent = Energie_recuperee_chaudiere_kW/Energie_du_dechet_kW*100;
+const WHB_yield_pourcent = Energie_du_dechet_kW !== 0 ? Energie_recuperee_chaudiere_kW/Energie_du_dechet_kW*100 : 0;
 
  const INCI = {
     H_superheated_steam_kW,

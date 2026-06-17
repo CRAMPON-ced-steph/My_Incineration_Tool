@@ -53,7 +53,6 @@ while (H_IN_IDFAN > H_target) {
   
   // Ajout d'une condition de sécurité pour éviter une boucle infinie
   if (T_in < 50) { // température maximale arbitraire
-      console.warn('Température minimale atteinte');
       break;
   }
 }
