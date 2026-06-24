@@ -108,7 +108,7 @@ const dataELECTROFILTER={
 
   
   const dataFlow={
-    //T_amont_ELECTROFILTER,
+    T_in: nodeData.result.dataFlow.T,
     T,
     P_mmCE,
     Qv_wet_m3_h ,

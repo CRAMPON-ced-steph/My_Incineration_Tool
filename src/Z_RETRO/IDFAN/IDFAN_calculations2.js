@@ -120,6 +120,7 @@ const Id_fan = {
 
   const dataFlow={
     //T_amont_ELECTROFILTER,
+    T_in: T_out,
     T,
     P_mmCE,
     Qv_wet_m3_h ,

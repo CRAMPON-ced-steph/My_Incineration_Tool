@@ -13,6 +13,7 @@ export const performCalculation_SCRUBBER_option_TinTout = (nodeData, PDC_aero) =
   let Qv_wet_m3_h = coeff_Nm3_to_m3(P_mmCE, T) * Qv_wet_Nm3_h;
 
   let dataFlow = {
+    T_in: nodeData.result.dataFlow.T,
     T: nodeData.result.dataFlow.T,
     P_mmCE,
     Qv_wet_m3_h,

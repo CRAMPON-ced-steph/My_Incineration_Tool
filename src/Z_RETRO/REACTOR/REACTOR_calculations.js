@@ -103,6 +103,7 @@ export const performCalculation_REACTOR = (
   };
 
   const dataFlow = {
+    T_in: nodeData.result.dataFlow.T,
     T,
     P_mmCE,
     Qv_wet_m3_h,

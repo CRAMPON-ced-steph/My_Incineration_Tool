@@ -88,7 +88,7 @@ export const performCalculation_WATER_INJECTION_option_T = (nodeData, Tamont, Te
     P_out_mmCE,}
 
   const dataFlow = {
-
+    T_in: nodeData.result.dataFlow.T,
     T,
     P_mmCE,
 

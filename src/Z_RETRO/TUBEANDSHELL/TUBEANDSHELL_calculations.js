@@ -179,6 +179,7 @@ export const performCalculation_TUBEANDSHELL = (
   };
 
   const dataFlow = {
+    T_in:            T_FG_out_node,
     T:               T_FG_in,
     P_mmCE:          P_out_mmCE,
     Qv_wet_m3_h,

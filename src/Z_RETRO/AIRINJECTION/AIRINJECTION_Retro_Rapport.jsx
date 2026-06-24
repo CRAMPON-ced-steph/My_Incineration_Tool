@@ -29,116 +29,248 @@ const KV = ({ label, value, unit = '' }) => (
   </div>
 );
 
-const AIRINJECTION_Retro_Rapport = ({ calculationResult, inputParams, onClose }) => {
-  const r = calculationResult || {};
-  const df = r.dataFlow || {};
-  const d = r.dataAIRINJECTION || {};
-  const p = inputParams || {};
+const GasTable = ({ df }) => {
+  const rows = [
+    { name: 'CO₂', nm3h: df.Qv_CO2_Nm3_h, kgh: df.Qm_CO2_kg_h, hkj: df.H_CO2_kj, pctWet: df.CO2_humide_pourcent, pctDry: df.CO2_dry_pourcent },
+    { name: 'H₂O', nm3h: df.Qv_H2O_Nm3_h, kgh: df.Qm_H2O_kg_h, hkj: df.H_H2O_kj, pctWet: df.H2O_pourcent, pctDry: undefined },
+    { name: 'O₂',  nm3h: df.Qv_O2_Nm3_h,  kgh: df.Qm_O2_kg_h,  hkj: df.H_O2_kj,  pctWet: df.O2_humide_pourcent, pctDry: df.O2_dry_pourcent },
+    { name: 'N₂',  nm3h: df.Qv_N2_Nm3_h,  kgh: df.Qm_N2_kg_h,  hkj: df.H_N2_kj,  pctWet: df.N2_humide_pourcent, pctDry: undefined },
+  ];
+  const totNm3h = rows.reduce((s, r) => s + (parseFloat(r.nm3h) || 0), 0);
+  const totKgh  = rows.reduce((s, r) => s + (parseFloat(r.kgh)  || 0), 0);
+  const totHkj  = rows.reduce((s, r) => s + (parseFloat(r.hkj)  || 0), 0);
+  return (
+    <table style={styles.table}>
+      <thead><tr>
+        <th style={styles.th}>Composant</th><th style={styles.th}>Nm³/h</th><th style={styles.th}>kg/h</th>
+        <th style={styles.th}>Enthalpie [kJ/h]</th><th style={styles.th}>% vol (humide)</th><th style={styles.th}>% vol (sec)</th>
+      </tr></thead>
+      <tbody>
+        {rows.map((r) => (
+          <tr key={r.name}>
+            <td style={styles.tdLabel}>{r.name}</td>
+            <td style={styles.td}>{fmt(r.nm3h, 0)}</td><td style={styles.td}>{fmt(r.kgh, 0)}</td>
+            <td style={styles.td}>{fmt(r.hkj, 0)}</td>
+            <td style={styles.td}>{r.pctWet !== undefined ? fmt(r.pctWet, 2) : '—'}</td>
+            <td style={styles.td}>{r.pctDry !== undefined ? fmt(r.pctDry, 2) : '—'}</td>
+          </tr>
+        ))}
+        <tr style={{ fontWeight: 'bold', background: '#eaf0fb' }}>
+          <td style={styles.tdLabel}>Total</td><td style={styles.td}>{fmt(totNm3h, 0)}</td>
+          <td style={styles.td}>{fmt(totKgh, 0)}</td><td style={styles.td}>{fmt(totHkj, 0)}</td>
+          <td style={styles.td}>—</td><td style={styles.td}>—</td>
+        </tr>
+      </tbody>
+    </table>
+  );
+};
+
+export default function AIRINJECTION_Retro_Rapport({ calculationResult, inputParams, onClose }) {
+  const df = calculationResult?.dataFlow || {};
+  const da = calculationResult?.dataAIRINJECTION || {};
 
   return (
     <div style={styles.overlay}>
       <div style={styles.modal}>
         <div style={styles.header}>
-          <h2 style={styles.headerTitle}>AIR INJECTION — Rapport rétro-calcul</h2>
-          <button onClick={onClose} style={styles.closeBtn}>✕ Fermer</button>
+          <h1 style={styles.headerTitle}>Injection d'air (AIRINJECTION) — Rapport Rétro</h1>
+          <button style={styles.closeBtn} onClick={onClose}>✕ Fermer</button>
         </div>
-
         <div style={styles.scrollArea}>
           <div style={styles.reportContent}>
-            <h1 style={styles.mainTitle}>Rapport de synthèse — Mode rétro-calcul AIRINJECTION</h1>
+            <div style={styles.mainTitle}>Injection d'air (AIRINJECTION)</div>
 
-            <Section title="1. Paramètres d'entrée">
-              <div style={styles.twoCol}>
-                <SubSection title="Conditions">
-                  <KV label="T fumées amont" value={fmt(p.T_amont_AIRINJECTION, 1)} unit="°C" />
-                  <KV label="T air parasite" value={fmt(p.T_air_parasite, 1)} unit="°C" />
-                  <KV label="Q air parasite" value={fmt(p.Qair_parasite, 0)} unit="m³/h" />
-                  <KV label="PDC aérodynamique" value={fmt(p.PDC_aero, 0)} unit="mmCE" />
-                </SubSection>
-                <SubSection title="Gaz entrant">
-                  <KV label="Débit humide amont" value={fmt(df.Qv_wet_Nm3_h, 0)} unit="Nm³/h" />
-                  <KV label="Débit sec amont" value={fmt(df.Qv_sec_Nm3_h, 0)} unit="Nm³/h" />
-                  <KV label="T amont" value={fmt(df.T, 1)} unit="°C" />
-                </SubSection>
-              </div>
-            </Section>
-
-            <Section title="2. Air parasite">
-              <div style={styles.twoCol}>
-                <SubSection title="Débits volumiques">
-                  <KV label="Q air entrant" value={fmt(d.Qv_air_entrant_Nm3_h, 0)} unit="Nm³/h" />
-                  <KV label="Q air parasite" value={fmt(d.Qair_parasite, 0)} unit="Nm³/h" />
-                  <KV label="Q O₂ air (vol)" value={fmt(d.Qv_O2_air_entrant_Nm3_h, 0)} unit="Nm³/h" />
-                  <KV label="Q N₂ air (vol)" value={fmt(d.Qv_N2_air_entrant_Nm3_h, 0)} unit="Nm³/h" />
-                </SubSection>
-                <SubSection title="Débits massiques">
-                  <KV label="Q air entrant" value={fmt(d.Qm_air_entrant_kg_h, 0)} unit="kg/h" />
-                  <KV label="Q O₂ air" value={fmt(d.Qm_O2_air_entrant_kg_h, 0)} unit="kg/h" />
-                  <KV label="Q N₂ air" value={fmt(d.Qm_N2_air_entrant_kg_h, 0)} unit="kg/h" />
-                </SubSection>
-              </div>
-            </Section>
-
-            <Section title="3. Gaz de sortie">
-              <div style={styles.twoCol}>
-                <SubSection title="Débits sortie">
-                  <KV label="Débit humide" value={fmt(df.Qv_wet_Nm3_h, 0)} unit="Nm³/h" />
-                  <KV label="Débit sec" value={fmt(df.Qv_sec_Nm3_h, 0)} unit="Nm³/h" />
-                </SubSection>
-                <SubSection title="Conditions sortie">
-                  <KV label="Température sortie" value={fmt(df.T, 1)} unit="°C" />
-                  <KV label="Pression sortie" value={fmt(df.P_mmCE, 0)} unit="mmCE" />
-                </SubSection>
-              </div>
-            </Section>
-
-            <Section title="4. Synthèse">
+            {/* Section 1 — Synthèse */}
+            <Section title="1. Synthèse">
               <div style={styles.tagRow}>
-                {[
-                  { label: 'Q air entrant [Nm³/h]', val: fmt(d.Qv_air_entrant_Nm3_h, 0), color: '#4a90e2' },
-                  { label: 'Q air parasite [Nm³/h]', val: fmt(d.Qair_parasite, 0), color: '#e74c3c' },
-                  { label: 'PDC aéro [mmCE]', val: fmt(p.PDC_aero, 0), color: '#2ecc71' },
-                  { label: 'T amont [°C]', val: fmt(df.T, 1), color: '#f39c12' },
-                ].map(({ label, val, color }) => (
-                  <div key={label} style={{ ...styles.tag, borderLeft: `4px solid ${color}` }}>
-                    <span style={styles.tagLabel}>{label}</span>
-                    <span style={{ ...styles.tagValue, color }}>{val}</span>
-                  </div>
-                ))}
+                <div style={styles.tag}>
+                  <span style={styles.tagLabel}>T entrée (amont)</span>
+                  <span style={styles.tagValue}>{fmt(df.T, 1)} °C</span>
+                </div>
+                <div style={styles.tag}>
+                  <span style={styles.tagLabel}>T sortie (aval)</span>
+                  <span style={styles.tagValue}>{fmt(df.T_in, 1)} °C</span>
+                </div>
+                <div style={styles.tag}>
+                  <span style={styles.tagLabel}>Débit humide</span>
+                  <span style={styles.tagValue}>{fmt(df.Qv_wet_Nm3_h, 0)} Nm³/h</span>
+                </div>
+                <div style={styles.tag}>
+                  <span style={styles.tagLabel}>Débit sec</span>
+                  <span style={styles.tagValue}>{fmt(df.Qv_sec_Nm3_h, 0)} Nm³/h</span>
+                </div>
+                <div style={styles.tag}>
+                  <span style={styles.tagLabel}>Débit massique</span>
+                  <span style={styles.tagValue}>{fmt(df.Qm_tot_kg_h, 0)} kg/h</span>
+                </div>
+                <div style={styles.tag}>
+                  <span style={styles.tagLabel}>Air parasite</span>
+                  <span style={styles.tagValue}>{fmt(da.Qair_parasite, 0)} Nm³/h</span>
+                </div>
+                <div style={styles.tag}>
+                  <span style={styles.tagLabel}>Puissance</span>
+                  <span style={styles.tagValue}>{fmt(df.H_tot_kW, 1)} kW</span>
+                </div>
+                <div style={styles.tag}>
+                  <span style={styles.tagLabel}>O₂ sec</span>
+                  <span style={styles.tagValue}>{fmt(df.O2_dry_pourcent, 2)} %</span>
+                </div>
               </div>
             </Section>
 
-            <div style={styles.footer}>Rapport généré automatiquement — {new Date().toLocaleDateString()}</div>
+            {/* Section 2 — Fumées en entrée */}
+            <Section title="2. Fumées en entrée (côté amont AIRINJECTION)">
+              <SubSection>
+                <GasTable df={df} />
+              </SubSection>
+              <SubSection>
+                <div style={styles.twoCol}>
+                  <div>
+                    <KV label="T entrée fumées" value={fmt(df.T, 1)} unit="°C" />
+                    <KV label="T sortie fumées (aval)" value={fmt(df.T_in, 1)} unit="°C" />
+                    <KV label="Pression sortie" value={fmt(df.P_mmCE, 1)} unit="mmCE" />
+                  </div>
+                  <div>
+                    <KV label="Débit humide" value={fmt(df.Qv_wet_Nm3_h, 0)} unit="Nm³/h" />
+                    <KV label="Débit sec" value={fmt(df.Qv_sec_Nm3_h, 0)} unit="Nm³/h" />
+                    <KV label="Débit massique total" value={fmt(df.Qm_tot_kg_h, 0)} unit="kg/h" />
+                  </div>
+                </div>
+              </SubSection>
+            </Section>
+
+            {/* Section 3 — Enthalpies */}
+            <Section title="3. Bilan enthalpique">
+              <SubSection>
+                <div style={styles.twoCol}>
+                  <div>
+                    <KV label="H CO₂" value={fmt(df.H_CO2_kj, 0)} unit="kJ/h" />
+                    <KV label="H H₂O" value={fmt(df.H_H2O_kj, 0)} unit="kJ/h" />
+                    <KV label="H O₂"  value={fmt(df.H_O2_kj, 0)}  unit="kJ/h" />
+                    <KV label="H N₂"  value={fmt(df.H_N2_kj, 0)}  unit="kJ/h" />
+                  </div>
+                  <div>
+                    <KV label="H total" value={fmt(df.H_tot_kj, 0)} unit="kJ/h" />
+                    <KV label="Puissance totale" value={fmt(df.H_tot_kW, 2)} unit="kW" />
+                  </div>
+                </div>
+              </SubSection>
+            </Section>
+
+            {/* Section 4 — Air parasite AIRINJECTION */}
+            <Section title="4. Air parasite (AIRINJECTION)">
+              <SubSection>
+                <div style={styles.twoCol}>
+                  <div>
+                    <KV label="Air parasite (fuite)" value={fmt(da.Qair_parasite, 0)} unit="Nm³/h" />
+                    <KV label="Débit air entrant" value={fmt(da.Qv_air_entrant_Nm3_h, 0)} unit="Nm³/h" />
+                    <KV label="Débit air entrant" value={fmt(da.Qm_air_entrant_kg_h, 0)} unit="kg/h" />
+                  </div>
+                  <div>
+                    <KV label="O₂ air entrant" value={fmt(da.Qv_O2_air_entrant_Nm3_h, 0)} unit="Nm³/h" />
+                    <KV label="O₂ air entrant" value={fmt(da.Qm_O2_air_entrant_kg_h, 0)} unit="kg/h" />
+                    <KV label="N₂ air entrant" value={fmt(da.Qv_N2_air_entrant_Nm3_h, 0)} unit="Nm³/h" />
+                    <KV label="N₂ air entrant" value={fmt(da.Qm_N2_air_entrant_kg_h, 0)} unit="kg/h" />
+                    <KV label="Pression sortie" value={fmt(df.P_mmCE, 1)} unit="mmCE" />
+                  </div>
+                </div>
+              </SubSection>
+            </Section>
+
+            {/* Section 5 — Composition % */}
+            <Section title="5. Composition volumique des fumées">
+              <SubSection>
+                <div style={styles.twoCol}>
+                  <div>
+                    <KV label="O₂ (sec)"     value={fmt(df.O2_dry_pourcent, 2)}     unit="%" />
+                    <KV label="O₂ (humide)"  value={fmt(df.O2_humide_pourcent, 2)}  unit="%" />
+                    <KV label="CO₂ (sec)"    value={fmt(df.CO2_dry_pourcent, 2)}    unit="%" />
+                    <KV label="CO₂ (humide)" value={fmt(df.CO2_humide_pourcent, 2)} unit="%" />
+                  </div>
+                  <div>
+                    <KV label="H₂O (humide)" value={fmt(df.H2O_pourcent, 2)}        unit="%" />
+                    <KV label="N₂ (humide)"  value={fmt(df.N2_humide_pourcent, 2)}  unit="%" />
+                  </div>
+                </div>
+              </SubSection>
+            </Section>
+
+            <div style={styles.footer}>Rapport généré automatiquement — AIRINJECTION Retro</div>
           </div>
         </div>
       </div>
     </div>
   );
-};
+}
 
+// ── Styles ──
 const styles = {
-  overlay: { position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.6)', zIndex: 9999, display: 'flex', alignItems: 'stretch', justifyContent: 'center', padding: '20px' },
-  modal: { background: '#fff', borderRadius: 8, display: 'flex', flexDirection: 'column', width: '100%', maxWidth: 1100, boxShadow: '0 8px 32px rgba(0,0,0,0.4)', overflow: 'hidden' },
-  header: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px', background: '#1a3a6b', flexShrink: 0 },
+  overlay: {
+    position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.6)',
+    zIndex: 9999, display: 'flex', alignItems: 'stretch', justifyContent: 'center',
+    padding: '20px',
+  },
+  modal: {
+    background: '#fff', borderRadius: 8, display: 'flex', flexDirection: 'column',
+    width: '100%', maxWidth: 1100, boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+    overflow: 'hidden',
+  },
+  header: {
+    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+    padding: '14px 20px', background: '#1a3a6b', flexShrink: 0,
+  },
   headerTitle: { margin: 0, fontSize: 17, fontWeight: 'bold', color: '#fff' },
-  closeBtn: { padding: '7px 14px', border: 'none', borderRadius: 4, cursor: 'pointer', fontWeight: 'bold', fontSize: 13, background: '#c0392b', color: '#fff' },
+  closeBtn: {
+    padding: '7px 14px', border: 'none', borderRadius: 4, cursor: 'pointer',
+    fontWeight: 'bold', fontSize: 13, background: '#c0392b', color: '#fff',
+  },
   scrollArea: { flex: 1, overflowY: 'auto', background: '#f0f2f5', padding: '20px' },
-  reportContent: { background: '#fff', maxWidth: 1000, margin: '0 auto', padding: '20px 24px', fontFamily: 'Arial, sans-serif', fontSize: 13, color: '#222' },
-  mainTitle: { fontSize: 20, fontWeight: 'bold', color: '#1a3a6b', borderBottom: '3px solid #4a90e2', paddingBottom: 8, marginBottom: 24 },
+  reportContent: {
+    background: '#fff', maxWidth: 1000, margin: '0 auto',
+    padding: '20px 24px', fontFamily: 'Arial, sans-serif', fontSize: 13, color: '#222',
+  },
+  mainTitle: {
+    fontSize: 20, fontWeight: 'bold', color: '#1a3a6b',
+    borderBottom: '3px solid #4a90e2', paddingBottom: 8, marginBottom: 24,
+  },
   section: { marginBottom: 28, border: '1px solid #d0daea', borderRadius: 6, overflow: 'hidden' },
-  sectionTitle: { fontSize: 15, fontWeight: 'bold', color: '#fff', background: '#4a90e2', margin: 0, padding: '8px 14px' },
+  sectionTitle: {
+    fontSize: 15, fontWeight: 'bold', color: '#fff',
+    background: '#4a90e2', margin: 0, padding: '8px 14px',
+  },
   subSection: { padding: '10px 14px' },
-  subTitle: { fontSize: 13, fontWeight: 'bold', color: '#1a3a6b', margin: '0 0 6px 0', borderBottom: '1px solid #e0e8f4', paddingBottom: 3 },
+  subTitle: {
+    fontSize: 13, fontWeight: 'bold', color: '#1a3a6b',
+    margin: '0 0 6px 0', borderBottom: '1px solid #e0e8f4', paddingBottom: 3,
+  },
   twoCol: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 0 },
-  kvRow: { display: 'flex', justifyContent: 'space-between', padding: '3px 0', borderBottom: '1px dotted #e8e8e8' },
+  kvRow: {
+    display: 'flex', justifyContent: 'space-between',
+    padding: '3px 0', borderBottom: '1px dotted #e8e8e8',
+  },
   kvLabel: { color: '#444', flex: 1 },
   kvValue: { fontWeight: 'bold', color: '#1a3a6b', minWidth: 80, textAlign: 'right' },
   kvUnit: { fontWeight: 'normal', color: '#666', fontSize: 11 },
+  table: { width: '100%', borderCollapse: 'collapse', fontSize: 11, marginBottom: 8 },
+  th: {
+    background: '#eaf0fb', border: '1px solid #c5d5ea',
+    padding: '4px 6px', textAlign: 'center', fontWeight: 'bold', color: '#1a3a6b',
+  },
+  td: { border: '1px solid #dde6f0', padding: '3px 6px', textAlign: 'center', color: '#222' },
+  tdLabel: {
+    border: '1px solid #dde6f0', padding: '3px 8px',
+    textAlign: 'left', color: '#333', fontStyle: 'italic',
+  },
   tagRow: { display: 'flex', flexWrap: 'wrap', gap: 10, padding: '10px 14px' },
-  tag: { background: '#f0f5ff', border: '1px solid #c5d5ea', borderRadius: 4, padding: '6px 12px', display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 140 },
+  tag: {
+    background: '#f0f5ff', border: '1px solid #c5d5ea', borderRadius: 4,
+    padding: '6px 12px', display: 'flex', flexDirection: 'column',
+    alignItems: 'center', minWidth: 140,
+  },
   tagLabel: { fontSize: 10, color: '#555' },
   tagValue: { fontSize: 15, fontWeight: 'bold', color: '#1a3a6b' },
-  footer: { marginTop: 24, textAlign: 'right', fontSize: 11, color: '#999', borderTop: '1px solid #eee', paddingTop: 8 },
+  footer: {
+    marginTop: 24, textAlign: 'right', fontSize: 11,
+    color: '#999', borderTop: '1px solid #eee', paddingTop: 8,
+  },
 };
-
-export default AIRINJECTION_Retro_Rapport;

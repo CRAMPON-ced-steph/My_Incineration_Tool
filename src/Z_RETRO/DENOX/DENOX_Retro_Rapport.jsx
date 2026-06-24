@@ -29,17 +29,54 @@ const KV = ({ label, value, unit = '' }) => (
   </div>
 );
 
+const GasTable = ({ df }) => {
+  const Qm_H2O = df.Qm_H2O_kg_h ?? df.Qm_H2O_total_kg_h ?? 0;
+  const rows = [
+    { name: 'CO₂', nm3h: df.Qv_CO2_Nm3_h, kgh: df.Qm_CO2_kg_h, hkj: df.H_CO2_kj, pctWet: df.CO2_humide_pourcent, pctDry: df.CO2_dry_pourcent },
+    { name: 'H₂O', nm3h: df.Qv_H2O_Nm3_h, kgh: Qm_H2O, hkj: df.H_H2O_kj, pctWet: df.H2O_pourcent, pctDry: undefined },
+    { name: 'O₂', nm3h: df.Qv_O2_Nm3_h, kgh: df.Qm_O2_kg_h, hkj: df.H_O2_kj, pctWet: df.O2_humide_pourcent, pctDry: df.O2_dry_pourcent },
+    { name: 'N₂', nm3h: df.Qv_N2_Nm3_h, kgh: df.Qm_N2_kg_h, hkj: df.H_N2_kj, pctWet: df.N2_humide_pourcent, pctDry: undefined },
+  ];
+  const totNm3h = rows.reduce((s, r) => s + (parseFloat(r.nm3h) || 0), 0);
+  const totKgh  = rows.reduce((s, r) => s + (parseFloat(r.kgh)  || 0), 0);
+  const totHkj  = rows.reduce((s, r) => s + (parseFloat(r.hkj)  || 0), 0);
+  return (
+    <table style={styles.table}>
+      <thead><tr>
+        <th style={styles.th}>Composant</th><th style={styles.th}>Nm³/h</th><th style={styles.th}>kg/h</th>
+        <th style={styles.th}>Enthalpie [kJ/h]</th><th style={styles.th}>% vol (humide)</th><th style={styles.th}>% vol (sec)</th>
+      </tr></thead>
+      <tbody>
+        {rows.map((r) => (
+          <tr key={r.name}>
+            <td style={styles.tdLabel}>{r.name}</td>
+            <td style={styles.td}>{fmt(r.nm3h, 0)}</td><td style={styles.td}>{fmt(r.kgh, 0)}</td>
+            <td style={styles.td}>{fmt(r.hkj, 0)}</td>
+            <td style={styles.td}>{r.pctWet !== undefined ? fmt(r.pctWet, 2) : '—'}</td>
+            <td style={styles.td}>{r.pctDry !== undefined ? fmt(r.pctDry, 2) : '—'}</td>
+          </tr>
+        ))}
+        <tr style={{ fontWeight: 'bold', background: '#eaf0fb' }}>
+          <td style={styles.tdLabel}>Total</td><td style={styles.td}>{fmt(totNm3h, 0)}</td>
+          <td style={styles.td}>{fmt(totKgh, 0)}</td><td style={styles.td}>{fmt(totHkj, 0)}</td>
+          <td style={styles.td}>—</td><td style={styles.td}>—</td>
+        </tr>
+      </tbody>
+    </table>
+  );
+};
+
 const DENOX_Retro_Rapport = ({ calculationResult, inputParams, onClose }) => {
   const r = calculationResult || {};
   const df = r.dataFlow || {};
-  const d = r.dataDENOX || {};
+  const dd = r.dataDENOX || {};
   const p = inputParams || {};
 
   return (
     <div style={styles.overlay}>
       <div style={styles.modal}>
         <div style={styles.header}>
-          <h2 style={styles.headerTitle}>DeNOx — Rapport rétro-calcul</h2>
+          <h2 style={styles.headerTitle}>DeNOx (DENOX) — Rapport rétro-calcul</h2>
           <button onClick={onClose} style={styles.closeBtn}>✕ Fermer</button>
         </div>
 
@@ -47,57 +84,91 @@ const DENOX_Retro_Rapport = ({ calculationResult, inputParams, onClose }) => {
           <div style={styles.reportContent}>
             <h1 style={styles.mainTitle}>Rapport de synthèse — Mode rétro-calcul DENOX</h1>
 
+            {/* Section 1 */}
             <Section title="1. Paramètres d'entrée">
               <div style={styles.twoCol}>
-                <SubSection title="Objectif NOx">
+                <SubSection title="Conditions">
                   <KV label="Cible NOx" value={fmt(p.targetNOx, 0)} unit="mg/Nm³" />
                   <KV label="T eau spray" value={fmt(p.sprayWaterTemp, 1)} unit="°C" />
-                  <KV label="Coef. stœchiométrique" value={fmt(p.coeffStoech, 2)} unit="—" />
-                  <KV label="PDC" value={fmt(p.pdc, 0)} unit="mmCE" />
+                  <KV label="T entrée fumées" value={fmt(df.T, 1)} unit="°C" />
+                  <KV label="T sortie fumées" value={fmt(df.T_in, 1)} unit="°C" />
+                  <KV label="PDC" value={fmt(p.PDC, 0)} unit="mmCE" />
                 </SubSection>
-                <SubSection title="Solution réductrice">
-                  <KV label="Concentration solution" value={fmt(p.solutionConc, 1)} unit="%" />
-                  <KV label="Densité solution" value={fmt(p.solutionDensity, 0)} unit="kg/m³" />
-                  <KV label="Débit spray" value={fmt(p.sprayFlowrate, 1)} unit="l/h" />
-                </SubSection>
-              </div>
-            </Section>
-
-            <Section title="2. Gaz entrant">
-              <div style={styles.twoCol}>
-                <SubSection title="Débits">
+                <SubSection title="Gaz entrant (aval)">
                   <KV label="Débit humide" value={fmt(df.Qv_wet_Nm3_h, 0)} unit="Nm³/h" />
                   <KV label="Débit sec" value={fmt(df.Qv_sec_Nm3_h, 0)} unit="Nm³/h" />
-                  <KV label="T amont" value={fmt(df.T, 1)} unit="°C" />
-                </SubSection>
-                <SubSection title="NOx entrant">
-                  <KV label="Concentration NOx" value={fmt(d.NOx_concentration_mg_Nm3, 0)} unit="mg/Nm³" />
-                  <KV label="Débit sec (real)" value={fmt(d.Qv_sec_m3_h, 0)} unit="m³/h" />
-                  <KV label="Débit sec 11% O₂" value={fmt(d.Qv_sec_11pourcent_Nm3_h, 0)} unit="Nm³/h" />
+                  <KV label="Débit massique" value={fmt(df.Qm_tot_kg_h, 0)} unit="kg/h" />
                 </SubSection>
               </div>
             </Section>
 
-            <Section title="3. Résultats de réduction NOx">
+            {/* Section 2 */}
+            <Section title="2. Composition calculée des fumées">
               <div style={styles.twoCol}>
-                <SubSection title="Quantités molaires">
-                  <KV label="NH₃ injecté" value={fmt(d.Quantite_NH3_mol_h, 0)} unit="mol/h" />
-                  <KV label="NO à éliminer" value={fmt(d.Quantite_NO_a_eliminer_mol_h, 0)} unit="mol/h" />
-                  <KV label="NOx éliminable" value={fmt(d.Quantite_NOx_eliminable_kg_h, 2)} unit="kg/h" />
+                <SubSection title="Débits volumiques">
+                  <KV label="Débit humide" value={fmt(df.Qv_wet_Nm3_h, 0)} unit="Nm³/h" />
+                  <KV label="Débit sec" value={fmt(df.Qv_sec_Nm3_h, 0)} unit="Nm³/h" />
+                  <KV label="Débit sec 11% O₂" value={fmt(dd.Qv_sec_11pourcent_Nm3_h, 0)} unit="Nm³/h" />
                 </SubSection>
-                <SubSection title="Consommation réactif">
-                  <KV label="Conso. stœchio." value={fmt(d.Conso_stoechio_reactif_kg_h, 2)} unit="kg/h" />
+                <SubSection title="Composition humide">
+                  <KV label="CO₂" value={fmt(df.CO2_humide_pourcent, 2)} unit="%" />
+                  <KV label="H₂O" value={fmt(df.H2O_pourcent, 2)} unit="%" />
+                  <KV label="O₂" value={fmt(df.O2_humide_pourcent, 2)} unit="%" />
+                  <KV label="N₂" value={fmt(df.N2_humide_pourcent, 2)} unit="%" />
+                </SubSection>
+              </div>
+              <SubSection title="">
+                <GasTable df={df} />
+              </SubSection>
+            </Section>
+
+            {/* Section 3 */}
+            <Section title="3. Bilan enthalpique">
+              <div style={styles.twoCol}>
+                <SubSection title="Enthalpies par composant">
+                  <KV label="H CO₂" value={fmt(df.H_CO2_kj, 0)} unit="kJ/h" />
+                  <KV label="H H₂O" value={fmt(df.H_H2O_kj, 0)} unit="kJ/h" />
+                  <KV label="H O₂" value={fmt(df.H_O2_kj, 0)} unit="kJ/h" />
+                  <KV label="H N₂" value={fmt(df.H_N2_kj, 0)} unit="kJ/h" />
+                </SubSection>
+                <SubSection title="Puissance thermique">
+                  <KV label="H total" value={fmt(df.H_tot_kj, 0)} unit="kJ/h" />
+                  <KV label="H total" value={fmt(df.H_tot_kW, 1)} unit="kW" />
+                  <KV label="H total" value={fmt(df.H_tot_kW != null ? df.H_tot_kW / 1000 : undefined, 3)} unit="MW" />
+                  <KV label="Débit massique total" value={fmt(df.Qm_tot_kg_h, 0)} unit="kg/h" />
                 </SubSection>
               </div>
             </Section>
 
-            <Section title="4. Synthèse">
+            {/* Section 4 */}
+            <Section title="4. Traitement NOx">
+              <div style={styles.twoCol}>
+                <SubSection title="Réactif">
+                  <KV label="Conso. stœchio. réactif" value={fmt(dd.Conso_stoechio_reactif_kg_h, 2)} unit="kg/h" />
+                  <KV label="Quantité NH₃" value={fmt(dd.Quantite_NH3_mol_h, 0)} unit="mol/h" />
+                  <KV label="Quantité NO à éliminer" value={fmt(dd.Quantite_NO_a_eliminer_mol_h, 0)} unit="mol/h" />
+                  <KV label="NOx éliminable" value={fmt(dd.Quantite_NOx_eliminable_kg_h, 2)} unit="kg/h" />
+                </SubSection>
+                <SubSection title="Émissions">
+                  <KV label="Concentration NOx" value={fmt(dd.NOx_concentration_mg_Nm3, 1)} unit="mg/Nm³" />
+                  <KV label="Débit sec 11% O₂" value={fmt(dd.Qv_sec_11pourcent_Nm3_h, 0)} unit="Nm³/h @11%O₂" />
+                  <KV label="Pression sortie" value={fmt(df.P_mmCE, 0)} unit="mmCE" />
+                </SubSection>
+              </div>
+            </Section>
+
+            {/* Section 5 */}
+            <Section title="5. Synthèse">
               <div style={styles.tagRow}>
                 {[
-                  { label: 'NOx cible [mg/Nm³]', val: fmt(p.targetNOx, 0), color: '#e74c3c' },
-                  { label: 'NOx mesuré [mg/Nm³]', val: fmt(d.NOx_concentration_mg_Nm3, 0), color: '#f39c12' },
-                  { label: 'NH₃ injecté [mol/h]', val: fmt(d.Quantite_NH3_mol_h, 0), color: '#4a90e2' },
-                  { label: 'Conso réactif [kg/h]', val: fmt(d.Conso_stoechio_reactif_kg_h, 2), color: '#2ecc71' },
+                  { label: 'T entrée [°C]',         val: fmt(df.T, 1),                          color: '#e67e22' },
+                  { label: 'T sortie [°C]',          val: fmt(df.T_in, 1),                       color: '#e74c3c' },
+                  { label: 'Débit humide [Nm³/h]',   val: fmt(df.Qv_wet_Nm3_h, 0),              color: '#4a90e2' },
+                  { label: 'Débit sec [Nm³/h]',      val: fmt(df.Qv_sec_Nm3_h, 0),              color: '#2980b9' },
+                  { label: 'Débit massique [kg/h]',  val: fmt(df.Qm_tot_kg_h, 0),               color: '#2ecc71' },
+                  { label: 'NOx [mg/Nm³]',           val: fmt(dd.NOx_concentration_mg_Nm3, 1),  color: '#8e44ad' },
+                  { label: 'Puissance [kW]',         val: fmt(df.H_tot_kW, 1),                  color: '#f39c12' },
+                  { label: 'O₂ sec [%]',             val: fmt(df.O2_dry_pourcent, 2),            color: '#9b59b6' },
                 ].map(({ label, val, color }) => (
                   <div key={label} style={{ ...styles.tag, borderLeft: `4px solid ${color}` }}>
                     <span style={styles.tagLabel}>{label}</span>
@@ -133,6 +204,10 @@ const styles = {
   kvLabel: { color: '#444', flex: 1 },
   kvValue: { fontWeight: 'bold', color: '#1a3a6b', minWidth: 80, textAlign: 'right' },
   kvUnit: { fontWeight: 'normal', color: '#666', fontSize: 11 },
+  table: { width: '100%', borderCollapse: 'collapse', fontSize: 11, marginBottom: 8 },
+  th: { background: '#eaf0fb', border: '1px solid #c5d5ea', padding: '4px 6px', textAlign: 'center', fontWeight: 'bold', color: '#1a3a6b' },
+  td: { border: '1px solid #dde6f0', padding: '3px 6px', textAlign: 'center', color: '#222' },
+  tdLabel: { border: '1px solid #dde6f0', padding: '3px 8px', textAlign: 'left', color: '#333', fontStyle: 'italic' },
   tagRow: { display: 'flex', flexWrap: 'wrap', gap: 10, padding: '10px 14px' },
   tag: { background: '#f0f5ff', border: '1px solid #c5d5ea', borderRadius: 4, padding: '6px 12px', display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 140 },
   tagLabel: { fontSize: 10, color: '#555' },

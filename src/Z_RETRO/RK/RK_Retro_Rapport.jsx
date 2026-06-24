@@ -139,9 +139,15 @@ const RK_Retro_Rapport = ({ calculationResult, nodeData, inputParams, onClose })
                 </SubSection>
                 <SubSection title="Données d'entrée combustion">
                   {isNCV ? (
-                    <KV label="PCI déchet (donné)" value={fmt(p.NCV_kcal_kg, 0)} unit="kcal/kg" />
+                    <>
+                      <KV label="PCI déchet (imposé)" value={fmt(p.NCV_kcal_kg, 0)} unit="kcal/kg" />
+                      <KV label="Débit déchets (calculé)" value={fmt(r.MasseDechet, 0)} unit="kg/h" />
+                    </>
                   ) : (
-                    <KV label="Débit déchets (donné)" value={fmt(p.Masse_dechet_kg_h, 0)} unit="kg/h" />
+                    <>
+                      <KV label="Débit déchets (imposé)" value={fmt(p.Masse_dechet_kg_h, 0)} unit="kg/h" />
+                      <KV label="PCI déchet (calculé)" value={fmt(r.NCV, 0)} unit="kcal/kg" />
+                    </>
                   )}
                   {isWithWHB && (
                     <KV

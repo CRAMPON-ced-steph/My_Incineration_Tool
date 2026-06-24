@@ -195,7 +195,9 @@ export const translations = {
     // === camelCase keys for SCRUBBER_Report ===
     reportTitle_SCRUBBER: 'Laveur de fumées (Scrubber) — Rapport de synthèse',
     combustionGases: 'Gaz de combustion',
+    inletTemp: 'Température d\'entrée',
     outletTemp: 'Température de sortie',
+    waterInjected: 'Eau injectée / retirée',
     o2Dry: 'O₂ mesuré (sec)',
     wetFlowTotal: 'Débit humide total [kg/h]',
     dryFlowNm3h: 'Débit sec [Nm³/h]',
@@ -368,7 +370,9 @@ export const translations = {
     // === camelCase keys for SCRUBBER_Report ===
     reportTitle_SCRUBBER: 'Flue Gas Scrubber — Synthesis Report',
     combustionGases: 'Flue Gas',
+    inletTemp: 'Inlet temperature',
     outletTemp: 'Outlet temperature',
+    waterInjected: 'Water injected / removed',
     o2Dry: 'O₂ measured (dry)',
     wetFlowTotal: 'Total wet flow [kg/h]',
     dryFlowNm3h: 'Dry flow [Nm³/h]',
@@ -541,7 +545,9 @@ export const translations = {
     // === camelCase keys for SCRUBBER_Report ===
     reportTitle_SCRUBBER: 'Rauchgaswäscher (Scrubber) — Synthesebericht',
     combustionGases: 'Rauchgase',
+    inletTemp: 'Eintrittstemperatur',
     outletTemp: 'Austrittstemperatur',
+    waterInjected: 'Eingespritztes / entferntes Wasser',
     o2Dry: 'O₂ gemessen (trocken)',
     wetFlowTotal: 'Gesamter Feuchtrauchgasstrom [kg/h]',
     dryFlowNm3h: 'Trockenstrom [Nm³/h]',

@@ -94,6 +94,7 @@ let T=T_final;
   const dataCOOLINGTOWER = {H_tot_intermediaire_kj,H_tot_intermediaire_kW, H_vapeur_kJ, H_vapeur_kW, T_intermediaire, T_final};
 
   const dataFlow = {
+    T_in: Taval,
     T,
     P_mmCE,
     Qv_wet_m3_h,

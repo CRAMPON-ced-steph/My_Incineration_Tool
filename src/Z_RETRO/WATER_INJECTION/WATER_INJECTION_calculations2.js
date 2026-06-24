@@ -49,6 +49,7 @@ export const performCalculation_WATER_INJECTION_option_Qeau = (nodeData, Qeau, T
   return {
     dataWATER_INJECTION: { Qeau },
     dataFlow: {
+      T_in: Taval,
       T,
       P_mmCE,
       Qv_wet_m3_h,

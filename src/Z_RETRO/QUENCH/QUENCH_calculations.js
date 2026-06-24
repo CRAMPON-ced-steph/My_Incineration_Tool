@@ -90,7 +90,8 @@ export const performCalculation_QUENCH_option_T = (nodeData, Tamont, Teau, PDC_a
     P_out_mmCE,}
  
   const dataFlow = {
-  
+
+    T_in: nodeData.result.dataFlow.T,
     T,
     P_mmCE,
 

@@ -87,6 +87,7 @@ const dataSCRUBBER = {Qeau, H2O_scrubber_kj, H2O_scrubber_kW}
 
 const dataFlow = {
 
+  T_in: nodeData.result.dataFlow.T,
   T,
   P_mmCE ,
   Qv_wet_m3_h,

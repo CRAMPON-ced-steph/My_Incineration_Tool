@@ -49,6 +49,7 @@ export const performCalculation_QUENCH_option_Qeau = (nodeData, Qeau, Teau, PDC_
   return {
     dataQUENCH: { Qeau },
     dataFlow: {
+      T_in: Taval,
       T,
       P_mmCE,
       Qv_wet_m3_h,
