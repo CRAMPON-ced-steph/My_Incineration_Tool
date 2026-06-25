@@ -16,7 +16,6 @@ const useTranslation = (currentLanguage = 'fr') => {
 import {
   PCI_kJ_kgMV,
   PCI_kcal_kgMV,
-  PCI_kcal_kg,
   PCS_kcal_kgMV,
   PCS_kcal_kg,
   PCI_Dulong,
@@ -93,7 +92,7 @@ const defaultFonctionnement = () => ({
 });
 
 const defaultBoue = () => {
-  const MS_pourcent = 25;
+  const MS_pourcent = 85;
   const MV_pourcent = 70;
   const MS_kg_h = 2000;
   const BoueBrute = MS_kg_h / (MS_pourcent / 100);
@@ -106,17 +105,17 @@ const defaultBoue = () => {
     BoueBrute_kg_h: +BoueBrute.toFixed(1),
     MV_kg_h: +MV_kg_h.toFixed(1),
     EauExtraite_kg_h: +(BoueBrute - MS_kg_h).toFixed(1),
-    MM_kg_h: +(MS_kg_h - MV_kg_h).toFixed(1),
   };
 };
 
 const defaultChons = () => ({
-  C: 49.7,
-  H: 6.8,
-  O: 34.3,
-  N: 7.0,
-  S: 1.5,
-  Cl: 0.7,
+  C: 36.2,
+  H: 5.4,
+  O: 20.8,
+  N: 0.8,
+  S: 0.2,
+  Cl: 0.6,
+  Cendres: 36,
   impC: 5,
   impH: 5,
   impO: 10,
@@ -145,34 +144,39 @@ const BouesTab = ({ innerData, currentLanguage  }) => {
   // ============================================================
 
   const [fonctionnement, setFonctionnement] = useState(() =>
-    lsGet('bouesTab_fonctionnement', defaultFonctionnement())
+    lsGet('bouesTab_fonctionnement_GF', defaultFonctionnement())
   );
-  const [boue, setBoue] = useState(() => lsGet('bouesTab_boue', defaultBoue()));
-  const [chons, setChons] = useState(() => lsGet('bouesTab_chons', defaultChons()));
+  const [boue, setBoue] = useState(() => lsGet('bouesTab_boue_GF', defaultBoue()));
+  const [chons, setChons] = useState(() => ({ ...defaultChons(), ...lsGet('bouesTab_chons_GF', {}) }));
   const [heavyMetals, setHeavyMetals] = useState(() => {
-    const stored = lsGet('bouesTab_heavyMetals', {});
+    const stored = lsGet('bouesTab_heavyMetals_GF', {});
     return { ...DEFAULT_HEAVY_METALS, ...stored };
   });
+  const [pciOM, setPciOM] = useState(() => lsGet('bouesTab_pciOM_GF', 1500));
 
   // ============================================================
   // PERSISTANCE - LOCALSTORAGE
   // ============================================================
 
   useEffect(() => {
-    lsSet('bouesTab_fonctionnement', fonctionnement);
+    lsSet('bouesTab_fonctionnement_GF', fonctionnement);
   }, [fonctionnement]);
 
   useEffect(() => {
-    lsSet('bouesTab_boue', boue);
+    lsSet('bouesTab_boue_GF', boue);
   }, [boue]);
 
   useEffect(() => {
-    lsSet('bouesTab_chons', chons);
+    lsSet('bouesTab_chons_GF', chons);
   }, [chons]);
 
   useEffect(() => {
-    lsSet('bouesTab_heavyMetals', heavyMetals);
+    lsSet('bouesTab_heavyMetals_GF', heavyMetals);
   }, [heavyMetals]);
+
+  useEffect(() => {
+    lsSet('bouesTab_pciOM_GF', pciOM);
+  }, [pciOM]);
 
   // ============================================================
   // CALCUL RÉSUMÉ FONCTIONNEMENT
@@ -186,7 +190,7 @@ const BouesTab = ({ innerData, currentLanguage  }) => {
   }, [fonctionnement.daysPerWeek, fonctionnement.hoursPerDay]);
 
   // ============================================================
-  // CALCUL BOUE
+  // CALCUL OM
   // ============================================================
 
   useEffect(() => {
@@ -197,14 +201,12 @@ const BouesTab = ({ innerData, currentLanguage  }) => {
     const BoueBrute = MS_pourcent > 0 ? MS_kg_h / (MS_pourcent / 100) : 0;
     const MV_kg_h = MS_kg_h * (MV_pourcent / 100);
     const EauExtraite = BoueBrute - MS_kg_h;
-    const MM_kg_h = MS_kg_h - MV_kg_h;
 
     setBoue((prev) => ({
       ...prev,
       BoueBrute_kg_h: +BoueBrute.toFixed(1),
       MV_kg_h: +MV_kg_h.toFixed(1),
       EauExtraite_kg_h: +EauExtraite.toFixed(1),
-      MM_kg_h: +MM_kg_h.toFixed(1),
     }));
   }, [boue.MS_pourcent, boue.MV_pourcent, boue.MS_kg_h]);
 
@@ -214,7 +216,7 @@ const BouesTab = ({ innerData, currentLanguage  }) => {
 
   useEffect(() => {
     const MV = Number(boue.MV_kg_h) || 0;
-    const elements = ['C', 'H', 'O', 'N', 'S', 'Cl'];
+    const elements = ['C', 'H', 'O', 'N', 'S', 'Cl', 'Cendres'];
 
     setChons((prev) => {
       const next = { ...prev };
@@ -227,7 +229,7 @@ const BouesTab = ({ innerData, currentLanguage  }) => {
       next.sumPercent = +sum.toFixed(2);
       return next;
     });
-  }, [chons.C, chons.H, chons.O, chons.N, chons.S, chons.Cl, boue.MV_kg_h]);
+  }, [chons.C, chons.H, chons.O, chons.N, chons.S, chons.Cl, chons.Cendres, boue.MV_kg_h]);
 
   // ============================================================
   // MISE À JOUR innerData
@@ -239,7 +241,7 @@ const BouesTab = ({ innerData, currentLanguage  }) => {
     innerData.hoursPerDay = Number(fonctionnement.hoursPerDay);
     innerData.totalHoursPerWeek = fonctionnement.summaryTotal;
 
-    // Boue
+    // OM
     innerData.sludgeType = boue.sludgeType;
     innerData.MS_pourcent = Number(boue.MS_pourcent);
     innerData.MV_pourcent = Number(boue.MV_pourcent);
@@ -247,7 +249,7 @@ const BouesTab = ({ innerData, currentLanguage  }) => {
     innerData.BoueBrute_kg_h = Number(boue.BoueBrute_kg_h);
     innerData.MV_kg_h = Number(boue.MV_kg_h);
     innerData.EauExtraite_kg_h = Number(boue.EauExtraite_kg_h);
-    innerData.MM_kg_h = Number(boue.MM_kg_h);
+    innerData.MM_kg_h = Number(chons.kgCendres) || 0;
     innerData.MasseBoueBrute = Number(boue.BoueBrute_kg_h);
 
     // Alias legacy
@@ -261,18 +263,18 @@ const BouesTab = ({ innerData, currentLanguage  }) => {
     innerData.N_percent = Number(chons.N);
     innerData.S_percent = Number(chons.S);
     innerData.Cl_percent = Number(chons.Cl);
+    innerData.Cendres_percent = Number(chons.Cendres);
 
     // PCI / PCS
     const pci_kJ_kgMV = PCI_kJ_kgMV(boue.sludgeType);
     const pci_kcal_kgMV = PCI_kcal_kgMV(boue.sludgeType);
-    const pci_kcal_kg = PCI_kcal_kg(Number(boue.MS_pourcent), Number(boue.MV_pourcent), pci_kcal_kgMV);
     const pcs_kcal_kgMV = PCS_kcal_kgMV(pci_kcal_kgMV, Number(chons.H));
-    const pcs_kcal_kg = PCS_kcal_kg(pci_kcal_kg, Number(boue.MS_pourcent), Number(boue.MV_pourcent), Number(chons.H));
+    const pcs_kcal_kg = PCS_kcal_kg(pciOM, Number(boue.MS_pourcent), Number(boue.MV_pourcent), Number(chons.H));
     const pci_dulong = PCI_Dulong(Number(chons.C), Number(chons.H), Number(chons.O), Number(chons.S));
 
     innerData.pciKJkgMV = pci_kJ_kgMV;
     innerData.PCIKCALKGMV = pci_kcal_kgMV;
-    innerData.pciKcalkg = pci_kcal_kg;
+    innerData.pciKcalkg = pciOM;
     innerData.pcsKcalkgMV = pcs_kcal_kgMV;
     innerData.pcsKcalkg = pcs_kcal_kg;
     innerData.pciDulong = pci_dulong;
@@ -346,7 +348,7 @@ const BouesTab = ({ innerData, currentLanguage  }) => {
     innerData.PCDDF_kg_h = PCDDF_kg_h;
     innerData.Ti_kg_h = Ti_kg_h;
     innerData.HF_kg_h = HF_kg_h;
-  }, [fonctionnement, boue, chons, heavyMetals, innerData]);
+  }, [fonctionnement, boue, chons, heavyMetals, pciOM, innerData]);
 
   // ============================================================
   // HANDLERS
@@ -376,7 +378,7 @@ const BouesTab = ({ innerData, currentLanguage  }) => {
   }, []);
 
   const resetToDefault = useCallback(() => {
-    const keys = ['bouesTab_fonctionnement', 'bouesTab_boue', 'bouesTab_chons', 'bouesTab_heavyMetals'];
+    const keys = ['bouesTab_fonctionnement_GF', 'bouesTab_boue_GF', 'bouesTab_chons_GF', 'bouesTab_heavyMetals_GF', 'bouesTab_pciOM_GF'];
     keys.forEach((k) => {
       try {
         localStorage.removeItem(k);
@@ -388,6 +390,7 @@ const BouesTab = ({ innerData, currentLanguage  }) => {
     setBoue(defaultBoue());
     setChons(defaultChons());
     setHeavyMetals(DEFAULT_HEAVY_METALS);
+    setPciOM(1500);
   }, []);
 
   // ============================================================
@@ -511,27 +514,11 @@ const BouesTab = ({ innerData, currentLanguage  }) => {
         </div>
       </div>
 
-      {/* CARACTÉRISTIQUES BOUES */}
+      {/* CARACTÉRISTIQUES OM */}
       <div style={cardStyle}>
         <h2 style={{ color: '#1a202c', fontSize: '20px', marginBottom: '20px' }}>
-          {t('Caractéristiques des Boues') || 'Caractéristiques des Boues'}
+          {t('Caractéristiques des OM') || 'Caractéristiques des OM'}
         </h2>
-
-        <div style={{ marginBottom: '20px' }}>
-          <label style={labelStyle}>{t('Type de boue') || 'Type de boue'}</label>
-          <select
-            value={boue.sludgeType}
-            onChange={(e) => handleSludgeTypeChange(e.target.value)}
-            style={inputStyle}
-          >
-            <option value="">{t('Sélectionnez un type de boue') || 'Sélectionnez un type de boue'}</option>
-            {Object.keys(DEFAULT_CHONS_VALUES).map((k) => (
-              <option key={k} value={k}>
-                {k}
-              </option>
-            ))}
-          </select>
-        </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '15px', marginBottom: '20px', alignItems: 'start' }}>
           <div>
@@ -547,19 +534,7 @@ const BouesTab = ({ innerData, currentLanguage  }) => {
             />
           </div>
           <div>
-            <label style={labelStyle}>{t('Matières volatiles') || 'Matières volatiles'} [%]</label>
-            <input
-              type="number"
-              min="0"
-              max="100"
-              step="0.1"
-              value={boue.MV_pourcent}
-              onChange={(e) => setBoue((p) => ({ ...p, MV_pourcent: Number(e.target.value) || 0 }))}
-              style={inputStyle}
-            />
-          </div>
-          <div>
-            <label style={labelStyle}>{t('Quantité de boues') || 'Quantité de boues'} [kg MS/h]</label>
+            <label style={labelStyle}>{t("Quantité d'ordures ménagères sèches") || "Quantité d'ordures ménagères sèches"} [kg OM sèches/h]</label>
             <input
               type="number"
               min="0"
@@ -569,13 +544,22 @@ const BouesTab = ({ innerData, currentLanguage  }) => {
               style={inputStyle}
             />
           </div>
+          <div>
+            <label style={labelStyle}>{t('PCI OM') || 'PCI OM'} [kcal/kg OM]</label>
+            <input
+              type="number"
+              min="0"
+              step="1"
+              value={pciOM}
+              onChange={(e) => setPciOM(Number(e.target.value) || 0)}
+              style={inputStyle}
+            />
+          </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '15px', alignItems: 'start' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '15px', alignItems: 'start' }}>
           {[
-            { label: t('Matière brute') || 'Matière brute', unit: '[kg/h]', val: boue.BoueBrute_kg_h },
-            { label: t('Matière volatile') || 'Matière volatile', unit: '[kg/h]', val: boue.MV_kg_h },
-            { label: t('Matière minérale') || 'Matière minérale', unit: '[kg/h]', val: boue.MM_kg_h },
+            { label: t('Quantité d\'ordures ménagères humides') || 'Quantité d\'ordures ménagères humides', unit: '[kg OM/h]', val: boue.BoueBrute_kg_h },
             { label: t('Eau extraite') || 'Eau extraite', unit: '[kg/h]', val: boue.EauExtraite_kg_h },
           ].map(({ label, unit, val }) => (
             <div key={label}>
@@ -591,7 +575,7 @@ const BouesTab = ({ innerData, currentLanguage  }) => {
       {/* COMPOSITION CHONS */}
       <div style={cardStyle}>
         <h2 style={{ color: '#1a202c', fontSize: '20px', marginBottom: '20px' }}>
-          {t('Composition CHONS') || 'Composition CHONS'} [% sur MV]
+          {t('Composition CHONS') || 'Composition CHONS'} [% sur masse sèche]
           <span
             style={{
               marginLeft: '15px',
@@ -604,8 +588,8 @@ const BouesTab = ({ innerData, currentLanguage  }) => {
           </span>
         </h2>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '10px', alignItems: 'start' }}>
-          {['C', 'H', 'O', 'N', 'S', 'Cl'].map((el) => (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '10px', alignItems: 'start' }}>
+          {['C', 'H', 'O', 'N', 'S', 'Cl', 'Cendres'].map((el) => (
             <div key={el}>
               <label style={labelStyle}>
                 {el} [%]
@@ -630,13 +614,13 @@ const BouesTab = ({ innerData, currentLanguage  }) => {
       {/* MÉTAUX LOURDS */}
       <div style={cardStyle}>
         <h2 style={{ color: '#1a202c', fontSize: '20px', marginBottom: '20px' }}>
-          {t('Teneur en Métaux Lourds') || 'Teneur en Métaux Lourds'} [mg/kg MS] et Masses [kg/h]
+          {t('Teneur en Métaux Lourds') || 'Teneur en Métaux Lourds'} [mg/kg OM] et Masses [kg/h]
         </h2>
 
-        {/* CONCENTRATIONS [mg/kg MS] */}
+        {/* CONCENTRATIONS [mg/kg OM] */}
         <div style={{ marginBottom: '30px' }}>
           <h3 style={{ color: '#374151', fontSize: '16px', marginBottom: '15px' }}>
-            📥 {t('Concentrations') || 'Concentrations'} [mg/kg MS]
+            📥 {t('Concentrations') || 'Concentrations'} [mg/kg OM]
           </h3>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '15px', alignItems: 'start' }}>
             {[
@@ -650,9 +634,9 @@ const BouesTab = ({ innerData, currentLanguage  }) => {
               { label: 'Ni (Nickel)', id: 'ni', def: 50 },
               { label: 'Pb (Plomb)', id: 'pb', def: 100 },
               { label: 'Zn (Zinc)', id: 'zn', def: 2000 },
-              { label: 'PCDDF', id: 'pcddf', def: 0.0001, note: '10⁻⁴ mg/kg MS' },
-              { label: 'Ti (Titane)', id: 'ti', def: 1000, note: '1000 à 10000 mg/kg MS' },
-              { label: 'HF (Acide fluorhydrique)', id: 'hf', def: 500, note: '500 mg/kg MS' },
+              { label: 'PCDDF', id: 'pcddf', def: 0.0001, note: '10⁻⁴ mg/kg OM' },
+              { label: 'Ti (Titane)', id: 'ti', def: 1000, note: '1000 à 10000 mg/kg OM' },
+              { label: 'HF (Acide fluorhydrique)', id: 'hf', def: 500, note: '500 mg/kg OM' },
             ].map(({ label, id, def, note }) => (
               <div key={id}>
                 <label style={labelStyle}>{label}</label>
@@ -667,7 +651,7 @@ const BouesTab = ({ innerData, currentLanguage  }) => {
                   style={inputStyle}
                 />
                 <div style={{ fontSize: '11px', color: '#6b7280', marginTop: '4px' }}>
-                  {note ? `${note}` : `Défaut: ${def} mg/kg MS`}
+                  {note ? `${note}` : `Défaut: ${def} mg/kg OM`}
                 </div>
               </div>
             ))}
@@ -687,7 +671,7 @@ const BouesTab = ({ innerData, currentLanguage  }) => {
             📤 {t('Masses calculées') || 'Masses calculées'} [kg/h]
           </h3>
           <p style={{ color: '#1e40af', fontSize: '12px', fontWeight: '600', marginBottom: '15px' }}>
-            💡 {t('Formule') || 'Formule'}: Masse [kg/h] = (Concentration [mg/kg MS] × MS [kg/h]) / 1,000,000
+            💡 {t('Formule') || 'Formule'}: Masse [kg/h] = (Concentration [mg/kg OM] × MS [kg/h]) / 1,000,000
           </p>
 
           {(() => {

@@ -394,7 +394,7 @@ const GF_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
   const languageCode = getLanguageCode(currentLanguage);
   const t = (key) => translations[languageCode]?.[key] || translations['fr']?.[key] || key;
 
-  // ── Section 1 : Boues ────────────────────────────────────────────────────────
+  // ── Section 1 : OM ────────────────────────────────────────────────────────
   const daysPerWeek        = innerData.daysPerWeek        ?? 0;
   const hoursPerDay        = innerData.hoursPerDay        ?? 0;
   const totalHoursPerWeek  = innerData.totalHoursPerWeek  ?? 0;
@@ -440,12 +440,8 @@ const GF_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
   };
 
   // ── Section 2 : Combustion ───────────────────────────────────────────────────
-  // T_OUT = T_fumee_sortie_HX_C (remapped by sendAllData)
-  // T_OUT : clé remappée dans sendAllData (T_fumee_sortie_HX_C → T_OUT)
-  // Quand le rapport est affiché comme onglet, innerData = innerDataRef.current (clé brute)
-  // Quand affiché dans GlobalReport, innerData = node.data.result (clé remappée)
-  const T_OUT       = innerData.T_OUT       || innerData.T_fumee_sortie_HX_C || 0;
-  const P_out_mmCE  = innerData.P_out_mmCE  || innerData.P_sortie_HX_mmCE    || 0;
+  // T_OUT = Temp_fumee_voute_C (sortie SCC, pas de HX)
+  const T_OUT       = innerData.T_OUT       || innerData.Temp_fumee_voute_C || 0;
   const O2_calcule  = innerData.O2_calcule  || 0;
   const FG_OUT_kg_h = innerData.FG_OUT_kg_h || {};
 
@@ -468,8 +464,6 @@ const GF_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
   const Volume_air_balayage             = innerData.Volume_air_balayage              ?? 0;
   const Volume_air_combustible_total    = innerData.Volume_air_combustible_total_Nm3_h ?? 0;
   const Temp_air_fluidisation           = innerData.Temp_air_fluidisation_av_prechauffe_C ?? 0;
-  const Tair_ap_prechauffe_C            = innerData.Tair_ap_prechauffe_C             ?? 0;
-  const Temp_air_soufflante_C           = innerData.Temp_air_soufflante_C            ?? 0;
   const Meau_air_comburant              = innerData.Meau_air_comburant               ?? 0;
 
   // Paramètres combustion
@@ -484,7 +478,6 @@ const GF_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
   const FG_dry_Nm3_h                    = innerData.FG_dry_Nm3_h                    ?? 0;
   const Rho_FG_kg_Nm3                   = innerData.Rho_FG_kg_Nm3                   ?? 0;
   const Temp_fumee_voute_C              = innerData.Temp_fumee_voute_C              ?? 0;
-  const Tf_voute_ap_HX_C               = innerData.Tf_voute_ap_HX_C                ?? 0;
   const m_co                            = innerData.m_co                            ?? 0;
   const m_co2                           = innerData.m_co2                           ?? 0;
   const m_h2o                           = innerData.m_h2o                           ?? 0;
@@ -494,23 +487,22 @@ const GF_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
   const m_chcl                          = innerData.m_chcl                          ?? 0;
 
   // Paramètres thermiques
-  const Rdt_HX                          = innerData.Rdt_HX                          ?? 0;
   const Hf_voute_kW                     = innerData.Hf_voute_kW                     ?? 0;
-  const Hf_voute_ap_HX_kW              = innerData.Hf_voute_ap_HX_kW               ?? 0;
-  const Hair_ap_prechauffage_kW         = innerData.Hair_ap_prechauffage_kW         ?? 0;
 
   // Bilan énergétique — clés confirmées dans innerData (écrites par CombustionTab)
   const H_in_kW              = innerData.H_in_kW             ?? 0;
   const H_pertes_kW          = innerData.H_pertes_kW         ?? 0;
   const H_imbrule_kW         = innerData.H_imbrule_kW        ?? 0;
   const H_air_balayage_kW    = innerData.H_air_balayage_kW   ?? 0;
-  const H_air_soufflante_kW  = innerData.H_air_soufflante_kW ?? 0;
+  const H_air_fluidisation_kW = innerData.H_air_fluidisation_av_prechauffe_kW ?? 0;
+  const H_air_secondaire_kW  = innerData.H_air_secondaire_kW ?? 0;
+  const H_air_tertiaire_kW   = innerData.H_air_tertiaire_kW  ?? 0;
 
   // Valeurs écrites depuis CombustionTab (via mes ajouts), ou dérivées si absent
-  // H_NETTE_BOUE : stockée par CombustionTab, sinon calculée depuis les données boue
-  const _eau_kg_h = MasseBoueBrute - MS_kg_h;  // humidité boue
+  // H_NETTE_BOUE : stockée par CombustionTab, sinon calculée depuis les données OM
+  const _eau_kg_h = MasseBoueBrute - MS_kg_h;  // humidité OM
   const _H_MV_kW  = (pciKJkgMV * MV_kg_h) / 3600;
-  const _H_Evap_kW = (_eau_kg_h * (4.1868 * 15 - 2501.6)) / 3600; // T_boue ≈ 15°C
+  const _H_Evap_kW = (_eau_kg_h * (4.1868 * 15 - 2501.6)) / 3600; // T_OM ≈ 15°C
   const H_NETTE_BOUE_kW = innerData.H_NETTE_BOUE_kW !== undefined && innerData.H_NETTE_BOUE_kW !== 0
     ? innerData.H_NETTE_BOUE_kW
     : _H_MV_kW + _H_Evap_kW;
@@ -554,61 +546,17 @@ const GF_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
     { label: 'CAP [kg/h]',          value: Conso_reactifs.CAP       },
   ].filter(r => parseFloat(r.value) > 0);
 
-  // ── Section 4 : Dimensionnement ───────────────────────────────────────────────
-  const Modele                      = innerData.Modele                          || '—';
-  const NombreFour                  = Number(innerData.NombreFour)              || 1;
-  const DiametreFreeboard           = innerData.DiametreFreeboard_m             || innerData.DiametreFreeboard || 0;
-  const DiametreVoute               = innerData.DiametreVoute_m                 || innerData.DiametreVoute      || 0;
-  const SurfaceVoute_m2             = innerData.SurfaceVoute_m2                 || 0;
-  const NbrTuyeresActifs            = innerData.NbrTuyeres                      || 0;
-  const NbTrousParTuyere            = innerData.NbTrousIter2                    || 0;
-  const VitesseTuyere_ms            = innerData.VitesseReelleTuyereIter2_ms     || 0;
-  const PressionFreeboard           = innerData.PressionFreeboard               || innerData.Pression_Freeboard || 0;
-  const VitesseVoute2_ms            = innerData.VitesseVoute2_ms                || 0;
-  const VitesseFreeboard            = innerData.VitesseReelleFour_ms            || 0;
-  // Charges théoriques (calculées comme dans VouteTab)
-  const _surf                       = SurfaceVoute_m2 > 0 ? SurfaceVoute_m2 : null;
-  const ChargMS_kg_h_m2             = _surf ? (MS_kg_h / NombreFour / _surf) : 0;
-  const ChargMV_kg_h_m2             = _surf ? (MV_kg_h / NombreFour / _surf) : 0;
-  const ChargEau_kg_h_m2            = _surf ? (EauExtraite_kg_h / NombreFour / _surf) : 0;
-  // Capacité et densité thermique
-  const CapaciteThermique_kW        = H_in_kW - H_pertes_kW - H_imbrule_kW - H_air_balayage_kW;
-  const DensiteThermique_kW_m2      = _surf ? (CapaciteThermique_kW / _surf) : 0;
-  // HX data — dimensionnement échangeur
-  const S_echange_m2                = innerData.S_echange_m2        || 0;
-  const DTLM_HX                     = innerData.DTLM_HX             || 0;
-  const Facteur_UA                  = innerData.Facteur_UA           || 0;
-  const Coeff_Hext_HX               = innerData.Coeff_Hext_HX       ?? 0;
-  const coeff_Hint_HX               = innerData.coeff_Hint_HX       ?? 0;
-  const FactUEncrasse_HX            = innerData.FactUEncrasse_HX    ?? 0;
-  const Section_calandre_m2         = innerData.Section_calandre_m2 ?? 0;
-  // HX côté fumées
-  const P_freeboard_mmCE            = innerData.P_freeboard          ?? 0;
-  const Q_FG_wet_entree_m3_h        = innerData.Q_FG_wet_entree_m3_h ?? 0;
-  const P_sortie_HX_fg_mmCE        = innerData.P_sortie_HX_fg_mmCE  ?? 0;
-  const Q_FG_wet_sortie_m3_h       = innerData.Q_FG_wet_sortie_m3_h ?? 0;
-  // HX côté air
-  const PDC_HX_cote_air_mmCE        = innerData.PDC_HX_cote_air_mmCE   ?? 0;
-  const P_cote_air_entree_mmCE      = innerData.P_cote_air_entree_mmCE ?? 0;
-  const Q_air_entree_HX_m3_h        = innerData.Q_air_entree_HX_m3_h  ?? 0;
-  const Q_air_sortie_HX_m3_h        = innerData.Q_air_sortie_HX_m3_h  ?? 0;
-  // Ventilateur
-  const Q_air_pulser_Nm3_h          = innerData.Q_air_pulser_Nm3_h           ?? 0;
-  const Q_air_ventilateur_m3_h      = innerData.Q_air_ventilateur_m3_h       ?? 0;
-  const Puissance_elec_ventilateur_kW = innerData.Puissance_elec_ventilateur_kW ?? 0;
-  const Rendement_ventilateur_HX    = innerData.Rendement_ventilateur_HX     ?? 0;
-
-  // ── Section 5 : OPEX ─────────────────────────────────────────────────────────
+  // ── Section 4 : OPEX ─────────────────────────────────────────────────────────
   const opex = computeOpexCosts(innerData);
 
   return (
     <div style={styles.container}>
       <h1 style={styles.mainTitle}>
-        Four à Lit Fluidisé (GF) — Rapport de synthèse
+        Four à Grille (GF) — Rapport de synthèse
       </h1>
 
-      {/* ── SECTION 1 : Boues ──────────────────────────────────────────────── */}
-      <Section title={`1. ${t('Caractéristiques des Boues')}`}>
+      {/* ── SECTION 1 : OM ──────────────────────────────────────────────── */}
+      <Section title={`1. ${t('Caractéristiques des OM')}`}>
 
         {/* Fonctionnement + Débit */}
         <div style={styles.twoCol}>
@@ -617,12 +565,12 @@ const GF_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
             <KV label={t('Nombre d\'heures par jour')}   value={fmt(hoursPerDay, 0)} unit="h/j"   />
             <KV label="Total"                            value={fmt(totalHoursPerWeek, 0)} unit="h/sem" />
           </SubSection>
-          <SubSection title={t('Caractéristiques des Boues')}>
-            <KV label={t('Type de boue')}          value={sludgeType}                />
+          <SubSection title={t('Caractéristiques des OM')}>
+            <KV label={t('Type de déchet')}          value={sludgeType}                />
             <KV label={t('Siccité')}               value={fmt(MS_pourcent, 1)}  unit="%" />
             <KV label="MV"                         value={fmt(MV_pourcent, 1)}  unit="%" />
             <KV label={t('Débit MS')}              value={fmt(MS_kg_h, 0)}      unit="kg MS/h" />
-            <KV label="Débit boue brute"           value={fmt(MasseBoueBrute, 0)} unit="kg/h" />
+            <KV label="Débit OM brut"           value={fmt(MasseBoueBrute, 0)} unit="kg/h" />
             <KV label="Débit MV"                   value={fmt(MV_kg_h, 0)}      unit="kg MV/h" />
             <KV label="Eau extraite"               value={fmt(EauExtraite_kg_h, 0)} unit="kg/h" />
             <KV label="Cendres (MM)"               value={fmt(MM_kg_h, 0)}      unit="kg/h" />
@@ -651,9 +599,9 @@ const GF_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
           <SubSection title="PCI / PCS">
             <KV label="PCI [kJ/kg MV]"    value={fmt(pciKJkgMV, 0)}   />
             <KV label="PCI [kcal/kg MV]"  value={fmt(PCIKCALKGMV, 0)} />
-            <KV label="PCI [kcal/kg boue]"value={fmt(pciKcalkg, 0)}   />
+            <KV label="PCI [kcal/kg OM]"  value={fmt(pciKcalkg, 0)}   />
             <KV label="PCS [kcal/kg MV]"  value={fmt(pcsKcalkgMV, 0)} />
-            <KV label="PCS [kcal/kg boue]"value={fmt(pcsKcalkg, 0)}   />
+            <KV label="PCS [kcal/kg OM]"  value={fmt(pcsKcalkg, 0)}   />
             <KV label="PCI Dulong [kcal/kg MV]" value={fmt(pciDulong, 0)} />
           </SubSection>
         </div>
@@ -708,9 +656,7 @@ const GF_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
             <KV label="Débit air total [Nm³/h]"             value={fmt(Q_air_comb_tot_Nm3_h, 0)}         />
             <KV label="Dont : air combustible [Nm³/h]"      value={fmt(Volume_air_combustible_total, 0)} />
             <KV label="Dont : air de balayage [Nm³/h]"      value={fmt(Volume_air_balayage, 0)}          />
-            <KV label="T° air fluidisation av. préchauffage [°C]" value={fmt(Temp_air_fluidisation, 0)}  />
-            <KV label="T° air ap. préchauffage (lit) [°C]"  value={fmt(Tair_ap_prechauffe_C, 0)}         />
-            <KV label="T° air soufflante [°C]"              value={fmt(Temp_air_soufflante_C, 0)}        />
+            <KV label="T° air primaire [°C]"                value={fmt(Temp_air_fluidisation, 0)}        />
             <KV label="Eau dans l'air comburant [kg/h]"     value={fmt(Meau_air_comburant, 2)}           />
           </SubSection>
 
@@ -726,19 +672,15 @@ const GF_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
 
         {/* Fumées voûte + Paramètres thermiques */}
         <div style={styles.twoCol}>
-          <SubSection title="Fumées sortie voûte">
-            <KV label="T° fumées voûte [°C]"                value={fmt(Temp_fumee_voute_C, 0)}           />
-            <KV label="T° fumées ap. HX [°C]"              value={fmt(Tf_voute_ap_HX_C, 0)}             />
+          <SubSection title="Fumées sortie SCC">
+            <KV label="T° fumées sortie SCC [°C]"           value={fmt(Temp_fumee_voute_C, 0)}           />
             <KV label="Débit fumées humides [Nm³/h]"        value={fmt(FG_wet_Nm3_h, 0)}                 />
             <KV label="Débit fumées sèches [Nm³/h]"         value={fmt(FG_dry_Nm3_h, 0)}                 />
             <KV label="Densité fumées [kg/Nm³]"             value={fmt(Rho_FG_kg_Nm3, 4)}               />
           </SubSection>
 
           <SubSection title="Paramètres thermiques">
-            <KV label="Rendement HX [%]"                    value={fmt(Rdt_HX, 1)}                       />
-            <KV label="Enthalpie fumées voûte [kW]"         value={fmt(Hf_voute_kW, 1)}                  />
-            <KV label="Enthalpie fumées ap. HX [kW]"        value={fmt(Hf_voute_ap_HX_kW, 1)}            />
-            <KV label="Chaleur récupérée air [kW]"          value={fmt(Hair_ap_prechauffage_kW, 1)}       />
+            <KV label="Enthalpie fumées sortie SCC [kW]"    value={fmt(Hf_voute_kW, 1)}                  />
           </SubSection>
         </div>
 
@@ -748,8 +690,7 @@ const GF_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
             <KV label="Débit gaz naturel convergé [kg/h]"   value={fmt(Q_gaz_kg_h, 3)}            />
             <KV label="Débit gaz naturel convergé [Nm³/h]"  value={fmt(Q_gaz_Nm3_h, 3)}           />
             <KV label="O₂ calculé (sec) [%]"               value={fmt((O2_calcule || 0) * 100, 2)} />
-            <KV label="T° sortie HX [°C]"                   value={fmt(T_OUT, 0)}                  />
-            <KV label="Pression sortie HX [mmCE]"           value={fmt(P_out_mmCE)}                />
+            <KV label="T° sortie SCC [°C]"                  value={fmt(T_OUT, 0)}                  />
           </SubSection>
 
           <SubSection title="Gaz sortie four">
@@ -782,12 +723,14 @@ const GF_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
             </thead>
             <tbody>
               {[
-                { label: 'H_NETTE_BOUE',        vin: H_NETTE_BOUE_kW,         vout: null },
-                { label: 'Hair_ap_préchauffage', vin: Hair_ap_prechauffage_kW,  vout: null },
+                { label: 'H_NETTE_OM',           vin: H_NETTE_BOUE_kW,         vout: null },
+                { label: 'H_air_neuf_réch',      vin: H_air_fluidisation_kW,   vout: null },
+                { label: 'H_air_secondaire',     vin: H_air_secondaire_kW,     vout: null },
+                { label: 'H_air_tertiaire',      vin: H_air_tertiaire_kW,      vout: null },
                 { label: 'H_air_balayage',       vin: H_air_balayage_kW,        vout: null },
                 { label: 'H_gaz appoint',        vin: H_gaz_inter,              vout: null },
-                { label: 'H_matière_minérale',   vin: null, vout: H_matiere_minerale_kW },
-                { label: 'Hf_voûte',             vin: null, vout: Hf_voute_kW },
+                { label: 'H_inertes_cendres',    vin: null, vout: H_matiere_minerale_kW },
+                { label: 'Hf_SCC',               vin: null, vout: Hf_voute_kW },
                 { label: 'Pertes thermiques',    vin: null, vout: H_pertes_kW },
                 { label: 'Imbrûlés (CO + H₂)',   vin: null, vout: H_imbrule_kW },
               ].map(({ label, vin, vout }) => (
@@ -853,116 +796,8 @@ const GF_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
         </div>
       </Section>
 
-      {/* ── SECTION 4 : Dimensionnement ────────────────────────────────────── */}
-      <Section title="4. Dimensionnement">
-
-        <SubSection title={`${t('Voûte')} — ${t('Résumé Final')} ${t('Dimensionnement Réacteur')}`}>
-          {Modele === '—' && NbrTuyeresActifs === 0 ? (
-            <p style={{ color: '#888', fontSize: 11, margin: '6px 0' }}>
-              Données voûte non disponibles — ouvrir l'onglet Voûte.
-            </p>
-          ) : (
-            <div style={{ ...styles.twoCol, gap: 24 }}>
-              <div>
-                <KV label={t('Modèle')}                                   value={Modele}                              />
-                <KV label="Nombre de fours"                               value={fmt(NombreFour, 0)}                  />
-                <KV label="Ø freeboard [m]"                               value={fmt(DiametreFreeboard, 3)}           />
-                <KV label="Ø voûte [m]"                                   value={fmt(DiametreVoute, 3)}               />
-                <KV label="Surface voûte [m²]"                            value={fmt(SurfaceVoute_m2, 4)}             />
-                <KV label="Vitesse freeboard [m/s]"                       value={fmt(VitesseFreeboard, 3)}            />
-                <KV label="Vitesse voûte iter. 2 [m/s]"                   value={fmt(VitesseVoute2_ms, 4)}            />
-                <KV label="Pression finale freeboard [mmCE]"              value={fmt(PressionFreeboard, 2)}           />
-              </div>
-              <div>
-                <KV label="Nb tuyères actives"                            value={fmt(NbrTuyeresActifs, 0)}            />
-                <KV label="Nb trous / tuyère"                             value={fmt(NbTrousParTuyere, 0)}            />
-                <KV label="Vitesse réelle tuyère [m/s]"                   value={fmt(VitesseTuyere_ms, 1)}            />
-                <KV label="Charge MS théorique [kg MS/h/m²]"             value={fmt(ChargMS_kg_h_m2, 2)}            />
-                <KV label="Charge MV théorique [kg MV/h/m²]"             value={fmt(ChargMV_kg_h_m2, 2)}            />
-                <KV label={`Charge eau théorique [kg eau/h/m²]${ChargEau_kg_h_m2 > 540 ? ' ⚠' : ''}`}
-                                                                          value={fmt(ChargEau_kg_h_m2, 2)}
-                />
-                <KV label="Capacité thermique du four [kW]"               value={fmt(CapaciteThermique_kW, 1)}        />
-                <KV label="Densité thermique du four [kW/m²]"             value={fmt(DensiteThermique_kW_m2, 1)}      />
-              </div>
-            </div>
-          )}
-        </SubSection>
-
-        <SubSection title="HX côté fumées">
-          <div style={{ ...styles.twoCol, gap: 32 }}>
-            <div>
-              <KV label="T° fumées voûte [°C]"             value={fmt(Temp_fumee_voute_C, 0)}      />
-              <KV label="Débit fumées humides [Nm³/h]"     value={fmt(FG_wet_Nm3_h, 0)}            />
-              <KV label="Pression freeboard [mmCE]"        value={fmt(P_freeboard_mmCE, 0)}        />
-              <KV label="Débit fumées entrée HX [m³/h]"    value={fmt(Q_FG_wet_entree_m3_h, 0)}   />
-              <KV label="Enthalpie fumées entrée [kW]"     value={fmt(Hf_voute_kW, 1)}             />
-            </div>
-            <div>
-              <KV label="T° fumées sortie HX [°C]"         value={fmt(Tf_voute_ap_HX_C, 0)}       />
-              <KV label="Pression sortie HX fumées [mmCE]" value={fmt(P_sortie_HX_fg_mmCE, 0)}    />
-              <KV label="Débit fumées sortie HX [m³/h]"   value={fmt(Q_FG_wet_sortie_m3_h, 0)}   />
-              <KV label="Enthalpie fumées sortie [kW]"     value={fmt(Hf_voute_ap_HX_kW, 1)}      />
-            </div>
-          </div>
-        </SubSection>
-
-        <SubSection title="HX côté air">
-          <div style={{ ...styles.twoCol, gap: 32 }}>
-            <div>
-              <KV label="T° air soufflante [°C]"           value={fmt(Temp_air_soufflante_C, 0)}  />
-              <KV label="Débit air [Nm³/h]"                value={fmt(Q_air_comb_tot_Nm3_h, 0)}   />
-              <KV label="PDC HX côté air [mmCE]"           value={fmt(PDC_HX_cote_air_mmCE, 1)}   />
-              <KV label="Pression entrée HX air [mmCE]"    value={fmt(P_cote_air_entree_mmCE, 0)} />
-              <KV label="Débit air entrée HX [m³/h]"       value={fmt(Q_air_entree_HX_m3_h, 0)}   />
-              <KV label="Enthalpie air entrée [kW]"        value={fmt(H_air_soufflante_kW, 1)}    />
-            </div>
-            <div>
-              <KV label="T° air ap. préchauffe [°C]"       value={fmt(Tair_ap_prechauffe_C, 0)}   />
-              <KV label="Débit air sortie HX [m³/h]"       value={fmt(Q_air_sortie_HX_m3_h, 0)}   />
-              <KV label="Enthalpie air sortie [kW]"        value={fmt(Hair_ap_prechauffage_kW, 1)} />
-            </div>
-          </div>
-        </SubSection>
-
-        <SubSection title="Dimensionnement de l'échangeur">
-          <div style={{ ...styles.twoCol, gap: 32 }}>
-            <div>
-              <KV label="Rendement HX [%]"                 value={fmt(Rdt_HX, 1)}                             />
-              <KV label="Q chaleur cédée fumées [kW]"      value={fmt(Hf_voute_kW - Hf_voute_ap_HX_kW, 1)}   />
-              <KV label="Q chaleur reçue air [kW]"         value={fmt(Hair_ap_prechauffage_kW - H_air_soufflante_kW, 1)} />
-              <KV label="DTLM [K]"                         value={fmt(DTLM_HX, 2)}                            />
-              <KV label="Facteur UA [W/K]"                 value={fmt(Facteur_UA, 0)}                         />
-            </div>
-            <div>
-              <KV label="Surface d'échange [m²]"           value={fmt(S_echange_m2, 2)}                       />
-              <KV label="Section calandre [m²]"            value={fmt(Section_calandre_m2, 4)}                />
-              <KV label="Hext [kCal/m².°C]"                value={fmt(Coeff_Hext_HX, 4)}                     />
-              <KV label="Hint [kCal/m².°C]"                value={fmt(coeff_Hint_HX, 4)}                     />
-              <KV label="U encrassé [kCal/m².°C]"          value={fmt(FactUEncrasse_HX, 4)}                   />
-            </div>
-          </div>
-        </SubSection>
-
-        <SubSection title="Ventilateur">
-          <div style={{ ...styles.twoCol, gap: 32 }}>
-            <div>
-              <KV label="Débit air à pulser [Nm³/h]"       value={fmt(Q_air_pulser_Nm3_h, 0)}             />
-              <KV label="Pression ventilateur [mmCE]"      value={fmt(P_cote_air_entree_mmCE, 0)}         />
-              <KV label="T° air soufflante [°C]"           value={fmt(Temp_air_soufflante_C, 0)}          />
-            </div>
-            <div>
-              <KV label="Débit ventilateur [m³/h]"         value={fmt(Q_air_ventilateur_m3_h, 0)}         />
-              <KV label="Rendement ventilateur [%]"        value={fmt(Rendement_ventilateur_HX * 100, 1)} />
-              <KV label="Puissance électrique [kW]"        value={fmt(Puissance_elec_ventilateur_kW, 1)}  />
-            </div>
-          </div>
-        </SubSection>
-
-      </Section>
-
-      {/* ── SECTION 5 : OPEX ───────────────────────────────────────────────── */}
-      <Section title={`5. ${t('OPEX')} — Coûts horaires`}>
+      {/* ── SECTION 4 : OPEX ───────────────────────────────────────────────── */}
+      <Section title={`4. ${t('OPEX')} — Coûts horaires`}>
         <OpexCostSection opex={opex} />
       </Section>
 

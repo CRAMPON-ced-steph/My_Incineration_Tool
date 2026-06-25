@@ -52,7 +52,7 @@ export const performCalculation_FB_MS = (
 
     let P_incinerateur_MWH = (H_out_kW - H_air_kW) / 1000 - Pth_MW;
 
-    let MS = 10;
+    let MS = 1;
     let PCIkcalkgMV = PCI_kcal_kgMV(wasteType);
     let calculatePCIkcalkg = calculatePCI_kcal_kg(MS, MV, PCIkcalkgMV);
     let Hboue_kcal = calculatePCIkcalkg * Q_boue_kg_h;
@@ -61,19 +61,32 @@ export const performCalculation_FB_MS = (
     // Boucle corrigée
     let _iter4 = 0;
     do {
+        
         calculatePCIkcalkg = calculatePCI_kcal_kg(MS, MV, PCIkcalkgMV);
         Hboue_kcal = calculatePCIkcalkg * Q_boue_kg_h;
         Hboue_kW = Hboue_kcal * 4.1868/3600;
-        MS = MS + 1;
+        MS = MS +1;
         _iter4++;
     } while (Hboue_kW < P_incinerateur_MWH * 1000 && _iter4 < 100000); // Conversion MW en kW
+
+ MS = MS -1;
+  calculatePCIkcalkg = calculatePCI_kcal_kg(MS, MV, PCIkcalkgMV);
+        Hboue_kcal = calculatePCIkcalkg * Q_boue_kg_h;
+        Hboue_kW = Hboue_kcal * 4.1868/3600;
+       
+
+
+
+    const MasseDechet = Qboue_kg_h;
 
     return {
         H_out_kW,
         H_air_kW,
         P_incinerateur_MWH,
+        PCIkcalkgMV,
         calculatePCIkcalkg,
         MS,
+        MasseDechet,
         Qboue_kg_h,
         Qv_wet_m3_h
     };

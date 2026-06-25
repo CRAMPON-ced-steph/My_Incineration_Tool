@@ -41,7 +41,7 @@ const DEFAULT_VALUES = {
   diagramMode: DIAGRAM_MODES.NO
 };
 
-const RK_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage, autoTrigger = false }) => {
+const RK_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage, autoTrigger = false, allNodes }) => {
   // États principaux
   const [Tair_RK_C, setTair_RK_C] = useState(() => 
     localStorage.getItem('Tair_RK_C') || DEFAULT_VALUES.Tair_RK_C
@@ -115,6 +115,16 @@ const RK_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguag
       }
     }
   }, [calculationResult_RK]);
+
+  // Détection automatique du mode WHB selon la présence d'un noeud WHB sur le canvas
+  useEffect(() => {
+    if (!allNodes) return;
+    const hasWHB = allNodes.some(n => n.data?.label === 'WHB');
+    const expected = hasWHB ? CALCULATION_MODES.WITH_WHB : CALCULATION_MODES.WITHOUT_WHB;
+    if (bilanType_whb !== expected) {
+      setBilanType_whb(expected);
+    }
+  }, [allNodes]);
 
   // Validation des entrées
   const validateInputs = useCallback(() => {
@@ -205,14 +215,7 @@ const RK_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguag
     );
   }, []);
 
-  // Toggle pour le type de bilan WHB
-  const toggleBilanType_whb = useCallback(() => {
-    setBilanType_whb(prev => 
-      prev === CALCULATION_MODES.WITH_WHB 
-        ? CALCULATION_MODES.WITHOUT_WHB 
-        : CALCULATION_MODES.WITH_WHB
-    );
-  }, []);
+
 
   // Toggle pour le type de bilan NCV/Masse
   const toggleBilanType_NCV_Masse = useCallback(() => {
@@ -320,15 +323,18 @@ const RK_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguag
       <CloseButton onClose={onClose} />
       <h3>{t.Parametres} {title}</h3>
 
-      {/* Toggle pour le mode de calcul WHB */}
+      {/* Indicateur automatique du mode WHB (détecté depuis le canvas) */}
       <div className="toggle-container">
-        <ToggleButton 
-          label={t.BilanTyp}
-          value={bilanType_whb}
-          mapping={whbDisplayMapping}
-          onChange={toggleBilanType_whb}
-          testId="whb-toggle"
-        />
+        <div style={{ marginTop: '10px', display: 'flex', alignItems: 'center' }}>
+          <label style={{ marginRight: '10px' }}>{t.BilanTyp}:</label>
+          <span
+            data-testid="whb-toggle"
+            className={`toggle-button ${bilanType_whb === CALCULATION_MODES.WITH_WHB ? 'toggle-button--option1' : 'toggle-button--option2'}`}
+            style={{ opacity: 0.85, cursor: 'default' }}
+          >
+            {getDisplayValue(bilanType_whb, whbDisplayMapping)}
+          </span>
+        </div>
       </div>
       
       <div className="inputs-container">

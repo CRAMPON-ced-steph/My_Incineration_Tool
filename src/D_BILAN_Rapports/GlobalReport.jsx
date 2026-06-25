@@ -23,7 +23,7 @@ import TUBEANDSHELL_Report from '../Y_BILAN/ECHANGEURS/TUBEANDSHELL/TUBEANDSHELL
 import WATER_INJECTION_Report from '../Y_BILAN/WATER_INJECTION/WATER_INJECTION_Report';
 
 const REPORT_MAP = {
-  RK: RK_Report,
+  'RK+SCC': RK_Report,
   GF: GF_Report,
   FB: FB_Report,
   BHF: BHF_Report,
@@ -43,7 +43,7 @@ const REPORT_MAP = {
   WATER_INJECTION: WATER_INJECTION_Report,
 };
 
-const EQUIPMENT_ORDER = ['RK', 'GF', 'FB', 'WHB', 'QUENCH', 'DENOX', 'BHF', 'REACTOR', 'SCRUBBER', 'ELECTROFILTER', 'CYCLONE', 'COOLINGTOWER', 'IDFAN', 'STACK', 'AIRINJECTION', 'IACT', 'HX_TubeAndShell', 'WATER_INJECTION'];
+const EQUIPMENT_ORDER = ['RK+SCC', 'GF', 'FB', 'WHB', 'QUENCH', 'DENOX', 'BHF', 'REACTOR', 'SCRUBBER', 'ELECTROFILTER', 'CYCLONE', 'COOLINGTOWER', 'IDFAN', 'STACK', 'AIRINJECTION', 'IACT', 'HX_TubeAndShell', 'WATER_INJECTION'];
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 

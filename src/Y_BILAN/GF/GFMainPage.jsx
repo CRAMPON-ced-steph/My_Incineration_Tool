@@ -1,5 +1,5 @@
 import React, { useState, useRef, useCallback, useMemo } from 'react';
-import BouesTab from './1_BouesTab';
+import BouesTab from './1_OmTab';
 import CombustionTab from './2_CombustionTab';
 import GF_Report from './GF_Report';
 
@@ -7,7 +7,6 @@ import GF_Report from './GF_Report';
 
 import Pollutant from './3_Pollutant_Emission';
 import DimensionnementTab from './3_VouteTab';
-import Recuperateur from './4_Recuperator';
 import GFopex from './5_GF_Opex';
 import GFCalcOpex from './5_1_GF_calcul_Opex';
 
@@ -29,9 +28,6 @@ const GFMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
   // Contient TOUTES les données échangées entre onglets
   const innerDataRef = useRef({});
 
-  // ✅ combustionResults est un STATE (pas une ref)
-  // CombustionTab appelle onResultsChange → setCombustionResults → nouvel objet créé
-  // → React détecte le changement de prop dans RecuperateurHX
   const [combustionResults, setCombustionResults] = useState({});
 
   // ✅ Compteur de version pour forcer le re-render des onglets aval
@@ -54,11 +50,10 @@ const GFMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
   // ============================================================
   // ✨ useMemo + dépendance [currentLanguage] = traduction dynamique des titres
   const tabs = useMemo(() => [
-    { name: 'boues', label: t('Caractéristiques des Boues') || 'Caractéristiques des Boues' },
+    { name: 'boues', label: t('Caractéristiques des OM') || 'Caractéristiques des OM' },
     { name: 'combustion', label: t('Combustion') || 'Combustion' },
     { name: 'pollutant', label: t('Polluant') || 'Polluant' },
     { name: 'voute', label: t('Voûte') || 'Voûte' },
-    { name: 'HX', label: t('HX') || 'HX' },
     { name: 'opex', label: t('OPEX') || 'OPEX' },
     { name: 'rapport', label: t('Rapport') || 'Rapport' },
   ], [currentLanguage]);
@@ -103,11 +98,8 @@ const GFMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
           },
           O2_calcule: innerDataRef.current['O2_calcule'] ?? 0,
 
-          // ✅ Température fumées sortie HX
-          T_OUT: innerDataRef.current['T_fumee_sortie_HX_C'] ?? 0,
-
-          // ✅ Pression sortie HX (depuis onglet Recuperateur)
-          P_out_mmCE: innerDataRef.current['P_sortie_HX_mmCE'] ?? 0,
+          T_OUT: innerDataRef.current['Temp_fumee_voute_C'] ?? 0,
+          P_out_mmCE: 0,
 
           // === POLLUANT (depuis Pollutant_Emission) ===
           PollutantInput: innerDataRef.current['PInput'] || {},
@@ -179,8 +171,6 @@ const GFMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
           Volume_air_balayage:                  innerDataRef.current['Volume_air_balayage']                  ?? 0,
           Volume_air_combustible_total_Nm3_h:   innerDataRef.current['Volume_air_combustible_total_Nm3_h']   ?? 0,
           Temp_air_fluidisation_av_prechauffe_C: innerDataRef.current['Temp_air_fluidisation_av_prechauffe_C'] ?? 0,
-          Tair_ap_prechauffe_C:                 innerDataRef.current['Tair_ap_prechauffe_C']                 ?? 0,
-          Temp_air_soufflante_C:                innerDataRef.current['Temp_air_soufflante_C']                ?? 0,
           Meau_air_comburant:                   innerDataRef.current['Meau_air_comburant']                   ?? 0,
 
           // === PARAMÈTRES COMBUSTION ===
@@ -195,7 +185,6 @@ const GFMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
           FG_dry_Nm3_h:             innerDataRef.current['FG_dry_Nm3_h']            ?? 0,
           Rho_FG_kg_Nm3:            innerDataRef.current['Rho_FG_kg_Nm3']           ?? 0,
           Temp_fumee_voute_C:       innerDataRef.current['Temp_fumee_voute_C']      ?? 0,
-          Tf_voute_ap_HX_C:         innerDataRef.current['Tf_voute_ap_HX_C']        ?? 0,
           m_co:                     innerDataRef.current['m_co']                    ?? 0,
           m_co2:                    innerDataRef.current['m_co2']                   ?? 0,
           m_h2o:                    innerDataRef.current['m_h2o']                   ?? 0,
@@ -205,10 +194,7 @@ const GFMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
           m_chcl:                   innerDataRef.current['m_chcl']                  ?? 0,
 
           // === PARAMÈTRES THERMIQUES ===
-          Rdt_HX:                   innerDataRef.current['Rdt_HX']                  ?? 0,
           Hf_voute_kW:              innerDataRef.current['Hf_voute_kW']             ?? 0,
-          Hf_voute_ap_HX_kW:        innerDataRef.current['Hf_voute_ap_HX_kW']      ?? 0,
-          Hair_ap_prechauffage_kW:  innerDataRef.current['Hair_ap_prechauffage_kW'] ?? 0,
 
           // === BILAN ÉNERGÉTIQUE ===
           H_in_kW:                  innerDataRef.current['H_in_kW']                 ?? 0,
@@ -216,7 +202,9 @@ const GFMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
           H_pertes_kW:              innerDataRef.current['H_pertes_kW']             ?? 0,
           H_imbrule_kW:             innerDataRef.current['H_imbrule_kW']            ?? 0,
           H_air_balayage_kW:        innerDataRef.current['H_air_balayage_kW']       ?? 0,
-          H_air_soufflante_kW:      innerDataRef.current['H_air_soufflante_kW']     ?? 0,
+          H_air_fluidisation_av_prechauffe_kW: innerDataRef.current['H_air_fluidisation_av_prechauffe_kW'] ?? 0,
+          H_air_secondaire_kW:     innerDataRef.current['H_air_secondaire_kW']      ?? 0,
+          H_air_tertiaire_kW:      innerDataRef.current['H_air_tertiaire_kW']       ?? 0,
           H_NETTE_BOUE_kW:          innerDataRef.current['H_NETTE_BOUE_kW']         ?? 0,
           H_matiere_minerale_kW:    innerDataRef.current['H_matiere_minerale_kW']   ?? 0,
           H_gaz_inter:              innerDataRef.current['H_gaz_inter']             ?? 0,
@@ -258,7 +246,6 @@ const GFMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
       'thermalParams_GF',
       'airComposition_GF',
       'emissions2_GF',
-      'freeParams_HX_GF',
       'opexDashboard_GF',
     ];
     keys.forEach((k) => {
@@ -316,21 +303,6 @@ const GFMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
   // HANDLERS — DATA FLOW
   // ============================================================
 
-  // ✅ Callback pour DimensionnementTab — transmet résultats dans innerData
-  const handleDimensionnementData = useCallback((data) => {
-    if (data && typeof data === 'object' && Object.keys(data).length > 0) {
-      const hasChanged = Object.entries(data).some(
-        ([key, value]) => innerDataRef.current[key] !== value
-      );
-
-      if (hasChanged) {
-        Object.assign(innerDataRef.current, data);
-        // Déclencher un tick SEULEMENT si les données ont vraiment changé
-        setInnerDataTick((t) => t + 1);
-      }
-    }
-  }, []);
-
   // ============================================================
   // RENDER TAB CONTENT
   // ============================================================
@@ -374,18 +346,7 @@ const GFMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
           <DimensionnementTab
             innerData={innerDataRef.current}
             innerDataTick={innerDataTick}
-            onDataChange={handleDimensionnementData}
             currentLanguage={currentLanguage}
-          />
-        );
-
-      case 'HX':
-        return (
-          <Recuperateur
-            innerData={innerDataRef.current}
-            combustionResults={combustionResults}
-            currentLanguage={currentLanguage}
-            onInnerDataChange={notifyInnerDataChanged}
           />
         );
 
@@ -463,7 +424,7 @@ const GFMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
         }}
       >
         <h1 style={{ margin: 0, fontSize: '24px', color: '#1a202c' }}>
-          {t('Caractéristiques de Fonctionnement') || 'Caractéristiques de Fonctionnement'} - Four à Lit Fluidisé
+          {t('Caractéristiques de Fonctionnement') || 'Caractéristiques de Fonctionnement'} - Four à grille
         </h1>
         <div style={{ display: 'flex', gap: '10px' }}>
           <button
@@ -483,7 +444,7 @@ const GFMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
             }}
             title={
               isSaveBtnDisabled()
-                ? t('Complétez les données boues obligatoires') || 'Complétez les données boues obligatoires'
+                ? t('Complétez les données OM obligatoires') || 'Complétez les données OM obligatoires'
                 : t('Enregistrer les données') || 'Enregistrer les données'
             }
           >
@@ -554,7 +515,6 @@ const GFMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
           borderTop: '1px solid #e5e7eb',
         }}
       >
-        <p>Application de dimensionnement - Four à Lit Fluidisé | v1.0</p>
       </div>
     </div>
   );

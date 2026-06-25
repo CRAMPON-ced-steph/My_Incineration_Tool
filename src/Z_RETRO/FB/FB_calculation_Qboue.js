@@ -65,15 +65,23 @@ export const performCalculation_FB_Qboue = (
         _iter3++;
     } while (Hboue_kW < P_incinerateur_MWH * 1000 && _iter3 < 100000); // Conversion MW en kW
 
+    Q_boue_kg_h = Q_boue_kg_h - 1;
+    Hboue_kcal = calculatePCIkcalkg * Q_boue_kg_h;
+    Hboue_kW = Hboue_kcal * 4.1868 / 3600;
+
+    const MasseDechet = Q_boue_kg_h;
+
     return {
         wasteType,
         H_out_kW,
         H_air_kW,
         Hboue_kW,
         P_incinerateur_MWH,
+        PCIkcalkgMV,
         calculatePCIkcalkg,
         MS,
         MV,
+        MasseDechet,
         Q_boue_kg_h,
         Qv_wet_m3_h
     };

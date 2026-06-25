@@ -41,7 +41,7 @@ const PCI_kJ_kgMV_VALUES = {
 
 const PCI_kcal_kgMV_VALUES = {
   'PRIMAIRE': 4781.06,
-  'MIXTE': 5300,
+  'MIXTE': 5629.76,
   'BIOLOGIQUE': 5629.76,
   'DIGEREE': 5412.86,
   'GRAISSE': 8717.64,

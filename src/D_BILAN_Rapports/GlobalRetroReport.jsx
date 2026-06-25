@@ -18,7 +18,7 @@ ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, ScatterC
 
 // Map node label → truthy = has a retro report available
 const RETRO_REPORT_MAP = {
-  RK:             true,
+  'RK+SCC':       true,
   STACK:          true,
   BHF:            true,
   COOLINGTOWER:   true,
@@ -40,10 +40,19 @@ const RETRO_REPORT_MAP = {
 
 
 const EQUIPMENT_ORDER = [
-  'RK', 'GF', 'FB', 'WHB', 'IACT', 'HX_TubeAndShell',
+  'RK+SCC', 'GF', 'FB', 'WHB', 'IACT', 'HX_TubeAndShell',
   'QUENCH', 'WATER_INJECTION', 'DENOX', 'BHF', 'AIRINJECTION',
   'REACTOR', 'SCRUBBER', 'ELECTROFILTER', 'CYCLONE',
   'COOLINGTOWER', 'IDFAN', 'STACK',
+];
+
+// ─── Line color palette (cover page + line separators) ───────────────────────
+const LINE_COLORS = [
+  { bg: 'rgba(74,144,226,0.15)', border: '#4a90e2', title: '#a0cfff', sep: 'linear-gradient(90deg, #1a3a6b 0%, #2c5aa0 100%)' },
+  { bg: 'rgba(231,76,60,0.15)',  border: '#e74c3c', title: '#ffb3aa', sep: 'linear-gradient(90deg, #6b1a1a 0%, #a02c2c 100%)' },
+  { bg: 'rgba(46,204,113,0.15)', border: '#2ecc71', title: '#a0ffc8', sep: 'linear-gradient(90deg, #1a6b3a 0%, #2ca05a 100%)' },
+  { bg: 'rgba(243,156,18,0.15)', border: '#f39c12', title: '#ffe0a0', sep: 'linear-gradient(90deg, #6b4e1a 0%, #a07a2c 100%)' },
+  { bg: 'rgba(155,89,182,0.15)', border: '#9b59b6', title: '#d5a0ff', sep: 'linear-gradient(90deg, #3d1a6b 0%, #6b2ca0 100%)' },
 ];
 
 // ─── Combustion Diagram Section ───────────────────────────────────────────────
@@ -213,17 +222,79 @@ const diagStyles = {
 
 // ─────────────────────────────────────────────────────────────────────────────
 
-const GlobalRetroReport = ({ nodes, onClose }) => {
+// ── Utility: group nodes into process lines (connected components) ────────────
+// Returns an array of lines, each line being an array of nodes in topological
+// order following edges (source → target = Bilan direction, furnace → STACK).
+const buildProcessLines = (allNodes, edges) => {
+  const edgeList = edges || [];
+  const allIds = new Set(allNodes.map(n => n.id));
+
+  // 1. Union-Find to discover connected components (uses ALL nodes, not just reportable)
+  const parent = {};
+  const find = (x) => { if (parent[x] !== x) parent[x] = find(parent[x]); return parent[x]; };
+  const union = (a, b) => { parent[find(a)] = find(b); };
+
+  for (const n of allNodes) parent[n.id] = n.id;
+  for (const e of edgeList) {
+    if (allIds.has(e.source) && allIds.has(e.target)) union(e.source, e.target);
+  }
+
+  // 2. Topological sort (Kahn) per component — gives Bilan direction (furnace → STACK)
+  const adj = {};      // adjacency list
+  const inDeg = {};    // in-degree
+  for (const n of allNodes) { adj[n.id] = []; inDeg[n.id] = 0; }
+  for (const e of edgeList) {
+    if (allIds.has(e.source) && allIds.has(e.target)) {
+      adj[e.source].push(e.target);
+      inDeg[e.target] = (inDeg[e.target] || 0) + 1;
+    }
+  }
+
+  const topoOrder = [];
+  const queue = allNodes.filter(n => inDeg[n.id] === 0).map(n => n.id);
+  while (queue.length) {
+    const id = queue.shift();
+    topoOrder.push(id);
+    for (const next of adj[id]) {
+      inDeg[next]--;
+      if (inDeg[next] === 0) queue.push(next);
+    }
+  }
+  // Nodes not reached (cycles) — append at end
+  for (const n of allNodes) {
+    if (!topoOrder.includes(n.id)) topoOrder.push(n.id);
+  }
+
+  const topoRank = {};
+  topoOrder.forEach((id, i) => { topoRank[id] = i; });
+
+  // 3. Group reportable-active nodes by component, sorted by topo rank
+  const reportable = allNodes.filter(n => n.data?.isActive && RETRO_REPORT_MAP[n.data?.label]);
+  const groups = {};
+  for (const n of reportable) {
+    const root = find(n.id);
+    if (!groups[root]) groups[root] = [];
+    groups[root].push(n);
+  }
+
+  for (const root in groups) {
+    groups[root].sort((a, b) => (topoRank[a.id] || 0) - (topoRank[b.id] || 0));
+  }
+
+  // 4. Sort lines themselves: first equipment's topo rank
+  const lines = Object.values(groups).sort((a, b) =>
+    (topoRank[a[0]?.id] || 0) - (topoRank[b[0]?.id] || 0)
+  );
+
+  return lines;
+};
+
+const GlobalRetroReport = ({ nodes, edges, onClose }) => {
   const reportRef = useRef();
   const [generating, setGenerating] = useState(false);
 
-  const activeNodes = [...nodes]
-    .filter(n => n.data?.isActive && RETRO_REPORT_MAP[n.data?.label])
-    .sort((a, b) => {
-      const ia = EQUIPMENT_ORDER.indexOf(a.data.label);
-      const ib = EQUIPMENT_ORDER.indexOf(b.data.label);
-      return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
-    });
+  const lines = buildProcessLines(nodes, edges);
+  const activeNodes = lines.flat();
 
   const generatePDF = async () => {
     if (!reportRef.current) return;
@@ -340,42 +411,81 @@ const GlobalRetroReport = ({ nodes, onClose }) => {
                   })}
                 </p>
                 <div style={styles.coverEquipList}>
-                  <h3 style={styles.coverEquipTitle}>Équipements inclus :</h3>
-                  {activeNodes.map(n => (
-                    <div key={n.id} style={styles.coverEquipItem}>
-                      ▸ {n.data.label}{n.data.title ? ` — ${n.data.title}` : ''}
+                  {lines.map((line, li) => (
+                    <div key={li} style={{
+                      marginBottom: li < lines.length - 1 ? 16 : 0,
+                      background: lines.length > 1 ? LINE_COLORS[li % LINE_COLORS.length].bg : 'rgba(255,255,255,0.1)',
+                      borderLeft: lines.length > 1 ? `4px solid ${LINE_COLORS[li % LINE_COLORS.length].border}` : 'none',
+                      borderRadius: 6,
+                      padding: '12px 16px',
+                    }}>
+                      <h3 style={{
+                        ...styles.coverEquipTitle,
+                        color: lines.length > 1 ? LINE_COLORS[li % LINE_COLORS.length].title : '#e0ecff',
+                      }}>
+                        {lines.length > 1 ? `Ligne ${li + 1}` : 'Équipements inclus'}
+                      </h3>
+                      {line.map(n => (
+                        <div key={n.id} style={styles.coverEquipItem}>
+                          ▸ {n.data.label}{n.data.title ? ` — ${n.data.title}` : ''}
+                        </div>
+                      ))}
                     </div>
                   ))}
                 </div>
               </div>
 
-              {/* Une section par nœud actif */}
-              {activeNodes.map((node, idx) => {
-
-                const hasResult = !!node.data.result;
-
-                return (
-                  <div key={node.id} data-pdf-section style={styles.equipSection}>
-                    <div style={styles.equipSeparator}>
-                      <span style={styles.equipIndex}>{idx + 1}</span>
-                      <span style={styles.equipLabel}>{node.data.label}</span>
-                      {node.data.title && (
-                        <span style={styles.equipTitle}> — {node.data.title}</span>
-                      )}
-                    </div>
-
-                    {hasResult ? (
-                      /* Render inline report body (no modal chrome) */
-                      <ReportBody node={node} />
-                    ) : (
-                      <div style={styles.noData}>
-                        Aucun résultat disponible — ouvrir le nœud, lancer un calcul
-                        et revenir au flow.
+              {/* Une section par ligne de process */}
+              {lines.map((line, lineIdx) => (
+                <div key={lineIdx}>
+                  {/* Séparateur de ligne (affiché seulement si > 1 ligne) */}
+                  {lines.length > 1 && (() => {
+                    const lc = LINE_COLORS[lineIdx % LINE_COLORS.length];
+                    return (
+                      <div data-pdf-section style={{ ...styles.lineSeparator, background: lc.sep, borderLeft: `5px solid ${lc.border}` }}>
+                        <span style={{ ...styles.lineLabel, color: lc.title }}>Ligne {lineIdx + 1}</span>
+                        <span style={styles.lineDesc}>
+                          {line.map(n => n.data.label).join(' → ')}
+                        </span>
                       </div>
-                    )}
-                  </div>
-                );
-              })}
+                    );
+                  })()}
+
+                  {/* Équipements de la ligne */}
+                  {line.map((node, idx) => {
+                    const globalIdx = lines.slice(0, lineIdx).reduce((s, l) => s + l.length, 0) + idx;
+                    const hasResult = !!node.data.result;
+                    const lineColor = lines.length > 1 ? LINE_COLORS[lineIdx % LINE_COLORS.length].border : undefined;
+
+                    return (
+                      <div key={node.id} data-pdf-section style={{
+                        ...styles.equipSection,
+                        ...(lineColor ? { borderLeft: `4px solid ${lineColor}` } : {}),
+                      }}>
+                        <div style={styles.equipSeparator}>
+                          <span style={{
+                            ...styles.equipIndex,
+                            ...(lineColor ? { background: lineColor } : {}),
+                          }}>{globalIdx + 1}</span>
+                          <span style={styles.equipLabel}>{node.data.label}</span>
+                          {node.data.title && (
+                            <span style={styles.equipTitle}> — {node.data.title}</span>
+                          )}
+                        </div>
+
+                        {hasResult ? (
+                          <ReportBody node={node} />
+                        ) : (
+                          <div style={styles.noData}>
+                            Aucun résultat disponible — ouvrir le nœud, lancer un calcul
+                            et revenir au flow.
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              ))}
 
               {/* Diagramme de combustion — toujours en dernier */}
               <div data-pdf-section style={styles.diagSection}>
@@ -396,7 +506,7 @@ const ReportBody = ({ node }) => {
   const result    = node.data.result    || {};
   const inputData = node.data.inputData || {};
 
-  if (label === 'RK') {
+  if (label === 'RK+SCC') {
     return (
       <RKReportBody
         calculationResult={result}
@@ -1810,6 +1920,14 @@ const styles = {
   },
   coverEquipTitle: { margin:'0 0 10px 0', fontSize:15, color:'#e0ecff' },
   coverEquipItem: { padding:'4px 0', fontSize:14, color:'#fff' },
+  lineSeparator: {
+    display:'flex', alignItems:'center', gap:12,
+    background:'linear-gradient(90deg, #1a3a6b 0%, #2c5aa0 100%)',
+    padding:'14px 20px', color:'#fff',
+  },
+  lineIcon: { fontSize:22, fontWeight:'bold', color:'#4a90e2' },
+  lineLabel: { fontSize:17, fontWeight:'bold', color:'#fff' },
+  lineDesc: { fontSize:13, color:'#adc8f0', marginLeft:8 },
   equipSection: { borderBottom:'3px solid #e0e8f4' },
   equipSeparator: {
     display:'flex', alignItems:'center', gap:12,

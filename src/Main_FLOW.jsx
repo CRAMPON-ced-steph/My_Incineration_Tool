@@ -401,6 +401,12 @@ function Flow({
       // Read latest nodeData from local snapshot (always up-to-date)
       const nodeData = currentNodes.find(n => n.id === node.id)?.data || node.data;
 
+      // Auto-détection WHB pour RK+SCC : synchroniser localStorage avant le calcul batch
+      if (node.data.label === 'RK+SCC') {
+        const hasWHB = currentNodes.some(n => n.data?.label === 'WHB');
+        localStorage.setItem('bilanType_whb_RK', hasWHB ? 'WITH_WHB' : 'WITHOUT_WHB');
+      }
+
       let result = null;
       try {
         result = batchCalcMap[node.data.label](nodeData);
@@ -491,6 +497,7 @@ function Flow({
         onGoBack={() => setSelectedNode(null)}
         onClose={() => setSelectedNode(null)}
         currentLanguage={currentLanguage}
+        allNodes={nodes}
       />
     );
   };
@@ -740,6 +747,7 @@ function Flow({
       {showRetroRapportEditor && (
         <GlobalRetroReport
           nodes={nodes}
+          edges={edges}
           onClose={() => setShowRetroRapportEditor(false)}
         />
       )}

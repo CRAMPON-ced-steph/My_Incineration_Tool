@@ -227,7 +227,12 @@ const SCRUBBER_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentL
   );
 
   const handleTeauChange = createInputHandler(setT_eau, DEFAULT_VALUES.Teau);
-  const handleTamontChange = createInputHandler(setT_amont_SCRUBBER, DEFAULT_VALUES.T_amont_SCRUBBER);
+  const handleTamontChange = (e) => {
+    const v = e.target.value;
+    if (v === '' || v === '-') { setT_amont_SCRUBBER(v); return; }
+    const n = parseFloat(v);
+    setT_amont_SCRUBBER(isNaN(n) ? DEFAULT_VALUES.T_amont_SCRUBBER : String(Math.min(n, 99.6)));
+  };
   const handlePDCChange = createInputHandler(setPDC_aero, DEFAULT_VALUES.PDC_aero);
 
   // Composant ToggleButton réutilisable

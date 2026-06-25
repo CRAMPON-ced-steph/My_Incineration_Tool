@@ -51,8 +51,14 @@ const DEFAULT_VALUES = {
 };
 
 const FB_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage, autoTrigger = false }) => {
+  // Refs stables — évite de recréer handleSendData à chaque update parent
+  const nodeDataRef = useRef(nodeData);
+  nodeDataRef.current = nodeData;
+  const onSendDataRef = useRef(onSendData);
+  onSendDataRef.current = onSendData;
+
   // États principaux existants
-  const [Tair_FB_C, setTair_FB_C] = useState(() => 
+  const [Tair_FB_C, setTair_FB_C] = useState(() =>
     localStorage.getItem('Tair_FB_C') || DEFAULT_VALUES.Tair_FB_C
   );
   const [Thermal_losses_MW, setThermal_losses_MW] = useState(() => 
@@ -170,14 +176,14 @@ const FB_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguag
     setIsCalculating(true);
     try {
       const validatedInputs = validateInputs();
-      
+      const nd = nodeDataRef.current;
+
       let result;
-      
+
       // Choix de la fonction de calcul selon le type de bilan
       if (bilanType === BALANCE_TYPES.DS) {
-        // Bilan par DS (Dry Solids) -> utilise performCalculation_FB_MS
         result = performCalculation_FB_MS(
-          nodeData,
+          nd,
           validatedInputs.Tair_FB_C,
           validatedInputs.Thermal_losses_MW,
           validatedInputs.Q_boue_kg_h,
@@ -185,9 +191,8 @@ const FB_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguag
           validatedInputs.MV_percent
         );
       } else {
-        // Bilan par Q SLUDGE -> utilise performCalculation_FB_Qboue
         result = performCalculation_FB_Qboue(
-          nodeData,
+          nd,
           validatedInputs.Tair_FB_C,
           validatedInputs.Thermal_losses_MW,
           wasteType,
@@ -195,18 +200,19 @@ const FB_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguag
           validatedInputs.MV_percent
         );
       }
-      
 
-
-
-      setCalculationResult_FB(result);
+      const resultWithFlow = {
+        ...result,
+        dataFlow: nd?.result?.dataFlow || {},
+      };
+      setCalculationResult_FB(resultWithFlow);
       hasCalculatedOnce.current = true;
       if (diagramMode === DIAGRAM_MODES.YES) {
         const pointE = { x: result.MasseDechet || 0, y: result.P_incinerateur_MWH || 0 };
         localStorage.setItem('pointE', JSON.stringify(pointE));
       }
-      onSendData({ result, inputData: { Tair_FB_C, Thermal_losses_MW, bilanType, wasteType, Q_boue_kg_h, MS_percent, MV_percent, NCV_kcal_kg } });
-      
+      onSendDataRef.current({ result: resultWithFlow, inputData: { Tair_FB_C, Thermal_losses_MW, bilanType, wasteType, Q_boue_kg_h, MS_percent, MV_percent, NCV_kcal_kg } });
+
     } catch (error) {
       console.error('Erreur lors du calcul:', error);
       alert(`${t.CalculationError}: ${error.message}`);
@@ -214,7 +220,7 @@ const FB_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguag
       setIsCalculating(false);
     }
   }, [
-    nodeData, bilanType, wasteType, validateInputs, onSendData, t
+    bilanType, wasteType, validateInputs, t, diagramMode
   ]);
 
   // Toggle pour le diagramme de combustion
@@ -299,8 +305,8 @@ const FB_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguag
     [WASTE_TYPES.REFUS_DEGRILLAGE]: 'Refus dégrillage'
   }), []);
 
-  // Composant ToggleButton réutilisable et corrigé
-  const ToggleButton = React.memo(({ label, value, mapping, onChange, testId }) => {
+  // Composant ToggleButton réutilisable
+  const ToggleButton = ({ label, value, mapping, onChange, testId }) => {
     const displayValue = getDisplayValue(value, mapping);
     const isFirstOption = value === Object.keys(mapping)[0];
     
@@ -318,10 +324,10 @@ const FB_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguag
         </button>
       </div>
     );
-  });
+  };
 
   // Composant pour le menu déroulant aligné avec les InputField
-  const WasteTypeSelector = React.memo(() => (
+  const WasteTypeSelector = () => (
     <div style={{ 
       marginBottom: '15px',
       display: 'flex', 
@@ -369,7 +375,7 @@ const FB_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguag
         </select>
       </div>
     </div>
-  ));
+  );
 
   const hasCalculatedOnce = useRef(false);
   const hasAutoTriggered = useRef(false);
@@ -539,6 +545,7 @@ const FB_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguag
       {showReport && calculationResult_FB && (
         <FB_Retro_Rapport
           calculationResult={calculationResult_FB}
+          nodeData={nodeDataRef.current}
           inputParams={{ Tair_FB_C, Thermal_losses_MW, bilanType, wasteType, Q_boue_kg_h, MS_percent, MV_percent, NCV_kcal_kg }}
           onClose={() => setShowReport(false)}
         />

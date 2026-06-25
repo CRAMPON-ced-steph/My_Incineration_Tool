@@ -914,6 +914,7 @@ const GF_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguag
       {showReport && calculationResult_GF && (
         <GF_Retro_Rapport
           calculationResult={calculationResult_GF}
+          nodeData={nodeData}
           inputParams={{ Waste_flow_rate_kg_h, Pressure_losse_mmCE, Combustion_air_flowrate_Nm3_h, Measured_air_temperature_C, Q_feed_water_kg_h, T_feed_water_C, Blowdown_pourcent }}
           onClose={() => setShowReport(false)}
         />

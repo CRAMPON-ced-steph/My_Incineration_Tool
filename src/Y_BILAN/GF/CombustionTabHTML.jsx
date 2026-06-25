@@ -3,7 +3,7 @@
 // ============================================================
 
 import React from 'react';
-import SchemaProcessus from './SchemaProcessus';
+import SchemaProcessus from './SchemaProcessusGF';
 
 // ============================================================
 // TOGGLE SWITCH COMPONENT
@@ -72,16 +72,16 @@ const CombustionTabHTML = ({
         </div>
       </div>
 
-      {/* ═══ BOUE ═══ */}
+      {/* ═══ OM ═══ */}
       <div style={card}>
-        <div style={secTitle}>📊 {t('Paramètres des Boues')} ({t("synchronisés depuis l'onglet 1")})</div>
+        <div style={secTitle}>📊 {t('Paramètres des OM')} ({t("synchronisés depuis l'onglet 1")})</div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '15px' }}>
           {[
             { label: 'Masse brute', key: 'Masse_brute_kg_h', unit: '(kg/h)' },
             { label: 'Masse sèche', key: 'Masse_seche_kg_h', unit: '(kg/h)' },
             { label: 'Masse volatile', key: 'Masse_volatile_kg_h', unit: '(kg/h)' },
             { label: 'Masse eau', key: 'Masse_eau_kg_h', unit: '(kg/h)' },
-            { label: 'PCI boue', key: 'PCI_boue_kcal_kgMV', unit: '(kcal/kg MV)' },
+            { label: 'PCI OM', key: 'PCI_OM_kcal_kgOM', unit: '(kcal/kg OM)' },
             { label: 'SO₂ récupéré', key: 'SO2_recupere_cendre_pourcent', unit: '(%)' },
           ].map(({ label, key, unit }) => (
             <div key={key}><label style={labelStyle}>{t(label)} {unit}</label>
@@ -94,7 +94,7 @@ const CombustionTabHTML = ({
       <div style={card}>
         <div style={secTitle}>💨 {t('Paramètres de Combustion')}</div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '15px' }}>
-          <div><label style={labelStyle}>{t("Excès d'air Lit Fluidisé")} (%)</label>
+          <div><label style={labelStyle}>{t("Excès d'air primaire Grille")} (%)</label>
             <input type="number" step="0.1" value={emissions.Exces_air_lit} onChange={(e) => handleEmission('Exces_air_lit', e.target.value)} style={inputStyle} /></div>
           <div><label style={labelStyle}>{t("Excès d'air Combustible d'appoint")} (%)</label>
             <input type="number" step="0.1" value={emissions.Exces_air_combustible} onChange={(e) => handleEmission('Exces_air_combustible', e.target.value)} style={inputStyle} /></div>
@@ -160,17 +160,15 @@ const CombustionTabHTML = ({
         <div style={cardTitle}>🌡️ {t('Paramètres Thermiques')}</div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '15px' }}>
           {[
-            { label: 'Temp. boue entrée', key: 'Temp_boue_entree_C' },
-            { label: 'Temp. fumée voûte / Freeboard', key: 'Temp_fumee_voute_C' },
-            { label: 'Temp. air fluidisation av. préch.', key: 'Temp_air_fluidisation_av_prechauffe_C' },
+            { label: 'Temp. OM entrée', key: 'Temp_boue_entree_C' },
+            { label: 'Temp. fumée sortie SCC', key: 'Temp_fumee_voute_C' },
+            { label: 'Temp. air primaire', key: 'Temp_air_fluidisation_av_prechauffe_C' },
             { label: 'Temp. air secondaire', key: 'Temp_air_secondaire_C' },
             { label: 'Masse air secondaire', key: 'Masse_air_secondaire_kg_h' },
             { label: 'Temp. air tertiaire', key: 'Temp_air_tertiaire_C' },
             { label: 'Masse air tertiaire', key: 'Masse_air_tertiaire_kg_h' },
             { label: 'Temp. air balayage', key: 'Temp_air_balayage_instrumentation_C' },
             { label: 'Pertes thermiques', key: 'Pertes_thermiques_pourcent' },
-            { label: 'Temp. fumée après HX', key: 'Tf_voute_ap_HX_C' },
-            { label: 'Rendement HX', key: 'Rdt_HX', step: '0.01' },
           ].map(({ label, key, step = '0.1' }) => (
             <div key={key}><label style={labelStyle}>{t(label)}</label>
               <input type="number" step={step} value={thermalParams[key] ?? 0} onChange={(e) => handleThermal(key, e.target.value)} style={inputStyle} /></div>
@@ -181,16 +179,12 @@ const CombustionTabHTML = ({
       {/* ═══ BILAN ÉNERGÉTIQUE ═══ */}
       <EnergyBalanceSection t={t} results={results} thermalParams={thermalParams} emissions={emissions} residuConvergence={residuConvergence} f={f} showDetailedBilan={showDetailedBilan} setShowDetailedBilan={setShowDetailedBilan} cardTitle={cardTitle} card={card} secTitle={secTitle} resultBox={resultBox} TH={TH} TD={TD} inputStyle={inputStyle} labelStyle={labelStyle} />
 
-      {/* ═══ AIR PRÉCHAUFFÉ ═══ */}
+      {/* ═══ RÉSULTATS COMBUSTION ═══ */}
       <div style={card}>
-        <div style={cardTitle}>🌡️ {t('Air Préchauffé — Résultats')}</div>
+        <div style={cardTitle}>🌡️ {t('Résultats Combustion')}</div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '15px' }}>
           {[
-            { label: 'Temp. air après préch.', val: results.Tair_ap_prechauffe_C },
-            { label: 'Enthalpie air préch.', val: results.Hair_ap_prechauffage_kW },
-            { label: 'Hf fumées voûte', val: results.Hf_voute_kW },
-            { label: 'Hf fumées après HX', val: results.Hf_voute_ap_HX_kW },
-            { label: 'Temp. air soufflante', val: results.Temp_air_soufflante_C },
+            { label: 'Hf fumées sortie SCC', val: results.Hf_voute_kW },
             { label: 'Q_gaz', val: results.Q_gaz_kg_h },
           ].map(({ label, val }) => (
             <div key={label}><label style={labelStyle}>{t(label)}</label><div style={resultBox}>{f(val)}</div></div>
@@ -218,7 +212,7 @@ const NormalAirTable = ({ results, composition, sludgeComp, f, TH, TD }) => (
       </thead>
       <tbody>
         <tr style={{ backgroundColor: '#FFFFCC' }}>
-          <td style={TD}><b>Boue</b></td>
+          <td style={TD}><b>OM</b></td>
           {['C', 'H', 'O', 'N', 'S', 'Cl'].map((el) => <td key={el} style={TD}>{f(sludgeComp[el], 1)}</td>)}
           <td style={{ ...TD, backgroundColor: '#FGF6C1' }}>-</td>
           <td style={TD}>-</td><td style={TD}>-</td><td style={TD}>-</td><td style={TD}>-</td><td style={TD}>-</td>
@@ -230,7 +224,7 @@ const NormalAirTable = ({ results, composition, sludgeComp, f, TH, TD }) => (
           <td style={TD}>-</td><td style={TD}>-</td><td style={TD}>-</td><td style={TD}>-</td><td style={TD}>-</td>
         </tr>
         <tr style={{ backgroundColor: '#FFE6CC' }}>
-          <td style={TD}><b>Masse comp. boue</b></td>
+          <td style={TD}><b>Masse comp. OM</b></td>
           {['C', 'H', 'O', 'N', 'S', 'Cl'].map((el) => <td key={el} style={TD}>{f(results.Masses_boues_composition_kg_h?.[el])}</td>)}
           <td style={{ ...TD, backgroundColor: '#FGF6C1' }}>-</td>
           <td style={TD}>{f(results.Masse_air_sec_combustion_boue_kg_h)}</td>
@@ -285,9 +279,9 @@ const ExpertAirTable = ({ t, results, composition, sludgeComp, airComposition, f
         </tr>
       </thead>
       <tbody>
-        {/* Boue row */}
+        {/* OM row */}
         <tr style={{ backgroundColor: '#FFFFF0' }}>
-          <td style={{ ...TDR, color: '#dc2626' }}>Boue</td>
+          <td style={{ ...TDR, color: '#dc2626' }}>OM</td>
           <td style={{ ...TD, color: '#0ea5e9' }}>{f(sludgeComp.C, 1)}</td>
           <td style={{ ...TD, color: '#0ea5e9' }}>{f(sludgeComp.H, 2)}</td>
           <td style={{ ...TD, color: '#0ea5e9' }}>{f(sludgeComp.O, 1)}</td>
@@ -311,7 +305,7 @@ const ExpertAirTable = ({ t, results, composition, sludgeComp, airComposition, f
         </tr>
         {/* Air compositions (5 rows) */}
         {[
-          { key: 'air_combustion_boue', label: 'Air de combustion des boues', color: '#dc2626' },
+          { key: 'air_combustion_boue', label: 'Air de combustion des OM', color: '#dc2626' },
           { key: 'air_combustion_gaz', label: 'Air de combustion gaz', color: '#dc2626' },
           { key: 'air_instrumentation', label: 'Air instrumentation', color: '#dc2626' },
           { key: 'air_secondaire', label: 'Air secondaire', color: '#dc2626' },
@@ -340,9 +334,9 @@ const ExpertAirTable = ({ t, results, composition, sludgeComp, airComposition, f
         </tr>
         {/* Separator */}
         <tr><td colSpan={13} style={{ height: '4px', backgroundColor: '#FFD700' }} /></tr>
-        {/* Moles boues row */}
+        {/* Moles OM row */}
         <tr style={{ backgroundColor: '#FFFF99' }}>
-          <td style={{ ...TDL, color: '#dc2626' }}>Moles boues</td>
+          <td style={{ ...TDL, color: '#dc2626' }}>Moles OM</td>
           <td style={{ ...TD, color: '#0ea5e9', fontWeight: 'bold' }}>{f(results.MolesBoues_C, 1)}</td>
           <td style={{ ...TD, color: '#0ea5e9', fontWeight: 'bold' }}>{f(results.MolesBoues_H, 1)}</td>
           <td style={{ ...TD, color: '#0ea5e9', fontWeight: 'bold' }}>{f(results.MolesBoues_O, 1)}</td>
@@ -353,7 +347,7 @@ const ExpertAirTable = ({ t, results, composition, sludgeComp, airComposition, f
         </tr>
         {/* Moles eau issue de la boue */}
         <tr style={{ backgroundColor: '#FFFF99' }}>
-          <td style={{ ...TDL, color: '#dc2626' }}>Moles eau issue de la boue</td>
+          <td style={{ ...TDL, color: '#dc2626' }}>Moles eau issue de l'OM</td>
           <td style={TD}></td>
           <td style={{ ...TD, color: '#0ea5e9', fontWeight: 'bold' }}>{f(airCompositionCalculations.molesWater.H, 1)}</td>
           <td style={{ ...TD, color: '#0ea5e9', fontWeight: 'bold' }}>{f(airCompositionCalculations.molesWater.O, 1)}</td>
@@ -375,7 +369,7 @@ const ExpertAirTable = ({ t, results, composition, sludgeComp, airComposition, f
         <tr><td colSpan={13} style={{ height: '4px', backgroundColor: '#FFD700' }} /></tr>
         {/* Moles air de combustion des boues */}
         <tr style={{ backgroundColor: '#E6F3FF' }}>
-          <td style={{ ...TDL, color: '#dc2626' }}>Moles air de combustion des boues</td>
+          <td style={{ ...TDL, color: '#dc2626' }}>Moles air de combustion des OM</td>
           <td style={TD}>{f(airCompositionCalculations.molesCombBoue.C, 1)}</td>
           <td style={TD}>{f(airCompositionCalculations.molesCombBoue.H, 1)}</td>
           <td style={TD}>{f(airCompositionCalculations.molesCombBoue.O, 1)}</td>
@@ -432,9 +426,9 @@ const ExpertAirTable = ({ t, results, composition, sludgeComp, airComposition, f
         </tr>
         {/* Separator */}
         <tr><td colSpan={13} style={{ height: '4px', backgroundColor: '#ccc' }} /></tr>
-        {/* SUM Moles boue */}
+        {/* SUM Moles OM */}
         <tr style={{ backgroundColor: '#FFFF99', fontWeight: 'bold' }}>
-          <td style={{ ...TDL, color: '#dc2626' }}>SUM Moles boue</td>
+          <td style={{ ...TDL, color: '#dc2626' }}>SUM Moles OM</td>
           <td style={{ ...TD, color: '#dc2626' }}>{f(airCompositionCalculations.sumMolesBoue.C)}</td>
           <td style={{ ...TD, color: '#dc2626' }}>{f(airCompositionCalculations.sumMolesBoue.H)}</td>
           <td style={{ ...TD, color: '#dc2626' }}>{f(airCompositionCalculations.sumMolesBoue.O)}</td>
@@ -517,7 +511,7 @@ const ExpertEmissionsTable = ({ results, f, TH, TD, TDL }) => (
       </thead>
       <tbody>
         <tr style={{ backgroundColor: '#FFFDE7' }}>
-          <td style={TDL}>Moles issues de la boue</td>
+          <td style={TDL}>Moles issues de l'OM</td>
           <td style={{...TD}}>{f(results.MolesBoues_C)}</td><td style={TD}>{f(results.MolesBoues_H)}</td>
           <td style={TD}>{f(results.MolesBoues_O)}</td><td style={TD}>{f(results.MolesBoues_N)}</td>
           <td style={TD}>{f(results.MolesBoues_S)}</td><td style={TD}>{f(results.MolesBoues_Cl)}</td>
@@ -602,13 +596,16 @@ const EnergyBalanceSection = ({
         </thead>
         <tbody>
           {[
-            { label: 'H_NETTE_BOUE', in: results.H_NETTE_BOUE_kW, out: null },
-            { label: 'Hair_ap_préchauffage', in: results.Hair_ap_prechauffage_kW, out: null },
+            { label: 'H_NETTE_OM', in: results.H_NETTE_OM_kW, out: null },
+            { label: 'H_air_neuf_réch', in: results.H_air_fluidisation_av_prechauffe_kW, out: null },
+            { label: 'H_air_secondaire', in: results.H_air_secondaire_kW, out: null },
+            { label: 'H_air_tertiaire', in: results.H_air_tertiaire_kW, out: null },
             { label: 'H_air_balayage', in: results.H_air_balayage_instrumentation_kW, out: null },
             { label: 'H_gaz appoint', in: results.H_gaz_inter ?? null, out: null },
-            { label: 'H_matière_minérale', in: null, out: results.H_matiere_minerale_kW },
-            { label: 'Hf_voûte', in: null, out: results.Hf_voute_kW },
+            { label: 'H_inertes_cendres', in: null, out: results.H_matiere_minerale_kW },
+            { label: 'Hf_SCC', in: null, out: results.Hf_voute_kW },
             { label: 'Pertes thermiques', in: null, out: results.Pertes_thermiques_kW },
+            { label: 'Imbrûlés (CO + H₂)', in: null, out: results.H_imbrule_kW },
           ].map(({ label, in: vin, out: vout }) => (
             <tr key={label}>
               <td style={{ ...TD, fontWeight: 'bold' }}>{label}</td>
@@ -643,181 +640,67 @@ const EnergyBalanceSection = ({
 // DETAILED ENERGY BALANCE TABLE
 // ============================================================
 
-const DetailedEnergyBalance = ({ results, thermalParams, emissions, f, secTitle, TH, TD }) => (
-  <div style={{ marginBottom: '25px' }}>
-    <div style={secTitle}>📋 Bilan Énergétique Détaillé</div>
-    <div style={{ overflowX: 'auto' }}>
-      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '9px' }}>
-        <thead>
-          <tr>
-            <th style={{ ...TH, width: '180px', position: 'sticky', left: 0, zIndex: 1, padding: '8px 4px' }}>Paramètre</th>
-            {[
-              { label: '1', subtitle: 'Boue\nentrée', c: '#FFE4B5' },
-              { label: '2', subtitle: 'Matières\nminérales', c: '#D3D3D3' },
-              { label: '3', subtitle: 'Énergie nette\nexportée par MM', c: '#D3D3D3' },
-              { label: '4', subtitle: 'Air flu\npréchauffé', c: '#87CEEB' },
-              { label: '5', subtitle: 'Air\nsecondaire', c: '#87CEEB' },
-              { label: '6', subtitle: 'Air\ntertiaire', c: '#87CEEB' },
-              { label: '7', subtitle: 'Énergie\nappoint gaz', c: '#FFD700' },
-              { label: '8', subtitle: 'Pertes par\nimbrûlés', c: '#FFA07A' },
-              { label: '9', subtitle: 'Air flu avant\npréch', c: '#87CEEB' },
-              { label: '10', subtitle: 'Air flu après\npréch', c: '#87CEEB' },
-              { label: '11', subtitle: 'Fumées\ndu four', c: '#DDA0DD' },
-              { label: '12', subtitle: 'Fumées ap\npréch', c: '#DDA0DD' },
-              { label: '13', subtitle: 'Eau refr\nentrée', c: '#ADD8E6' },
-              { label: '14', subtitle: 'Eau refr\nsortie', c: '#ADD8E6' },
-            ].map((col, i) => (
-              <th key={i} style={{ ...TH, backgroundColor: col.c, minWidth: '75px', padding: '4px 2px', fontSize: '8px' }}>
-                <div style={{ fontWeight: 'bold', marginBottom: '2px' }}>{col.label}</div>
-                <div style={{ whiteSpace: 'pre-line', lineHeight: '1.2' }}>{col.subtitle}</div>
-              </th>
+const DetailedEnergyBalance = ({ results, thermalParams, emissions, f, secTitle, TH, TD }) => {
+  const stickyTd = (bg) => ({ ...TD, fontWeight: 'bold', textAlign: 'left', position: 'sticky', left: 0, backgroundColor: bg, zIndex: 1 });
+  const rows = [
+    { label: 'Température [°C]',               vals: [thermalParams.Temp_boue_entree_C, thermalParams.Temp_boue_entree_C, null, thermalParams.Temp_fumee_voute_C, null, thermalParams.Temp_air_fluidisation_av_prechauffe_C, thermalParams.Temp_air_secondaire_C, thermalParams.Temp_air_tertiaire_C, null, null, thermalParams.Temp_air_balayage_instrumentation_C, thermalParams.Temp_fumee_voute_C, null] },
+    { label: 'Température air soufflante [°C]', vals: [null, null, null, null, null, null, null, null, null, null, results.Temp_air_soufflante_C, null, null] },
+    { label: 'Masse [kg/h]',                    vals: [emissions.Masse_brute_kg_h, null, null, emissions.Masse_mineral_kg_h, null, results.Masse_air_sec_combustion_tot_kg_h, thermalParams.Masse_air_secondaire_kg_h, thermalParams.Masse_air_tertiaire_kg_h, results.Masse_gaz_kg_h, null, results.Masse_air_balayage_kg_h, null, null] },
+    { label: 'Débit [m³(n)/h]',                 vals: [null, null, null, null, null, null, null, null, results.Q_gaz_Nm3_h, null, null, null, null] },
+    { label: 'PCI [kWh/m³(n)]',                 vals: [null, null, null, null, null, null, null, null, results.PCI_gaz_kWh_Nm3, null, null, null, null] },
+    { label: 'Masse air sec [kg/h]',            vals: [null, null, null, null, null, results.Masse_air_sec_combustion_tot_kg_h, thermalParams.Masse_air_secondaire_kg_h, thermalParams.Masse_air_tertiaire_kg_h, null, null, results.Masse_air_balayage_kg_h, null, null] },
+    { label: 'Humidité [kgH2O/kgAS]', decimals: 3, vals: [null, null, null, null, null, emissions.Teneur_en_eau_kgH2O_kgAS, emissions.Teneur_en_eau_kgH2O_kgAS, emissions.Teneur_en_eau_kgH2O_kgAS, null, null, emissions.Teneur_en_eau_kgH2O_kgAS, null, null] },
+    { label: "Masse d'eau [kgH2O/h]",           vals: [null, null, null, null, null, results.Masse_humidite_air_combustion_total_kg_h, results.Mhum_air_sec, results.Mhum_air_tert, null, null, results.Mhum_air_instru, null, null] },
+    { label: '% pertes',                        vals: [null, null, null, null, null, null, null, null, null, thermalParams.Pertes_thermiques_pourcent, null, null, null] },
+    { label: 'PCI OM [kCal/kgOM]',              vals: [emissions.PCI_OM_kcal_kgOM, null, null, null, null, null, null, null, null, null, null, null, null] },
+    { label: 'kg OM/h',                         vals: [emissions.Masse_brute_kg_h, null, null, null, null, null, null, null, null, emissions.Masse_brute_kg_h, null, null, null] },
+    { label: 'Débit MS des OM [kg/h]',          vals: [null, emissions.Masse_seche_kg_h, null, null, null, null, null, null, null, null, null, null, null] },
+    { label: 'Débit eau à évaporer [kg/h]',     vals: [null, null, emissions.Masse_eau_kg_h, null, null, null, null, null, null, null, null, null, null] },
+    { label: 'Énergie cédée par les fumées [kWh]', vals: [null, null, null, null, null, null, null, null, null, null, null, null, null] },
+    { label: 'Énergie transmise [kWh]',         vals: [null, null, null, null, null, null, null, null, null, null, null, null, null] },
+    { label: 'Enthalpie [kWh]',                 vals: [(emissions.Masse_brute_kg_h * emissions.PCI_OM_kcal_kgOM * 4.1868) / 3600, results.H_MS_kW, results.H_Evap_boue_entree_kW, results.H_matiere_minerale_kW, results.H_NETTE_OM_kW, results.H_air_fluidisation_av_prechauffe_kW, results.H_air_secondaire_kW, results.H_air_tertiaire_kW, results.H_gaz_inter, results.Pertes_thermiques_kW, results.H_air_balayage_instrumentation_kW, results.Hf_voute_kW, results.H_imbrule_kW] },
+  ];
+  return (
+    <div style={{ marginBottom: '25px' }}>
+      <div style={secTitle}>📋 Bilan Énergétique Détaillé</div>
+      <div style={{ overflowX: 'auto' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '9px' }}>
+          <thead>
+            <tr>
+              <th style={{ ...TH, width: '160px', position: 'sticky', left: 0, zIndex: 1 }} />
+              {['1a','1b','1c','1d','1e','2','3','4','5','6','7','10','12'].map((n) => (
+                <th key={n} style={{ ...TH, fontSize: '9px', fontWeight: 'bold', textAlign: 'center', minWidth: '70px', backgroundColor: '#f0f0f0' }}>{n}</th>
+              ))}
+            </tr>
+            <tr>
+              <th style={{ ...TH, width: '160px', position: 'sticky', left: 0, zIndex: 1 }}>Énergie</th>
+              <th colSpan={3} style={{ ...TH, backgroundColor: '#FFE4B5', fontSize: '8px', textAlign: 'center' }}>OM entrée</th>
+              {[
+                { label: '1. Matières inertes, cendres', c: '#D3D3D3' },
+                { label: 'Énergie nette OM', c: '#90EE90' },
+                { label: '2. Air primaire', c: '#87CEEB' },
+                { label: '3. Air secondaire', c: '#87CEEB' },
+                { label: '4. Air tertiaire', c: '#87CEEB' },
+                { label: '5. Énergie combustible', c: '#FFD700' },
+                { label: '6. Pertes therm.', c: '#FFA07A' },
+                { label: '7. Air balayage', c: '#87CEEB' },
+                { label: '10. Fumées SCC', c: '#DDA0DD' },
+                { label: '12. Pertes imbrûlés', c: '#FFA07A' },
+              ].map((col, i) => <th key={i} style={{ ...TH, backgroundColor: col.c, fontSize: '8px', minWidth: '70px' }}>{col.label}</th>)}
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((row, ri) => (
+              <tr key={ri} style={{ backgroundColor: ri % 2 === 0 ? '#FAFAFA' : '#fff' }}>
+                <td style={stickyTd(ri % 2 === 0 ? '#FAFAFA' : '#fff')}>{row.label}</td>
+                {row.vals.map((v, ci) => <td key={ci} style={TD}>{v != null ? (typeof v === 'number' ? v.toFixed(row.decimals ?? 2) : v) : ''}</td>)}
+              </tr>
             ))}
-          </tr>
-        </thead>
-        <tbody>
-          <tr style={{ backgroundColor: '#FAFAFA' }}>
-            <td style={{ ...TD, fontWeight: 'bold', textAlign: 'left', position: 'sticky', left: 0, backgroundColor: '#FAFAFA', zIndex: 1 }}>
-              Température [°C]
-            </td>
-            <td style={TD}>{f(thermalParams.Temp_boue_entree_C)}</td>
-            <td style={TD}>-</td>
-            <td style={TD}>-</td>
-            <td style={TD}>{f(thermalParams.Temp_air_fluidisation_av_prechauffe_C + 45)}</td>
-            <td style={TD}>{f(thermalParams.Temp_air_secondaire_C)}</td>
-            <td style={TD}>{f(thermalParams.Temp_air_tertiaire_C)}</td>
-            <td style={TD}>-</td>
-            <td style={TD}>-</td>
-            <td style={TD}>{f(thermalParams.Temp_air_fluidisation_av_prechauffe_C)}</td>
-            <td style={TD}>{f(results.Tair_ap_prechauffe_C)}</td>
-            <td style={TD}>{f(thermalParams.Temp_fumee_voute_C)}</td>
-            <td style={TD}>{f(thermalParams.Tf_voute_ap_HX_C)}</td>
-            <td style={TD}>-</td>
-            <td style={TD}>-</td>
-          </tr>
-
-          <tr style={{ backgroundColor: '#fff' }}>
-            <td style={{ ...TD, fontWeight: 'bold', textAlign: 'left', position: 'sticky', left: 0, backgroundColor: '#fff', zIndex: 1 }}>
-              Débit MS des boues [kg/h]
-            </td>
-            <td style={TD}>{f(emissions.Masse_seche_kg_h)}</td>
-            <td style={TD}>-</td>
-            <td style={TD}>-</td>
-            <td style={TD}>-</td>
-            <td style={TD}>-</td>
-            <td style={TD}>-</td>
-            <td style={TD}>-</td>
-            <td style={TD}>-</td>
-            <td style={TD}>-</td>
-            <td style={TD}>-</td>
-            <td style={TD}>-</td>
-            <td style={TD}>-</td>
-            <td style={TD}>-</td>
-            <td style={TD}>-</td>
-          </tr>
-
-          <tr style={{ backgroundColor: '#FAFAFA' }}>
-            <td style={{ ...TD, fontWeight: 'bold', textAlign: 'left', position: 'sticky', left: 0, backgroundColor: '#FAFAFA', zIndex: 1 }}>
-              Débit eau à évaporer [kg/h]
-            </td>
-            <td style={TD}>{f(emissions.Masse_eau_kg_h)}</td>
-            <td style={TD}>-</td>
-            <td style={TD}>-</td>
-            <td style={TD}>-</td>
-            <td style={TD}>-</td>
-            <td style={TD}>-</td>
-            <td style={TD}>-</td>
-            <td style={TD}>-</td>
-            <td style={TD}>-</td>
-            <td style={TD}>-</td>
-            <td style={TD}>-</td>
-            <td style={TD}>-</td>
-            <td style={TD}>-</td>
-            <td style={TD}>-</td>
-          </tr>
-
-          <tr style={{ backgroundColor: '#FAFAFA' }}>
-            <td style={{ ...TD, fontWeight: 'bold', textAlign: 'left', position: 'sticky', left: 0, backgroundColor: '#FAFAFA', zIndex: 1 }}>
-              Efficacité [%]
-            </td>
-            <td style={TD}>-</td>
-            <td style={TD}>-</td>
-            <td style={TD}>-</td>
-            <td style={TD}>-</td>
-            <td style={TD}>-</td>
-            <td style={TD}>-</td>
-            <td style={TD}>-</td>
-            <td style={TD}>-</td>
-            <td style={TD}>-</td>
-            <td style={TD}>-</td>
-            <td style={TD}>-</td>
-            <td style={TD}>{f(thermalParams.Rdt_HX * 100)}</td>
-            <td style={TD}>-</td>
-            <td style={TD}>-</td>
-          </tr>
-
-          <tr style={{ backgroundColor: '#FAFAFA' }}>
-            <td style={{ ...TD, fontWeight: 'bold', textAlign: 'left', position: 'sticky', left: 0, backgroundColor: '#FAFAFA', zIndex: 1 }}>
-              Énergie cédée par fumées [kW]
-            </td>
-            <td style={TD}>-</td>
-            <td style={TD}>-</td>
-            <td style={TD}>-</td>
-            <td style={TD}>-</td>
-            <td style={TD}>-</td>
-            <td style={TD}>-</td>
-            <td style={TD}>-</td>
-            <td style={TD}>-</td>
-            <td style={TD}>-</td>
-            <td style={TD}>-</td>
-            <td style={TD}>{f(results.Hf_voute_kW)}</td>
-            <td style={TD}>{f(results.Hf_voute_ap_HX_kW)}</td>
-            <td style={TD}>-</td>
-            <td style={TD}>-</td>
-          </tr>
-
-          <tr style={{ backgroundColor: '#fff' }}>
-            <td style={{ ...TD, fontWeight: 'bold', textAlign: 'left', position: 'sticky', left: 0, backgroundColor: '#fff', zIndex: 1 }}>
-              Énergie transmise [kW]
-            </td>
-            <td style={TD}>-</td>
-            <td style={TD}>-</td>
-            <td style={TD}>-</td>
-            <td style={TD}>{f(results.H_air_fluidisation_av_prechauffe_kW)}</td>
-            <td style={TD}>{f(results.H_air_secondaire_kW)}</td>
-            <td style={TD}>{f(results.H_air_tertiaire_kW)}</td>
-            <td style={TD}>-</td>
-            <td style={TD}>{f(results.Pertes_thermiques_kW)}</td>
-            <td style={TD}>-</td>
-            <td style={TD}>-</td>
-            <td style={TD}>-</td>
-            <td style={TD}>-</td>
-            <td style={TD}>-</td>
-            <td style={TD}>-</td>
-          </tr>
-
-          <tr style={{ backgroundColor: '#FAFAFA', fontWeight: 'bold' }}>
-            <td style={{ ...TD, fontWeight: 'bold', textAlign: 'left', position: 'sticky', left: 0, backgroundColor: '#FAFAFA', zIndex: 1 }}>
-              Enthalpie [kW]
-            </td>
-            <td style={{ ...TD, backgroundColor: '#FFE4B5' }}>{f(results.H_NETTE_BOUE_kW)}</td>
-            <td style={{ ...TD, backgroundColor: '#D3D3D3' }}>{f(results.H_matiere_minerale_kW)}</td>
-            <td style={{ ...TD, backgroundColor: '#D3D3D3' }}>{f(-results.H_matiere_minerale_kW)}</td>
-            <td style={{ ...TD, backgroundColor: '#87CEEB' }}>{f(results.H_air_fluidisation_av_prechauffe_kW)}</td>
-            <td style={{ ...TD, backgroundColor: '#87CEEB' }}>{f(results.H_air_secondaire_kW)}</td>
-            <td style={{ ...TD, backgroundColor: '#87CEEB' }}>{f(results.H_air_tertiaire_kW)}</td>
-            <td style={{ ...TD, backgroundColor: '#FFD700' }}>{f(results.H_gaz_inter || 0)}</td>
-            <td style={{ ...TD, backgroundColor: '#FFA07A' }}>-</td>
-            <td style={{ ...TD, backgroundColor: '#87CEEB' }}>-</td>
-            <td style={{ ...TD, backgroundColor: '#87CEEB' }}>{f(results.Hair_ap_prechauffage_kW)}</td>
-            <td style={{ ...TD, backgroundColor: '#DDA0DD' }}>{f(results.Hf_voute_kW)}</td>
-            <td style={{ ...TD, backgroundColor: '#DDA0DD' }}>{f(results.Hf_voute_ap_HX_kW)}</td>
-            <td style={{ ...TD, backgroundColor: '#ADD8E6' }}>-</td>
-            <td style={{ ...TD, backgroundColor: '#ADD8E6' }}>-</td>
-          </tr>
-        </tbody>
-      </table>
+          </tbody>
+        </table>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 export default CombustionTabHTML;
