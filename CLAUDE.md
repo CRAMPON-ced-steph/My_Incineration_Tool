@@ -451,3 +451,51 @@ Raisons :
 
 - `Y_BILAN/ECHANGEURS/AIRCOOLER/` and `Y_BILAN/ECHANGEURS/WATERCOOLER/` deleted (replaced by TUBEANDSHELL).
 - Imports/exports removed from `RetroAndBilanComponents.jsx` and `Main_FLOW.jsx`.
+
+---
+
+## Refactoring localStorage nodeId — multi-instance support (2026-06-25)
+
+### Problème résolu
+Quand un même type d'équipement (ex: 2 BHF) était utilisé sur des lignes séparées, les deux partageaient les mêmes clés localStorage (ex: `PDC_aero_BHF`), ce qui provoquait des rapports vides et des données mélangées.
+
+### Changements effectués
+
+**1. Génération d'ID stable** — `Main_FLOW.jsx`
+- Compteur monotone `nodeIdCounterRef` au lieu de `nodes.length + 1` (évite les collisions après suppression)
+- Synchronisé au chargement de projet
+
+**2. ~50 fichiers refactorés** — toutes les clés localStorage suffixées par `_${nodeId}`
+- **19 Z_RETRO Parameter_Tabs** : AIRINJECTION, BHF, CO2, COOLINGTOWER, CYCLONE, DENOX, ELECTROFILTER, FB, GF, IACT, IDFAN, QUENCH, REACTOR, RK, SCRUBBER, STACK, TUBEANDSHELL, WATER_INJECTION, WHB
+- **19 Y_BILAN tabs** : BouesTab, Recuperator, CombustionTab, tous les Flue_gas_ML et Pollutant_Emission_ML, SEPARATEURS, TUBEANDSHELL_Parameters, CO2, OmTab
+- **batchCalculators.js** : toutes les fonctions acceptent `(nodeData, nodeId)` maintenant
+- **Main_FLOW.jsx** : `batchResultStorageKey()` fonction, `handleCalculateAll` passe `node.id`, `calcSent_` et `bilanType_whb_RK_` suffixés
+
+**3. DataFlowDisplay** — `C_Components/DataFlowDisplay.jsx`
+- Les en-têtes affichent maintenant `BHF (3)` et `BHF (7)` pour distinguer les colonnes
+- Les clés metadata (`nodeId`, `nodeName`) filtrées des lignes affichées
+
+**4. Build** — `npm run build` passe sans erreur.
+
+### Branche
+`feature/localStorage-nodeId` — non encore mergée dans `main`.
+
+### Pattern localStorage avec nodeId
+
+Tous les fichiers Z_RETRO utilisent le pattern `getStorageKeys(nodeId)` :
+```js
+const getStorageKeys = (nodeId) => ({
+  KEY_NAME: `key_name_EQUIPMENT_${nodeId}`,
+  ...
+});
+// Inside component:
+const STORAGE_KEYS = useMemo(() => getStorageKeys(nodeId), [nodeId]);
+```
+
+Les fichiers Y_BILAN utilisent des template literals directement :
+```js
+localStorage.getItem(`emissions_BHF_${nodeId}`)
+```
+
+### Clés intentionnellement partagées (PAS de nodeId)
+- `'pointE'` — écrit par FB, RK et GF Parameter_Tabs; lu par LinearGraph et GlobalRetroReport
