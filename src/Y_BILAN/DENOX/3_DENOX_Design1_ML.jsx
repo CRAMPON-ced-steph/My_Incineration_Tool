@@ -5,6 +5,7 @@ import DENOXimage from '../../B_Images/DENOX_img.png';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './DENOX_traduction';
 
+import { fmt } from '../../A_Transverse_fonction/formatNumber';
 const DENOXDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
   const getInitialValue = (paramName, defaultValue) => {
     return innerData?.[paramName] !== undefined ? innerData[paramName] : defaultValue;
@@ -104,10 +105,10 @@ const DENOXDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
           'Nombre de plaques': nombrePlaques,
           'Nombre de couches': nombreCouches,
           'Plaques par couche': plaquesParCouche,
-          'Hauteur réacteur [m]': hauteurTotale.toFixed(2),
-          'Largeur réacteur [m]': largeurReacteur.toFixed(2),
-          'Longueur réacteur [m]': longueurReacteur.toFixed(2),
-          'Volume total plaques [m³]': (nombrePlaques * volumePlaque).toFixed(2)
+          'Hauteur réacteur [m]': fmt(hauteurTotale, 2),
+          'Largeur réacteur [m]': fmt(largeurReacteur, 2),
+          'Longueur réacteur [m]': fmt(longueurReacteur, 2),
+          'Volume total plaques [m³]': fmt((nombrePlaques * volumePlaque), 2)
         };
 
       case 'nid_abeilles':
@@ -121,10 +122,10 @@ const DENOXDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
           'Éléments par rangée': elementsParRangee,
           'Nombre de rangées': nombreRangees,
           'Hauteur réacteur [m]': '1.00',
-          'Largeur réacteur [m]': (elementsParRangee * 0.15).toFixed(2),
-          'Longueur réacteur [m]': (nombreRangees * 0.15).toFixed(2),
+          'Largeur réacteur [m]': fmt((elementsParRangee * 0.15), 2),
+          'Longueur réacteur [m]': fmt((nombreRangees * 0.15), 2),
           'Densité cellulaire [cpsi]': '400',
-          'Volume total éléments [m³]': (nombreElements * volumeElement).toFixed(2)
+          'Volume total éléments [m³]': fmt((nombreElements * volumeElement), 2)
         };
 
       case 'lit_fixe':
@@ -136,12 +137,12 @@ const DENOXDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
         const masseCatalyseur = volumeCatalyseur * 600;
         
         return {
-          'Volume lit total [m³]': volumeLitTotal.toFixed(2),
-          'Hauteur du lit [m]': hauteurLit.toFixed(2),
-          'Diamètre réacteur [m]': diametreLit.toFixed(2),
-          'Section du lit [m²]': sectionLitRecalculee.toFixed(2),
-          'Porosité du lit [%]': (porosite * 100).toFixed(1),
-          'Masse catalyseur [kg]': masseCatalyseur.toFixed(0),
+          'Volume lit total [m³]': fmt(volumeLitTotal, 2),
+          'Hauteur du lit [m]': fmt(hauteurLit, 2),
+          'Diamètre réacteur [m]': fmt(diametreLit, 2),
+          'Section du lit [m²]': fmt(sectionLitRecalculee, 2),
+          'Porosité du lit [%]': fmt((porosite * 100), 1),
+          'Masse catalyseur [kg]': fmt(masseCatalyseur, 0),
           'Densité apparente [kg/m³]': '600'
         };
 
@@ -186,13 +187,13 @@ const DENOXDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
 
   // Paramètres calculés
   const elementsGeneral = [
-    { text: t('Volume catalyseur requis [m³]'), value: volumeCatalyseur.toFixed(2) },
-    { text: t('Section transversale [m²]'), value: sectionTransversale.toFixed(2) },
-    { text: t('Concentration NOx sortie [mg/Nm³]'), value: concNOxSortie.toFixed(1) },
-    { text: t('Consommation NH₃ [kg/h]'), value: consoAmmoniaque.toFixed(2) },
-    { text: t('Perte de charge [Pa]'), value: perteCharge.toFixed(0) },
-    { text: t('Surface des manches [m²]'), value: surfaceManches.toFixed(2) },
-    { text: t('Pression de sortie [mmCE]'), value: pressionSortie.toFixed(2) },
+    { text: t('Volume catalyseur requis [m³]'), value: fmt(volumeCatalyseur, 2) },
+    { text: t('Section transversale [m²]'), value: fmt(sectionTransversale, 2) },
+    { text: t('Concentration NOx sortie [mg/Nm³]'), value: fmt(concNOxSortie, 1) },
+    { text: t('Consommation NH₃ [kg/h]'), value: fmt(consoAmmoniaque, 2) },
+    { text: t('Perte de charge [Pa]'), value: fmt(perteCharge, 0) },
+    { text: t('Surface des manches [m²]'), value: fmt(surfaceManches, 2) },
+    { text: t('Pression de sortie [mmCE]'), value: fmt(pressionSortie, 2) },
   ];
 
   const elementsSpecifiques = Object.entries(dimensionnementSpecifique).map(([key, value]) => ({
@@ -328,13 +329,13 @@ const DENOXDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
         <h3>{t('Résumé des paramètres principaux')}</h3>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '20px' }}>
           <p><strong>{t('Technologie')}:</strong> {technologieSelectionnee.replace('_', ' ')}</p>
-          <p><strong>{t('Volume catalyseur [m³]')}:</strong> {volumeCatalyseur.toFixed(2)}</p>
+          <p><strong>{t('Volume catalyseur [m³]')}:</strong> {fmt(volumeCatalyseur, 2)}</p>
           <p><strong>{t('Taux de réduction NOx [%]')}:</strong> {tauxReduction}%</p>
-          <p><strong>{t('Concentration NOx sortie [mg/Nm³]')}:</strong> {concNOxSortie.toFixed(1)}</p>
-          <p><strong>{t('Consommation NH₃ [kg/h]')}:</strong> {consoAmmoniaque.toFixed(2)}</p>
-          <p><strong>{t('Surface des manches [m²]')}:</strong> {surfaceManches.toFixed(2)}</p>
-          <p><strong>{t('Perte de charge [Pa]')}:</strong> {perteCharge.toFixed(0)}</p>
-          <p><strong>{t('Pression de sortie [mmCE]')}:</strong> {pressionSortie.toFixed(2)}</p>
+          <p><strong>{t('Concentration NOx sortie [mg/Nm³]')}:</strong> {fmt(concNOxSortie, 1)}</p>
+          <p><strong>{t('Consommation NH₃ [kg/h]')}:</strong> {fmt(consoAmmoniaque, 2)}</p>
+          <p><strong>{t('Surface des manches [m²]')}:</strong> {fmt(surfaceManches, 2)}</p>
+          <p><strong>{t('Perte de charge [Pa]')}:</strong> {fmt(perteCharge, 0)}</p>
+          <p><strong>{t('Pression de sortie [mmCE]')}:</strong> {fmt(pressionSortie, 2)}</p>
         </div>
       </div>
     </div>

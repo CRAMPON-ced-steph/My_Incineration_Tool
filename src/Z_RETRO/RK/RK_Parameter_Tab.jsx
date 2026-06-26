@@ -41,36 +41,36 @@ const DEFAULT_VALUES = {
   diagramMode: DIAGRAM_MODES.NO
 };
 
-const RK_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage, autoTrigger = false, allNodes }) => {
+const RK_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage, autoTrigger = false, allNodes, nodeId }) => {
   // États principaux
-  const [Tair_RK_C, setTair_RK_C] = useState(() => 
-    localStorage.getItem('Tair_RK_C') || DEFAULT_VALUES.Tair_RK_C
+  const [Tair_RK_C, setTair_RK_C] = useState(() =>
+    localStorage.getItem(`Tair_RK_C_${nodeId}`) || DEFAULT_VALUES.Tair_RK_C
   );
-  const [Thermal_losses_MW, setThermal_losses_MW] = useState(() => 
-    localStorage.getItem('Thermal_losses_MW_RK') || DEFAULT_VALUES.Thermal_losses_MW
+  const [Thermal_losses_MW, setThermal_losses_MW] = useState(() =>
+    localStorage.getItem(`Thermal_losses_MW_RK_${nodeId}`) || DEFAULT_VALUES.Thermal_losses_MW
   );
-  const [NCV_kcal_kg, setNCV_kcal_kg] = useState(() => 
-    localStorage.getItem('NCV_kcal_kg_RK') || DEFAULT_VALUES.NCV_kcal_kg
+  const [NCV_kcal_kg, setNCV_kcal_kg] = useState(() =>
+    localStorage.getItem(`NCV_kcal_kg_RK_${nodeId}`) || DEFAULT_VALUES.NCV_kcal_kg
   );
-  const [Masse_dechet_kg_h, setMasse_dechet_kg_h] = useState(() => 
-    localStorage.getItem('Masse_dechet_kg_h_RK') || DEFAULT_VALUES.Masse_dechet_kg_h
+  const [Masse_dechet_kg_h, setMasse_dechet_kg_h] = useState(() =>
+    localStorage.getItem(`Masse_dechet_kg_h_RK_${nodeId}`) || DEFAULT_VALUES.Masse_dechet_kg_h
   );
 
   // États pour les types de calcul (utilisation des constantes)
   const [bilanType_NCV_Masse, setBilanType_NCV_Masse] = useState(() =>
-    localStorage.getItem('bilanType_NCV_Masse_RK') || DEFAULT_VALUES.bilanType_NCV_Masse
+    localStorage.getItem(`bilanType_NCV_Masse_RK_${nodeId}`) || DEFAULT_VALUES.bilanType_NCV_Masse
   );
   const [bilanType_whb, setBilanType_whb] = useState(() =>
-    localStorage.getItem('bilanType_whb_RK') || DEFAULT_VALUES.bilanType_whb
+    localStorage.getItem(`bilanType_whb_RK_${nodeId}`) || DEFAULT_VALUES.bilanType_whb
   );
   const [diagramMode, setDiagramMode] = useState(() =>
-    localStorage.getItem('RK_diagramMode') || DEFAULT_VALUES.diagramMode
+    localStorage.getItem(`RK_diagramMode_${nodeId}`) || DEFAULT_VALUES.diagramMode
   );
 
   // États pour l'interface
   const [calculationResult_RK, setCalculationResult_RK] = useState(() => {
     try {
-      const stored = localStorage.getItem('calculationResult_RK');
+      const stored = localStorage.getItem(`calculationResult_RK_${nodeId}`);
       return stored ? JSON.parse(stored) : null;
     } catch {
       return null;
@@ -91,13 +91,13 @@ const RK_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguag
   useEffect(() => {
     const saveToLocalStorage = () => {
       try {
-        localStorage.setItem('Tair_RK_C', Tair_RK_C);
-        localStorage.setItem('Thermal_losses_MW_RK', Thermal_losses_MW);
-        localStorage.setItem('NCV_kcal_kg_RK', NCV_kcal_kg);
-        localStorage.setItem('Masse_dechet_kg_h_RK', Masse_dechet_kg_h);
-        localStorage.setItem('bilanType_NCV_Masse_RK', bilanType_NCV_Masse);
-        localStorage.setItem('bilanType_whb_RK', bilanType_whb);
-        localStorage.setItem('RK_diagramMode', diagramMode);
+        localStorage.setItem(`Tair_RK_C_${nodeId}`, Tair_RK_C);
+        localStorage.setItem(`Thermal_losses_MW_RK_${nodeId}`, Thermal_losses_MW);
+        localStorage.setItem(`NCV_kcal_kg_RK_${nodeId}`, NCV_kcal_kg);
+        localStorage.setItem(`Masse_dechet_kg_h_RK_${nodeId}`, Masse_dechet_kg_h);
+        localStorage.setItem(`bilanType_NCV_Masse_RK_${nodeId}`, bilanType_NCV_Masse);
+        localStorage.setItem(`bilanType_whb_RK_${nodeId}`, bilanType_whb);
+        localStorage.setItem(`RK_diagramMode_${nodeId}`, diagramMode);
       } catch (error) {
         console.warn('Erreur lors de la sauvegarde dans localStorage:', error);
       }
@@ -109,7 +109,7 @@ const RK_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguag
   useEffect(() => {
     if (calculationResult_RK) {
       try {
-        localStorage.setItem('calculationResult_RK', JSON.stringify(calculationResult_RK));
+        localStorage.setItem(`calculationResult_RK_${nodeId}`, JSON.stringify(calculationResult_RK));
       } catch (error) {
         console.warn('Erreur lors de la sauvegarde des résultats:', error);
       }
@@ -194,8 +194,8 @@ const RK_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguag
       });
 
       if (diagramMode === DIAGRAM_MODES.YES) {
-        const pointE = { x: result.MasseDechet || 0, y: result.P_incinerateur_MWH || 0 };
-        localStorage.setItem('pointE', JSON.stringify(pointE));
+        const pointE = { x: result.MasseDechet || 0, y: result.P_incinerateur_MWH || 0, label: 'RK', nodeId };
+        localStorage.setItem(`pointE_${nodeId}`, JSON.stringify(pointE));
       }
       
     } catch (error) {
@@ -234,8 +234,8 @@ const RK_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguag
   // Effacement de la mémoire
   const clearMemory = useCallback(() => {
     try {
-      ['Tair_RK_C', 'Thermal_losses_MW_RK', 'NCV_kcal_kg_RK', 'Masse_dechet_kg_h_RK',
-       'bilanType_NCV_Masse', 'bilanType_whb', 'calculationResult_RK', 'RK_diagramMode'
+      [`Tair_RK_C_${nodeId}`, `Thermal_losses_MW_RK_${nodeId}`, `NCV_kcal_kg_RK_${nodeId}`, `Masse_dechet_kg_h_RK_${nodeId}`,
+       `bilanType_NCV_Masse_RK_${nodeId}`, `bilanType_whb_RK_${nodeId}`, `calculationResult_RK_${nodeId}`, `RK_diagramMode_${nodeId}`
       ].forEach(key => localStorage.removeItem(key));
       setCalculationResult_RK(null);
       
@@ -405,7 +405,7 @@ const RK_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguag
           disabled={isCalculating}
           currentLanguage={currentLanguage}
           isCalculating={isCalculating}
-          storageKey={`calcSent_${title}`}
+          storageKey={`calcSent_${title}_${nodeId}`}
         />
         
         <ShowResultButton 

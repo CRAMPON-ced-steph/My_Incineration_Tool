@@ -23,14 +23,14 @@ const BALANCE_TYPES = {
 };
 
 // Constantes pour localStorage
-const STORAGE_KEYS = {
-  T_EAU: 'Teau_WATER_INJECTION',
-  T_AMONT_WATER_INJECTION: 'T_amont_WATER_INJECTION',
-  Q_EAU: 'Qeau_WATER_INJECTION',
-  PDC_AERO: 'PDC_aero_WATER_INJECTION',
-  BILAN_TYPE: 'WATER_INJECTION_bilanType',
-  CALCULATION_RESULT: 'calculationResult_WATER_INJECTION'
-};
+const getStorageKeys = (nodeId) => ({
+  T_EAU: `Teau_WATER_INJECTION_${nodeId}`,
+  T_AMONT_WATER_INJECTION: `T_amont_WATER_INJECTION_${nodeId}`,
+  Q_EAU: `Qeau_WATER_INJECTION_${nodeId}`,
+  PDC_AERO: `PDC_aero_WATER_INJECTION_${nodeId}`,
+  BILAN_TYPE: `WATER_INJECTION_bilanType_${nodeId}`,
+  CALCULATION_RESULT: `calculationResult_WATER_INJECTION_${nodeId}`
+});
 
 // Valeurs par défaut
 const DEFAULT_VALUES = {
@@ -41,7 +41,8 @@ const DEFAULT_VALUES = {
   bilanType: BALANCE_TYPES.TEMPERATURE
 };
 
-const WATER_INJECTION_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage, autoTrigger = false }) => {
+const WATER_INJECTION_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage, autoTrigger = false, nodeId }) => {
+  const STORAGE_KEYS = getStorageKeys(nodeId);
   // États principaux
   const [Teau, setTeau] = useState(() =>
     localStorage.getItem(STORAGE_KEYS.T_EAU) || DEFAULT_VALUES.Teau
@@ -344,7 +345,7 @@ const WATER_INJECTION_Parameter_Tab = ({ nodeData, title, onSendData, onClose, c
           disabled={isCalculating || !nodeData?.result}
           currentLanguage={currentLanguage}
           isCalculating={isCalculating}
-          storageKey={`calcSent_${title}`}
+          storageKey={`calcSent_${title}_${nodeId}`}
         />
 
         <ShowResultButton

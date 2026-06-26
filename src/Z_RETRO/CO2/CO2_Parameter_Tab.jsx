@@ -67,7 +67,7 @@ const CO2_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLangua
             <h3>{title} Parameters</h3>
 
             <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
-                <CalculateSendButton onClick={handleSendData} currentLanguage={currentLanguage} storageKey={`calcSent_${title}`} />
+                <CalculateSendButton onClick={handleSendData} currentLanguage={currentLanguage} storageKey={`calcSent_${title}_${nodeId}`} />
                 <button onClick={toggleSlider} style={{ background: '#4CAF50', color: 'white', border: 'none', borderRadius: '4px', padding: '8px 16px', cursor: 'pointer' }}>
                     {isSliderOpen ? 'Hide Results' : 'Show Results'}
                 </button>

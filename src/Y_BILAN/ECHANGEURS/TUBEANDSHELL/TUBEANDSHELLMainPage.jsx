@@ -6,7 +6,7 @@ import '../../../index.css';
 import { getLanguageCode } from '../../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './TubeShell_traduction';
 
-const TUBEANDSHELLMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLanguage = 'fr' }) => {
+const TUBEANDSHELLMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLanguage = 'fr', nodeId }) => {
   const languageCode = getLanguageCode(currentLanguage);
   const t = (key) => translations[languageCode]?.[key] || translations['fr']?.[key] || key;
 
@@ -27,6 +27,7 @@ const TUBEANDSHELLMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, 
           upstreamFG_IN={FG_IN_upstream}
           upstreamP_IN={P_IN_upstream}
           currentLanguage={currentLanguage}
+          nodeId={nodeId}
         />
       ),
     },
@@ -36,6 +37,7 @@ const TUBEANDSHELLMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, 
         <TUBEANDSHELL_Report
           innerData={innerData}
           currentLanguage={currentLanguage}
+          nodeId={nodeId}
         />
       ),
     },

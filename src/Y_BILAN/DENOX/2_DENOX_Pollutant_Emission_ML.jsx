@@ -8,7 +8,8 @@ import { getOpexData } from '../../A_Transverse_fonction/opexDataService';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './DENOX_traduction';
 
-const FlueGasPollutantEmission = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
+import { fmt } from '../../A_Transverse_fonction/formatNumber';
+const FlueGasPollutantEmission = ({ innerData, setInnerData, currentLanguage = 'fr', nodeId }) => {
   // ============ ÉTATS PRINCIPAUX ============
   const initialEmissionsDENOX = {
     'Fly ashes content [g/Nm3]': 0,
@@ -29,12 +30,12 @@ const FlueGasPollutantEmission = ({ innerData, setInnerData, currentLanguage = '
   };
 
   const [emissionsDENOX, setEmissions2] = useState(() => {
-    const saved = localStorage.getItem('emissionsDENOX');
+    const saved = localStorage.getItem(`emissionsDENOX_${nodeId}`);
     return saved ? JSON.parse(saved) : initialEmissionsDENOX;
   });
 
   useEffect(() => {
-    localStorage.setItem('emissionsDENOX', JSON.stringify(emissionsDENOX));
+    localStorage.setItem(`emissionsDENOX_${nodeId}`, JSON.stringify(emissionsDENOX));
   }, [emissionsDENOX]);
 
   // ============ DONNÉES EXTERNES ============
@@ -323,10 +324,10 @@ const FlueGasPollutantEmission = ({ innerData, setInnerData, currentLanguage = '
   // ============ ÉLÉMENTS DE TABLEAU ============
   const elementsGeneric = [
     { text: t('Waste Flow [kg/h]'), value: masse_dechets },
-    { text: t('Flue gas Flow Wet [Nm3/h]'), value: Debit_fumees_humide_Nm3_h.toFixed(0) },
-    { text: t('Flue gas Flow Dry [Nm3/h]'), value: Debit_fumees_sec_Nm3_h.toFixed(0) },
-    { text: t('O2 calculated [%]'), value: FG_O2_calcule.toFixed(2) },
-    { text: t('inert mass [kg/h]'), value: Inert_kg_h.toFixed(2) },
+    { text: t('Flue gas Flow Wet [Nm3/h]'), value: fmt(Debit_fumees_humide_Nm3_h, 0) },
+    { text: t('Flue gas Flow Dry [Nm3/h]'), value: fmt(Debit_fumees_sec_Nm3_h, 0) },
+    { text: t('O2 calculated [%]'), value: fmt(FG_O2_calcule, 2) },
+    { text: t('inert mass [kg/h]'), value: fmt(Inert_kg_h, 2) },
   ];
 
   const residusCalculations = [
@@ -410,7 +411,7 @@ const FlueGasPollutantEmission = ({ innerData, setInnerData, currentLanguage = '
 
   const handleReset = useCallback(() => {
     setEmissions2(initialEmissionsDENOX);
-    localStorage.removeItem('emissionsDENOX');
+    localStorage.removeItem(`emissionsDENOX_${nodeId}`);
   }, []);
 
   // Paramètres pour affichage directs
@@ -562,7 +563,7 @@ const FlueGasPollutantEmission = ({ innerData, setInnerData, currentLanguage = '
                   <option value="CAP">CAP</option>
                 </select>
               </td>
-              <td style={cellStyle}>{masses_pollutant_input.SO2?.toFixed(3) || '0.000'}</td>
+              <td style={cellStyle}>{(masses_pollutant_input.SO2 != null ? fmt(masses_pollutant_input.SO2, 3) : '') || '0.000'}</td>
               <td style={{ ...cellStyle, padding: '4px' }}>
                 <input
                   type="number"
@@ -584,10 +585,10 @@ const FlueGasPollutantEmission = ({ innerData, setInnerData, currentLanguage = '
                   disabled={SOx_reactif === 'None'}
                 />
               </td>
-              <td style={cellStyle}>{outputPollutants.SO2?.toFixed(3) || '0.000'}</td>
-              <td style={cellStyle}>{SOx_reactif !== 'None' ? reductionCalculations.mass_residus_SOx.toFixed(3) : '0.000'}</td>
-              <td style={cellStyle}>{SOx_reactif !== 'None' ? reductionCalculations.mass_reactif_reel_SOx.toFixed(3) : '0.000'}</td>
-              <td style={cellStyle}>{SOx_reactif !== 'None' ? reductionCalculations.mass_reduction_SOx.toFixed(3) : '0.000'}</td>
+              <td style={cellStyle}>{(outputPollutants.SO2 != null ? fmt(outputPollutants.SO2, 3) : '') || '0.000'}</td>
+              <td style={cellStyle}>{SOx_reactif !== 'None' ? fmt(reductionCalculations.mass_residus_SOx, 3) : '0.000'}</td>
+              <td style={cellStyle}>{SOx_reactif !== 'None' ? fmt(reductionCalculations.mass_reactif_reel_SOx, 3) : '0.000'}</td>
+              <td style={cellStyle}>{SOx_reactif !== 'None' ? fmt(reductionCalculations.mass_reduction_SOx, 3) : '0.000'}</td>
             </tr>
             <tr>
               <td style={cellStyle}>{t('HCl')}</td>
@@ -605,7 +606,7 @@ const FlueGasPollutantEmission = ({ innerData, setInnerData, currentLanguage = '
                   <option value="CAP">CAP</option>
                 </select>
               </td>
-              <td style={cellStyle}>{masses_pollutant_input.HCl?.toFixed(3) || '0.000'}</td>
+              <td style={cellStyle}>{(masses_pollutant_input.HCl != null ? fmt(masses_pollutant_input.HCl, 3) : '') || '0.000'}</td>
               <td style={{ ...cellStyle, padding: '4px' }}>
                 <input
                   type="number"
@@ -627,10 +628,10 @@ const FlueGasPollutantEmission = ({ innerData, setInnerData, currentLanguage = '
                   disabled={HCl_reactif === 'None'}
                 />
               </td>
-              <td style={cellStyle}>{outputPollutants.HCl?.toFixed(3) || '0.000'}</td>
-              <td style={cellStyle}>{HCl_reactif !== 'None' ? reductionCalculations.mass_residus_HCl.toFixed(3) : '0.000'}</td>
-              <td style={cellStyle}>{HCl_reactif !== 'None' ? reductionCalculations.mass_reactif_reel_HCl.toFixed(3) : '0.000'}</td>
-              <td style={cellStyle}>{HCl_reactif !== 'None' ? reductionCalculations.mass_reduction_HCl.toFixed(3) : '0.000'}</td>
+              <td style={cellStyle}>{(outputPollutants.HCl != null ? fmt(outputPollutants.HCl, 3) : '') || '0.000'}</td>
+              <td style={cellStyle}>{HCl_reactif !== 'None' ? fmt(reductionCalculations.mass_residus_HCl, 3) : '0.000'}</td>
+              <td style={cellStyle}>{HCl_reactif !== 'None' ? fmt(reductionCalculations.mass_reactif_reel_HCl, 3) : '0.000'}</td>
+              <td style={cellStyle}>{HCl_reactif !== 'None' ? fmt(reductionCalculations.mass_reduction_HCl, 3) : '0.000'}</td>
             </tr>
             <tr>
               <td style={cellStyle}>{t('HF')}</td>
@@ -648,7 +649,7 @@ const FlueGasPollutantEmission = ({ innerData, setInnerData, currentLanguage = '
                   <option value="CAP">CAP</option>
                 </select>
               </td>
-              <td style={cellStyle}>{masses_pollutant_input.HF?.toFixed(3) || '0.000'}</td>
+              <td style={cellStyle}>{(masses_pollutant_input.HF != null ? fmt(masses_pollutant_input.HF, 3) : '') || '0.000'}</td>
               <td style={{ ...cellStyle, padding: '4px' }}>
                 <input
                   type="number"
@@ -670,10 +671,10 @@ const FlueGasPollutantEmission = ({ innerData, setInnerData, currentLanguage = '
                   disabled={HF_reactif === 'None'}
                 />
               </td>
-              <td style={cellStyle}>{outputPollutants.HF?.toFixed(3) || '0.000'}</td>
-              <td style={cellStyle}>{HF_reactif !== 'None' ? reductionCalculations.mass_residus_HF.toFixed(3) : '0.000'}</td>
-              <td style={cellStyle}>{HF_reactif !== 'None' ? reductionCalculations.mass_reactif_reel_HF.toFixed(3) : '0.000'}</td>
-              <td style={cellStyle}>{HF_reactif !== 'None' ? reductionCalculations.mass_reduction_HF.toFixed(3) : '0.000'}</td>
+              <td style={cellStyle}>{(outputPollutants.HF != null ? fmt(outputPollutants.HF, 3) : '') || '0.000'}</td>
+              <td style={cellStyle}>{HF_reactif !== 'None' ? fmt(reductionCalculations.mass_residus_HF, 3) : '0.000'}</td>
+              <td style={cellStyle}>{HF_reactif !== 'None' ? fmt(reductionCalculations.mass_reactif_reel_HF, 3) : '0.000'}</td>
+              <td style={cellStyle}>{HF_reactif !== 'None' ? fmt(reductionCalculations.mass_reduction_HF, 3) : '0.000'}</td>
             </tr>
           </tbody>
         </table>

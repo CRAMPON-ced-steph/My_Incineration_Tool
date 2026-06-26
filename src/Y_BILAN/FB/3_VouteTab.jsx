@@ -5,6 +5,7 @@ import { Calcul_DH_Voute, calculDebitPT, PFreeBoard } from '../../A_Transverse_f
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './FB_traduction';
 
+import { fmt } from '../../A_Transverse_fonction/formatNumber';
 // ✅ Hook personnalisé pour traductions dynamiques
 const useTranslation = (currentLanguage = 'fr') => {
   return useMemo(() => {
@@ -318,7 +319,7 @@ const DimensionnementTab = ({ innerData = {}, innerDataTick, onDataChange, curre
             <label style={labelStyle}>{t('Débit Fumées Humides') || 'Débit Fumées Humides'} [m³/h/Four]</label>
             <input
               type="text"
-              value={calculsComplets ? calculsComplets.DebitFumeesHumides_m3hFour.toFixed(2) : '-'}
+              value={calculsComplets ? fmt(calculsComplets.DebitFumeesHumides_m3hFour) : '-'}
               readOnly
               style={readOnlyStyle}
             />
@@ -327,7 +328,7 @@ const DimensionnementTab = ({ innerData = {}, innerDataTick, onDataChange, curre
             <label style={labelStyle}>{t('Débit air instrumentation 20% haut du four [Nm³/h]')}</label>
             <input
               type="text"
-              value={calculsComplets ? calculsComplets.VolAirInstr20PctHautFour_Nm3h.toFixed(2) : '-'}
+              value={calculsComplets ? fmt(calculsComplets.VolAirInstr20PctHautFour_Nm3h) : '-'}
               readOnly
               style={readOnlyStyle}
             />
@@ -336,7 +337,7 @@ const DimensionnementTab = ({ innerData = {}, innerDataTick, onDataChange, curre
             <label style={labelStyle}>{t('Vitesse réelle four [m/s]')}</label>
             <input
               type="text"
-              value={calculsComplets ? calculsComplets.VitesseReelleFour_ms.toFixed(3) : '-'}
+              value={calculsComplets ? fmt(calculsComplets.VitesseReelleFour_ms, 3) : '-'}
               readOnly
               style={readOnlyStyle}
             />
@@ -442,36 +443,36 @@ const DimensionnementTab = ({ innerData = {}, innerDataTick, onDataChange, curre
           </h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '25px 20px', alignItems: 'start' }}>
             {[
-              { label: 'PDC Voute Iter1 [mmCE]', val: calculsComplets.PDC_Voute_Iter1.toFixed(4), bg: '#fef3c7' },
+              { label: 'PDC Voute Iter1 [mmCE]', val: fmt(calculsComplets.PDC_Voute_Iter1, 4), bg: '#fef3c7' },
               {
                 label: 'Pression Voute Iter1 [mmCE]',
-                val: calculsComplets.PressionVoute_Iter1_mmCe.toFixed(2),
+                val: fmt(calculsComplets.PressionVoute_Iter1_mmCe),
                 bg: '#fef3c7',
               },
               {
                 label: 'Debit air reel boite à vent Iter1 [m3/h]',
-                val: calculsComplets.DebitAirReelBoiteVentIter1_m3h.toFixed(2),
+                val: fmt(calculsComplets.DebitAirReelBoiteVentIter1_m3h),
                 bg: '#fef3c7',
               },
               {
                 label: 'Debit air reel boite à vent Iter1 [m3/s]',
-                val: calculsComplets.DebitAirReelBoiteVentIter1_m3s.toFixed(4),
+                val: fmt(calculsComplets.DebitAirReelBoiteVentIter1_m3s, 4),
                 bg: '#fef3c7',
               },
               {
                 label: 'Debit reel tuyeres Iter 1 [m3/s]',
-                val: calculsComplets.DebitReelTuyeresIter1_m3s.toFixed(4),
+                val: fmt(calculsComplets.DebitReelTuyeresIter1_m3s, 4),
                 bg: '#dcfce7',
               },
               { label: 'Nombre de trous iter 1', val: calculsComplets.NbTrousIter1, bg: '#dcfce7' },
               {
                 label: 'Surface Tuyeres Reelle Iter1 [m2]',
-                val: calculsComplets.SurfaceTuyeresReelleIter1_m2.toFixed(6),
+                val: fmt(calculsComplets.SurfaceTuyeresReelleIter1_m2, 6),
                 bg: '#dcfce7',
               },
               {
                 label: 'Vitesse reelle tuyere Iter1 [m/s]',
-                val: calculsComplets.VitesseReelleTuyereIter1_ms.toFixed(2),
+                val: fmt(calculsComplets.VitesseReelleTuyereIter1_ms),
                 bg: '#e0e7ff',
               },
             ].map(({ label, val, bg }) => (
@@ -499,46 +500,46 @@ const DimensionnementTab = ({ innerData = {}, innerDataTick, onDataChange, curre
           </h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '25px 20px', alignItems: 'start' }}>
             {[
-              { label: 'PDC Voute Iter2 [mmCE]', val: calculsComplets.PDC_Voute_Iter2.toFixed(4), bg: '#fed7aa' },
+              { label: 'PDC Voute Iter2 [mmCE]', val: fmt(calculsComplets.PDC_Voute_Iter2, 4), bg: '#fed7aa' },
               {
                 label: 'Pression Voute Iter2 [mmCE]',
-                val: calculsComplets.PressionVoute_Iter2_mmCe.toFixed(2),
+                val: fmt(calculsComplets.PressionVoute_Iter2_mmCe),
                 bg: '#fed7aa',
               },
               {
                 label: 'Debit air reel boite à vent Iter2 [m3/h]',
-                val: calculsComplets.DebitAirReelBoiteVentIter2_m3h.toFixed(2),
+                val: fmt(calculsComplets.DebitAirReelBoiteVentIter2_m3h),
                 bg: '#fed7aa',
               },
               {
                 label: 'Debit air reel boite à vent Iter2 [m3/s]',
-                val: calculsComplets.DebitAirReelBoiteVentIter2_m3s.toFixed(4),
+                val: fmt(calculsComplets.DebitAirReelBoiteVentIter2_m3s, 4),
                 bg: '#fed7aa',
               },
               {
                 label: 'Debit reel tuyeres Iter 2 [m3/s]',
-                val: calculsComplets.DebitReelTuyeresIter2_m3s.toFixed(4),
+                val: fmt(calculsComplets.DebitReelTuyeresIter2_m3s, 4),
                 bg: '#bbf7d0',
               },
               { label: 'Nombre de trous iter 2', val: calculsComplets.NbTrousIter2, bg: '#bbf7d0' },
               {
                 label: 'Surface Tuyeres Reelle Iter2 [m2]',
-                val: calculsComplets.SurfaceTuyeresReelleIter2_m2.toFixed(6),
+                val: fmt(calculsComplets.SurfaceTuyeresReelleIter2_m2, 6),
                 bg: '#bbf7d0',
               },
               {
                 label: 'Surface voute [m2]',
-                val: calculsComplets.SurfaceVoute_m2.toFixed(4),
+                val: fmt(calculsComplets.SurfaceVoute_m2, 4),
                 bg: '#bbf7d0',
               },
               {
                 label: 'Vitesse voute 2 [m/s]',
-                val: calculsComplets.VitesseVoute2_ms.toFixed(4),
+                val: fmt(calculsComplets.VitesseVoute2_ms, 4),
                 bg: '#ddd6fe',
               },
               {
                 label: 'Vitesse reelle tuyere Iter2 [m/s]',
-                val: calculsComplets.VitesseReelleTuyereIter2_ms.toFixed(2),
+                val: fmt(calculsComplets.VitesseReelleTuyereIter2_ms),
                 bg: '#ddd6fe',
               },
             ].map(({ label, val, bg }) => (
@@ -551,7 +552,7 @@ const DimensionnementTab = ({ innerData = {}, innerDataTick, onDataChange, curre
               <label style={labelStyle}>{t('Pression finale freeboard [mmCE]')}</label>
               <input
                 type="text"
-                value={calculsComplets.PressionFreeboard.toFixed(2)}
+                value={fmt(calculsComplets.PressionFreeboard)}
                 readOnly
                 style={{ ...readOnlyStyle, backgroundColor: '#ddd6fe' }}
               />
@@ -575,27 +576,27 @@ const DimensionnementTab = ({ innerData = {}, innerDataTick, onDataChange, curre
                 { label: 'Modèle', val: parametres.Modele },
                 { label: 'NbrTuyeres Actives', val: calculsComplets.NbrTuyeres },
                 { label: 'NbTrous/Tuyère', val: calculsComplets.NbTrousIter2 },
-                { label: 'VitesseReelleTuyere [m/s]', val: calculsComplets.VitesseReelleTuyereIter2_ms.toFixed(1) },
-                { label: 'Pression finale freeboard [mmCE]', val: calculsComplets.PressionFreeboard.toFixed(2) },
+                { label: 'VitesseReelleTuyere [m/s]', val: fmt(calculsComplets.VitesseReelleTuyereIter2_ms, 1) },
+                { label: 'Pression finale freeboard [mmCE]', val: fmt(calculsComplets.PressionFreeboard, 2) },
                 (() => {
                   const v = calculsComplets.VitesseVoute2_ms;
                   const alerte = v > 0 && (v < 0.8 || v > 1.1) ? t('Hors plage [0.8 – 1.1 m/s]') : null;
-                  return { label: 'Vitesse voute 2 [m/s]', val: v.toFixed(4), alerte };
+                  return { label: 'Vitesse voute 2 [m/s]', val: fmt(v, 4), alerte };
                 })(),
                 {
                   label: 'Charge MS théorique du radier [kg MS/h/m²]',
-                  val: calculsComplets.SurfaceVoute_m2 > 0 ? ((innerData?.MS_kg_h ?? 0) / calculsComplets.NombreFour / calculsComplets.SurfaceVoute_m2).toFixed(2) : '-',
+                  val: calculsComplets.SurfaceVoute_m2 > 0 ? fmt((innerData?.MS_kg_h ?? 0) / calculsComplets.NombreFour / calculsComplets.SurfaceVoute_m2) : '-',
                 },
                 {
                   label: 'Charge MV théorique [kg MV/h/m²]',
-                  val: calculsComplets.SurfaceVoute_m2 > 0 ? ((innerData?.MV_kg_h ?? 0) / calculsComplets.NombreFour / calculsComplets.SurfaceVoute_m2).toFixed(2) : '-',
+                  val: calculsComplets.SurfaceVoute_m2 > 0 ? fmt((innerData?.MV_kg_h ?? 0) / calculsComplets.NombreFour / calculsComplets.SurfaceVoute_m2) : '-',
                 },
                 (() => {
                   const chargeEau = calculsComplets.SurfaceVoute_m2 > 0
                     ? (innerData?.EauExtraite_kg_h ?? 0) / calculsComplets.NombreFour / calculsComplets.SurfaceVoute_m2
                     : null;
                   const alerte = chargeEau !== null && chargeEau > 540 ? t('Charge eau > 540 kg/h/m²') : null;
-                  return { label: 'Charge eau théorique [kg eau/h/m²]', val: chargeEau !== null ? chargeEau.toFixed(2) : '-', alerte };
+                  return { label: 'Charge eau théorique [kg eau/h/m²]', val: chargeEau !== null ? fmt(chargeEau) : '-', alerte };
                 })(),
                 {
                   label: 'Capacité thermique du four [kW]',
@@ -604,7 +605,7 @@ const DimensionnementTab = ({ innerData = {}, innerDataTick, onDataChange, curre
                     const H_pertes = innerData?.H_pertes_kW ?? 0;
                     const H_imbrule = innerData?.H_imbrule_kW ?? 0;
                     const H_air_instr = innerData?.H_air_balayage_kW ?? 0;
-                    return (H_in - H_pertes - H_imbrule - H_air_instr).toFixed(1);
+                    return fmt((H_in - H_pertes - H_imbrule - H_air_instr), 1);
                   })(),
                 },
                 {
@@ -616,7 +617,7 @@ const DimensionnementTab = ({ innerData = {}, innerDataTick, onDataChange, curre
                     const H_air_instr = innerData?.H_air_balayage_kW ?? 0;
                     const capacite = H_in - H_pertes - H_imbrule - H_air_instr;
                     const surface = calculsComplets.SurfaceVoute_m2;
-                    return surface > 0 ? (capacite / surface).toFixed(1) : '-';
+                    return surface > 0 ? fmt((capacite / surface), 1) : '-';
                   })(),
                 },
               ].map(({ label, val, alerte }) => (

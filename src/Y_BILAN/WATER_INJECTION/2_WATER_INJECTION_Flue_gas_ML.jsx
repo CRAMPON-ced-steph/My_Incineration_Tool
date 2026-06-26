@@ -8,7 +8,8 @@ import { h_fumee, Qeau_added_to_be_at_T } from '../../A_Transverse_fonction/enth
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './WATER_INJECTION_traduction';
 
-const WATER_INJECTIONFlueGasParameters = ({ innerData, currentLanguage = 'fr' }) => {
+import { fmt } from '../../A_Transverse_fonction/formatNumber';
+const WATER_INJECTIONFlueGasParameters = ({ innerData, currentLanguage = 'fr', nodeId }) => {
 
 
 
@@ -26,12 +27,12 @@ const WATER_INJECTIONFlueGasParameters = ({ innerData, currentLanguage = 'fr' })
   };
 
   const [emissions_WATER_INJECTION, setEmissions_WATER_INJECTION] = useState(() => {
-    const savedEmissions = localStorage.getItem('emissions_WATER_INJECTION');
+    const savedEmissions = localStorage.getItem(`emissions_WATER_INJECTION_${nodeId}`);
     return savedEmissions ? JSON.parse(savedEmissions) : initialEmissions_WATER_INJECTION;
   });
 
   useEffect(() => {
-    localStorage.setItem('emissions_WATER_INJECTION', JSON.stringify(emissions_WATER_INJECTION));
+    localStorage.setItem(`emissions_WATER_INJECTION_${nodeId}`, JSON.stringify(emissions_WATER_INJECTION));
   }, [emissions_WATER_INJECTION]);
 
   // Input data with fallback values
@@ -130,10 +131,10 @@ const WATER_INJECTIONFlueGasParameters = ({ innerData, currentLanguage = 'fr' })
   };
 
   const elementsGeneric = [
-    { text: t('Temperature inlet WATER_INJECTION [°C]'), value: T_IN.toFixed(1) },
-    { text: t('Delta enthalpies [kJ/kg]'), value: Delta_H.toFixed(0) },
-    { text: t('Sprayed/cooling water [kg/h]'), value: Q_eau_kg_h.toFixed(0) },
-    { text: t('Outlet flue gas volume [Nm3/h]'), value: FG_humide_EAU_tot_m3_h.toFixed(2) },
+    { text: t('Temperature inlet WATER_INJECTION [°C]'), value: fmt(T_IN, 1) },
+    { text: t('Delta enthalpies [kJ/kg]'), value: fmt(Delta_H, 0) },
+    { text: t('Sprayed/cooling water [kg/h]'), value: fmt(Q_eau_kg_h, 0) },
+    { text: t('Outlet flue gas volume [Nm3/h]'), value: fmt(FG_humide_EAU_tot_m3_h, 2) },
   ];
 
   const handleChange = (name, value) => {
@@ -147,7 +148,7 @@ const WATER_INJECTIONFlueGasParameters = ({ innerData, currentLanguage = 'fr' })
   };
 
   const clearMemory = useCallback(() => {
-    localStorage.removeItem('emissions_WATER_INJECTION');
+    localStorage.removeItem(`emissions_WATER_INJECTION_${nodeId}`);
     setEmissions_WATER_INJECTION(initialEmissions_WATER_INJECTION);
   }, []);
 

@@ -4,6 +4,7 @@ import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './COOLINGTOWER_traduction';
 import { getOpexData } from '../../A_Transverse_fonction/opexDataService';
 
+import { fmt } from '../../A_Transverse_fonction/formatNumber';
 const COOLINGTOWERDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
   const languageCode = getLanguageCode(currentLanguage);
   const t = (key) => {
@@ -287,10 +288,10 @@ const COOLINGTOWERDesign = ({ innerData, setInnerData, currentLanguage = 'fr' })
         <div>
           <h4 className="font-semibold text-lg text-gray-700 mb-3">{t('Caractéristiques calculées')}</h4>
           <ul className="space-y-2 text-sm text-gray-600">
-            <li><strong>{t('Hauteur minimale')}:</strong> {resultsData.height.toFixed(2)} m</li>
-            <li><strong>SMD:</strong> {(resultsData.sprayCharacteristics.smd * 1e6).toFixed(1)} μm</li>
-            <li><strong>{t('Vitesse des gouttes')}:</strong> {resultsData.sprayCharacteristics.dropletVelocity.toFixed(1)} m/s</li>
-            <li><strong>{t('Angle de spray')}:</strong> {resultsData.sprayCharacteristics.sprayAngle.toFixed(1)}°</li>
+            <li><strong>{t('Hauteur minimale')}:</strong> {fmt(resultsData.height, 2)} m</li>
+            <li><strong>SMD:</strong> {fmt((resultsData.sprayCharacteristics.smd * 1e6), 1)} μm</li>
+            <li><strong>{t('Vitesse des gouttes')}:</strong> {fmt(resultsData.sprayCharacteristics.dropletVelocity, 1)} m/s</li>
+            <li><strong>{t('Angle de spray')}:</strong> {fmt(resultsData.sprayCharacteristics.sprayAngle, 1)}°</li>
           </ul>
         </div>
 

@@ -8,7 +8,7 @@ import '../../index.css';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './DENOX_traduction';
 
-const DENOXMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLanguage = 'fr' }) => {
+const DENOXMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLanguage = 'fr', nodeId }) => {
   const languageCode = getLanguageCode(currentLanguage);
   const t = (key) => {
     return translations[languageCode]?.[key] || translations['fr']?.[key] || key;
@@ -25,23 +25,23 @@ const DENOXMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, current
   const tabs = [
     {
       name: t('Flue gases'),
-      content: <DENOXFlueGasParameters innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} />
+      content: <DENOXFlueGasParameters innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} nodeId={nodeId} />
     },
     {
       name: t('Pollutant Emissions'),
-      content: <DENOXFlueGasPollutantEmission innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} />
+      content: <DENOXFlueGasPollutantEmission innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} nodeId={nodeId} />
     },
     {
       name: t('Design'),
-      content: <DENOXDesign innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} />
+      content: <DENOXDesign innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} nodeId={nodeId} />
     },
     {
       name: t('Opex'),
-      content: <DENOXOpex innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} />
+      content: <DENOXOpex innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} nodeId={nodeId} />
     },
     {
       name: t('Rapport'),
-      content: <DENOX_Report innerData={innerData} currentLanguage={currentLanguage} />
+      content: <DENOX_Report innerData={innerData} currentLanguage={currentLanguage} nodeId={nodeId} />
     },
   ];
 

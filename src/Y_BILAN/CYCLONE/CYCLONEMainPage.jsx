@@ -8,7 +8,7 @@ import '../../index.css';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './CYCLONE_traduction';
 
-const CYCLONEMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLanguage = 'fr' }) => {
+const CYCLONEMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLanguage = 'fr', nodeId }) => {
   const languageCode = getLanguageCode(currentLanguage);
   const t = (key) => {
     return translations[languageCode]?.[key] || translations['fr']?.[key] || key;
@@ -26,23 +26,23 @@ const CYCLONEMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, curre
   const tabs = [
     {
       name: t('Flue gases'),
-      content: <CYCLONEFlueGasParameters innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} />
+      content: <CYCLONEFlueGasParameters innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} nodeId={nodeId} />
     },
     {
       name: t('Pollutant Emissions'),
-      content: <CYCLONEFlueGasPollutantEmission innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} />
+      content: <CYCLONEFlueGasPollutantEmission innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} nodeId={nodeId} />
     },
     {
       name: t('Design'),
-      content: <CYCLONEDesign innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} />
+      content: <CYCLONEDesign innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} nodeId={nodeId} />
     },
     {
       name: t('Opex'),
-      content: <CYCLONEOpex innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} />
+      content: <CYCLONEOpex innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} nodeId={nodeId} />
     },
     {
       name: t('Rapport'),
-      content: <CYCLONE_Report innerData={innerData} currentLanguage={currentLanguage} />
+      content: <CYCLONE_Report innerData={innerData} currentLanguage={currentLanguage} nodeId={nodeId} />
     },
   ];
 

@@ -8,9 +8,10 @@ import { H_in_systemA } from '../../A_Transverse_fonction/bilan_fct_RK';
 import { H2O_kg_m3, CO2_kg_m3, O2_kg_m3, N2_kg_m3, CO2_m3_kg, H2O_m3_kg, N2_m3_kg, O2_m3_kg } from '../../A_Transverse_fonction/conv_calculation';
 import { TEMP_FUMEE_INC, Q_AIR_DILUTION } from '../../A_Transverse_fonction/enthalpy_mix_gas';
 
-const CaptureParameters = ({ innerData }) => {
+import { fmt } from '../../A_Transverse_fonction/formatNumber';
+const CaptureParameters = ({ innerData, nodeId }) => {
   const [emissions, setEmissions] = useState(() => {
-    const savedEmissions = localStorage.getItem('emissions_CO2');
+    const savedEmissions = localStorage.getItem(`emissions_CO2_${nodeId}`);
     return savedEmissions ? JSON.parse(savedEmissions) : {
       'Flue gas temperature outlet [°C]': 900,
       'Air factor': 1,
@@ -39,7 +40,7 @@ const CaptureParameters = ({ innerData }) => {
   };
 
   useEffect(() => {
-    localStorage.setItem('emissions_CO2', JSON.stringify(emissions));
+    localStorage.setItem(`emissions_CO2_${nodeId}`, JSON.stringify(emissions));
   }, [emissions]);
 
   const handleChange = (name, value) => {
@@ -166,11 +167,11 @@ const CaptureParameters = ({ innerData }) => {
   const O2_sec_pourcent = FG_dry_extractor_Nm3_h !== 0 ? FG_O2_extractor_Nm3_h / FG_dry_extractor_Nm3_h * 100 : 0;
 
   const elementsGeneric = [
-    { text: 'Air Stoechio [Kmole]', value: Air_stoechio_kmole.toFixed(2) },
-    { text: 'Calculated temperature [°C]', value: T_four_calcule.toFixed(2) },
-    { text: 'Water Content [kg/Nm3]', value: Water_content_kg_Nm3.toFixed(5) },
-    { text: 'H_system', value: H_system.toFixed(0) },
-    { text: 'Air factor calculated', value: Air_factor_calculated.toFixed(1) },
+    { text: 'Air Stoechio [Kmole]', value: fmt(Air_stoechio_kmole, 2) },
+    { text: 'Calculated temperature [°C]', value: fmt(T_four_calcule, 2) },
+    { text: 'Water Content [kg/Nm3]', value: fmt(Water_content_kg_Nm3, 5) },
+    { text: 'H_system', value: fmt(H_system, 0) },
+    { text: 'Air factor calculated', value: fmt(Air_factor_calculated, 1) },
   ];
 
   const AirStData = {

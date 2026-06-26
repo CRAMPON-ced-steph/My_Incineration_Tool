@@ -7,7 +7,8 @@ import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './AIRINJECTION_traduction';
 import '../../index.css';
 
-const AIRINJECTIONFlueGasParameters = ({ innerData, currentLanguage = 'fr' }) => {
+import { fmt } from '../../A_Transverse_fonction/formatNumber';
+const AIRINJECTIONFlueGasParameters = ({ innerData, nodeId, currentLanguage = 'fr' }) => {
   const initialEmissions_AIRINJECTION = {
     'Flue gas temperature outlet [°C]': 400,
     'Ambient air temperature [°C]': 20,
@@ -22,12 +23,12 @@ const AIRINJECTIONFlueGasParameters = ({ innerData, currentLanguage = 'fr' }) =>
   };
 
   const [emissions_AIRINJECTION, setEmissions_AIRINJECTION] = useState(() => {
-    const savedEmissions = localStorage.getItem('emissions_AIRINJECTION');
+    const savedEmissions = localStorage.getItem(`emissions_AIRINJECTION_${nodeId}`);
     return savedEmissions ? JSON.parse(savedEmissions) : initialEmissions_AIRINJECTION;
   });
 
   useEffect(() => {
-    localStorage.setItem('emissions_AIRINJECTION', JSON.stringify(emissions_AIRINJECTION));
+    localStorage.setItem(`emissions_AIRINJECTION_${nodeId}`, JSON.stringify(emissions_AIRINJECTION));
   }, [emissions_AIRINJECTION]);
 
   // Input data with fallback values
@@ -128,10 +129,10 @@ const AIRINJECTIONFlueGasParameters = ({ innerData, currentLanguage = 'fr' }) =>
   };
 
   const elementsGeneric = [
-    { text: t('Temperature inlet AIRINJECTION [°C]'), value: T_in.toFixed(1) },
-    { text: t('Delta enthalpies [kJ/kg]'), value: Delta_H.toFixed(0) },
-    { text: t('Sprayed/cooling water [kg/h]'), value: Q_eau_kg_h.toFixed(0) },
-    { text: t('Outlet flue gas volume [Nm3/h]'), value: FG_humide_EAU_tot_m3_h.toFixed(2) },
+    { text: t('Temperature inlet AIRINJECTION [°C]'), value: fmt(T_in, 1) },
+    { text: t('Delta enthalpies [kJ/kg]'), value: fmt(Delta_H, 0) },
+    { text: t('Sprayed/cooling water [kg/h]'), value: fmt(Q_eau_kg_h, 0) },
+    { text: t('Outlet flue gas volume [Nm3/h]'), value: fmt(FG_humide_EAU_tot_m3_h, 2) },
   ];
 
   const handleChange = (name, value) => {
@@ -145,7 +146,7 @@ const AIRINJECTIONFlueGasParameters = ({ innerData, currentLanguage = 'fr' }) =>
   };
 
   const clearMemory = useCallback(() => {
-    localStorage.removeItem('emissions_AIRINJECTION');
+    localStorage.removeItem(`emissions_AIRINJECTION_${nodeId}`);
     setEmissions_AIRINJECTION(initialEmissions_AIRINJECTION);
   }, []);
 

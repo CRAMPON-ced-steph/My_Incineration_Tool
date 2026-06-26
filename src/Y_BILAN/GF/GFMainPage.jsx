@@ -2,6 +2,7 @@ import React, { useState, useRef, useCallback, useMemo } from 'react';
 import BouesTab from './1_OmTab';
 import CombustionTab from './2_CombustionTab';
 import GF_Report from './GF_Report';
+import { fmt } from '../../A_Transverse_fonction/formatNumber';
 
 //import CombustionTab from './2_CombustionTabTequi';
 
@@ -13,7 +14,7 @@ import GFCalcOpex from './5_1_GF_calcul_Opex';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './GF_traduction';
 
-const GFMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLanguage = 'fr' }) => {
+const GFMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLanguage = 'fr', nodeId }) => {
   // ============================================================
   // LANGUAGE MANAGEMENT
   // ============================================================
@@ -236,17 +237,18 @@ const GFMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
     setCombustionResults({});
 
     // Supprimer les données du localStorage
+    const suffix = nodeId ? `_${nodeId}` : '';
     const keys = [
-      'bouesTab_fonctionnement_GF',
-      'bouesTab_boue_GF',
-      'bouesTab_chons_GF',
-      'bouesTab_heavyMetals_GF',
-      'emissions_GF',
-      'Temperatures_imposees',
-      'thermalParams_GF',
-      'airComposition_GF',
-      'emissions2_GF',
-      'opexDashboard_GF',
+      `bouesTab_fonctionnement_GF${suffix}`,
+      `bouesTab_boue_GF${suffix}`,
+      `bouesTab_chons_GF${suffix}`,
+      `bouesTab_heavyMetals_GF${suffix}`,
+      `emissions_GF${suffix}`,
+      `Temperatures_imposees${suffix}`,
+      `thermalParams_GF${suffix}`,
+      `airComposition_GF${suffix}`,
+      `emissions2_GF${suffix}`,
+      `opexDashboard_GF${suffix}`,
     ];
     keys.forEach((k) => {
       try {
@@ -286,7 +288,7 @@ const GFMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
       '💨 FUMÉES',
       `• Débit humide: ${d.FG_OUT_Nm3_h?.wet ?? 0} Nm³/h`,
       `• Débit sec: ${d.FG_OUT_Nm3_h?.dry ?? 0} Nm³/h`,
-      `• O₂ calculé: ${((d.O2_calcule ?? 0) * 100).toFixed(2)}%`,
+      `• O₂ calculé: ${fmt((d.O2_calcule ?? 0) * 100)}%`,
     ].join('\n');
 
     // Afficher l'alerte
@@ -314,6 +316,7 @@ const GFMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
           <BouesTab
             innerData={innerDataRef.current}
             currentLanguage={currentLanguage}
+            nodeId={nodeId}
           />
         );
 
@@ -324,6 +327,7 @@ const GFMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
             onInnerDataChange={notifyInnerDataChanged}
             onResultsChange={setCombustionResults}
             currentLanguage={currentLanguage}
+            nodeId={nodeId}
           />
         );
 
@@ -338,6 +342,7 @@ const GFMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
             }}
             onInnerDataChange={notifyInnerDataChanged}
             currentLanguage={currentLanguage}
+            nodeId={nodeId}
           />
         );
 
@@ -347,6 +352,7 @@ const GFMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
             innerData={innerDataRef.current}
             innerDataTick={innerDataTick}
             currentLanguage={currentLanguage}
+            nodeId={nodeId}
           />
         );
 
@@ -361,6 +367,7 @@ const GFMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
               notifyInnerDataChanged();
             }}
             currentLanguage={currentLanguage}
+            nodeId={nodeId}
           />
         );
 
@@ -369,6 +376,7 @@ const GFMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
           <GF_Report
             innerData={innerDataRef.current}
             currentLanguage={currentLanguage}
+            nodeId={nodeId}
           />
         );
 
@@ -490,6 +498,7 @@ const GFMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
         innerData={innerDataRef.current}
         innerDataTick={innerDataTick}
         setInnerData={setInnerDataForCalcOpex}
+        nodeId={nodeId}
       />
 
       {/* ════════════════════════════════════════ CONTENT ════════════════════════════════════════ */}

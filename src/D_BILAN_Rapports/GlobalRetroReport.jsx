@@ -423,7 +423,7 @@ const GlobalRetroReport = ({ nodes, edges, onClose }) => {
                         ...styles.coverEquipTitle,
                         color: lines.length > 1 ? LINE_COLORS[li % LINE_COLORS.length].title : '#e0ecff',
                       }}>
-                        {lines.length > 1 ? `Ligne ${li + 1}` : 'Équipements inclus'}
+                        {lines.length > 1 ? (line[0]?.data?.lineName || `Ligne ${li + 1}`) : 'Équipements inclus'}
                       </h3>
                       {line.map(n => (
                         <div key={n.id} style={styles.coverEquipItem}>
@@ -443,7 +443,7 @@ const GlobalRetroReport = ({ nodes, edges, onClose }) => {
                     const lc = LINE_COLORS[lineIdx % LINE_COLORS.length];
                     return (
                       <div data-pdf-section style={{ ...styles.lineSeparator, background: lc.sep, borderLeft: `5px solid ${lc.border}` }}>
-                        <span style={{ ...styles.lineLabel, color: lc.title }}>Ligne {lineIdx + 1}</span>
+                        <span style={{ ...styles.lineLabel, color: lc.title }}>{line[0]?.data?.lineName || `Ligne ${lineIdx + 1}`}</span>
                         <span style={styles.lineDesc}>
                           {line.map(n => n.data.label).join(' → ')}
                         </span>
@@ -535,7 +535,7 @@ const ReportBody = ({ node }) => {
 };
 
 // ── Inline body for RK (copy of RK_Retro_Rapport content without modal) ───────
-const fmt = (v, d = 2) => { const n = parseFloat(v); return isNaN(n) ? '—' : n.toFixed(d); };
+import { fmt } from '../A_Transverse_fonction/formatNumber';
 
 const Section = ({ title, children }) => (
   <div style={bodyStyles.section}>

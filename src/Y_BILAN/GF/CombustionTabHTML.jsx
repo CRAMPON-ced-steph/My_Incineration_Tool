@@ -5,6 +5,7 @@
 import React from 'react';
 import SchemaProcessus from './SchemaProcessusGF';
 
+import { fmt } from '../../A_Transverse_fonction/formatNumber';
 // ============================================================
 // TOGGLE SWITCH COMPONENT
 // ============================================================
@@ -609,8 +610,8 @@ const EnergyBalanceSection = ({
           ].map(({ label, in: vin, out: vout }) => (
             <tr key={label}>
               <td style={{ ...TD, fontWeight: 'bold' }}>{label}</td>
-              <td style={{ ...TD, backgroundColor: '#FFE6CC' }}>{vin != null ? vin.toFixed(2) : '-'}</td>
-              <td style={{ ...TD, backgroundColor: '#E6F3FF' }}>{vout != null ? vout.toFixed(2) : '-'}</td>
+              <td style={{ ...TD, backgroundColor: '#FFE6CC' }}>{vin != null ? fmt(vin, 2) : '-'}</td>
+              <td style={{ ...TD, backgroundColor: '#E6F3FF' }}>{vout != null ? fmt(vout, 2) : '-'}</td>
             </tr>
           ))}
           <tr style={{ fontWeight: 'bold' }}>
@@ -628,7 +629,7 @@ const EnergyBalanceSection = ({
             <td style={{ ...TD, backgroundColor: '#f8f8f8' }}>-</td>
             <td style={{ ...TD, backgroundColor: '#f8f8f8', fontStyle: 'italic',
               color: residuConvergence != null && Math.abs(residuConvergence) < 1 ? '#16a34a' : '#dc2626' }}>
-              {residuConvergence?.toFixed(4) ?? '-'}</td>
+              {(residuConvergence != null ? fmt(residuConvergence, 4) : '') ?? '-'}</td>
           </tr>
         </tbody>
       </table>

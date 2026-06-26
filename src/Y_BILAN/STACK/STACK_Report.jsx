@@ -2,8 +2,7 @@ import React from 'react';
 import { getOpexData } from '../../A_Transverse_fonction/opexDataService';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './STACK_traduction';
-
-const fmt = (v, decimals = 2) => { const n = parseFloat(v); return isNaN(n) ? '—' : n.toFixed(decimals); };
+import { fmt } from '../../A_Transverse_fonction/formatNumber';
 const Section = ({ title, children }) => <div style={styles.section}><h2 style={styles.sectionTitle}>{title}</h2>{children}</div>;
 const SubSection = ({ title, children }) => <div style={styles.subSection}>{title && <h3 style={styles.subTitle}>{title}</h3>}{children}</div>;
 const KV = ({ label, value, unit = '' }) => <div style={styles.kvRow}><span style={styles.kvLabel}>{label}</span><span style={styles.kvValue}>{value}{unit ? <span style={styles.kvUnit}> {unit}</span> : null}</span></div>;

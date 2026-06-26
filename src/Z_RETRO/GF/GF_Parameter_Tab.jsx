@@ -14,49 +14,49 @@ import '../../index.css';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './GF_traduction';
 
-// Constantes pour localStorage
-const STORAGE_KEYS = {
+// Constantes pour localStorage (suffixées par nodeId)
+const getStorageKeys = (nodeId) => ({
   // Paramètres principaux
-  WASTE_FLOW_RATE: 'Waste_flow_rate_kg_h_GF',
-  PRESSURE_LOSS: 'Pressure_losse_mmCE_GF',
-  COMBUSTION_AIR_FLOWRATE: 'Combustion_air_flowrate_Nm3_h_GF',
-  MEASURED_AIR_TEMPERATURE: 'Measured_air_temperature_C_GF',
-  FEED_WATER_FLOW: 'Q_feed_water_kg_h_GF',
-  FEED_WATER_TEMP: 'T_feed_water_C_GF',
-  BLOWDOWN_PERCENT: 'Blowdown_pourcent_GF',
+  WASTE_FLOW_RATE: `Waste_flow_rate_kg_h_GF_${nodeId}`,
+  PRESSURE_LOSS: `Pressure_losse_mmCE_GF_${nodeId}`,
+  COMBUSTION_AIR_FLOWRATE: `Combustion_air_flowrate_Nm3_h_GF_${nodeId}`,
+  MEASURED_AIR_TEMPERATURE: `Measured_air_temperature_C_GF_${nodeId}`,
+  FEED_WATER_FLOW: `Q_feed_water_kg_h_GF_${nodeId}`,
+  FEED_WATER_TEMP: `T_feed_water_C_GF_${nodeId}`,
+  BLOWDOWN_PERCENT: `Blowdown_pourcent_GF_${nodeId}`,
 
   // Paramètres conditionnels
-  Q_AIR_INGRESS: 'Q_air_ingress_Nm3_h_GF',
-  T_AIR_INGRESS: 'T_air_ingress_C_GF',
-  Q_SATURATED_STEAM: 'Q_saturated_steam_GF',
-  STEAM_PRESSURE: 'Steam_pressure_gauge_bar_GF',
-  SUPERHEATED_STEAM_TEMP: 'super_heated_steam_temperature_C_GF',
-  Q_SUPERHEATED_STEAM: 'Q_superheated_steam_kg_h_GF',
-  P_SUPERHEATED_STEAM: 'P_superheated_steam_bar_GF',
-  T_SUPERHEATED_WATER: 'T_superheated_water_boiler_C_GF',
-  Q_SUPERHEATED_WATER: 'Q_superheated_water_kg_h_GF',
-  Q_RECYCLED_FLUE_GAS: 'Q_recycled_flue_gas_Nm3_h_GF',
-  T_RECYCLED_FLUE_GAS: 'T_recycled_flue_gas_C_GF',
-  INJECTED_WATER_TEMP: 'Injected_water_temperature_C_GF',
-  Q_TREATMENT_INJECTED_WATER: 'Q_treatment_injected_water_kg_h_GF',
-  AUXILIARY_FUEL: 'Auxiliary_fuel_kWh_GF',
-  BOTTOM_ASH_PERCENT: 'Bottom_ash_pourcent_GF',
-  BOTTOM_ASH_TEMP: 'Bottom_ash_temperature_C_GF',
-  UNBURNT_BOTTOM_ASH: 'Unburnt_bottom_ash_pourcent_GF',
-  UNBURNT_LCV: 'Unburnt_LCV_kcal_kg_GF',
-  REFERENCE_TEMP: 'Reference_temperature_C_GF',
+  Q_AIR_INGRESS: `Q_air_ingress_Nm3_h_GF_${nodeId}`,
+  T_AIR_INGRESS: `T_air_ingress_C_GF_${nodeId}`,
+  Q_SATURATED_STEAM: `Q_saturated_steam_GF_${nodeId}`,
+  STEAM_PRESSURE: `Steam_pressure_gauge_bar_GF_${nodeId}`,
+  SUPERHEATED_STEAM_TEMP: `super_heated_steam_temperature_C_GF_${nodeId}`,
+  Q_SUPERHEATED_STEAM: `Q_superheated_steam_kg_h_GF_${nodeId}`,
+  P_SUPERHEATED_STEAM: `P_superheated_steam_bar_GF_${nodeId}`,
+  T_SUPERHEATED_WATER: `T_superheated_water_boiler_C_GF_${nodeId}`,
+  Q_SUPERHEATED_WATER: `Q_superheated_water_kg_h_GF_${nodeId}`,
+  Q_RECYCLED_FLUE_GAS: `Q_recycled_flue_gas_Nm3_h_GF_${nodeId}`,
+  T_RECYCLED_FLUE_GAS: `T_recycled_flue_gas_C_GF_${nodeId}`,
+  INJECTED_WATER_TEMP: `Injected_water_temperature_C_GF_${nodeId}`,
+  Q_TREATMENT_INJECTED_WATER: `Q_treatment_injected_water_kg_h_GF_${nodeId}`,
+  AUXILIARY_FUEL: `Auxiliary_fuel_kWh_GF_${nodeId}`,
+  BOTTOM_ASH_PERCENT: `Bottom_ash_pourcent_GF_${nodeId}`,
+  BOTTOM_ASH_TEMP: `Bottom_ash_temperature_C_GF_${nodeId}`,
+  UNBURNT_BOTTOM_ASH: `Unburnt_bottom_ash_pourcent_GF_${nodeId}`,
+  UNBURNT_LCV: `Unburnt_LCV_kcal_kg_GF_${nodeId}`,
+  REFERENCE_TEMP: `Reference_temperature_C_GF_${nodeId}`,
 
   // États des toggles
-  SATURATED_STEAM_ENABLED: 'saturatedSteamEnabled_GF',
-  SUPERHEATED_STEAM_ENABLED: 'superheatedSteamEnabled_GF',
-  SUPERHEATED_WATER_ENABLED: 'superheatedWaterEnabled_GF',
-  RECYCLED_FLUE_GAS_ENABLED: 'recycledFlueGasEnabled_GF',
-  INJECTED_WATER_ENABLED: 'injectedWaterEnabled_GF',
-  AIR_INGRESS_ENABLED: 'AirIngressEnabled_GF',
+  SATURATED_STEAM_ENABLED: `saturatedSteamEnabled_GF_${nodeId}`,
+  SUPERHEATED_STEAM_ENABLED: `superheatedSteamEnabled_GF_${nodeId}`,
+  SUPERHEATED_WATER_ENABLED: `superheatedWaterEnabled_GF_${nodeId}`,
+  RECYCLED_FLUE_GAS_ENABLED: `recycledFlueGasEnabled_GF_${nodeId}`,
+  INJECTED_WATER_ENABLED: `injectedWaterEnabled_GF_${nodeId}`,
+  AIR_INGRESS_ENABLED: `AirIngressEnabled_GF_${nodeId}`,
 
-  CALCULATION_RESULT: 'calculationResult_GF',
-  DIAGRAM_MODE: 'GF_diagramMode'
-};
+  CALCULATION_RESULT: `calculationResult_GF_${nodeId}`,
+  DIAGRAM_MODE: `GF_diagramMode_${nodeId}`
+});
 
 // Valeurs par défaut
 const DEFAULT_VALUES = {
@@ -100,129 +100,131 @@ const DEFAULT_VALUES = {
   diagramMode: 'NO'
 };
 
-const GF_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage, autoTrigger = false }) => {
+const GF_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage, nodeId, autoTrigger = false }) => {
+  const STORAGE_KEYS = useMemo(() => getStorageKeys(nodeId), [nodeId]);
+
   // États principaux - Paramètres de base
-  const [Waste_flow_rate_kg_h, setWaste_flow_rate_kg_h] = useState(() => 
-    localStorage.getItem(STORAGE_KEYS.WASTE_FLOW_RATE) || DEFAULT_VALUES.Waste_flow_rate_kg_h
+  const [Waste_flow_rate_kg_h, setWaste_flow_rate_kg_h] = useState(() =>
+    localStorage.getItem(getStorageKeys(nodeId).WASTE_FLOW_RATE) || DEFAULT_VALUES.Waste_flow_rate_kg_h
   );
-  const [Pressure_losse_mmCE, setPressure_losse_mmCE] = useState(() => 
-    localStorage.getItem(STORAGE_KEYS.PRESSURE_LOSS) || DEFAULT_VALUES.Pressure_losse_mmCE
+  const [Pressure_losse_mmCE, setPressure_losse_mmCE] = useState(() =>
+    localStorage.getItem(getStorageKeys(nodeId).PRESSURE_LOSS) || DEFAULT_VALUES.Pressure_losse_mmCE
   );
-  const [Combustion_air_flowrate_Nm3_h, setCombustion_air_flowrate_Nm3_h] = useState(() => 
-    localStorage.getItem(STORAGE_KEYS.COMBUSTION_AIR_FLOWRATE) || DEFAULT_VALUES.Combustion_air_flowrate_Nm3_h
+  const [Combustion_air_flowrate_Nm3_h, setCombustion_air_flowrate_Nm3_h] = useState(() =>
+    localStorage.getItem(getStorageKeys(nodeId).COMBUSTION_AIR_FLOWRATE) || DEFAULT_VALUES.Combustion_air_flowrate_Nm3_h
   );
-  const [Measured_air_temperature_C, setMeasured_air_temperature_C] = useState(() => 
-    localStorage.getItem(STORAGE_KEYS.MEASURED_AIR_TEMPERATURE) || DEFAULT_VALUES.Measured_air_temperature_C
+  const [Measured_air_temperature_C, setMeasured_air_temperature_C] = useState(() =>
+    localStorage.getItem(getStorageKeys(nodeId).MEASURED_AIR_TEMPERATURE) || DEFAULT_VALUES.Measured_air_temperature_C
   );
-  const [Q_feed_water_kg_h, setQ_feed_water_kg_h] = useState(() => 
-    localStorage.getItem(STORAGE_KEYS.FEED_WATER_FLOW) || DEFAULT_VALUES.Q_feed_water_kg_h
+  const [Q_feed_water_kg_h, setQ_feed_water_kg_h] = useState(() =>
+    localStorage.getItem(getStorageKeys(nodeId).FEED_WATER_FLOW) || DEFAULT_VALUES.Q_feed_water_kg_h
   );
-  const [T_feed_water_C, setT_feed_water_C] = useState(() => 
-    localStorage.getItem(STORAGE_KEYS.FEED_WATER_TEMP) || DEFAULT_VALUES.T_feed_water_C
+  const [T_feed_water_C, setT_feed_water_C] = useState(() =>
+    localStorage.getItem(getStorageKeys(nodeId).FEED_WATER_TEMP) || DEFAULT_VALUES.T_feed_water_C
   );
-  const [Blowdown_pourcent, setBlowdown_pourcent] = useState(() => 
-    localStorage.getItem(STORAGE_KEYS.BLOWDOWN_PERCENT) || DEFAULT_VALUES.Blowdown_pourcent
+  const [Blowdown_pourcent, setBlowdown_pourcent] = useState(() =>
+    localStorage.getItem(getStorageKeys(nodeId).BLOWDOWN_PERCENT) || DEFAULT_VALUES.Blowdown_pourcent
   );
 
   // États conditionnels - Sections avec toggles
-  const [Q_air_ingress_Nm3_h, setQ_air_ingress_Nm3_h] = useState(() => 
-    localStorage.getItem(STORAGE_KEYS.Q_AIR_INGRESS) || DEFAULT_VALUES.Q_air_ingress_Nm3_h
+  const [Q_air_ingress_Nm3_h, setQ_air_ingress_Nm3_h] = useState(() =>
+    localStorage.getItem(getStorageKeys(nodeId).Q_AIR_INGRESS) || DEFAULT_VALUES.Q_air_ingress_Nm3_h
   );
-  const [T_air_ingress_C, setT_air_ingress_C] = useState(() => 
-    localStorage.getItem(STORAGE_KEYS.T_AIR_INGRESS) || DEFAULT_VALUES.T_air_ingress_C
+  const [T_air_ingress_C, setT_air_ingress_C] = useState(() =>
+    localStorage.getItem(getStorageKeys(nodeId).T_AIR_INGRESS) || DEFAULT_VALUES.T_air_ingress_C
   );
-  
+
   // États vapeur saturée
-  const [Q_saturated_steam, setQ_saturated_steam] = useState(() => 
-    localStorage.getItem(STORAGE_KEYS.Q_SATURATED_STEAM) || DEFAULT_VALUES.Q_saturated_steam
+  const [Q_saturated_steam, setQ_saturated_steam] = useState(() =>
+    localStorage.getItem(getStorageKeys(nodeId).Q_SATURATED_STEAM) || DEFAULT_VALUES.Q_saturated_steam
   );
-  const [Steam_pressure_gauge_bar, setSteam_pressure_gauge_bar] = useState(() => 
-    localStorage.getItem(STORAGE_KEYS.STEAM_PRESSURE) || DEFAULT_VALUES.Steam_pressure_gauge_bar
+  const [Steam_pressure_gauge_bar, setSteam_pressure_gauge_bar] = useState(() =>
+    localStorage.getItem(getStorageKeys(nodeId).STEAM_PRESSURE) || DEFAULT_VALUES.Steam_pressure_gauge_bar
   );
-  
+
   // États vapeur surchauffée
-  const [super_heated_steam_temperature_C, setSuper_heated_steam_temperature_C] = useState(() => 
-    localStorage.getItem(STORAGE_KEYS.SUPERHEATED_STEAM_TEMP) || DEFAULT_VALUES.super_heated_steam_temperature_C
+  const [super_heated_steam_temperature_C, setSuper_heated_steam_temperature_C] = useState(() =>
+    localStorage.getItem(getStorageKeys(nodeId).SUPERHEATED_STEAM_TEMP) || DEFAULT_VALUES.super_heated_steam_temperature_C
   );
-  const [Q_superheated_steam_kg_h, setQ_superheated_steam_kg_h] = useState(() => 
-    localStorage.getItem(STORAGE_KEYS.Q_SUPERHEATED_STEAM) || DEFAULT_VALUES.Q_superheated_steam_kg_h
+  const [Q_superheated_steam_kg_h, setQ_superheated_steam_kg_h] = useState(() =>
+    localStorage.getItem(getStorageKeys(nodeId).Q_SUPERHEATED_STEAM) || DEFAULT_VALUES.Q_superheated_steam_kg_h
   );
-  const [P_superheated_steam_bar, setP_superheated_steam_bar] = useState(() => 
-    localStorage.getItem(STORAGE_KEYS.P_SUPERHEATED_STEAM) || DEFAULT_VALUES.P_superheated_steam_bar
+  const [P_superheated_steam_bar, setP_superheated_steam_bar] = useState(() =>
+    localStorage.getItem(getStorageKeys(nodeId).P_SUPERHEATED_STEAM) || DEFAULT_VALUES.P_superheated_steam_bar
   );
-  
+
   // États eau surchauffée
-  const [T_superheated_water_boiler_C, setT_superheated_water_boiler_C] = useState(() => 
-    localStorage.getItem(STORAGE_KEYS.T_SUPERHEATED_WATER) || DEFAULT_VALUES.T_superheated_water_boiler_C
+  const [T_superheated_water_boiler_C, setT_superheated_water_boiler_C] = useState(() =>
+    localStorage.getItem(getStorageKeys(nodeId).T_SUPERHEATED_WATER) || DEFAULT_VALUES.T_superheated_water_boiler_C
   );
-  const [Q_superheated_water_kg_h, setQ_superheated_water_kg_h] = useState(() => 
-    localStorage.getItem(STORAGE_KEYS.Q_SUPERHEATED_WATER) || DEFAULT_VALUES.Q_superheated_water_kg_h
+  const [Q_superheated_water_kg_h, setQ_superheated_water_kg_h] = useState(() =>
+    localStorage.getItem(getStorageKeys(nodeId).Q_SUPERHEATED_WATER) || DEFAULT_VALUES.Q_superheated_water_kg_h
   );
-  
+
   // États gaz recyclés
-  const [Q_recycled_flue_gas_Nm3_h, setQ_recycled_flue_gas_Nm3_h] = useState(() => 
-    localStorage.getItem(STORAGE_KEYS.Q_RECYCLED_FLUE_GAS) || DEFAULT_VALUES.Q_recycled_flue_gas_Nm3_h
+  const [Q_recycled_flue_gas_Nm3_h, setQ_recycled_flue_gas_Nm3_h] = useState(() =>
+    localStorage.getItem(getStorageKeys(nodeId).Q_RECYCLED_FLUE_GAS) || DEFAULT_VALUES.Q_recycled_flue_gas_Nm3_h
   );
-  const [T_recycled_flue_gas_C, setT_recycled_flue_gas_C] = useState(() => 
-    localStorage.getItem(STORAGE_KEYS.T_RECYCLED_FLUE_GAS) || DEFAULT_VALUES.T_recycled_flue_gas_C
+  const [T_recycled_flue_gas_C, setT_recycled_flue_gas_C] = useState(() =>
+    localStorage.getItem(getStorageKeys(nodeId).T_RECYCLED_FLUE_GAS) || DEFAULT_VALUES.T_recycled_flue_gas_C
   );
-  
+
   // États eau injectée
-  const [Injected_water_temperature_C, setInjected_water_temperature_C] = useState(() => 
-    localStorage.getItem(STORAGE_KEYS.INJECTED_WATER_TEMP) || DEFAULT_VALUES.Injected_water_temperature_C
+  const [Injected_water_temperature_C, setInjected_water_temperature_C] = useState(() =>
+    localStorage.getItem(getStorageKeys(nodeId).INJECTED_WATER_TEMP) || DEFAULT_VALUES.Injected_water_temperature_C
   );
-  const [Q_treatment_injected_water_kg_h, setQ_treatment_injected_water_kg_h] = useState(() => 
-    localStorage.getItem(STORAGE_KEYS.Q_TREATMENT_INJECTED_WATER) || DEFAULT_VALUES.Q_treatment_injected_water_kg_h
+  const [Q_treatment_injected_water_kg_h, setQ_treatment_injected_water_kg_h] = useState(() =>
+    localStorage.getItem(getStorageKeys(nodeId).Q_TREATMENT_INJECTED_WATER) || DEFAULT_VALUES.Q_treatment_injected_water_kg_h
   );
-  
+
   // États autres paramètres
-  const [Auxiliary_fuel_kWh, setAuxiliary_fuel_kWh] = useState(() => 
-    localStorage.getItem(STORAGE_KEYS.AUXILIARY_FUEL) || DEFAULT_VALUES.Auxiliary_fuel_kWh
+  const [Auxiliary_fuel_kWh, setAuxiliary_fuel_kWh] = useState(() =>
+    localStorage.getItem(getStorageKeys(nodeId).AUXILIARY_FUEL) || DEFAULT_VALUES.Auxiliary_fuel_kWh
   );
-  const [Bottom_ash_pourcent, setBottom_ash_pourcent] = useState(() => 
-    localStorage.getItem(STORAGE_KEYS.BOTTOM_ASH_PERCENT) || DEFAULT_VALUES.Bottom_ash_pourcent
+  const [Bottom_ash_pourcent, setBottom_ash_pourcent] = useState(() =>
+    localStorage.getItem(getStorageKeys(nodeId).BOTTOM_ASH_PERCENT) || DEFAULT_VALUES.Bottom_ash_pourcent
   );
-  const [Bottom_ash_temperature_C, setBottom_ash_temperature_C] = useState(() => 
-    localStorage.getItem(STORAGE_KEYS.BOTTOM_ASH_TEMP) || DEFAULT_VALUES.Bottom_ash_temperature_C
+  const [Bottom_ash_temperature_C, setBottom_ash_temperature_C] = useState(() =>
+    localStorage.getItem(getStorageKeys(nodeId).BOTTOM_ASH_TEMP) || DEFAULT_VALUES.Bottom_ash_temperature_C
   );
-  const [Unburnt_bottom_ash_pourcent, setUnburnt_bottom_ash_pourcent] = useState(() => 
-    localStorage.getItem(STORAGE_KEYS.UNBURNT_BOTTOM_ASH) || DEFAULT_VALUES.Unburnt_bottom_ash_pourcent
+  const [Unburnt_bottom_ash_pourcent, setUnburnt_bottom_ash_pourcent] = useState(() =>
+    localStorage.getItem(getStorageKeys(nodeId).UNBURNT_BOTTOM_ASH) || DEFAULT_VALUES.Unburnt_bottom_ash_pourcent
   );
-  const [Unburnt_LCV_kcal_kg, setUnburnt_LCV_kcal_kg] = useState(() => 
-    localStorage.getItem(STORAGE_KEYS.UNBURNT_LCV) || DEFAULT_VALUES.Unburnt_LCV_kcal_kg
+  const [Unburnt_LCV_kcal_kg, setUnburnt_LCV_kcal_kg] = useState(() =>
+    localStorage.getItem(getStorageKeys(nodeId).UNBURNT_LCV) || DEFAULT_VALUES.Unburnt_LCV_kcal_kg
   );
-  const [Reference_temperature_C, setReference_temperature_C] = useState(() => 
-    localStorage.getItem(STORAGE_KEYS.REFERENCE_TEMP) || DEFAULT_VALUES.Reference_temperature_C
+  const [Reference_temperature_C, setReference_temperature_C] = useState(() =>
+    localStorage.getItem(getStorageKeys(nodeId).REFERENCE_TEMP) || DEFAULT_VALUES.Reference_temperature_C
   );
 
   // États des toggles
-  const [saturatedSteamEnabled, setSaturatedSteamEnabled] = useState(() => 
-    localStorage.getItem(STORAGE_KEYS.SATURATED_STEAM_ENABLED) === 'true'
+  const [saturatedSteamEnabled, setSaturatedSteamEnabled] = useState(() =>
+    localStorage.getItem(getStorageKeys(nodeId).SATURATED_STEAM_ENABLED) === 'true'
   );
-  const [superheatedSteamEnabled, setSuperheatedSteamEnabled] = useState(() => 
-    localStorage.getItem(STORAGE_KEYS.SUPERHEATED_STEAM_ENABLED) === 'true'
+  const [superheatedSteamEnabled, setSuperheatedSteamEnabled] = useState(() =>
+    localStorage.getItem(getStorageKeys(nodeId).SUPERHEATED_STEAM_ENABLED) === 'true'
   );
-  const [superheatedWaterEnabled, setSuperheatedWaterEnabled] = useState(() => 
-    localStorage.getItem(STORAGE_KEYS.SUPERHEATED_WATER_ENABLED) === 'true'
+  const [superheatedWaterEnabled, setSuperheatedWaterEnabled] = useState(() =>
+    localStorage.getItem(getStorageKeys(nodeId).SUPERHEATED_WATER_ENABLED) === 'true'
   );
-  const [recycledFlueGasEnabled, setRecycledFlueGasEnabled] = useState(() => 
-    localStorage.getItem(STORAGE_KEYS.RECYCLED_FLUE_GAS_ENABLED) === 'true'
+  const [recycledFlueGasEnabled, setRecycledFlueGasEnabled] = useState(() =>
+    localStorage.getItem(getStorageKeys(nodeId).RECYCLED_FLUE_GAS_ENABLED) === 'true'
   );
-  const [injectedWaterEnabled, setInjectedWaterEnabled] = useState(() => 
-    localStorage.getItem(STORAGE_KEYS.INJECTED_WATER_ENABLED) === 'true'
+  const [injectedWaterEnabled, setInjectedWaterEnabled] = useState(() =>
+    localStorage.getItem(getStorageKeys(nodeId).INJECTED_WATER_ENABLED) === 'true'
   );
   const [AirIngressEnabled, setAirIngressEnabled] = useState(() =>
-    localStorage.getItem(STORAGE_KEYS.AIR_INGRESS_ENABLED) === 'true'
+    localStorage.getItem(getStorageKeys(nodeId).AIR_INGRESS_ENABLED) === 'true'
   );
   const [diagramMode, setDiagramMode] = useState(() =>
-    localStorage.getItem(STORAGE_KEYS.DIAGRAM_MODE) || DEFAULT_VALUES.diagramMode
+    localStorage.getItem(getStorageKeys(nodeId).DIAGRAM_MODE) || DEFAULT_VALUES.diagramMode
   );
 
   // États pour l'interface
   const [showReport, setShowReport] = useState(false);
   const [calculationResult_GF, setCalculationResult_GF] = useState(() => {
     try {
-      const stored = localStorage.getItem(STORAGE_KEYS.CALCULATION_RESULT);
+      const stored = localStorage.getItem(getStorageKeys(nodeId).CALCULATION_RESULT);
       return stored ? JSON.parse(stored) : null;
     } catch (error) {
       console.warn('Erreur lors du chargement des résultats:', error);
@@ -432,8 +434,8 @@ const GF_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguag
       setCalculationResult_GF(result);
       hasCalculatedOnce.current = true;
       if (diagramMode === 'YES') {
-        const pointE = { x: result.Waste_flow_rate_kg_h || 0, y: result.P_incinerateur_MWH || 0 };
-        localStorage.setItem('pointE', JSON.stringify(pointE));
+        const pointE = { x: result.Waste_flow_rate_kg_h || 0, y: result.P_incinerateur_MWH || 0, label: 'GF', nodeId };
+        localStorage.setItem(`pointE_${nodeId}`, JSON.stringify(pointE));
       }
       if (onSendData) {
         onSendData({ result, inputData: { Waste_flow_rate_kg_h, Pressure_losse_mmCE, Combustion_air_flowrate_Nm3_h, Measured_air_temperature_C, Q_feed_water_kg_h, T_feed_water_C, Blowdown_pourcent } });
@@ -868,7 +870,7 @@ const GF_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguag
           disabled={isCalculating || !nodeData?.result}
           currentLanguage={currentLanguage}
           isCalculating={isCalculating}
-          storageKey={`calcSent_${title}`}
+          storageKey={`calcSent_${title}_${nodeId}`}
         />
         
         <ShowResultButton 

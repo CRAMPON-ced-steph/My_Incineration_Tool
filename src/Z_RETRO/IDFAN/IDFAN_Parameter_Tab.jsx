@@ -21,13 +21,13 @@ const DISSIPATION_TYPES = {
   OFF: 'OFF'
 };
 
-// Constantes pour localStorage
-const STORAGE_KEYS = {
-  TYPE: 'Type_IDFAN',
-  P_AMONT: 'P_amont_IDFAN',
-  RDT_ELEC: 'Rdt_elec_IDFAN',
-  CALCULATION_RESULT: 'calculationResult_IDFAN'
-};
+// Fonctions pour localStorage keys dynamiques
+const getStorageKeys = (nodeId) => ({
+  TYPE: `Type_IDFAN_${nodeId}`,
+  P_AMONT: `P_amont_IDFAN_${nodeId}`,
+  RDT_ELEC: `Rdt_elec_IDFAN_${nodeId}`,
+  CALCULATION_RESULT: `calculationResult_IDFAN_${nodeId}`,
+});
 
 // Valeurs par défaut
 const DEFAULT_VALUES = {
@@ -36,17 +36,18 @@ const DEFAULT_VALUES = {
   Rdt_elec: '70'
 };
 
-const IDFAN_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage, autoTrigger = false }) => {
+const IDFAN_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage, nodeId, autoTrigger = false }) => {
+  const STORAGE_KEYS = getStorageKeys(nodeId);
   // États principaux
-  const [P_amont, setP_amont] = useState(() => 
+  const [P_amont, setP_amont] = useState(() =>
     localStorage.getItem(STORAGE_KEYS.P_AMONT) || DEFAULT_VALUES.P_amont
   );
-  const [Rdt_elec, setRdt_elec] = useState(() => 
+  const [Rdt_elec, setRdt_elec] = useState(() =>
     localStorage.getItem(STORAGE_KEYS.RDT_ELEC) || DEFAULT_VALUES.Rdt_elec
   );
 
   // Type de dissipation d'énergie
-  const [Type, setType] = useState(() => 
+  const [Type, setType] = useState(() =>
     localStorage.getItem(STORAGE_KEYS.TYPE) || DEFAULT_VALUES.Type
   );
 
@@ -296,7 +297,7 @@ const IDFAN_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLang
           disabled={isCalculating || !nodeData?.result}
           currentLanguage={currentLanguage}
           isCalculating={isCalculating}
-          storageKey={`calcSent_${title}`}
+          storageKey={`calcSent_${title}_${nodeId}`}
         />
         
         <ShowResultButton 

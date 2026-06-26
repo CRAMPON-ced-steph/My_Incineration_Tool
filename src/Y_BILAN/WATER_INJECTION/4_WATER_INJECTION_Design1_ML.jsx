@@ -7,6 +7,7 @@ import reactImage from '../../B_Images/quench_img.png';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './WATER_INJECTION_traduction';
 
+import { fmt } from '../../A_Transverse_fonction/formatNumber';
 const WATER_INJECTIONDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
   const languageCode = getLanguageCode(currentLanguage);
   const t = (key) => {
@@ -307,47 +308,47 @@ const WATER_INJECTIONDesign = ({ innerData, setInnerData, currentLanguage = 'fr'
   const elements_PDC = [{ text: t('Pression de sortie [mmCE]'), value: P_out_mmCE.toFixed(2) }];
 
   const elements_conso_pompe = [
-    { text: t('Puissance pompe nominale [kW]'), value: Puissance_pompe_kW.toFixed(2) },
-    { text: t('Rendement pompe [%]'), value: Rendement_pompe.toFixed(1) },
-    { text: t('Consommation réelle [kW]'), value: Conso_elec_pompe_reelle_kW.toFixed(2) },
+    { text: t('Puissance pompe nominale [kW]'), value: fmt(Puissance_pompe_kW, 2) },
+    { text: t('Rendement pompe [%]'), value: fmt(Rendement_pompe, 1) },
+    { text: t('Consommation réelle [kW]'), value: fmt(Conso_elec_pompe_reelle_kW, 2) },
   ];
 
   const elementsGeneric = [
-    { text: t('Temperature inlet WATER_INJECTION [°C]'), value: T_IN.toFixed(1) },
-    { text: t('Temperature outlet WATER_INJECTION [°C]'), value: T_sortie.toFixed(1) },
-    { text: t('Inlet temperature [K]'), value: T_IN_K.toFixed(0) },
-    { text: t('Outlet temperature [K]'), value: T_sortie_K.toFixed(0) },
-    { text: t('Quench surface area [m2]'), value: Surface_Quench.toFixed(2) },
-    { text: t('Sprayed/cooling water [kg/h]'), value: Eau_add.toFixed(0) },
-    { text: t('Spray pressure [bar]'), value: P_pulverisation.toFixed(0) },
-    { text: t('Débit eau [L/min]'), value: Q_eau_add_l_min.toFixed(2) },
-    { text: t('Vitesse des gaz [m/s]'), value: V_FG_m_s.toFixed(2) },
-    { text: t('Prix de l\'eau [€/m³]'), value: currentWaterPrice.toFixed(2) },
-    { text: t('Coût eau par heure [€/h]'), value: waterCostPerHour.toFixed(2) },
+    { text: t('Temperature inlet WATER_INJECTION [°C]'), value: fmt(T_IN, 1) },
+    { text: t('Temperature outlet WATER_INJECTION [°C]'), value: fmt(T_sortie, 1) },
+    { text: t('Inlet temperature [K]'), value: fmt(T_IN_K, 0) },
+    { text: t('Outlet temperature [K]'), value: fmt(T_sortie_K, 0) },
+    { text: t('Quench surface area [m2]'), value: fmt(Surface_Quench, 2) },
+    { text: t('Sprayed/cooling water [kg/h]'), value: fmt(Eau_add, 0) },
+    { text: t('Spray pressure [bar]'), value: fmt(P_pulverisation, 0) },
+    { text: t('Débit eau [L/min]'), value: fmt(Q_eau_add_l_min, 2) },
+    { text: t('Vitesse des gaz [m/s]'), value: fmt(V_FG_m_s, 2) },
+    { text: t('Prix de l\'eau [€/m³]'), value: fmt(currentWaterPrice, 2) },
+    { text: t('Coût eau par heure [€/h]'), value: fmt(waterCostPerHour, 2) },
   ];
 
   const quenchResultsElements = [
-    { text: t('Hauteur minimale du quench [m]'), value: quenchHeight.toFixed(2) },
-    { text: t('SMD (Sauter Mean Diameter) [µm]'), value: (sprayCharacteristics.smd * 1e6).toFixed(2) },
-    { text: t('Vitesse des gouttes [m/s]'), value: sprayCharacteristics.dropletVelocity.toFixed(2) },
-    { text: t('Angle du spray [°]'), value: sprayCharacteristics.sprayAngle.toFixed(2) },
+    { text: t('Hauteur minimale du quench [m]'), value: fmt(quenchHeight, 2) },
+    { text: t('SMD (Sauter Mean Diameter) [µm]'), value: fmt((sprayCharacteristics.smd * 1e6), 2) },
+    { text: t('Vitesse des gouttes [m/s]'), value: fmt(sprayCharacteristics.dropletVelocity, 2) },
+    { text: t('Angle du spray [°]'), value: fmt(sprayCharacteristics.sprayAngle, 2) },
     { text: t('Qualité du spray - Atomisation'), value: sprayQuality.atomization },
     { text: t('Qualité du spray - Uniformité'), value: sprayQuality.uniformity },
     { text: t('Qualité du spray - Couverture'), value: sprayQuality.coverage },
     { text: t('Type de buse - Description'), value: currentNozzle.description },
-    { text: t('Paramètre n (distribution)'), value: n.toFixed(2) },
-    { text: t('Taille moyenne des gouttes [µm]'), value: (dMean * 1e6).toFixed(2) },
+    { text: t('Paramètre n (distribution)'), value: fmt(n, 2) },
+    { text: t('Taille moyenne des gouttes [µm]'), value: fmt((dMean * 1e6), 2) },
   ];
 
   const elementsGenericSummary = [
-    { text: t('Quench diameter [m]'), value: DiameterQuench.toFixed(2) },
-    { text: t('Pression pulvérisation [bar]'), value: P_pulverisation.toFixed(1) },
+    { text: t('Quench diameter [m]'), value: fmt(DiameterQuench, 2) },
+    { text: t('Pression pulvérisation [bar]'), value: fmt(P_pulverisation, 1) },
     { text: t('Type de buse'), value: nozzleType },
     { text: t('Type d\'eau'), value: waterTypeLabels[waterType] },
-    { text: t('Surface quench [m²]'), value: Surface_Quench.toFixed(2) },
-    { text: t('Hauteur quench [m]'), value: quenchHeight.toFixed(2) },
-    { text: t('Puissance pompe [kW]'), value: Puissance_pompe_kW.toFixed(2) },
-    { text: t('Consommation eau [kg/h]'), value: Eau_add.toFixed(0) },
+    { text: t('Surface quench [m²]'), value: fmt(Surface_Quench, 2) },
+    { text: t('Hauteur quench [m]'), value: fmt(quenchHeight, 2) },
+    { text: t('Puissance pompe [kW]'), value: fmt(Puissance_pompe_kW, 2) },
+    { text: t('Consommation eau [kg/h]'), value: fmt(Eau_add, 0) },
   ];
 
   return (
@@ -377,10 +378,10 @@ const WATER_INJECTIONDesign = ({ innerData, setInnerData, currentLanguage = 'fr'
           <p><strong>{t('Pression pulvérisation')}:</strong> {P_pulverisation} bar</p>
           <p><strong>{t('Type de buse')}:</strong> {nozzleType}</p>
           <p><strong>{t('Type d\'eau')}:</strong> {waterTypeLabels[waterType]}</p>
-          <p><strong>{t('Surface quench')}:</strong> {Surface_Quench.toFixed(2)} m²</p>
-          <p><strong>{t('Hauteur quench')}:</strong> {quenchHeight.toFixed(2)} m</p>
+          <p><strong>{t('Surface quench')}:</strong> {fmt(Surface_Quench, 2)} m²</p>
+          <p><strong>{t('Hauteur quench')}:</strong> {fmt(quenchHeight, 2)} m</p>
           <p><strong>{t('Puissance pompe')}:</strong> {Puissance_pompe_kW} kW</p>
-          <p><strong>{t('Consommation eau')}:</strong> {Eau_add.toFixed(0)} kg/h</p>
+          <p><strong>{t('Consommation eau')}:</strong> {fmt(Eau_add, 0)} kg/h</p>
         </div>
         <h4>{t('Paramètres calculés détaillés')}</h4>
         <TableGeneric elements={elementsGenericSummary} />

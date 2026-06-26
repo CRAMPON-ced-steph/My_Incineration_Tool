@@ -10,7 +10,7 @@ import '../../index.css';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './QUENCH_traduction';
 
-const QUENCHMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLanguage = 'fr' }) => {
+const QUENCHMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLanguage = 'fr', nodeId }) => {
 
   // ✅ FIX: Normaliser le code de langue
   const normalizeLanguageCode = (lang) => {
@@ -44,23 +44,23 @@ const QUENCHMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, curren
   const tabs = [
     {
       name: t('Flue gases'),
-      content: <QUENCHFlueGasParameters innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} />
+      content: <QUENCHFlueGasParameters innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} nodeId={nodeId} />
     },
     {
       name: t('Pollutant Emissions'),
-      content: <QUENCHFlueGasPollutantEmission innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} />
+      content: <QUENCHFlueGasPollutantEmission innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} nodeId={nodeId} />
     },
     {
       name: t('Design'),
-      content: <QUENCHDesign innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} />
+      content: <QUENCHDesign innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} nodeId={nodeId} />
     },
     {
       name: t('Opex'),
-      content: <QUENCHOpex innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} />
+      content: <QUENCHOpex innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} nodeId={nodeId} />
     },
     {
       name: 'Rapport',
-      content: <QUENCH_Report innerData={innerData} />
+      content: <QUENCH_Report innerData={innerData} nodeId={nodeId} />
     },
   ];
 

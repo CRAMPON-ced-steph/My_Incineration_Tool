@@ -7,6 +7,7 @@ import FondTransparent from '../../B_Images/fond_transparent.jpg';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './ELECTROFILTER_traduction';
 
+import { fmt } from '../../A_Transverse_fonction/formatNumber';
 const ELECTROFILTER_Design = ({ innerData = {}, setInnerData, currentLanguage = 'fr' }) => {
   const languageCode = getLanguageCode(currentLanguage);
   
@@ -206,13 +207,13 @@ const ELECTROFILTER_Design = ({ innerData = {}, setInnerData, currentLanguage = 
 
   // Éléments génériques pour le tableau de résumé
   const elementsGeneric = [
-    { text: t('Surface des plaques [m²]'), value: surfacePlaques.toFixed(2) },
+    { text: t('Surface des plaques [m²]'), value: fmt(surfacePlaques, 2) },
     { text: t('Nombre de plaques [Nb]'), value: nombrePlaques },
-    { text: t('Consommation air comprimé [Nm3/h]'), value: conso_air_co_Nm3_h.toFixed(2) },
-    { text: t('Pression air comprimé [Bar]'), value: pression_air_comprime_bar.toFixed(1) },
-    { text: t('Residus électrofiltre [kg/h]'), value: cendres_kg_h.toFixed(2) },
-    { text: t('CO2 transport total [kg]'), value: CO2_transport_total.toFixed(2) },
-    { text: t('Coût transport total [€]'), value: cout_transport_total.toFixed(2) },
+    { text: t('Consommation air comprimé [Nm3/h]'), value: fmt(conso_air_co_Nm3_h, 2) },
+    { text: t('Pression air comprimé [Bar]'), value: fmt(pression_air_comprime_bar, 1) },
+    { text: t('Residus électrofiltre [kg/h]'), value: fmt(cendres_kg_h, 2) },
+    { text: t('CO2 transport total [kg]'), value: fmt(CO2_transport_total, 2) },
+    { text: t('Coût transport total [€]'), value: fmt(cout_transport_total, 2) },
   ];
 
   useEffect(() => {
@@ -278,9 +279,9 @@ const ELECTROFILTER_Design = ({ innerData = {}, setInnerData, currentLanguage = 
       <Section 
         title="Dimensionnement de l'électrofiltre"
         results={[
-          { text: t('Surface des plaques [m²]'), value: surfacePlaques.toFixed(2) },
+          { text: t('Surface des plaques [m²]'), value: fmt(surfacePlaques, 2) },
           { text: t('Nombre de plaques [Nb]'), value: nombrePlaques },
-          { text: t('Pression de sortie [mmCE]'), value: pressionSortie.toFixed(2) },
+          { text: t('Pression de sortie [mmCE]'), value: fmt(pressionSortie, 2) },
         ]}
       >
         <div style={{ display: 'flex', gap: '20px', marginBottom: '20px' }}>
@@ -311,9 +312,9 @@ const ELECTROFILTER_Design = ({ innerData = {}, setInnerData, currentLanguage = 
       <Section 
         title="Estimation des consommations électriques"
         results={[
-          { text: t('Consommation élec des champs [kW]'), value: conso_elec_champs_kW.toFixed(2) },
-          { text: t('Consommation vis de transport [kW]'), value: conso_vis_transport_kW.toFixed(2) },
-          { text: t('Consommation élec des marteaux débatisseurs [kW]'), value: conso_elec_marteau_debatissage_kW.toFixed(2) },
+          { text: t('Consommation élec des champs [kW]'), value: fmt(conso_elec_champs_kW, 2) },
+          { text: t('Consommation vis de transport [kW]'), value: fmt(conso_vis_transport_kW, 2) },
+          { text: t('Consommation élec des marteaux débatisseurs [kW]'), value: fmt(conso_elec_marteau_debatissage_kW, 2) },
         ]}
       >
         <ParameterInput 
@@ -327,8 +328,8 @@ const ELECTROFILTER_Design = ({ innerData = {}, setInnerData, currentLanguage = 
       <Section 
         title="Consommation d'air comprimé"
         results={[
-          { text: t('Consommation air comprimé [Nm3/h]'), value: conso_air_co_Nm3_h.toFixed(2) },
-          { text: t('Conso élec air comprimé [kW]'), value: Conso_elec_air_co_kW.toFixed(2) },
+          { text: t('Consommation air comprimé [Nm3/h]'), value: fmt(conso_air_co_Nm3_h, 2) },
+          { text: t('Conso élec air comprimé [kW]'), value: fmt(Conso_elec_air_co_kW, 2) },
         ]}
       >
         <ParameterInput 
@@ -353,11 +354,11 @@ const ELECTROFILTER_Design = ({ innerData = {}, setInnerData, currentLanguage = 
       <Section 
         title="Évacuation des résidus électrofiltre"
         results={[
-          { text: t('Residus électrofiltre [kg/h]'), value: cendres_kg_h.toFixed(2) },
+          { text: t('Residus électrofiltre [kg/h]'), value: fmt(cendres_kg_h, 2) },
           { text: t('Type de camion'), value: type_camion },
-          { text: t('Distance [km]'), value: distance_km.toFixed(0) },
-          { text: t('CO2 transport total [kg]'), value: CO2_transport_total.toFixed(2) },
-          { text: t('Coût transport total [€]'), value: cout_transport_total.toFixed(2) },
+          { text: t('Distance [km]'), value: fmt(distance_km, 0) },
+          { text: t('CO2 transport total [kg]'), value: fmt(CO2_transport_total, 2) },
+          { text: t('Coût transport total [€]'), value: fmt(cout_transport_total, 2) },
         ]}
       >
         <ParameterInput 
@@ -377,13 +378,13 @@ const ELECTROFILTER_Design = ({ innerData = {}, setInnerData, currentLanguage = 
       <div style={{ padding: '20px', maxWidth: '1000px', margin: '0 auto', backgroundColor: '#e8f4f8', borderRadius: '8px' }}>
         <h3>{t('Résumé des paramètres principaux')}</h3>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '20px' }}>
-          <p><strong>{t('Surface des plaques [m²]')}:</strong> {surfacePlaques.toFixed(2)} m²</p>
+          <p><strong>{t('Surface des plaques [m²]')}:</strong> {fmt(surfacePlaques, 2)} m²</p>
           <p><strong>{t('Rendement de capture [%]')}:</strong> {Rdt_capture}%</p>
           <p><strong>{t('Vitesse de migration [m/s]')}:</strong> {Vitesse_migration} m/s</p>
           <p><strong>{t('Nombre de plaques [Nb]')}:</strong> {nombrePlaques}</p>
           <p><strong>{t('Pression air comprimé [Bar]')}:</strong> {pression_air_comprime_bar} Bar</p>
-          <p><strong>{t('Consommation air comprimé [Nm3/h]')}:</strong> {conso_air_co_Nm3_h.toFixed(2)} Nm³/h</p>
-          <p><strong>{t('Residus électrofiltre [kg/h]')}:</strong> {cendres_kg_h.toFixed(2)} kg/h</p>
+          <p><strong>{t('Consommation air comprimé [Nm3/h]')}:</strong> {fmt(conso_air_co_Nm3_h, 2)} Nm³/h</p>
+          <p><strong>{t('Residus électrofiltre [kg/h]')}:</strong> {fmt(cendres_kg_h, 2)} kg/h</p>
           <p><strong>{t('Type de camion')}:</strong> {type_camion}</p>
         </div>
         <h4>{t('Paramètres calculés détaillés')}</h4>

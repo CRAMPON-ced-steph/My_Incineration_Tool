@@ -7,12 +7,13 @@ import { h_fumee } from '../../A_Transverse_fonction/enthalpy_mix_gas';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './IACT_traduction';
 
+import { fmt } from '../../A_Transverse_fonction/formatNumber';
 // Densités air sec à 0°C, 1 atm [kg/Nm³]
 const rho_air = 1.293;
 const O2_mass_frac = 0.233;
 const N2_mass_frac = 0.767;
 
-const IACTFlueGasParameters = ({ innerData, upstreamT_IN, upstreamFG_IN, upstreamP_IN, currentLanguage = 'fr' }) => {
+const IACTFlueGasParameters = ({ innerData, upstreamT_IN, upstreamFG_IN, upstreamP_IN, currentLanguage = 'fr', nodeId }) => {
   const initialEmissions_IACT = {
     'Flue gas temperature outlet [°C]': innerData?.T_OUT - 10,
     'Ambient air temperature [°C]': 20,
@@ -28,7 +29,7 @@ const IACTFlueGasParameters = ({ innerData, upstreamT_IN, upstreamFG_IN, upstrea
 
   const [emissions_IACT, setEmissions_IACT] = useState(() => {
     try {
-      const saved = JSON.parse(localStorage.getItem('emissions_IACT') || '{}');
+      const saved = JSON.parse(localStorage.getItem(`emissions_IACT_${nodeId}`) || '{}');
       // Ne conserver que les clés actuelles, avec fallback sur les valeurs par défaut
       return Object.fromEntries(
         Object.keys(initialEmissions_IACT).map(k => [k, saved[k] ?? initialEmissions_IACT[k]])
@@ -39,7 +40,7 @@ const IACTFlueGasParameters = ({ innerData, upstreamT_IN, upstreamFG_IN, upstrea
   });
 
   useEffect(() => {
-    localStorage.setItem('emissions_IACT', JSON.stringify(emissions_IACT));
+    localStorage.setItem(`emissions_IACT_${nodeId}`, JSON.stringify(emissions_IACT));
   }, [emissions_IACT]);
 
   // Données amont — transmises depuis IACTMainPage, stables à travers les changements d'onglet
@@ -148,10 +149,10 @@ const IACTFlueGasParameters = ({ innerData, upstreamT_IN, upstreamFG_IN, upstrea
   }
 
   const elementsGeneric = [
-    { text: t('Temperature inlet IACT [°C]'),       value: T_IN.toFixed(1) },
-    { text: t('Delta enthalpies fumées [kJ/h]'),    value: Delta_H_FG.toFixed(0) },
-    { text: t('Chaleur transmise à l\'air [kJ/h]'), value: Delta_H_air.toFixed(0) },
-    { text: t('Débit air chauffé [Nm³/h]'),         value:  V_air_Nm3_h.toFixed(0) },
+    { text: t('Temperature inlet IACT [°C]'),       value: fmt(T_IN, 1) },
+    { text: t('Delta enthalpies fumées [kJ/h]'),    value: fmt(Delta_H_FG, 0) },
+    { text: t('Chaleur transmise à l\'air [kJ/h]'), value: fmt(Delta_H_air, 0) },
+    { text: t('Débit air chauffé [Nm³/h]'),         value:  fmt(V_air_Nm3_h, 0) },
   ];
 
   const handleChange = (name, value) => {
@@ -162,7 +163,7 @@ const IACTFlueGasParameters = ({ innerData, upstreamT_IN, upstreamFG_IN, upstrea
   };
 
   const clearMemory = useCallback(() => {
-    localStorage.removeItem('emissions_IACT');
+    localStorage.removeItem(`emissions_IACT_${nodeId}`);
     setEmissions_IACT(initialEmissions_IACT);
   }, []);
 

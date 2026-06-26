@@ -20,18 +20,18 @@ const REAGENT_TYPES = {
   LIME: 'LIME'
 };
 
-// Constantes pour localStorage
-const STORAGE_KEYS = {
-  T_AMONT_REACTOR: 'T_amont_REACTOR',
-  T_AIR: 'T_air_REACTOR',
-  PDC_AERO: 'PDC_aero_REACTOR',
-  REAGENT_TYPE: 'reagentType_REACTOR',
-  BESOIN_AIR_LIME: 'Besoin_air_pulverisation_lime_Nm3_kg',
-  CONCENTRATION_LIME: 'Concentration_Lime_kg_lime_Nm3_FG',
-  BESOIN_AIR_CAP: 'Besoin_air_pulverisation_cap_Nm3_kg',
-  CONCENTRATION_CAP: 'Concentration_cap_mg_cap_Nm3_FG',
-  CALCULATION_RESULT: 'calculationResult_REACTOR'
-};
+// Constantes pour localStorage (suffixées par nodeId)
+const getStorageKeys = (nodeId) => ({
+  T_AMONT_REACTOR: `T_amont_REACTOR_${nodeId}`,
+  T_AIR: `T_air_REACTOR_${nodeId}`,
+  PDC_AERO: `PDC_aero_REACTOR_${nodeId}`,
+  REAGENT_TYPE: `reagentType_REACTOR_${nodeId}`,
+  BESOIN_AIR_LIME: `Besoin_air_pulverisation_lime_Nm3_kg_REACTOR_${nodeId}`,
+  CONCENTRATION_LIME: `Concentration_Lime_kg_lime_Nm3_FG_REACTOR_${nodeId}`,
+  BESOIN_AIR_CAP: `Besoin_air_pulverisation_cap_Nm3_kg_REACTOR_${nodeId}`,
+  CONCENTRATION_CAP: `Concentration_cap_mg_cap_Nm3_FG_REACTOR_${nodeId}`,
+  CALCULATION_RESULT: `calculationResult_REACTOR_${nodeId}`
+});
 
 // Valeurs par défaut
 const DEFAULT_VALUES = {
@@ -45,43 +45,45 @@ const DEFAULT_VALUES = {
   Concentration_cap_mg_cap_Nm3_FG: '0.1'
 };
 
-const REACTOR_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage, autoTrigger = false }) => {
+const REACTOR_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage, nodeId, autoTrigger = false }) => {
+  const STORAGE_KEYS = useMemo(() => getStorageKeys(nodeId), [nodeId]);
+
   // États principaux
-  const [T_amont_REACTOR, setT_amont_REACTOR] = useState(() => 
-    localStorage.getItem(STORAGE_KEYS.T_AMONT_REACTOR) || 
-    nodeData?.result?.dataFlow?.T?.toString() || 
+  const [T_amont_REACTOR, setT_amont_REACTOR] = useState(() =>
+    localStorage.getItem(getStorageKeys(nodeId).T_AMONT_REACTOR) ||
+    nodeData?.result?.dataFlow?.T?.toString() ||
     DEFAULT_VALUES.T_amont_REACTOR
   );
-  const [T_air, setT_air] = useState(() => 
-    localStorage.getItem(STORAGE_KEYS.T_AIR) || DEFAULT_VALUES.T_air
+  const [T_air, setT_air] = useState(() =>
+    localStorage.getItem(getStorageKeys(nodeId).T_AIR) || DEFAULT_VALUES.T_air
   );
-  const [PDC_aero, setPDC_aero] = useState(() => 
-    localStorage.getItem(STORAGE_KEYS.PDC_AERO) || DEFAULT_VALUES.PDC_aero
+  const [PDC_aero, setPDC_aero] = useState(() =>
+    localStorage.getItem(getStorageKeys(nodeId).PDC_AERO) || DEFAULT_VALUES.PDC_aero
   );
 
   // Paramètres spécifiques aux réactifs
-  const [Besoin_air_pulverisation_lime_Nm3_kg, setBesoin_air_pulverisation_lime_Nm3_kg] = useState(() => 
-    localStorage.getItem(STORAGE_KEYS.BESOIN_AIR_LIME) || DEFAULT_VALUES.Besoin_air_pulverisation_lime_Nm3_kg
+  const [Besoin_air_pulverisation_lime_Nm3_kg, setBesoin_air_pulverisation_lime_Nm3_kg] = useState(() =>
+    localStorage.getItem(getStorageKeys(nodeId).BESOIN_AIR_LIME) || DEFAULT_VALUES.Besoin_air_pulverisation_lime_Nm3_kg
   );
-  const [Concentration_Lime_kg_lime_Nm3_FG, setConcentration_Lime_kg_lime_Nm3_FG] = useState(() => 
-    localStorage.getItem(STORAGE_KEYS.CONCENTRATION_LIME) || DEFAULT_VALUES.Concentration_Lime_kg_lime_Nm3_FG
+  const [Concentration_Lime_kg_lime_Nm3_FG, setConcentration_Lime_kg_lime_Nm3_FG] = useState(() =>
+    localStorage.getItem(getStorageKeys(nodeId).CONCENTRATION_LIME) || DEFAULT_VALUES.Concentration_Lime_kg_lime_Nm3_FG
   );
-  const [Besoin_air_pulverisation_cap_Nm3_kg, setBesoin_air_pulverisation_cap_Nm3_kg] = useState(() => 
-    localStorage.getItem(STORAGE_KEYS.BESOIN_AIR_CAP) || DEFAULT_VALUES.Besoin_air_pulverisation_cap_Nm3_kg
+  const [Besoin_air_pulverisation_cap_Nm3_kg, setBesoin_air_pulverisation_cap_Nm3_kg] = useState(() =>
+    localStorage.getItem(getStorageKeys(nodeId).BESOIN_AIR_CAP) || DEFAULT_VALUES.Besoin_air_pulverisation_cap_Nm3_kg
   );
-  const [Concentration_cap_mg_cap_Nm3_FG, setConcentration_cap_mg_cap_Nm3_FG] = useState(() => 
-    localStorage.getItem(STORAGE_KEYS.CONCENTRATION_CAP) || DEFAULT_VALUES.Concentration_cap_mg_cap_Nm3_FG
+  const [Concentration_cap_mg_cap_Nm3_FG, setConcentration_cap_mg_cap_Nm3_FG] = useState(() =>
+    localStorage.getItem(getStorageKeys(nodeId).CONCENTRATION_CAP) || DEFAULT_VALUES.Concentration_cap_mg_cap_Nm3_FG
   );
 
   // Type de réactif
-  const [reagentType, setReagentType] = useState(() => 
-    localStorage.getItem(STORAGE_KEYS.REAGENT_TYPE) || DEFAULT_VALUES.reagentType
+  const [reagentType, setReagentType] = useState(() =>
+    localStorage.getItem(getStorageKeys(nodeId).REAGENT_TYPE) || DEFAULT_VALUES.reagentType
   );
 
   // États pour l'interface
   const [calculationResult_REACTOR, setCalculationResult_REACTOR] = useState(() => {
     try {
-      const stored = localStorage.getItem(STORAGE_KEYS.CALCULATION_RESULT);
+      const stored = localStorage.getItem(getStorageKeys(nodeId).CALCULATION_RESULT);
       return stored ? JSON.parse(stored) : null;
     } catch (error) {
       console.warn('Erreur lors du chargement des résultats:', error);
@@ -407,7 +409,7 @@ const REACTOR_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLa
           disabled={isCalculating || !nodeData?.result}
           currentLanguage={currentLanguage}
           isCalculating={isCalculating}
-          storageKey={`calcSent_${title}`}
+          storageKey={`calcSent_${title}_${nodeId}`}
         />
         
         <ShowResultButton 

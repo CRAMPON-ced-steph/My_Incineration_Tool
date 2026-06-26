@@ -5,6 +5,7 @@ import { getLanguageCode } from '../../../F_Gestion_Langues/Fonction_Traduction'
 import { translations } from './SEP21_traduction';
 import '../../../index.css';
 
+import { fmt } from '../../../A_Transverse_fonction/formatNumber';
 const SEP21FlueGasPollutantEmission = ({ innerData, currentLanguage = 'fr' }) => {
 
   const languageCode = getLanguageCode(currentLanguage);
@@ -57,10 +58,10 @@ const SEP21FlueGasPollutantEmission = ({ innerData, currentLanguage = 'fr' }) =>
   }
 
   const elementsGeneric = [
-    { text: t('Waste Flow [kg/h]'), value: masse_dechets.toFixed(2) },
-    { text: t('Flue gas Flow Wet [Nm3/h]'), value: Debit_fumees_humide_Nm3_h.toFixed(0) },
-    { text: t('Flue gas Flow Dry [Nm3/h]'), value: Debit_fumees_sec_Nm3_h.toFixed(0) },
-    { text: t('O2 calculated [%]'), value: FG_O2_calcule.toFixed(2) },
+    { text: t('Waste Flow [kg/h]'), value: fmt(masse_dechets, 2) },
+    { text: t('Flue gas Flow Wet [Nm3/h]'), value: fmt(Debit_fumees_humide_Nm3_h, 0) },
+    { text: t('Flue gas Flow Dry [Nm3/h]'), value: fmt(Debit_fumees_sec_Nm3_h, 0) },
+    { text: t('O2 calculated [%]'), value: fmt(FG_O2_calcule, 2) },
   ];
 
   return (

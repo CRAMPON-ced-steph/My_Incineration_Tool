@@ -34,29 +34,82 @@ import DashboardWindow from './G_Graphiques/Dashboard/Dashboard';
 import GlobalReport from './D_BILAN_Rapports/GlobalReport';
 import GlobalRetroReport from './D_BILAN_Rapports/GlobalRetroReport';
 import { batchCalcMap } from './Z_RETRO/batchCalculators';
+import CustomNode from './C_Components/CustomNode';
 
 const initialNodes = [];
 const initialEdges = [];
+const nodeTypes = { custom: CustomNode };
+
+const FURNACE_LABELS = ['RK+SCC', 'GF', 'FB'];
 
 // Maps node labels to the localStorage key each Parameter_Tab uses for its calculationResult.
-const batchResultStorageKeys = {
-  'RK+SCC': 'calculationResult_RK',
-  FB: 'calculationResult_FB',
-  GF: 'calculationResult_GF',
-  WHB: 'calculationResult_WHB',
-  QUENCH: 'calculationResult_QUENCH',
-  DENOX: 'calculationResult_DENOX',
-  BHF: 'CalculationResult_BHF',
-  IACT: 'CalculationResult_IACT',
-  COOLINGTOWER: 'calculationResult_COOLINGTOWER',
-  ELECTROFILTER: 'CalculationResult_ELECTROFILTER',
-  CYCLONE: 'CalculationResult_CYCLONE',
-  REACTOR: 'calculationResult_REACTOR',
-  SCRUBBER: 'calculationResult_SCRUBBER',
-  STACK: 'calculationResult_STACK',
-  IDFAN: 'calculationResult_IDFAN',
-  WATER_INJECTION: 'calculationResult_WATER_INJECTION',
-  AIRINJECTION: 'calculationResult_AIRINJECTION',
+// nodeId suffix ensures multi-instance isolation.
+const batchResultStorageKey = (label, nodeId) => {
+  const baseKeys = {
+    'RK+SCC': 'calculationResult_RK',
+    FB: 'calculationResult_FB',
+    GF: 'calculationResult_GF',
+    WHB: 'calculationResult_WHB',
+    QUENCH: 'calculationResult_QUENCH',
+    DENOX: 'calculationResult_DENOX',
+    BHF: 'CalculationResult_BHF',
+    IACT: 'CalculationResult_IACT',
+    COOLINGTOWER: 'calculationResult_COOLINGTOWER',
+    ELECTROFILTER: 'CalculationResult_ELECTROFILTER',
+    CYCLONE: 'CalculationResult_CYCLONE',
+    REACTOR: 'calculationResult_REACTOR',
+    SCRUBBER: 'calculationResult_SCRUBBER',
+    STACK: 'calculationResult_STACK',
+    IDFAN: 'calculationResult_IDFAN',
+    WATER_INJECTION: 'calculationResult_WATER_INJECTION',
+    AIRINJECTION: 'calculationResult_AIRINJECTION',
+  };
+  const base = baseKeys[label];
+  return base ? `${base}_${nodeId}` : null;
+};
+
+// Union-Find helper: group nodes into process lines (connected components)
+const buildProcessLines = (allNodes, edgeList) => {
+  const allIds = new Set(allNodes.map(n => n.id));
+  const parent = {};
+  const find = (x) => { if (parent[x] !== x) parent[x] = find(parent[x]); return parent[x]; };
+  const union = (a, b) => { parent[find(a)] = find(b); };
+  for (const n of allNodes) parent[n.id] = n.id;
+  for (const e of edgeList) {
+    if (allIds.has(e.source) && allIds.has(e.target)) union(e.source, e.target);
+  }
+  // Topological sort (Kahn)
+  const adj = {}, inDeg = {};
+  for (const n of allNodes) { adj[n.id] = []; inDeg[n.id] = 0; }
+  for (const e of edgeList) {
+    if (allIds.has(e.source) && allIds.has(e.target)) {
+      adj[e.source].push(e.target);
+      inDeg[e.target] = (inDeg[e.target] || 0) + 1;
+    }
+  }
+  const topoOrder = [];
+  const queue = allNodes.filter(n => inDeg[n.id] === 0).map(n => n.id);
+  while (queue.length) {
+    const id = queue.shift();
+    topoOrder.push(id);
+    for (const next of (adj[id] || [])) { inDeg[next]--; if (inDeg[next] === 0) queue.push(next); }
+  }
+  for (const n of allNodes) { if (!topoOrder.includes(n.id)) topoOrder.push(n.id); }
+  const topoRank = {};
+  topoOrder.forEach((id, i) => { topoRank[id] = i; });
+
+  const groups = {};
+  for (const n of allNodes) {
+    const root = find(n.id);
+    if (!groups[root]) groups[root] = [];
+    groups[root].push(n);
+  }
+  for (const root in groups) {
+    groups[root].sort((a, b) => (topoRank[a.id] || 0) - (topoRank[b.id] || 0));
+  }
+  return Object.values(groups).sort((a, b) =>
+    (topoRank[a[0]?.id] || 0) - (topoRank[b[0]?.id] || 0)
+  );
 };
 
 function FitViewButton() {
@@ -107,6 +160,9 @@ function Flow({
   const [selectedNode, setSelectedNode] = useState(null);
   const { fitView } = useReactFlow();
   const isFirstRender = useRef(true);
+  const nodeIdCounterRef = useRef(
+    nodes.length > 0 ? Math.max(...nodes.map(n => parseInt(n.id, 10) || 0)) + 1 : 1
+  );
   useEffect(() => {
     if (isFirstRender.current) { isFirstRender.current = false; return; }
     const id = setTimeout(() => fitView({ padding: 0.2, duration: 300 }), 50);
@@ -120,6 +176,7 @@ function Flow({
   const [isEraserActive, setIsEraserActive] = useState(false);
   const [showSaveDialog, setShowSaveDialog] = useState(false);
   const [saveProjectTitle, setSaveProjectTitle] = useState('');
+  const [showLineNameModal, setShowLineNameModal] = useState(false);
 
   // Batch calculation state
   const [batchCalcIndex, setBatchCalcIndex] = useState(-1);
@@ -238,33 +295,55 @@ function Flow({
   const onAddNode = useCallback(
     (label) => {
       const nodeStyle = NODE_COLORS[label] || {};
+      const nodeId = nodeIdCounterRef.current++;
+      const isFurnace = FURNACE_LABELS.includes(label);
+
+      let position;
+      if (!headNode || isFurnace) {
+        const maxY = nodes.reduce((max, n) => Math.max(max, n.position.y), -100);
+        position = { x: 0, y: maxY + 100 };
+      } else {
+        position = { x: headNode.position.x + 200, y: headNode.position.y };
+      }
+
+      const defaultStyle = { backgroundColor: '#fff', color: '#222', border: '1px solid #1a192b', borderRadius: '4px', padding: '10px 20px', fontSize: '12px', width: 150, textAlign: 'center' };
       const newNode = {
-        id: `${nodes.length + 1}`,
+        id: `${nodeId}`,
         data: { label },
-        position: { x: headNode ? headNode.position.x + 200 : 0, y: 100 },
-        sourcePosition: 'right',
-        targetPosition: 'left',
-        type: label === 'STACK' ? 'output' : ['RK+SCC', 'GF', 'FB'].includes(label) ? 'input' : undefined,
-        style: nodeStyle.background ? { backgroundColor: nodeStyle.background, color: nodeStyle.color, border: '1px solid rgba(0,0,0,0.15)', borderRadius: '4px' } : undefined,
+        position,
+        type: 'custom',
+        style: nodeStyle.background
+          ? { ...defaultStyle, backgroundColor: nodeStyle.background, color: nodeStyle.color, border: '1px solid rgba(0,0,0,0.15)' }
+          : defaultStyle,
       };
       setNodes((prevNodes) => [...prevNodes, newNode]);
 
-      if (headNode) {
-        setEdges((prevEdges) => [
-          ...prevEdges,
-          {
-            id: `${headNode.id}-${newNode.id}`,
-            source: headNode.id,
-            target: newNode.id,
-            label: (prevEdges.length + 1).toString(),
-            type: 'step',
-          },
-        ]);
+      if (headNode && !isFurnace) {
+        setEdges((prevEdges) => {
+          let chainLength = 0;
+          let currentId = headNode.id;
+          while (true) {
+            const upEdge = prevEdges.find(e => e.target === currentId);
+            if (!upEdge) break;
+            chainLength++;
+            currentId = upEdge.source;
+          }
+          return [
+            ...prevEdges,
+            {
+              id: `${headNode.id}-${newNode.id}`,
+              source: headNode.id,
+              target: newNode.id,
+              label: (chainLength + 1).toString(),
+              type: 'step',
+            },
+          ];
+        });
       }
 
       setHeadNode(newNode);
     },
-    [nodes, headNode, setNodes, setEdges]
+    [headNode, nodes, setNodes, setEdges]
   );
 
   // Kahn's algorithm — returns nodes in topological order (source → sink)
@@ -404,12 +483,12 @@ function Flow({
       // Auto-détection WHB pour RK+SCC : synchroniser localStorage avant le calcul batch
       if (node.data.label === 'RK+SCC') {
         const hasWHB = currentNodes.some(n => n.data?.label === 'WHB');
-        localStorage.setItem('bilanType_whb_RK', hasWHB ? 'WITH_WHB' : 'WITHOUT_WHB');
+        localStorage.setItem(`bilanType_whb_RK_${node.id}`, hasWHB ? 'WITH_WHB' : 'WITHOUT_WHB');
       }
 
       let result = null;
       try {
-        result = batchCalcMap[node.data.label](nodeData);
+        result = batchCalcMap[node.data.label](nodeData, node.id);
       } catch (e) {
         console.error(`[Calc. All] Erreur pour ${node.data.label}:`, e);
       }
@@ -419,12 +498,11 @@ function Flow({
         currentNodes = propagateResultUpstream(node.id, result, currentEdges, currentNodes);
         setNodes([...currentNodes]);
 
-        // Persist result to localStorage so visible panels show fresh data
-        const storageKey = batchResultStorageKeys[node.data.label];
+        const storageKey = batchResultStorageKey(node.data.label, node.id);
         if (storageKey) {
           try { localStorage.setItem(storageKey, JSON.stringify(result)); } catch {}
         }
-        localStorage.setItem(`calcSent_${node.data.label}`, 'true');
+        localStorage.setItem(`calcSent_${node.data.label}_${node.id}`, 'true');
       }
 
       setBatchDoneCount(i + 1);
@@ -491,6 +569,7 @@ function Flow({
     return (
       <Component
         key={selectedNode.id}
+        nodeId={selectedNode.id}
         title={selectedNode.data.label}
         nodeData={selectedNode.data}
         onSendData={onSendData}
@@ -557,16 +636,23 @@ function Flow({
         reader.onload = (event) => {
           try {
             const projectData = JSON.parse(event.target.result);
+            const defaultStyle = { backgroundColor: '#fff', color: '#222', border: '1px solid #1a192b', borderRadius: '4px', padding: '10px 20px', fontSize: '12px', width: 150, textAlign: 'center' };
             const restoredNodes = (projectData.nodes || []).map(n => {
               const nodeStyle = NODE_COLORS[n.data?.label] || {};
-              return nodeStyle.background
-                ? { ...n, style: { ...n.style, backgroundColor: nodeStyle.background, color: nodeStyle.color, border: '1px solid rgba(0,0,0,0.15)', borderRadius: '4px' } }
-                : n;
+              return {
+                ...n,
+                type: 'custom',
+                style: nodeStyle.background
+                  ? { ...defaultStyle, backgroundColor: nodeStyle.background, color: nodeStyle.color, border: '1px solid rgba(0,0,0,0.15)' }
+                  : { ...defaultStyle, ...(n.style || {}) },
+              };
             });
             setNodes(restoredNodes);
             setEdges(projectData.edges || []);
             setSelectedNode(projectData.selectedNode);
             setMode(projectData.mode || 'Bilan');
+            const maxId = restoredNodes.reduce((max, n) => Math.max(max, parseInt(n.id, 10) || 0), 0);
+            nodeIdCounterRef.current = maxId + 1;
             
             // Load language from project if available
             if (projectData.currentLanguage) {
@@ -648,6 +734,7 @@ function Flow({
         <ReactFlow
           nodes={nodes}
           edges={edges}
+          nodeTypes={nodeTypes}
           onNodeClick={isEraserActive ? undefined : onNodeClick}
           onNodesChange={onNodesChange}
           onNodesDelete={onNodesDelete}
@@ -675,6 +762,13 @@ function Flow({
             </button>
             <FitViewButton />
             <LockScrollButton />
+            <button
+              className="reset-btn"
+              onClick={() => setShowLineNameModal(true)}
+              title="Nommer les lignes de process"
+            >
+              🏷 Line Name
+            </button>
             {mode !== 'Bilan' && (
               <>
                 <button
@@ -717,6 +811,7 @@ function Flow({
         <LinearGraph
           currentLanguage={currentLanguage}
           onClose={() => setShowGraph(false)}
+          nodes={nodes}
         />
       )}
       
@@ -740,6 +835,7 @@ function Flow({
       {showRapportEditor && (
         <GlobalReport
           nodes={nodes}
+          edges={edges}
           onClose={() => setShowRapportEditor(false)}
         />
       )}
@@ -751,6 +847,70 @@ function Flow({
           onClose={() => setShowRetroRapportEditor(false)}
         />
       )}
+
+      {/* Modal Line Name */}
+      {showLineNameModal && (() => {
+        const lines = buildProcessLines(nodes, edges);
+        return (
+          <div style={{
+            position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.4)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2000,
+          }}>
+            <div style={{
+              background: 'white', borderRadius: '8px', padding: '28px 32px',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.2)', minWidth: '380px', maxWidth: '500px',
+            }}>
+              <h3 style={{ margin: '0 0 16px 0', fontSize: '16px', color: '#1a3a6b' }}>
+                Nommer les lignes de process
+              </h3>
+              {lines.length === 0 ? (
+                <p style={{ color: '#888', fontSize: '13px' }}>Aucune ligne détectée. Ajoutez un four pour créer une ligne.</p>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  {lines.map((line, i) => {
+                    const furnaceNode = line.find(n => FURNACE_LABELS.includes(n.data?.label));
+                    const firstNode = furnaceNode || line[0];
+                    const chain = line.map(n => n.data.label).join(' → ');
+                    return (
+                      <div key={firstNode.id} style={{ border: '1px solid #e0e8f4', borderRadius: '6px', padding: '10px 14px' }}>
+                        <div style={{ fontSize: '11px', color: '#888', marginBottom: '4px' }}>
+                          Ligne {i + 1} — {chain}
+                        </div>
+                        <input
+                          type="text"
+                          defaultValue={firstNode.data.lineName || ''}
+                          placeholder={`Nom ligne ${i + 1}`}
+                          onBlur={(e) => {
+                            const val = e.target.value.trim();
+                            setNodes(nds => nds.map(n =>
+                              n.id === firstNode.id
+                                ? { ...n, data: { ...n.data, lineName: val || undefined } }
+                                : n
+                            ));
+                          }}
+                          onKeyDown={(e) => { if (e.key === 'Enter') e.target.blur(); }}
+                          style={{
+                            width: '100%', boxSizing: 'border-box', padding: '6px 10px',
+                            border: '1px solid #ccc', borderRadius: '4px', fontSize: '13px',
+                          }}
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '18px' }}>
+                <button
+                  onClick={() => setShowLineNameModal(false)}
+                  style={{ padding: '7px 20px', border: 'none', borderRadius: '4px', background: '#1a3a6b', color: 'white', cursor: 'pointer', fontSize: '13px', fontWeight: 'bold' }}
+                >
+                  Fermer
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* Modal sauvegarde projet */}
       {showSaveDialog && (

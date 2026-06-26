@@ -22,15 +22,15 @@ const BALANCE_TYPES = {
   WATER_FLOW: 'WATER_FLOW_BALANCE'
 };
 
-// Constantes pour localStorage
-const STORAGE_KEYS = {
-  T_EAU: 'Teau_QUENCH',
-  T_AMONT_QUENCH: 'T_amont_QUENCH',
-  Q_EAU: 'Qeau_QUENCH',
-  PDC_AERO: 'PDC_aero_QUENCH',
-  BILAN_TYPE: 'QUENCH_bilanType',
-  CALCULATION_RESULT: 'calculationResult_QUENCH'
-};
+// Constantes pour localStorage (nodeId-aware)
+const getStorageKeys = (nodeId) => ({
+  T_EAU: `Teau_QUENCH_${nodeId}`,
+  T_AMONT_QUENCH: `T_amont_QUENCH_${nodeId}`,
+  Q_EAU: `Qeau_QUENCH_${nodeId}`,
+  PDC_AERO: `PDC_aero_QUENCH_${nodeId}`,
+  BILAN_TYPE: `QUENCH_bilanType_${nodeId}`,
+  CALCULATION_RESULT: `calculationResult_QUENCH_${nodeId}`
+});
 
 // Valeurs par défaut
 const DEFAULT_VALUES = {
@@ -41,7 +41,8 @@ const DEFAULT_VALUES = {
   bilanType: BALANCE_TYPES.TEMPERATURE
 };
 
-const QUENCH_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage, autoTrigger = false }) => {
+const QUENCH_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage, autoTrigger = false, nodeId }) => {
+  const STORAGE_KEYS = useMemo(() => getStorageKeys(nodeId), [nodeId]);
   // États principaux
   const [Teau, setTeau] = useState(() => 
     localStorage.getItem(STORAGE_KEYS.T_EAU) || DEFAULT_VALUES.Teau
@@ -112,7 +113,7 @@ const QUENCH_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLan
     };
 
     saveToLocalStorage();
-  }, [Teau, T_amont_QUENCH, Qeau, PDC_aero, bilanType]);
+  }, [Teau, T_amont_QUENCH, Qeau, PDC_aero, bilanType, STORAGE_KEYS]);
 
   // Sauvegarde des résultats de calcul
   useEffect(() => {
@@ -123,7 +124,7 @@ const QUENCH_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLan
         console.warn('Erreur lors de la sauvegarde des résultats:', error);
       }
     }
-  }, [calculationResult_QUENCH]);
+  }, [calculationResult_QUENCH, STORAGE_KEYS]);
 
   // Validation des entrées
   const validateInputs = useCallback(() => {
@@ -344,7 +345,7 @@ const QUENCH_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLan
           disabled={isCalculating || !nodeData?.result}
           currentLanguage={currentLanguage}
           isCalculating={isCalculating}
-          storageKey={`calcSent_${title}`}
+          storageKey={`calcSent_${title}_${nodeId}`}
         />
         
         <ShowResultButton 

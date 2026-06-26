@@ -13,7 +13,7 @@ import '../../index.css';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './ELECTROFILTER_traduction';
 
-const ELECTROFILTERMainPage = ({ nodeData, title, onSendData, onClose, onGoBack , currentLanguage = 'fr' }) => {
+const ELECTROFILTERMainPage = ({ nodeData, title, onSendData, onClose, onGoBack , currentLanguage = 'fr', nodeId }) => {
 
   const languageCode = getLanguageCode(currentLanguage);
   const t = (key) => {
@@ -23,11 +23,11 @@ const ELECTROFILTERMainPage = ({ nodeData, title, onSendData, onClose, onGoBack 
   const [innerData, setInnerData] = useState(nodeData.result);
   const tabs = [
   //{name: 'Steam Parameters',content: (<ELECTROFILTER_Parameters innerData={innerData} />),},
-  {name: t('Flue gases'), content: < ELECTROFILTERFlueGasParameters innerData={innerData}setInnerData={setInnerData}currentLanguage={currentLanguage}/> },
-  {name: t('Pollutant Emissions'), content: <ELECTROFILTERFlueGasPollutantEmission  innerData={innerData}setInnerData={setInnerData}currentLanguage={currentLanguage}/>,},
-  {name: t('Design'), content: < ELECTROFILTERDesign innerData={innerData}setInnerData={setInnerData}currentLanguage={currentLanguage}/> },
-  //{name: t('Opex'), content: < ELECTROFILTEROpex innerData={innerData}setInnerData={setInnerData} currentLanguage={currentLanguage}/> },
-  {name: t('Rapport'), content: <ELECTROFILTER_Report innerData={innerData} currentLanguage={currentLanguage} />},
+  {name: t('Flue gases'), content: < ELECTROFILTERFlueGasParameters innerData={innerData}setInnerData={setInnerData}currentLanguage={currentLanguage} nodeId={nodeId}/> },
+  {name: t('Pollutant Emissions'), content: <ELECTROFILTERFlueGasPollutantEmission  innerData={innerData}setInnerData={setInnerData}currentLanguage={currentLanguage} nodeId={nodeId}/>,},
+  {name: t('Design'), content: < ELECTROFILTERDesign innerData={innerData}setInnerData={setInnerData}currentLanguage={currentLanguage} nodeId={nodeId}/> },
+  //{name: t('Opex'), content: < ELECTROFILTEROpex innerData={innerData}setInnerData={setInnerData} currentLanguage={currentLanguage} nodeId={nodeId}/> },
+  {name: t('Rapport'), content: <ELECTROFILTER_Report innerData={innerData} currentLanguage={currentLanguage} nodeId={nodeId} />},
   ];
 
   const [activeTabIndex, setActiveTabIndex] = useState(0);

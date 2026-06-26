@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import TableGeneric from '../../C_Components/Tableau_generique';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './SCRUBBER_traduction';
+import { fmt } from '../../A_Transverse_fonction/formatNumber';
 
 // ===== CONSTANTES =====
 const reactifConfig = {
@@ -58,7 +59,7 @@ const SO2ScrubberCalculator = ({ innerData = {}, setInnerData, currentLanguage =
 
   const formatNumber = (value, decimals = 2) => {
     if (typeof value !== 'number' || isNaN(value) || !isFinite(value)) return '---';
-    return value.toFixed(decimals);
+    return fmt(value, decimals);
   };
 
   const validateInputs = (debit, concEntree, concSortie, vitesse) => {

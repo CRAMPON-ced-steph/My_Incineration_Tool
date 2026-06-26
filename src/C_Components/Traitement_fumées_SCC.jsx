@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { fmt } from '../A_Transverse_fonction/formatNumber';
 
 const SCC_NOxAndMercuryCalculator = ({ masses, Debit_fumees_sec_Nm3_h,innerData }) => {
   const parseStoredValue = (key, defaultValue) => {
@@ -125,7 +126,7 @@ const SCC_NOxAndMercuryCalculator = ({ masses, Debit_fumees_sec_Nm3_h,innerData 
                   min={0}
                 />
               </td>
-              <td style={cellStyle}>{ammoniaConsumption.toFixed(2)}</td>
+              <td style={cellStyle}>{fmt(ammoniaConsumption)}</td>
             </tr>
           </tbody>
         </table>
@@ -165,8 +166,8 @@ const SCC_NOxAndMercuryCalculator = ({ masses, Debit_fumees_sec_Nm3_h,innerData 
                   min={0}
                 />
               </td>
-              <td style={cellStyle}>{masses.Mercury.toFixed(2)}</td>
-              <td style={cellStyle}>{bromideConsumption.toFixed(2)}</td>
+              <td style={cellStyle}>{fmt(masses.Mercury)}</td>
+              <td style={cellStyle}>{fmt(bromideConsumption)}</td>
             </tr>
           </tbody>
         </table>

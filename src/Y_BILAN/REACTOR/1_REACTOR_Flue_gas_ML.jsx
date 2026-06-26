@@ -8,7 +8,8 @@ import { h_fumee, Qeau_added_to_be_at_T } from '../../A_Transverse_fonction/enth
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './REACTOR_traduction';
 
-const REACTORFlueGasParameters = ({ innerData, currentLanguage = 'fr' }) => {
+import { fmt } from '../../A_Transverse_fonction/formatNumber';
+const REACTORFlueGasParameters = ({ innerData, currentLanguage = 'fr', nodeId }) => {
   const initialEmissions_REACTOR = {
     'Flue gas temperature outlet [°C]': 400,
     'Ambient air temperature [°C]': 20,
@@ -23,12 +24,12 @@ const REACTORFlueGasParameters = ({ innerData, currentLanguage = 'fr' }) => {
   };
 
   const [emissions_REACTOR, setEmissions_REACTOR] = useState(() => {
-    const savedEmissions = localStorage.getItem('emissions_REACTOR');
+    const savedEmissions = localStorage.getItem(`emissions_REACTOR_${nodeId}`);
     return savedEmissions ? JSON.parse(savedEmissions) : initialEmissions_REACTOR;
   });
 
   useEffect(() => {
-    localStorage.setItem('emissions_REACTOR', JSON.stringify(emissions_REACTOR));
+    localStorage.setItem(`emissions_REACTOR_${nodeId}`, JSON.stringify(emissions_REACTOR));
   }, [emissions_REACTOR]);
 
   // Input data with fallback values
@@ -131,10 +132,10 @@ const REACTORFlueGasParameters = ({ innerData, currentLanguage = 'fr' }) => {
   };
 
   const elementsGeneric = [
-    { text: t('Temperature inlet REACTOR [°C]'), value: T_IN.toFixed(1) },
-    { text: t('Delta enthalpies [kJ/kg]'), value: Delta_H.toFixed(0) },
-    { text: t('Sprayed/cooling water [kg/h]'), value: Q_eau_kg_h.toFixed(0) },
-    { text: t('Outlet flue gas volume [Nm3/h]'), value: FG_humide_EAU_tot_m3_h.toFixed(2) },
+    { text: t('Temperature inlet REACTOR [°C]'), value: fmt(T_IN, 1) },
+    { text: t('Delta enthalpies [kJ/kg]'), value: fmt(Delta_H, 0) },
+    { text: t('Sprayed/cooling water [kg/h]'), value: fmt(Q_eau_kg_h, 0) },
+    { text: t('Outlet flue gas volume [Nm3/h]'), value: fmt(FG_humide_EAU_tot_m3_h, 2) },
   ];
 
   const handleChange = (name, value) => {
@@ -148,7 +149,7 @@ const REACTORFlueGasParameters = ({ innerData, currentLanguage = 'fr' }) => {
   };
 
   const clearMemory = useCallback(() => {
-    localStorage.removeItem('emissions_REACTOR');
+    localStorage.removeItem(`emissions_REACTOR_${nodeId}`);
     setEmissions_REACTOR(initialEmissions_REACTOR);
   }, []);
 

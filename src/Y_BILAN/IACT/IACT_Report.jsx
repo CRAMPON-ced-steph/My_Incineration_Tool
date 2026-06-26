@@ -3,13 +3,7 @@ import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './IACT_traduction';
 import { getOpexData } from '../../A_Transverse_fonction/opexDataService';
 import { CO2_kg_m3, H2O_kg_m3, O2_kg_m3, N2_kg_m3 } from '../../A_Transverse_fonction/conv_calculation';
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
-const fmt = (v, decimals = 2) => {
-  const n = parseFloat(v);
-  return isNaN(n) ? '—' : n.toFixed(decimals);
-};
+import { fmt } from '../../A_Transverse_fonction/formatNumber';
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 

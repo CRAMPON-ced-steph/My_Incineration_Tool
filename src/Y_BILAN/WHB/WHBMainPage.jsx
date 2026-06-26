@@ -11,7 +11,7 @@ import '../../index.css';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './WHB_traduction';
 
-const WHBMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLanguage = 'fr' }) => {
+const WHBMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLanguage = 'fr', nodeId }) => {
   // Get translations
   const languageCode = getLanguageCode(currentLanguage);
   const t = (key) => translations[languageCode]?.[key] || translations['fr']?.[key] || key;
@@ -23,10 +23,11 @@ const WHBMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLa
       name: 'steamParameters',
       label: t('steamParameters'),
       content: (
-        <WHB_Parameters 
-          innerData={innerData} 
+        <WHB_Parameters
+          innerData={innerData}
           setInnerData={setInnerData}
           currentLanguage={currentLanguage}
+          nodeId={nodeId}
         />
       ),
     },
@@ -34,10 +35,11 @@ const WHBMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLa
       name: 'flueGases',
       label: t('flueGases'),
       content: (
-        <WHBFlueGasParameters 
+        <WHBFlueGasParameters
           innerData={innerData}
           setInnerData={setInnerData}
           currentLanguage={currentLanguage}
+          nodeId={nodeId}
         />
       )
     },
@@ -45,10 +47,11 @@ const WHBMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLa
       name: 'pollutantEmissions',
       label: t('pollutantEmissions'),
       content: (
-        <WHBFlueGasPollutantEmission  
+        <WHBFlueGasPollutantEmission
           innerData={innerData}
           setInnerData={setInnerData}
           currentLanguage={currentLanguage}
+          nodeId={nodeId}
         />
       ),
     },

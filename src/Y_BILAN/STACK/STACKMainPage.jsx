@@ -15,7 +15,8 @@ const STACKMainPage = ({
   onSendData,
   onClose,
   onGoBack,
-  currentLanguage = 'fr'
+  currentLanguage = 'fr',
+  nodeId
 }) => {
 
 
@@ -38,6 +39,7 @@ const STACKMainPage = ({
           innerData={innerData}
           setInnerData={setInnerData}
           currentLanguage={currentLanguage}
+          nodeId={nodeId}
         />
       )
     },
@@ -48,6 +50,7 @@ const STACKMainPage = ({
           innerData={innerData}
           setInnerData={setInnerData}
           currentLanguage={currentLanguage}
+          nodeId={nodeId}
         />
       )
     },
@@ -58,6 +61,7 @@ const STACKMainPage = ({
           innerData={innerData}
           setInnerData={setInnerData}
           currentLanguage={currentLanguage}
+          nodeId={nodeId}
         />
       )
     },
@@ -68,12 +72,13 @@ const STACKMainPage = ({
           innerData={innerData}
           setInnerData={setInnerData}
           currentLanguage={currentLanguage}
+          nodeId={nodeId}
         />
       )
     },
     {
       name: t('rapport'),
-      content: <STACK_Report innerData={innerData} currentLanguage={currentLanguage} />
+      content: <STACK_Report innerData={innerData} currentLanguage={currentLanguage} nodeId={nodeId} />
     }
   ];
 

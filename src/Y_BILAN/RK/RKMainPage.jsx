@@ -14,7 +14,7 @@ import '../../index.css';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './RK_traduction';
 
-const RKMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLanguage = 'fr' }) => {
+const RKMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLanguage = 'fr', nodeId }) => {
   const [innerData, setInnerData] = useState(nodeData.result || {});
   
   // Get current language code and translations
@@ -26,10 +26,11 @@ const RKMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
       name: 'combustionParameters',
       label: t.combustionParameters || 'Combustion Parameters',
       content: (
-        <CombustionParameters 
-          innerData={innerData} 
+        <CombustionParameters
+          innerData={innerData}
           setInnerData={setInnerData}
           currentLanguage={currentLanguage}
+          nodeId={nodeId}
         />
       ),
     },
@@ -37,10 +38,11 @@ const RKMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
       name: 'flueGases',
       label: t.flueGases || 'Flue gases',
       content: (
-        <FlueGasParameters 
-          innerData={innerData} 
+        <FlueGasParameters
+          innerData={innerData}
           setInnerData={setInnerData}
           currentLanguage={currentLanguage}
+          nodeId={nodeId}
         />
       )
     },
@@ -48,10 +50,11 @@ const RKMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
       name: 'pollutantEmissions',
       label: t.pollutantEmissions || 'Pollutant Emissions',
       content: (
-        <FlueGasPollutantEmission 
-          innerData={innerData} 
+        <FlueGasPollutantEmission
+          innerData={innerData}
           setInnerData={setInnerData}
           currentLanguage={currentLanguage}
+          nodeId={nodeId}
         />
       ),
     },
@@ -59,10 +62,11 @@ const RKMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
       name: 'design',
       label: t.design || 'Design',
       content: (
-        <RKDesign 
-          innerData={innerData} 
+        <RKDesign
+          innerData={innerData}
           setInnerData={setInnerData}
           currentLanguage={currentLanguage}
+          nodeId={nodeId}
         />
       )
     },
@@ -74,6 +78,7 @@ const RKMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
           innerData={innerData}
           setInnerData={setInnerData}
           currentLanguage={currentLanguage}
+          nodeId={nodeId}
         />
       )
     },
@@ -84,6 +89,7 @@ const RKMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
         <RK_Report
           innerData={innerData}
           currentLanguage={currentLanguage}
+          nodeId={nodeId}
         />
       )
     },

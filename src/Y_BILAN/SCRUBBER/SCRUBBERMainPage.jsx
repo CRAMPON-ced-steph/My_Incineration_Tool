@@ -9,7 +9,7 @@ import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './SCRUBBER_traduction';
 import '../../index.css';
 
-const SCRUBBERMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLanguage = 'fr' }) => {
+const SCRUBBERMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLanguage = 'fr', nodeId }) => {
   const languageCode = getLanguageCode(currentLanguage);
   const t = (key) => {
     return translations[languageCode]?.[key] || translations['fr']?.[key] || key;
@@ -21,27 +21,27 @@ const SCRUBBERMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, curr
   const tabs = [
     {
       name: t('Flue gases'),
-      content: <SCRUBBERFlueGasParameters innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} />
+      content: <SCRUBBERFlueGasParameters innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} nodeId={nodeId} />
     },
     {
       name: t('Pollutant Emissions'),
-      content: <SCRUBBERFlueGasPollutantEmission innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} />
+      content: <SCRUBBERFlueGasPollutantEmission innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} nodeId={nodeId} />
     },
     {
       name: t('Scrubber acide'),
-      content: <HClScrubberCalculator innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} />
+      content: <HClScrubberCalculator innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} nodeId={nodeId} />
     },
     {
       name: t('Scrubber basique'),
-      content: <SO2ScrubberCalculator innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} />
+      content: <SO2ScrubberCalculator innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} nodeId={nodeId} />
     },
     {
       name: t('Opex'),
-      content: <SCRUBBEROpex innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} />
+      content: <SCRUBBEROpex innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} nodeId={nodeId} />
     },
     {
       name: t('rapport'),
-      content: <SCRUBBER_Report innerData={innerData} currentLanguage={currentLanguage} />
+      content: <SCRUBBER_Report innerData={innerData} currentLanguage={currentLanguage} nodeId={nodeId} />
     },
   ];
 

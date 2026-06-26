@@ -12,10 +12,11 @@ import Input_bilan from '../../C_Components/MiseEnFormeInputParamBilan';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './RK_traduction';
 
-const FlueGasPollutantEmission = ({ innerData, currentLanguage = 'fr' }) => {
+import { fmt } from '../../A_Transverse_fonction/formatNumber';
+const FlueGasPollutantEmission = ({ innerData, currentLanguage = 'fr', nodeId }) => {
   // Utilisation de clés internes simplifiées
   const [emissions2, setEmissions2] = useState(() => {
-    const savedEmissions = localStorage.getItem('emissions2_RK');
+    const savedEmissions = localStorage.getItem(`emissions2_RK_${nodeId}`);
     return savedEmissions ? JSON.parse(savedEmissions) : {
       mercuryTreatmentThreshold: 9,
       noxIn: 296,
@@ -54,7 +55,7 @@ const FlueGasPollutantEmission = ({ innerData, currentLanguage = 'fr' }) => {
   } = getOpexData();
 
   useEffect(() => {
-    localStorage.setItem('emissions2_RK', JSON.stringify(emissions2));
+    localStorage.setItem(`emissions2_RK_${nodeId}`, JSON.stringify(emissions2));
   }, [emissions2]);
 
   // Fonction de traduction
@@ -394,15 +395,15 @@ const FlueGasPollutantEmission = ({ innerData, currentLanguage = 'fr' }) => {
     };
     
     setEmissions2(defaultValues);
-    localStorage.removeItem('emissions2_RK');
+    localStorage.removeItem(`emissions2_RK_${nodeId}`);
   };
 
   const elementsGeneric = [
     { text: t('wasteFlow'), value: masse_dechets },
-    { text: t('flueGasFlowWet'), value: Debit_fumees_humide_Nm3_h.toFixed(0) },
-    { text: t('flueGasFlowDry'), value: Debit_fumees_sec_Nm3_h.toFixed(0) },
-    { text: t('o2Calculated'), value: FG_O2_calcule.toFixed(2) },
-    { text: t('inertMass'), value: Inert_kg_h.toFixed(2) },
+    { text: t('flueGasFlowWet'), value: fmt(Debit_fumees_humide_Nm3_h, 0) },
+    { text: t('flueGasFlowDry'), value: fmt(Debit_fumees_sec_Nm3_h, 0) },
+    { text: t('o2Calculated'), value: fmt(FG_O2_calcule, 2) },
+    { text: t('inertMass'), value: fmt(Inert_kg_h, 2) },
   ];
 
   const residusCalculations = [
@@ -604,7 +605,7 @@ const FlueGasPollutantEmission = ({ innerData, currentLanguage = 'fr' }) => {
                 </select>
               </td>
               <td style={{ padding: '8px', textAlign: 'center', width: '11.11%' }}>
-                {SOx_reactif !== 'None' ? Masse_polluant_SO2_kg_h.toFixed(3) : ''}
+                {SOx_reactif !== 'None' ? fmt(Masse_polluant_SO2_kg_h, 3) : ''}
               </td>
               <td style={{ padding: '4px', textAlign: 'center', width: '11.11%' }}>
                 <input
@@ -629,16 +630,16 @@ const FlueGasPollutantEmission = ({ innerData, currentLanguage = 'fr' }) => {
                 />
               </td>
               <td style={{ padding: '8px', textAlign: 'center', width: '11.11%' }}>
-                {masses_pollutant_output.SO2.toFixed(3)}
+                {fmt(masses_pollutant_output.SO2, 3)}
               </td>
               <td style={{ padding: '8px', textAlign: 'center', width: '11.11%' }}>
-                {SOx_reactif !== 'None' ? mass_residus_SOx.toFixed(3) : '0.000'}
+                {SOx_reactif !== 'None' ? fmt(mass_residus_SOx, 3) : '0.000'}
               </td>
               <td style={{ padding: '8px', textAlign: 'center', width: '11.11%' }}>
-                {SOx_reactif !== 'None' ? mass_reactif_reel_SOx.toFixed(3) : '0.000'}
+                {SOx_reactif !== 'None' ? fmt(mass_reactif_reel_SOx, 3) : '0.000'}
               </td>
               <td style={{ padding: '8px', textAlign: 'center', width: '11.11%' }}>
-                {SOx_reactif !== 'None' ? mass_reduction_SOx.toFixed(3) : '0.000'}
+                {SOx_reactif !== 'None' ? fmt(mass_reduction_SOx, 3) : '0.000'}
               </td>
             </tr>
             <tr>
@@ -658,7 +659,7 @@ const FlueGasPollutantEmission = ({ innerData, currentLanguage = 'fr' }) => {
                 </select>
               </td>
               <td style={{ padding: '8px', textAlign: 'center', width: '11.11%' }}>
-                {HCl_reactif !== 'None' ? Masse_polluant_HCl_kg_h.toFixed(3) : ''}
+                {HCl_reactif !== 'None' ? fmt(Masse_polluant_HCl_kg_h, 3) : ''}
               </td>
               <td style={{ padding: '4px', textAlign: 'center', width: '11.11%' }}>
                 <input
@@ -683,16 +684,16 @@ const FlueGasPollutantEmission = ({ innerData, currentLanguage = 'fr' }) => {
                 />
               </td>
               <td style={{ padding: '8px', textAlign: 'center', width: '11.11%' }}>
-                {masses_pollutant_output.HCl.toFixed(3)}
+                {fmt(masses_pollutant_output.HCl, 3)}
               </td>
               <td style={{ padding: '8px', textAlign: 'center', width: '11.11%' }}>
-                {HCl_reactif !== 'None' ? mass_residus_HCl.toFixed(3) : '0.000'}
+                {HCl_reactif !== 'None' ? fmt(mass_residus_HCl, 3) : '0.000'}
               </td>
               <td style={{ padding: '8px', textAlign: 'center', width: '11.11%' }}>
-                {HCl_reactif !== 'None' ? mass_reactif_reel_HCl.toFixed(3) : '0.000'}
+                {HCl_reactif !== 'None' ? fmt(mass_reactif_reel_HCl, 3) : '0.000'}
               </td>
               <td style={{ padding: '8px', textAlign: 'center', width: '11.11%' }}>
-                {HCl_reactif !== 'None' ? mass_reduction_HCl.toFixed(3) : '0.000'}
+                {HCl_reactif !== 'None' ? fmt(mass_reduction_HCl, 3) : '0.000'}
               </td>
             </tr>
             <tr>
@@ -712,7 +713,7 @@ const FlueGasPollutantEmission = ({ innerData, currentLanguage = 'fr' }) => {
                 </select>
               </td>
               <td style={{ padding: '8px', textAlign: 'center', width: '11.11%' }}>
-                {HF_reactif !== 'None' ? Masse_polluant_HF_kg_h.toFixed(3) : ''}
+                {HF_reactif !== 'None' ? fmt(Masse_polluant_HF_kg_h, 3) : ''}
               </td>
               <td style={{ padding: '4px', textAlign: 'center', width: '11.11%' }}>
                 <input
@@ -737,16 +738,16 @@ const FlueGasPollutantEmission = ({ innerData, currentLanguage = 'fr' }) => {
                 />
               </td>
               <td style={{ padding: '8px', textAlign: 'center', width: '11.11%' }}>
-                {masses_pollutant_output.HF.toFixed(3)}
+                {fmt(masses_pollutant_output.HF, 3)}
               </td>
               <td style={{ padding: '8px', textAlign: 'center', width: '11.11%' }}>
-                {HF_reactif !== 'None' ? mass_residus_HF.toFixed(3) : '0.000'}
+                {HF_reactif !== 'None' ? fmt(mass_residus_HF, 3) : '0.000'}
               </td>
               <td style={{ padding: '8px', textAlign: 'center', width: '11.11%' }}>
-                {HF_reactif !== 'None' ? mass_reactif_reel_HF.toFixed(3) : '0.000'}
+                {HF_reactif !== 'None' ? fmt(mass_reactif_reel_HF, 3) : '0.000'}
               </td>
               <td style={{ padding: '8px', textAlign: 'center', width: '11.11%' }}>
-                {HF_reactif !== 'None' ? mass_reduction_HF.toFixed(3) : '0.000'}
+                {HF_reactif !== 'None' ? fmt(mass_reduction_HF, 3) : '0.000'}
               </td>
             </tr>
           </tbody>

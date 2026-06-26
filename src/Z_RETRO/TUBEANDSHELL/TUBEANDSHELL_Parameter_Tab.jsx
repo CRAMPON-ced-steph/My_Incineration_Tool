@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { performCalculation_TUBEANDSHELL } from './TUBEANDSHELL_calculations';
+import { fmt as fmtNum } from '../../A_Transverse_fonction/formatNumber';
 
 import InputField from '../../C_Components/input_retro';
 import ClearButton from '../../C_Components/Clear_Button';
@@ -21,43 +22,43 @@ const labelStyle = {
   fontSize: '13px', fontWeight: '600', color: '#333', marginBottom: '4px',
 };
 
-const TUBEANDSHELL_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage, autoTrigger = false }) => {
+const TUBEANDSHELL_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage, autoTrigger = false, nodeId }) => {
 
   // ── Paramètres persistés ──────────────────────────────────────────────────
-  const [fluide,       setFluide]       = useState(() => localStorage.getItem('fluide_TUBEANDSHELL')       || 'eau');
-  const [bilanType,    setBilanType]    = useState(() => localStorage.getItem('bilanType_TUBEANDSHELL')    || 'T_sortie');
+  const [fluide,       setFluide]       = useState(() => localStorage.getItem(`fluide_TUBEANDSHELL_${nodeId}`)       || 'eau');
+  const [bilanType,    setBilanType]    = useState(() => localStorage.getItem(`bilanType_TUBEANDSHELL_${nodeId}`)    || 'T_sortie');
   const [T_fumee_in,   setT_fumee_in]   = useState(() => {
-    const saved = localStorage.getItem('T_fumee_in_TUBEANDSHELL');
+    const saved = localStorage.getItem(`T_fumee_in_TUBEANDSHELL_${nodeId}`);
     const defaultT = (nodeData?.result?.dataFlow?.T ?? 200) + 200;
     return saved != null ? parseFloat(saved) : defaultT;
   });
-  const [T_fluide_in,  setT_fluide_in]  = useState(() => parseFloat(localStorage.getItem('T_fluide_in_TUBEANDSHELL'))  || 15);
-  const [T_fluide_out, setT_fluide_out] = useState(() => parseFloat(localStorage.getItem('T_fluide_out_TUBEANDSHELL')) || 50);
-  const [m_eau,        setM_eau]        = useState(() => parseFloat(localStorage.getItem('m_eau_TUBEANDSHELL'))        || 1000);
-  const [V_air,        setV_air]        = useState(() => parseFloat(localStorage.getItem('V_air_TUBEANDSHELL'))        || 1000);
-  const [Rendement,    setRendement]    = useState(() => parseFloat(localStorage.getItem('Rendement_TUBEANDSHELL'))    || 95);
-  const [Encrassement, setEncrassement] = useState(() => parseFloat(localStorage.getItem('Encrassement_TUBEANDSHELL')) || 25);
-  const [PDC_econo,    setPDC_econo]    = useState(() => parseFloat(localStorage.getItem('PDC_econo_TUBEANDSHELL'))    || 60);
+  const [T_fluide_in,  setT_fluide_in]  = useState(() => parseFloat(localStorage.getItem(`T_fluide_in_TUBEANDSHELL_${nodeId}`))  || 15);
+  const [T_fluide_out, setT_fluide_out] = useState(() => parseFloat(localStorage.getItem(`T_fluide_out_TUBEANDSHELL_${nodeId}`)) || 50);
+  const [m_eau,        setM_eau]        = useState(() => parseFloat(localStorage.getItem(`m_eau_TUBEANDSHELL_${nodeId}`))        || 1000);
+  const [V_air,        setV_air]        = useState(() => parseFloat(localStorage.getItem(`V_air_TUBEANDSHELL_${nodeId}`))        || 1000);
+  const [Rendement,    setRendement]    = useState(() => parseFloat(localStorage.getItem(`Rendement_TUBEANDSHELL_${nodeId}`))    || 95);
+  const [Encrassement, setEncrassement] = useState(() => parseFloat(localStorage.getItem(`Encrassement_TUBEANDSHELL_${nodeId}`)) || 25);
+  const [PDC_econo,    setPDC_econo]    = useState(() => parseFloat(localStorage.getItem(`PDC_econo_TUBEANDSHELL_${nodeId}`))    || 60);
 
   const [calculationResult, setCalculationResult] = useState(null);
   const [isSliderOpen, setIsSliderOpen] = useState(false);
   const [showReport, setShowReport] = useState(false);
 
   // ── Persistance localStorage ──────────────────────────────────────────────
-  useEffect(() => { localStorage.setItem('fluide_TUBEANDSHELL',       fluide);            }, [fluide]);
-  useEffect(() => { localStorage.setItem('bilanType_TUBEANDSHELL',    bilanType);         }, [bilanType]);
-  useEffect(() => { localStorage.setItem('T_fumee_in_TUBEANDSHELL',   T_fumee_in);        }, [T_fumee_in]);
-  useEffect(() => { localStorage.setItem('T_fluide_in_TUBEANDSHELL',  T_fluide_in);       }, [T_fluide_in]);
-  useEffect(() => { localStorage.setItem('T_fluide_out_TUBEANDSHELL', T_fluide_out);      }, [T_fluide_out]);
-  useEffect(() => { localStorage.setItem('m_eau_TUBEANDSHELL',        m_eau);             }, [m_eau]);
-  useEffect(() => { localStorage.setItem('V_air_TUBEANDSHELL',        V_air);             }, [V_air]);
-  useEffect(() => { localStorage.setItem('Rendement_TUBEANDSHELL',    Rendement);         }, [Rendement]);
-  useEffect(() => { localStorage.setItem('Encrassement_TUBEANDSHELL', Encrassement);      }, [Encrassement]);
-  useEffect(() => { localStorage.setItem('PDC_econo_TUBEANDSHELL',    PDC_econo);         }, [PDC_econo]);
+  useEffect(() => { localStorage.setItem(`fluide_TUBEANDSHELL_${nodeId}`,       fluide);            }, [fluide]);
+  useEffect(() => { localStorage.setItem(`bilanType_TUBEANDSHELL_${nodeId}`,    bilanType);         }, [bilanType]);
+  useEffect(() => { localStorage.setItem(`T_fumee_in_TUBEANDSHELL_${nodeId}`,   T_fumee_in);        }, [T_fumee_in]);
+  useEffect(() => { localStorage.setItem(`T_fluide_in_TUBEANDSHELL_${nodeId}`,  T_fluide_in);       }, [T_fluide_in]);
+  useEffect(() => { localStorage.setItem(`T_fluide_out_TUBEANDSHELL_${nodeId}`, T_fluide_out);      }, [T_fluide_out]);
+  useEffect(() => { localStorage.setItem(`m_eau_TUBEANDSHELL_${nodeId}`,        m_eau);             }, [m_eau]);
+  useEffect(() => { localStorage.setItem(`V_air_TUBEANDSHELL_${nodeId}`,        V_air);             }, [V_air]);
+  useEffect(() => { localStorage.setItem(`Rendement_TUBEANDSHELL_${nodeId}`,    Rendement);         }, [Rendement]);
+  useEffect(() => { localStorage.setItem(`Encrassement_TUBEANDSHELL_${nodeId}`, Encrassement);      }, [Encrassement]);
+  useEffect(() => { localStorage.setItem(`PDC_econo_TUBEANDSHELL_${nodeId}`,    PDC_econo);         }, [PDC_econo]);
 
   useEffect(() => {
     if (calculationResult) {
-      localStorage.setItem('CalculationResult_TUBEANDSHELL', JSON.stringify(calculationResult));
+      localStorage.setItem(`CalculationResult_TUBEANDSHELL_${nodeId}`, JSON.stringify(calculationResult));
     }
   }, [calculationResult]);
 
@@ -103,11 +104,11 @@ const TUBEANDSHELL_Parameter_Tab = ({ nodeData, title, onSendData, onClose, curr
   // ── Clear ─────────────────────────────────────────────────────────────────
   const clearMemory = () => {
     const keys = [
-      'fluide_TUBEANDSHELL', 'bilanType_TUBEANDSHELL',
-      'T_fumee_in_TUBEANDSHELL', 'T_fluide_in_TUBEANDSHELL', 'T_fluide_out_TUBEANDSHELL',
-      'm_eau_TUBEANDSHELL', 'V_air_TUBEANDSHELL',
-      'Rendement_TUBEANDSHELL', 'Encrassement_TUBEANDSHELL', 'PDC_econo_TUBEANDSHELL',
-      'CalculationResult_TUBEANDSHELL',
+      `fluide_TUBEANDSHELL_${nodeId}`, `bilanType_TUBEANDSHELL_${nodeId}`,
+      `T_fumee_in_TUBEANDSHELL_${nodeId}`, `T_fluide_in_TUBEANDSHELL_${nodeId}`, `T_fluide_out_TUBEANDSHELL_${nodeId}`,
+      `m_eau_TUBEANDSHELL_${nodeId}`, `V_air_TUBEANDSHELL_${nodeId}`,
+      `Rendement_TUBEANDSHELL_${nodeId}`, `Encrassement_TUBEANDSHELL_${nodeId}`, `PDC_econo_TUBEANDSHELL_${nodeId}`,
+      `CalculationResult_TUBEANDSHELL_${nodeId}`,
     ];
     keys.forEach(k => localStorage.removeItem(k));
     setFluide('eau');
@@ -135,7 +136,7 @@ const TUBEANDSHELL_Parameter_Tab = ({ nodeData, title, onSendData, onClose, curr
 
   // ── Helpers affichage ────────────────────────────────────────────────────
   const r = calculationResult?.dataTUBEANDSHELL;
-  const fmt = (v, d = 1) => (v != null && !isNaN(v)) ? parseFloat(v).toFixed(d) : '—';
+  const fmt = (v, d = 1) => fmtNum(v, d);
 
   return (
     <div className="container-box">
@@ -211,7 +212,7 @@ const TUBEANDSHELL_Parameter_Tab = ({ nodeData, title, onSendData, onClose, curr
 
       {/* Boutons */}
       <div className="prez-3-buttons">
-        <CalculateSendButton onClick={handleSendData} currentLanguage={currentLanguage} storageKey={`calcSent_${title}`} />
+        <CalculateSendButton onClick={handleSendData} currentLanguage={currentLanguage} storageKey={`calcSent_${title}_${nodeId}`} />
         <ShowResultButton isOpen={isSliderOpen} onToggle={() => setIsSliderOpen(!isSliderOpen)} currentLanguage={currentLanguage} />
         <ClearButton onClick={clearMemory} currentLanguage={currentLanguage} />
       </div>

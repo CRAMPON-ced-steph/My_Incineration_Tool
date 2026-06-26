@@ -4,6 +4,7 @@ import { molarMasses, massVolumique } from '../../A_Transverse_fonction/constant
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './GF_traduction';
 
+import { fmt } from '../../A_Transverse_fonction/formatNumber';
 const useTranslation = (currentLanguage = 'fr') => {
   return useMemo(() => {
     const languageCode = getLanguageCode(currentLanguage);
@@ -487,26 +488,26 @@ const ToggleSwitch = ({ label, checked, onChange }) => (
 // COMPOSANT PRINCIPAL
 // ============================================================
 
-const CombustionTab = ({ innerData = {}, onInnerDataChange, onResultsChange, currentLanguage = 'fr' }) => {
+const CombustionTab = ({ innerData = {}, onInnerDataChange, onResultsChange, currentLanguage = 'fr', nodeId }) => {
   const t = useTranslation(currentLanguage);
 
   const [emissions, setEmissions] = useState(() => {
-    const saved = lsGet('emissions_GF', {});
+    const saved = lsGet(`emissions_GF_${nodeId}`, {});
     return { ...DEFAULT_EMISSIONS, ...Object.fromEntries(Object.entries(saved).filter(([, v]) => v != null)) };
   });
   const [thermalParams, setThermalParams] = useState(() => {
-    const saved = lsGet('thermalParams_GF', {});
+    const saved = lsGet(`thermalParams_GF_${nodeId}`, {});
     return { ...DEFAULT_THERMAL, ...Object.fromEntries(Object.entries(saved).filter(([, v]) => v != null)) };
   });
-  const [airComposition, setAirComposition] = useState(() => lsGet('airComposition_GF', DEFAULT_AIR_COMPOSITION));
+  const [airComposition, setAirComposition] = useState(() => lsGet(`airComposition_GF_${nodeId}`, DEFAULT_AIR_COMPOSITION));
   const [showExpertAir, setShowExpertAir] = useState(false);
   const [showExpertFumees, setShowExpertFumees] = useState(false);
   const [showDetailedBilan, setShowDetailedBilan] = useState(false);
   const [useGazAppoint, setUseGazAppoint] = useState(true);
 
-  useEffect(() => { lsSet('emissions_GF', emissions); }, [emissions]);
-  useEffect(() => { lsSet('thermalParams_GF', thermalParams); }, [thermalParams]);
-  useEffect(() => { lsSet('airComposition_GF', airComposition); }, [airComposition]);
+  useEffect(() => { lsSet(`emissions_GF_${nodeId}`, emissions); }, [emissions]);
+  useEffect(() => { lsSet(`thermalParams_GF_${nodeId}`, thermalParams); }, [thermalParams]);
+  useEffect(() => { lsSet(`airComposition_GF_${nodeId}`, airComposition); }, [airComposition]);
 
   // ---- Sync OM depuis innerData ----
   useEffect(() => {
@@ -1690,8 +1691,8 @@ const CombustionTab = ({ innerData = {}, onInnerDataChange, onResultsChange, cur
               ].map(({ label, in: vin, out: vout }) => (
                 <tr key={label}>
                   <td style={{ ...TD, fontWeight: 'bold' }}>{label}</td>
-                  <td style={{ ...TD, backgroundColor: '#FFE6CC' }}>{vin != null ? vin.toFixed(2) : '-'}</td>
-                  <td style={{ ...TD, backgroundColor: '#E6F3FF' }}>{vout != null ? vout.toFixed(2) : '-'}</td>
+                  <td style={{ ...TD, backgroundColor: '#FFE6CC' }}>{vin != null ? fmt(vin, 2) : '-'}</td>
+                  <td style={{ ...TD, backgroundColor: '#E6F3FF' }}>{vout != null ? fmt(vout, 2) : '-'}</td>
                 </tr>
               ))}
               <tr style={{ fontWeight: 'bold' }}>
@@ -1709,7 +1710,7 @@ const CombustionTab = ({ innerData = {}, onInnerDataChange, onResultsChange, cur
                 <td style={{ ...TD, backgroundColor: '#f8f8f8' }}>-</td>
                 <td style={{ ...TD, backgroundColor: '#f8f8f8', fontStyle: 'italic',
                   color: residuConvergence != null && Math.abs(residuConvergence) < 1 ? '#16a34a' : '#dc2626' }}>
-                  {residuConvergence?.toFixed(4) ?? '-'}</td>
+                  {(residuConvergence != null ? fmt(residuConvergence, 4) : '') ?? '-'}</td>
               </tr>
             </tbody>
           </table>

@@ -13,7 +13,7 @@ import '../../index.css';
 
 import '../../index.css';
 
-const REACTORMainPage = ({ nodeData, title, onSendData, onClose, onGoBack,  currentLanguage = 'fr' }) => {
+const REACTORMainPage = ({ nodeData, title, onSendData, onClose, onGoBack,  currentLanguage = 'fr', nodeId }) => {
 
   const languageCode = getLanguageCode(currentLanguage);
   const t = (key) => {
@@ -28,23 +28,23 @@ const REACTORMainPage = ({ nodeData, title, onSendData, onClose, onGoBack,  curr
   const tabs = useMemo(() => [
     {
       name: t('flueGases'),
-      content: <REACTORFlueGasParameters innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} />
+      content: <REACTORFlueGasParameters innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} nodeId={nodeId} />
     },
     {
       name: t('pollutantEmissions'),
-      content: <REACTORFlueGasPollutantEmission innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} />
+      content: <REACTORFlueGasPollutantEmission innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} nodeId={nodeId} />
     },
     {
       name: t('design'),
-      content: <REACTORDesign innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} />
+      content: <REACTORDesign innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} nodeId={nodeId} />
     },
     {
       name: t('opex'),
-      content: <REACTOROpex innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} />
+      content: <REACTOROpex innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} nodeId={nodeId} />
     },
     {
       name: 'Rapport',
-      content: <REACTOR_Report innerData={innerData} currentLanguage={currentLanguage} />
+      content: <REACTOR_Report innerData={innerData} currentLanguage={currentLanguage} nodeId={nodeId} />
     },
   ], [currentLanguage, innerData, t]);
 

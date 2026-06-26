@@ -14,14 +14,14 @@ import { translations } from './ELECTROFILTER_traduction';
 import ELECTROFILTER_Retro_Rapport from './ELECTROFILTER_Retro_Rapport';
 import '../../index.css';
 
-// Constantes pour localStorage
-const STORAGE_KEYS = {
-  QAIR_DECOLMATATION: 'Qair_decolmatation_ELECTROFILTER',
-  T_AIR_DECOLMATATION: 'T_air_decolmatation_ELECTROFILTER',
-  T_AMONT_ELECTROFILTER: 'T_amont_ELECTROFILTER',
-  PDC_AERO: 'PDC_aero_ELECTROFILTER',
-  CALCULATION_RESULT: 'CalculationResult_ELECTROFILTER'
-};
+// Constantes pour localStorage (suffixées par nodeId)
+const getStorageKeys = (nodeId) => ({
+  QAIR_DECOLMATATION: `Qair_decolmatation_ELECTROFILTER_${nodeId}`,
+  T_AIR_DECOLMATATION: `T_air_decolmatation_ELECTROFILTER_${nodeId}`,
+  T_AMONT_ELECTROFILTER: `T_amont_ELECTROFILTER_${nodeId}`,
+  PDC_AERO: `PDC_aero_ELECTROFILTER_${nodeId}`,
+  CALCULATION_RESULT: `CalculationResult_ELECTROFILTER_${nodeId}`
+});
 
 // Valeurs par défaut
 const DEFAULT_VALUES = {
@@ -31,26 +31,28 @@ const DEFAULT_VALUES = {
   PDC_aero: '100'
 };
 
-const ELECTROFILTER_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage, autoTrigger = false }) => {
+const ELECTROFILTER_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage, nodeId, autoTrigger = false }) => {
+  const STORAGE_KEYS = useMemo(() => getStorageKeys(nodeId), [nodeId]);
+
   // États principaux
-  const [Qair_decolmatation, setQair_decolmatation] = useState(() => 
-    localStorage.getItem(STORAGE_KEYS.QAIR_DECOLMATATION) || DEFAULT_VALUES.Qair_decolmatation
+  const [Qair_decolmatation, setQair_decolmatation] = useState(() =>
+    localStorage.getItem(getStorageKeys(nodeId).QAIR_DECOLMATATION) || DEFAULT_VALUES.Qair_decolmatation
   );
-  const [T_air_decolmatation, setT_air_decolmatation] = useState(() => 
-    localStorage.getItem(STORAGE_KEYS.T_AIR_DECOLMATATION) || DEFAULT_VALUES.T_air_decolmatation
+  const [T_air_decolmatation, setT_air_decolmatation] = useState(() =>
+    localStorage.getItem(getStorageKeys(nodeId).T_AIR_DECOLMATATION) || DEFAULT_VALUES.T_air_decolmatation
   );
-  const [T_amont_ELECTROFILTER, setT_amont_ELECTROFILTER] = useState(() => 
-    localStorage.getItem(STORAGE_KEYS.T_AMONT_ELECTROFILTER) || 
+  const [T_amont_ELECTROFILTER, setT_amont_ELECTROFILTER] = useState(() =>
+    localStorage.getItem(getStorageKeys(nodeId).T_AMONT_ELECTROFILTER) ||
     nodeData?.result?.dataFlow?.T || DEFAULT_VALUES.T_amont_ELECTROFILTER
   );
-  const [PDC_aero, setPDC_aero] = useState(() => 
-    localStorage.getItem(STORAGE_KEYS.PDC_AERO) || DEFAULT_VALUES.PDC_aero
+  const [PDC_aero, setPDC_aero] = useState(() =>
+    localStorage.getItem(getStorageKeys(nodeId).PDC_AERO) || DEFAULT_VALUES.PDC_aero
   );
 
   // États pour l'interface
   const [CalculationResult_ELECTROFILTER, setCalculationResult_ELECTROFILTER] = useState(() => {
     try {
-      const stored = localStorage.getItem(STORAGE_KEYS.CALCULATION_RESULT);
+      const stored = localStorage.getItem(getStorageKeys(nodeId).CALCULATION_RESULT);
       return stored ? JSON.parse(stored) : null;
     } catch (error) {
       console.warn('Erreur lors du chargement des résultats:', error);
@@ -249,7 +251,7 @@ const ELECTROFILTER_Parameter_Tab = ({ nodeData, title, onSendData, onClose, cur
           disabled={isCalculating || !nodeData?.result}
           currentLanguage={currentLanguage}
           isCalculating={isCalculating}
-          storageKey={`calcSent_${title}`}
+          storageKey={`calcSent_${title}_${nodeId}`}
         />
         
         <ShowResultButton 

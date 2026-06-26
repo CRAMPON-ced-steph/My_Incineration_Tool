@@ -16,10 +16,11 @@ import { TEMP_FUMEE_INC, Q_AIR_DILUTION } from '../../A_Transverse_fonction/enth
 
 import '../../index.css';
 
-const FlueGasParameters = ({ innerData, currentLanguage = 'fr' }) => {
+import { fmt } from '../../A_Transverse_fonction/formatNumber';
+const FlueGasParameters = ({ innerData, currentLanguage = 'fr', nodeId }) => {
   // Utilisation de clés internes simples
   const [emissions, setEmissions] = useState(() => {
-    const savedEmissions = localStorage.getItem('emissions_RK');
+    const savedEmissions = localStorage.getItem(`emissions_RK_${nodeId}`);
     return savedEmissions ? JSON.parse(savedEmissions) : {
       flueGasTemperatureOutlet: 900,
       airFactor: 1,
@@ -48,7 +49,7 @@ const FlueGasParameters = ({ innerData, currentLanguage = 'fr' }) => {
   };
 
   useEffect(() => {
-    localStorage.setItem('emissions_RK', JSON.stringify(emissions));
+    localStorage.setItem(`emissions_RK_${nodeId}`, JSON.stringify(emissions));
   }, [emissions]);
 
   // Fonction de traduction
@@ -169,11 +170,11 @@ const FlueGasParameters = ({ innerData, currentLanguage = 'fr' }) => {
 
   // Éléments génériques avec traductions
   const elementsGeneric = [
-    { text: t('airStoechio'), value: Air_stoechio_kmole.toFixed(2) },
-    { text: t('calculatedTemperature'), value: T_four_calcule.toFixed(2) },
-    { text: t('waterContent'), value: Water_content_kg_Nm3.toFixed(5) },
-    { text: t('hSystem'), value: H_system.toFixed(0) },
-    { text: t('airFactorCalculated'), value: Air_factor_calculated.toFixed(2) },
+    { text: t('airStoechio'), value: fmt(Air_stoechio_kmole, 2) },
+    { text: t('calculatedTemperature'), value: fmt(T_four_calcule, 2) },
+    { text: t('waterContent'), value: fmt(Water_content_kg_Nm3, 5) },
+    { text: t('hSystem'), value: fmt(H_system, 0) },
+    { text: t('airFactorCalculated'), value: fmt(Air_factor_calculated, 2) },
   ];
 
   const AirStData = {
@@ -275,7 +276,7 @@ const FlueGasParameters = ({ innerData, currentLanguage = 'fr' }) => {
   };
 
   const clearMemory = useCallback(() => {
-    localStorage.removeItem('emissions_RK');
+    localStorage.removeItem(`emissions_RK_${nodeId}`);
     setEmissions(defaultEmissions);
   }, []);
 
@@ -312,7 +313,7 @@ const FlueGasParameters = ({ innerData, currentLanguage = 'fr' }) => {
       <GasTable data={AirCombData} />
 
       <h3>{t('flueGasComposition')}</h3>
-      <h4>{t('flueGasAtStoichiometry')} ({T_four_calcule.toFixed(0)}°C)</h4>
+      <h4>{t('flueGasAtStoichiometry')} ({fmt(T_four_calcule, 0)}°C)</h4>
       <MassCalculator masses={masses_FG_stoechio} TemperatureImposee={T_four_calcule} />
       
       <h4>{t('outputFlueGasWithoutWater')} ({T_out}°C)</h4>

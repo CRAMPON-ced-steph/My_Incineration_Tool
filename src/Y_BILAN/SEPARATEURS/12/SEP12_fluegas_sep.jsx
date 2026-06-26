@@ -6,17 +6,18 @@ import { CO2_kg_m3, H2O_kg_m3, O2_kg_m3, N2_kg_m3 } from '../../../A_Transverse_
 import { getLanguageCode } from '../../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './SEP12_traduction';
 
-const SEP12FluegasSep = ({ innerData, currentLanguage = 'fr' }) => {
+import { fmt } from '../../../A_Transverse_fonction/formatNumber';
+const SEP12FluegasSep = ({ innerData, currentLanguage = 'fr', nodeId }) => {
   const languageCode = getLanguageCode(currentLanguage);
   const t = (key) => translations[languageCode]?.[key] || translations['fr']?.[key] || key;
 
   const [pct_flux1, setPct_flux1] = useState(() => {
-    const saved = localStorage.getItem('pct_flux1_SEP12');
+    const saved = localStorage.getItem(`pct_flux1_SEP12_${nodeId}`);
     return saved !== null ? parseFloat(saved) : 50;
   });
 
   useEffect(() => {
-    localStorage.setItem('pct_flux1_SEP12', String(pct_flux1));
+    localStorage.setItem(`pct_flux1_SEP12_${nodeId}`, String(pct_flux1));
   }, [pct_flux1]);
 
   // Données amont — capturées au montage pour rester fixes malgré les mutations de innerData
@@ -62,10 +63,10 @@ const SEP12FluegasSep = ({ innerData, currentLanguage = 'fr' }) => {
       <h3>{t('SEP12 — 1 to 2 Separator')}</h3>
 
       {/* Flux entrant */}
-      <h4>{t('Inlet stream')} ({T_IN.toFixed(1)} °C)</h4>
+      <h4>{t('Inlet stream')} ({fmt(T_IN, 1)} °C)</h4>
       <MassCalculator masses={FG_IN} TemperatureImposee={T_IN} />
       <TableGeneric elements={[
-        { text: t('Total mass flow [kg/h]'), value: total_in.toFixed(0) },
+        { text: t('Total mass flow [kg/h]'), value: fmt(total_in, 0) },
       ]} />
 
       {/* Rapport de séparation */}
@@ -98,21 +99,21 @@ const SEP12FluegasSep = ({ innerData, currentLanguage = 'fr' }) => {
       </div>
 
       {/* Flux 1 — transmis au nœud suivant */}
-      <h4>{t('Flux 1 — to next node')} — {pct_flux1.toFixed(1)} %</h4>
+      <h4>{t('Flux 1 — to next node')} — {fmt(pct_flux1, 1)} %</h4>
       <MassCalculator masses={FG_flux1} TemperatureImposee={T_IN} />
       <TableGeneric elements={[
-        { text: t('Total mass flow [kg/h]'), value: (FG_flux1.CO2 + FG_flux1.H2O + FG_flux1.O2 + FG_flux1.N2).toFixed(0) },
-        { text: t('Dry flow [Nm³/h]'),       value: dry1.toFixed(0) },
-        { text: t('Wet flow [Nm³/h]'),       value: wet1.toFixed(0) },
+        { text: t('Total mass flow [kg/h]'), value: fmt((FG_flux1.CO2 + FG_flux1.H2O + FG_flux1.O2 + FG_flux1.N2), 0) },
+        { text: t('Dry flow [Nm³/h]'),       value: fmt(dry1, 0) },
+        { text: t('Wet flow [Nm³/h]'),       value: fmt(wet1, 0) },
       ]} />
 
       {/* Flux 2 — évacué */}
-      <h4>{t('Flux 2 — evacuated')} — {(100 - pct_flux1).toFixed(1)} %</h4>
+      <h4>{t('Flux 2 — evacuated')} — {fmt((100 - pct_flux1), 1)} %</h4>
       <MassCalculator masses={FG_flux2} TemperatureImposee={T_IN} />
       <TableGeneric elements={[
-        { text: t('Total mass flow [kg/h]'), value: (FG_flux2.CO2 + FG_flux2.H2O + FG_flux2.O2 + FG_flux2.N2).toFixed(0) },
-        { text: t('Dry flow [Nm³/h]'),       value: dry2.toFixed(0) },
-        { text: t('Wet flow [Nm³/h]'),       value: wet2.toFixed(0) },
+        { text: t('Total mass flow [kg/h]'), value: fmt((FG_flux2.CO2 + FG_flux2.H2O + FG_flux2.O2 + FG_flux2.N2), 0) },
+        { text: t('Dry flow [Nm³/h]'),       value: fmt(dry2, 0) },
+        { text: t('Wet flow [Nm³/h]'),       value: fmt(wet2, 0) },
       ]} />
     </div>
   );

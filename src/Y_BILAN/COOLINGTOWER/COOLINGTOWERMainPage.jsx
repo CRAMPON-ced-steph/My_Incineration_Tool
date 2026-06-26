@@ -13,7 +13,7 @@ import { translations } from './COOLINGTOWER_traduction';
 
 
 
-const COOLINGTOWERMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLanguage = 'fr' }) => {
+const COOLINGTOWERMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLanguage = 'fr', nodeId }) => {
 
   const languageCode = getLanguageCode(currentLanguage);
   const t = (key) => {
@@ -22,11 +22,11 @@ const COOLINGTOWERMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, 
   const [innerData, setInnerData] = useState(nodeData.result);
   const tabs = [
   //{name: 'Steam Parameters',content: (<COOLINGTOWER_Parameters innerData={innerData} />),},
-  {name: 'Flue gases', content: < COOLINGTOWERFlueGasParameters innerData={innerData}setInnerData={setInnerData}currentLanguage={currentLanguage} /> },
-  {name: 'Pollutant Emissions', content: <COOLINGTOWERFlueGasPollutantEmission  innerData={innerData}setInnerData={setInnerData}currentLanguage={currentLanguage} />,},
-  {name: 'Design', content: < COOLINGTOWERDesign innerData={innerData}setInnerData={setInnerData}currentLanguage={currentLanguage} /> },
-  {name: 'Opex', content: < COOLINGTOWEROpex innerData={innerData}setInnerData={setInnerData}currentLanguage={currentLanguage}  /> },
-  {name: 'Rapport', content: <COOLINGTOWER_Report innerData={innerData} currentLanguage={currentLanguage} />},
+  {name: 'Flue gases', content: < COOLINGTOWERFlueGasParameters innerData={innerData}setInnerData={setInnerData}currentLanguage={currentLanguage} nodeId={nodeId} /> },
+  {name: 'Pollutant Emissions', content: <COOLINGTOWERFlueGasPollutantEmission  innerData={innerData}setInnerData={setInnerData}currentLanguage={currentLanguage} nodeId={nodeId} />,},
+  {name: 'Design', content: < COOLINGTOWERDesign innerData={innerData}setInnerData={setInnerData}currentLanguage={currentLanguage} nodeId={nodeId} /> },
+  {name: 'Opex', content: < COOLINGTOWEROpex innerData={innerData}setInnerData={setInnerData}currentLanguage={currentLanguage} nodeId={nodeId} /> },
+  {name: 'Rapport', content: <COOLINGTOWER_Report innerData={innerData} currentLanguage={currentLanguage} nodeId={nodeId} />},
   ];
 
   const [activeTab, setActiveTab] = useState(tabs[0].name); // Onglet actif par défaut

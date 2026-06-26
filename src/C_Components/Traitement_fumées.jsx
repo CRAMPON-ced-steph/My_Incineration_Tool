@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import PollutantCalculator from '../C_Components/Tableau_polluants';
 import { R_1, R_2, R_3 } from '../A_Transverse_fonction/FGT_fct';
 import TableGeneric from '../C_Components/Tableau_generique';
+import { fmt } from '../A_Transverse_fonction/formatNumber';
 
 const FGT = ({ masses, innerData,Debit_fumees_sec_Nm3_h,  O2_mesure,O2_ref }) => {
 
@@ -306,7 +307,7 @@ const FGT = ({ masses, innerData,Debit_fumees_sec_Nm3_h,  O2_mesure,O2_ref }) =>
           min={0}
         />
       </td>
-      <td style={cellStyle}>{ammoniaConsumption.toFixed(2)}</td>
+      <td style={cellStyle}>{fmt(ammoniaConsumption)}</td>
     </tr>
   </tbody>
 </table>
@@ -346,8 +347,8 @@ const FGT = ({ masses, innerData,Debit_fumees_sec_Nm3_h,  O2_mesure,O2_ref }) =>
           min={0}
         />
       </td>
-      <td style={cellStyle}>{masses.Mercury.toFixed(2)}</td>
-      <td style={cellStyle}>{bromideConsumption.toFixed(2)}</td>
+      <td style={cellStyle}>{fmt(masses.Mercury)}</td>
+      <td style={cellStyle}>{fmt(bromideConsumption)}</td>
     </tr>
   </tbody>
 </table>
@@ -403,7 +404,7 @@ const FGT = ({ masses, innerData,Debit_fumees_sec_Nm3_h,  O2_mesure,O2_ref }) =>
                     ))}
                   </select>
                 </td>
-                <td>{row.mass.toFixed(3)}</td>
+                <td>{fmt(row.mass, 3)}</td>
                 <td>
                   <input
                     type="number"
@@ -439,10 +440,10 @@ const FGT = ({ masses, innerData,Debit_fumees_sec_Nm3_h,  O2_mesure,O2_ref }) =>
                     }}
                   />
                 </td>
-                <td>{(row.mass - calculatedRow.mass_reduction).toFixed(3)}</td>
-                <td>{calculatedRow.mass_residus.toFixed(3)}</td>
-                <td>{calculatedRow.mass_reactif_reel.toFixed(3)}</td>
-                <td>{calculatedRow.mass_reduction.toFixed(3)}</td>
+                <td>{fmt(row.mass - calculatedRow.mass_reduction, 3)}</td>
+                <td>{fmt(calculatedRow.mass_residus, 3)}</td>
+                <td>{fmt(calculatedRow.mass_reactif_reel, 3)}</td>
+                <td>{fmt(calculatedRow.mass_reduction, 3)}</td>
               </tr>
             );
           })}

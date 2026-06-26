@@ -13,13 +13,13 @@ import CalculateSendButton from '../../C_Components/CalculateSendButton';
 import COOLINGTOWER_Retro_Rapport from './COOLINGTOWER_Retro_Rapport';
 import '../../index.css';
 
-const COOLINGTOWER_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage, autoTrigger = false }) => {
-  
-  const [Teau, setTeau] = useState(() => parseFloat(localStorage.getItem('Teau_COOLINGTOWER')) || 15);
-  const [T_steam_C, setT_steam_C] = useState(() => parseFloat(localStorage.getItem('T_steam_C_COOLINGTOWER')) || (nodeData?.result?.dataFlow?.T || 120));
-  const [Qeau_kg_h, setQeau_kg_h] = useState(() => parseFloat(localStorage.getItem('Qeau_kg_h_COOLINGTOWER')) || 0);
-  const [Qsteam_kg_h, setQsteam_kg_h] = useState(() => parseFloat(localStorage.getItem('Qsteam_kg_h_COOLINGTOWER')) || 0);
-  const [PDC_aero, setPDC_aero] = useState(() => localStorage.getItem('PDC_aero_COOLINGTOWER') || '20');
+const COOLINGTOWER_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage, nodeId, autoTrigger = false }) => {
+
+  const [Teau, setTeau] = useState(() => parseFloat(localStorage.getItem(`Teau_COOLINGTOWER_${nodeId}`)) || 15);
+  const [T_steam_C, setT_steam_C] = useState(() => parseFloat(localStorage.getItem(`T_steam_C_COOLINGTOWER_${nodeId}`)) || (nodeData?.result?.dataFlow?.T || 120));
+  const [Qeau_kg_h, setQeau_kg_h] = useState(() => parseFloat(localStorage.getItem(`Qeau_kg_h_COOLINGTOWER_${nodeId}`)) || 0);
+  const [Qsteam_kg_h, setQsteam_kg_h] = useState(() => parseFloat(localStorage.getItem(`Qsteam_kg_h_COOLINGTOWER_${nodeId}`)) || 0);
+  const [PDC_aero, setPDC_aero] = useState(() => localStorage.getItem(`PDC_aero_COOLINGTOWER_${nodeId}`) || '20');
 
 
   const [calculationResult_COOLINGTOWER, setCalculationResult] = useState(null);
@@ -28,12 +28,12 @@ const COOLINGTOWER_Parameter_Tab = ({ nodeData, title, onSendData, onClose, curr
 
 
   // Sauvegarde dans le localStorage
-  useEffect(() => { localStorage.setItem('Teau_COOLINGTOWER', Teau); }, [Teau]);
-  useEffect(() => { localStorage.setItem('T_steam_C_COOLINGTOWER', T_steam_C); }, [T_steam_C]);
-  useEffect(() => { localStorage.setItem('Qeau_kg_h_COOLINGTOWER', Qeau_kg_h); }, [Qeau_kg_h]);
-  useEffect(() => { localStorage.setItem('Qsteam_kg_h_COOLINGTOWER', Qsteam_kg_h); }, [Qsteam_kg_h]);
-  useEffect(() => { localStorage.setItem('PDC_aero_COOLINGTOWER', PDC_aero); }, [PDC_aero]);
-  useEffect(() => { if (calculationResult_COOLINGTOWER) { localStorage.setItem('calculationResult_COOLINGTOWER', JSON.stringify(calculationResult_COOLINGTOWER)); } }, [calculationResult_COOLINGTOWER]);
+  useEffect(() => { localStorage.setItem(`Teau_COOLINGTOWER_${nodeId}`, Teau); }, [Teau, nodeId]);
+  useEffect(() => { localStorage.setItem(`T_steam_C_COOLINGTOWER_${nodeId}`, T_steam_C); }, [T_steam_C, nodeId]);
+  useEffect(() => { localStorage.setItem(`Qeau_kg_h_COOLINGTOWER_${nodeId}`, Qeau_kg_h); }, [Qeau_kg_h, nodeId]);
+  useEffect(() => { localStorage.setItem(`Qsteam_kg_h_COOLINGTOWER_${nodeId}`, Qsteam_kg_h); }, [Qsteam_kg_h, nodeId]);
+  useEffect(() => { localStorage.setItem(`PDC_aero_COOLINGTOWER_${nodeId}`, PDC_aero); }, [PDC_aero, nodeId]);
+  useEffect(() => { if (calculationResult_COOLINGTOWER) { localStorage.setItem(`calculationResult_COOLINGTOWER_${nodeId}`, JSON.stringify(calculationResult_COOLINGTOWER)); } }, [calculationResult_COOLINGTOWER, nodeId]);
 
   // Calcul à chaque changement de paramètre
   useEffect(() => {
@@ -79,12 +79,12 @@ const COOLINGTOWER_Parameter_Tab = ({ nodeData, title, onSendData, onClose, curr
 
   // Fonction pour réinitialiser le localStorage
   const clearMemory = () => {
-    localStorage.removeItem('Teau_COOLINGTOWER');
-    localStorage.removeItem('T_steam_C_COOLINGTOWER');
-    localStorage.removeItem('Qeau_kg_h_COOLINGTOWER');
-    localStorage.removeItem('Qsteam_kg_h_COOLINGTOWER');
-    localStorage.removeItem('PDC_aero_COOLINGTOWER');
-    localStorage.removeItem('calculationResult_COOLINGTOWER');
+    localStorage.removeItem(`Teau_COOLINGTOWER_${nodeId}`);
+    localStorage.removeItem(`T_steam_C_COOLINGTOWER_${nodeId}`);
+    localStorage.removeItem(`Qeau_kg_h_COOLINGTOWER_${nodeId}`);
+    localStorage.removeItem(`Qsteam_kg_h_COOLINGTOWER_${nodeId}`);
+    localStorage.removeItem(`PDC_aero_COOLINGTOWER_${nodeId}`);
+    localStorage.removeItem(`calculationResult_COOLINGTOWER_${nodeId}`);
     setTeau(15);  // Réinitialise l'état après avoir vidé le localStorage
     setT_steam_C(120);
     setQeau_kg_h(0);
@@ -118,7 +118,7 @@ const COOLINGTOWER_Parameter_Tab = ({ nodeData, title, onSendData, onClose, curr
       </div>
 
       <div className="prez-3-buttons">
-        <CalculateSendButton onClick={handleSendData} currentLanguage={currentLanguage} storageKey={`calcSent_${title}`} />
+        <CalculateSendButton onClick={handleSendData} currentLanguage={currentLanguage} storageKey={`calcSent_${title}_${nodeId}`} />
         <ShowResultButton isOpen={isSliderOpen} onToggle={toggleSlider} currentLanguage={currentLanguage} />
         <ClearButton onClick={clearMemory} currentLanguage={currentLanguage} />
       </div>

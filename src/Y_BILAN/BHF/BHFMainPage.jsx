@@ -8,7 +8,7 @@ import '../../index.css';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './BHF_traduction';
 
-const BHFMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLanguage = 'fr' }) => {
+const BHFMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLanguage = 'fr', nodeId }) => {
   const languageCode = getLanguageCode(currentLanguage);
   const t = (key) => {
     return translations[languageCode]?.[key] || translations['fr']?.[key] || key;
@@ -19,23 +19,23 @@ const BHFMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLa
   const tabs = [
     {
       name: t('Flue gases'),
-      content: <BHFFlueGasParameters innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} />
+      content: <BHFFlueGasParameters innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} nodeId={nodeId} />
     },
     {
       name: t('Pollutant Emissions'),
-      content: <BHFFlueGasPollutantEmission innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} />
+      content: <BHFFlueGasPollutantEmission innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} nodeId={nodeId} />
     },
     {
       name: t('Design'),
-      content: <BHFDesign innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} />
+      content: <BHFDesign innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} nodeId={nodeId} />
     },
     {
       name: t('Opex'),
-      content: <BHFOpex innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} />
+      content: <BHFOpex innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} nodeId={nodeId} />
     },
     {
       name: 'Rapport',
-      content: <BHF_Report innerData={innerData} currentLanguage={currentLanguage} />
+      content: <BHF_Report innerData={innerData} currentLanguage={currentLanguage} nodeId={nodeId} />
     },
   ];
 

@@ -8,7 +8,8 @@ import { h_fumee, Qeau_added_to_be_at_T } from '../../A_Transverse_fonction/enth
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './BHF_traduction';
 
-const BHFFlueGasParameters = ({ innerData, currentLanguage = 'fr' }) => {
+import { fmt } from '../../A_Transverse_fonction/formatNumber';
+const BHFFlueGasParameters = ({ innerData, currentLanguage = 'fr', nodeId }) => {
   const initialEmissions_BHF = {
     'Flue gas temperature outlet [°C]': innerData?.T_OUT -10,
     'Ambient air temperature [°C]': 20,
@@ -23,13 +24,13 @@ const BHFFlueGasParameters = ({ innerData, currentLanguage = 'fr' }) => {
   };
 
   const [emissions_BHF, setEmissions_BHF] = useState(() => {
-    const savedEmissions = localStorage.getItem('emissions_BHF');
+    const savedEmissions = localStorage.getItem(`emissions_BHF_${nodeId}`);
     return savedEmissions ? JSON.parse(savedEmissions) : initialEmissions_BHF;
   });
 
   useEffect(() => {
-    localStorage.setItem('emissions_BHF', JSON.stringify(emissions_BHF));
-  }, [emissions_BHF]);
+    localStorage.setItem(`emissions_BHF_${nodeId}`, JSON.stringify(emissions_BHF));
+  }, [emissions_BHF, nodeId]);
 
   // Input data with fallback values
   const T_IN = innerData?.T_OUT || 200;
@@ -130,10 +131,10 @@ const BHFFlueGasParameters = ({ innerData, currentLanguage = 'fr' }) => {
   };
 
   const elementsGeneric = [
-    { text: t('Temperature inlet BHF [°C]'), value: T_IN.toFixed(1) },
-    { text: t('Delta enthalpies [kJ/kg]'), value: Delta_H.toFixed(0) },
-    { text: t('Sprayed/cooling water [kg/h]'), value: Q_eau_kg_h.toFixed(0) },
-    { text: t('Outlet flue gas volume [Nm3/h]'), value: FG_humide_EAU_tot_m3_h.toFixed(2) },
+    { text: t('Temperature inlet BHF [°C]'), value: fmt(T_IN, 1) },
+    { text: t('Delta enthalpies [kJ/kg]'), value: fmt(Delta_H, 0) },
+    { text: t('Sprayed/cooling water [kg/h]'), value: fmt(Q_eau_kg_h, 0) },
+    { text: t('Outlet flue gas volume [Nm3/h]'), value: fmt(FG_humide_EAU_tot_m3_h, 2) },
   ];
 
   const handleChange = (name, value) => {
@@ -147,7 +148,7 @@ const BHFFlueGasParameters = ({ innerData, currentLanguage = 'fr' }) => {
   };
 
   const clearMemory = useCallback(() => {
-    localStorage.removeItem('emissions_BHF');
+    localStorage.removeItem(`emissions_BHF_${nodeId}`);
     setEmissions_BHF(initialEmissions_BHF);
   }, []);
 

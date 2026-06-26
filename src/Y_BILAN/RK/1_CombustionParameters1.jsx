@@ -3,7 +3,8 @@ import { cv_kj_kg, cv_waste } from '../../A_Transverse_fonction/bilan_fct_combus
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './RK_traduction';
 
-const CombustionParameters = ({ innerData, currentLanguage = 'fr' }) => {
+import { fmt } from '../../A_Transverse_fonction/formatNumber';
+const CombustionParameters = ({ innerData, currentLanguage = 'fr', nodeId }) => {
   // Get translations
   const languageCode = getLanguageCode(currentLanguage);
   const t = (key) => translations[languageCode]?.[key] || translations['fr']?.[key] || key;
@@ -185,11 +186,11 @@ const CombustionParameters = ({ innerData, currentLanguage = 'fr' }) => {
   ];
 
   const saveToLocalStorage = (data) => {
-    localStorage.setItem('combustionParameters_RK', JSON.stringify(data));
+    localStorage.setItem(`combustionParameters_RK_${nodeId}`, JSON.stringify(data));
   };
 
   const loadFromLocalStorage = () => {
-    const savedData = localStorage.getItem('combustionParameters_RK');
+    const savedData = localStorage.getItem(`combustionParameters_RK_${nodeId}`);
     return savedData ? JSON.parse(savedData) : null;
   };
 
@@ -224,7 +225,7 @@ const CombustionParameters = ({ innerData, currentLanguage = 'fr' }) => {
       rowData['%Comb'],
       rowData['%Water']
     ).toFixed(1);
-    rowData['Waste CV [kcal/kg]'] = (rowData['Waste CV [kJ/kg]'] / 4.1868).toFixed(1);
+    rowData['Waste CV [kcal/kg]'] = fmt((rowData['Waste CV [kJ/kg]'] / 4.1868), 1);
     return rowData;
   };
 

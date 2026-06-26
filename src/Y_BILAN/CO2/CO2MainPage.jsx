@@ -15,10 +15,10 @@ import CaptureParameters from './1_Capture_Parameters';
 //const Emissions = () => <div>Emissions Content</div>;
 //const Results = () => <div>Results Content</div>;
 
-const CO2MainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLanguage }) => {
+const CO2MainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLanguage, nodeId }) => {
   const [innerData, setInnerData] = useState({});
   const tabs = [
-    {name: 'Capture Parameters',content: (<CaptureParameters innerData={innerData} />),},
+    {name: 'Capture Parameters',content: (<CaptureParameters innerData={innerData} nodeId={nodeId} />),},
     //{name: 'Flue gases', content: < FlueGasParameters innerData={innerData}/> },
 
    // { name: 'Pollutant Emissions', content: <FlueGasPollutantEmission  innerData={innerData}/>,},

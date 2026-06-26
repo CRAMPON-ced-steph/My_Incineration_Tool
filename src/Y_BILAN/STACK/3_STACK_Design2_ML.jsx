@@ -9,7 +9,8 @@ import { getOpexData } from '../../A_Transverse_fonction/opexDataService';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './STACK_traduction';
 
-const STACKdesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
+import { fmt } from '../../A_Transverse_fonction/formatNumber';
+const STACKdesign = ({ innerData, setInnerData, currentLanguage = 'fr', nodeId }) => {
   // Translation setup
   const languageCode = getLanguageCode(currentLanguage);
   const t = (key) => {
@@ -43,7 +44,7 @@ const STACKdesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
 
   // ✅ STATE POUR PARAMETRES PRIMAIRES AVEC CLÉS STABLES
   const [parametres, setParametres] = useState(() => {
-    const saved = localStorage.getItem('parametres_STACKdesign');
+    const saved = localStorage.getItem(`parametres_STACKdesign_${nodeId}`);
     if (saved) {
       try {
         return JSON.parse(saved);
@@ -86,7 +87,7 @@ const STACKdesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
 
   // Save parameters to localStorage
   useEffect(() => {
-    localStorage.setItem('parametres_STACKdesign', JSON.stringify(parametres));
+    localStorage.setItem(`parametres_STACKdesign_${nodeId}`, JSON.stringify(parametres));
   }, [parametres]);
 
   // Helper function to safely extract parameter values
@@ -133,8 +134,8 @@ const STACKdesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
 
   // Results for primary stack
   const hauteur_cheminee_resultat = [
-    { text: t('pollutantConcentration'), value: concentration.toFixed(2) },
-    { text: t('minimumStackHeight'), value: hp.toFixed(2) }
+    { text: t('pollutantConcentration'), value: fmt(concentration, 2) },
+    { text: t('minimumStackHeight'), value: fmt(hp, 2) }
   ];
 
   // Multi-stack calculations
@@ -154,8 +155,8 @@ const STACKdesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
   }
 
   const hauteur_multi_stack = [
-    { text: t('correctedStackHeight'), value: hp2.toFixed(2) },
-    { text: t('heightDifferenceInitial'), value: (hp2 - hp).toFixed(2) }
+    { text: t('correctedStackHeight'), value: fmt(hp2, 2) },
+    { text: t('heightDifferenceInitial'), value: fmt((hp2 - hp), 2) }
   ];
 
   // Obstacle calculations
@@ -176,8 +177,8 @@ const STACKdesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
   }
 
   const hauteur_obstacle = [
-    { text: t('stackHeightWithObstacles'), value: hp3.toFixed(2) },
-    { text: t('heightDifferenceMultiStack'), value: (hp3 - hp2).toFixed(2) }
+    { text: t('stackHeightWithObstacles'), value: fmt(hp3, 2) },
+    { text: t('heightDifferenceMultiStack'), value: fmt((hp3 - hp2), 2) }
   ];
 
   // Determine emission limit
@@ -489,7 +490,7 @@ const STACKdesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
       <section style={{ marginTop: '40px', padding: '20px', background: pourcentageVLE > 100 ? '#ffebee' : '#e8f5e9', borderRadius: '8px' }}>
         <h3>{t('regulatoryCompliance')}</h3>
         <p><strong>{t('emissionLimit')}:</strong> {valeurLimite} mg/Nm³</p>
-        <p><strong>{t('calculatedConcentration')}:</strong> {concentration.toFixed(2)} mg/Nm³ ({pourcentageVLE}%)</p>
+        <p><strong>{t('calculatedConcentration')}:</strong> {fmt(concentration, 2)} mg/Nm³ ({pourcentageVLE}%)</p>
         <p><strong>{t('status')}:</strong> <span style={{ color: pourcentageVLE > 100 ? 'red' : 'green', fontWeight: 'bold' }}>{conformite}</span></p>
       </section>
     </div>

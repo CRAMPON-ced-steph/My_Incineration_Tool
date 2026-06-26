@@ -3,6 +3,7 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './FB_traduction';
 
+import { fmt } from '../../A_Transverse_fonction/formatNumber';
 // ✅ Hook personnalisé pour traductions dynamiques
 const useTranslation = (currentLanguage = 'fr') => {
   return useMemo(() => {
@@ -136,7 +137,7 @@ const defaultChons = () => ({
 // COMPOSANT
 // ============================================================
 
-const BouesTab = ({ innerData, currentLanguage  }) => {
+const BouesTab = ({ innerData, currentLanguage, nodeId }) => {
   // ✅ Utiliser le hook pour traductions dynamiques
   const t = useTranslation(currentLanguage);
 
@@ -145,12 +146,12 @@ const BouesTab = ({ innerData, currentLanguage  }) => {
   // ============================================================
 
   const [fonctionnement, setFonctionnement] = useState(() =>
-    lsGet('bouesTab_fonctionnement_FB', defaultFonctionnement())
+    lsGet(`bouesTab_fonctionnement_FB_${nodeId}`, defaultFonctionnement())
   );
-  const [boue, setBoue] = useState(() => lsGet('bouesTab_boue_FB', defaultBoue()));
-  const [chons, setChons] = useState(() => lsGet('bouesTab_chons_FB', defaultChons()));
+  const [boue, setBoue] = useState(() => lsGet(`bouesTab_boue_FB_${nodeId}`, defaultBoue()));
+  const [chons, setChons] = useState(() => lsGet(`bouesTab_chons_FB_${nodeId}`, defaultChons()));
   const [heavyMetals, setHeavyMetals] = useState(() => {
-    const stored = lsGet('bouesTab_heavyMetals_FB', {});
+    const stored = lsGet(`bouesTab_heavyMetals_FB_${nodeId}`, {});
     return { ...DEFAULT_HEAVY_METALS, ...stored };
   });
 
@@ -159,19 +160,19 @@ const BouesTab = ({ innerData, currentLanguage  }) => {
   // ============================================================
 
   useEffect(() => {
-    lsSet('bouesTab_fonctionnement_FB', fonctionnement);
+    lsSet(`bouesTab_fonctionnement_FB_${nodeId}`, fonctionnement);
   }, [fonctionnement]);
 
   useEffect(() => {
-    lsSet('bouesTab_boue_FB', boue);
+    lsSet(`bouesTab_boue_FB_${nodeId}`, boue);
   }, [boue]);
 
   useEffect(() => {
-    lsSet('bouesTab_chons_FB', chons);
+    lsSet(`bouesTab_chons_FB_${nodeId}`, chons);
   }, [chons]);
 
   useEffect(() => {
-    lsSet('bouesTab_heavyMetals_FB', heavyMetals);
+    lsSet(`bouesTab_heavyMetals_FB_${nodeId}`, heavyMetals);
   }, [heavyMetals]);
 
   // ============================================================
@@ -224,7 +225,7 @@ const BouesTab = ({ innerData, currentLanguage  }) => {
         next[`kg${el}`] = MV * (pct / 100);
         sum += pct;
       });
-      next.sumPercent = +sum.toFixed(2);
+      next.sumPercent = +fmt(sum, 2);
       return next;
     });
   }, [chons.C, chons.H, chons.O, chons.N, chons.S, chons.Cl, boue.MV_kg_h]);
@@ -376,7 +377,7 @@ const BouesTab = ({ innerData, currentLanguage  }) => {
   }, []);
 
   const resetToDefault = useCallback(() => {
-    const keys = ['bouesTab_fonctionnement_FB', 'bouesTab_boue_FB', 'bouesTab_chons_FB', 'bouesTab_heavyMetals_FB'];
+    const keys = [`bouesTab_fonctionnement_FB_${nodeId}`, `bouesTab_boue_FB_${nodeId}`, `bouesTab_chons_FB_${nodeId}`, `bouesTab_heavyMetals_FB_${nodeId}`];
     keys.forEach((k) => {
       try {
         localStorage.removeItem(k);
@@ -582,7 +583,7 @@ const BouesTab = ({ innerData, currentLanguage  }) => {
               <label style={labelStyle}>
                 {label} {unit}
               </label>
-              <input type="text" value={Number(val).toFixed(1)} readOnly style={readOnlyStyle} />
+              <input type="text" value={fmt(Number(val), 1)} readOnly style={readOnlyStyle} />
             </div>
           ))}
         </div>
@@ -600,7 +601,7 @@ const BouesTab = ({ innerData, currentLanguage  }) => {
               color: Math.abs(chons.sumPercent - 100) < 0.5 ? '#10b981' : '#ef4444',
             }}
           >
-            Σ = {chons.sumPercent?.toFixed(1)}%
+            Σ = {(chons.sumPercent != null ? fmt(chons.sumPercent, 1) : '')}%
           </span>
         </h2>
 
@@ -620,7 +621,7 @@ const BouesTab = ({ innerData, currentLanguage  }) => {
                 style={inputStyle}
               />
               <div style={{ fontSize: '11px', color: '#6b7280', marginTop: '4px' }}>
-                {Number(chons[`kg${el}`] || 0).toFixed(1)} kg/h
+                {fmt(Number(chons[`kg${el}`] || 0), 1)} kg/h
               </div>
             </div>
           ))}
@@ -755,7 +756,7 @@ const BouesTab = ({ innerData, currentLanguage  }) => {
                         fontFamily: 'monospace',
                       }}
                     >
-                      {value.toFixed(3)}
+                      {fmt(value, 3)}
                     </div>
                     <div
                       style={{

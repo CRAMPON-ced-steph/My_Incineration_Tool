@@ -2,6 +2,7 @@ import React from 'react';
 
 import { CO2_kg_m3, O2_kg_m3, N2_kg_m3, H2O_kg_m3 } from '../A_Transverse_fonction/conv_calculation';
 import { fh_CO2, fh_H2O, fh_O2, fh_N2 } from '../A_Transverse_fonction/enthalpy_gas';
+import { fmt } from '../A_Transverse_fonction/formatNumber';
 
 const MassCalculator = ({ masses, TemperatureImposee }) => {
   const calculateMasses = (masses) => {
@@ -95,7 +96,7 @@ const MassCalculator = ({ masses, TemperatureImposee }) => {
               {elements.map((element) => (
                 <td key={element}>
                   {data[index][element] !== undefined
-                    ? data[index][element].toFixed(2)
+                    ? fmt(data[index][element], 2)
                     : '-'}
                 </td>
               ))}

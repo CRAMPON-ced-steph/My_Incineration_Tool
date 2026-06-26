@@ -8,7 +8,8 @@ import { getOpexData } from '../../A_Transverse_fonction/opexDataService';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './SCRUBBER_traduction';
 
-const FlueGasPollutantEmission = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
+import { fmt } from '../../A_Transverse_fonction/formatNumber';
+const FlueGasPollutantEmission = ({ innerData, setInnerData, currentLanguage = 'fr', nodeId }) => {
   // ============ ÉTATS PRINCIPAUX ============
   const initialEmissionsSCRUBBER = {
     'Fly ashes content [g/Nm3]': 0,
@@ -26,12 +27,12 @@ const FlueGasPollutantEmission = ({ innerData, setInnerData, currentLanguage = '
   };
 
   const [emissionsSCRUBBER, setEmissions2] = useState(() => {
-    const saved = localStorage.getItem('emissionsSCRUBBER');
+    const saved = localStorage.getItem(`emissionsSCRUBBER_${nodeId}`);
     return saved ? JSON.parse(saved) : initialEmissionsSCRUBBER;
   });
 
   useEffect(() => {
-    localStorage.setItem('emissionsSCRUBBER', JSON.stringify(emissionsSCRUBBER));
+    localStorage.setItem(`emissionsSCRUBBER_${nodeId}`, JSON.stringify(emissionsSCRUBBER));
   }, [emissionsSCRUBBER]);
 
   // ============ DONNÉES EXTERNES ============
@@ -287,10 +288,10 @@ const FlueGasPollutantEmission = ({ innerData, setInnerData, currentLanguage = '
 
   const elementsGeneric = useMemo(() => [
     { text: t('Waste Flow [kg/h]'), value: masse_dechets },
-    { text: t('Flue gas Flow Wet [Nm3/h]'), value: Debit_fumees_humide_Nm3_h.toFixed(0) },
-    { text: t('Flue gas Flow Dry [Nm3/h]'), value: Debit_fumees_sec_Nm3_h.toFixed(0) },
-    { text: t('O2 calculated [%]'), value: FG_O2_calcule.toFixed(2) },
-    { text: t('inert mass [kg/h]'), value: Inert_kg_h.toFixed(2) },
+    { text: t('Flue gas Flow Wet [Nm3/h]'), value: fmt(Debit_fumees_humide_Nm3_h, 0) },
+    { text: t('Flue gas Flow Dry [Nm3/h]'), value: fmt(Debit_fumees_sec_Nm3_h, 0) },
+    { text: t('O2 calculated [%]'), value: fmt(FG_O2_calcule, 2) },
+    { text: t('inert mass [kg/h]'), value: fmt(Inert_kg_h, 2) },
   ], [masse_dechets, Debit_fumees_humide_Nm3_h, Debit_fumees_sec_Nm3_h, FG_O2_calcule, Inert_kg_h, t]);
 
   const residusCalculations = useMemo(() => [
@@ -361,7 +362,7 @@ const FlueGasPollutantEmission = ({ innerData, setInnerData, currentLanguage = '
 
   const handleReset = useCallback(() => {
     setEmissions2(initialEmissionsSCRUBBER);
-    localStorage.removeItem('emissionsSCRUBBER');
+    localStorage.removeItem(`emissionsSCRUBBER_${nodeId}`);
   }, []);
 
   return (

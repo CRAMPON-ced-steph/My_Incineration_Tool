@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Line } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -15,6 +15,8 @@ import {
 import { getLinearGraphTranslations } from './LinearGraph_traduction';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 
+import { fmt } from '../../A_Transverse_fonction/formatNumber';
+
 // Register ChartJS components
 ChartJS.register(
   CategoryScale,
@@ -26,7 +28,10 @@ ChartJS.register(
   Legend
 );
 
-const LinearGraph = ({ currentLanguage = 'fr', onClose }) => {
+const FURNACE_LABELS = ['RK+SCC', 'GF', 'FB'];
+const POINT_E_COLORS = ['#e53935', '#fb8c00', '#1e88e5', '#43a047', '#8e24aa', '#00897b'];
+
+const LinearGraph = ({ currentLanguage = 'fr', onClose, nodes = [] }) => {
   // Get current language code and translations
   const languageCode = getLanguageCode(currentLanguage);
   const t = getLinearGraphTranslations(languageCode);
@@ -43,38 +48,49 @@ const LinearGraph = ({ currentLanguage = 'fr', onClose }) => {
   const [pointB, setPointB] = useState(loadPoint('pointB', { x: 100, y: 10 }));
   const [pointC, setPointC] = useState(loadPoint('pointC', { x: 800, y: 10 }));
   const [pointD, setPointD] = useState(loadPoint('pointD', { x: 800, y: 2 }));
-  const [pointE, setPointE] = useState(loadPoint('pointE', { x: 500, y: 8 }));
 
-  // Save points to localStorage whenever they change
+  // Collect all pointE from furnace nodes
+  const pointsE = useMemo(() => {
+    const furnaceNodes = nodes.filter(n => FURNACE_LABELS.includes(n.data?.label));
+    const points = [];
+    furnaceNodes.forEach(n => {
+      const stored = localStorage.getItem(`pointE_${n.id}`);
+      if (stored) {
+        try {
+          const pt = JSON.parse(stored);
+          if (pt.x != null && pt.y != null) {
+            points.push({ ...pt, nodeId: n.id, label: pt.label || n.data.label });
+          }
+        } catch { /* ignore */ }
+      }
+    });
+    // Fallback: legacy single pointE key (old projects)
+    if (points.length === 0) {
+      const legacy = localStorage.getItem('pointE');
+      if (legacy) {
+        try {
+          const pt = JSON.parse(legacy);
+          if (pt.x != null && pt.y != null) {
+            points.push({ ...pt, nodeId: '?', label: pt.label || 'E' });
+          }
+        } catch { /* ignore */ }
+      }
+    }
+    return points;
+  }, [nodes]);
+
+  // Save domain points to localStorage whenever they change
   useEffect(() => {
     localStorage.setItem('pointA', JSON.stringify(pointA));
     localStorage.setItem('pointB', JSON.stringify(pointB));
     localStorage.setItem('pointC', JSON.stringify(pointC));
     localStorage.setItem('pointD', JSON.stringify(pointD));
-    localStorage.setItem('pointE', JSON.stringify(pointE));
-  }, [pointA, pointB, pointC, pointD, pointE]);
+  }, [pointA, pointB, pointC, pointD]);
 
   // Handler for updating point coordinates
   const handlePointChange = (point, coord, value) => {
-    switch (point) {
-      case 'A':
-        setPointA(prev => ({ ...prev, [coord]: value }));
-        break;
-      case 'B':
-        setPointB(prev => ({ ...prev, [coord]: value }));
-        break;
-      case 'C':
-        setPointC(prev => ({ ...prev, [coord]: value }));
-        break;
-      case 'D':
-        setPointD(prev => ({ ...prev, [coord]: value }));
-        break;
-      case 'E':
-        setPointE(prev => ({ ...prev, [coord]: value }));
-        break;
-      default:
-        break;
-    }
+    const setters = { A: setPointA, B: setPointB, C: setPointC, D: setPointD };
+    setters[point]?.(prev => ({ ...prev, [coord]: value }));
   };
 
   // Create dataset connecting points to form a polygon
@@ -88,25 +104,26 @@ const LinearGraph = ({ currentLanguage = 'fr', onClose }) => {
           { x: pointB.x, y: pointB.y },
           { x: pointC.x, y: pointC.y },
           { x: pointD.x, y: pointD.y },
-          { x: pointA.x, y: pointA.y }, // Connect back to A to close the polygon
+          { x: pointA.x, y: pointA.y },
         ],
         borderColor: 'rgb(75, 192, 192)',
         backgroundColor: 'rgba(75, 192, 192, 0.1)',
         borderWidth: 2,
         fill: true,
-        tension: 0, // Use straight lines
+        tension: 0,
         pointBackgroundColor: ['red', 'blue', 'green', 'purple', 'red'],
         pointRadius: 6,
         pointHoverRadius: 8,
       },
-      {
+      ...pointsE.map((pt, i) => ({
         type: 'scatter',
-        label: t.pointE,
-        data: [{ x: pointE.x, y: pointE.y }],
-        backgroundColor: 'orange',
-        pointRadius: 6,
-        pointHoverRadius: 8,
-      }
+        label: `${t.pointE} — ${pt.label} (${pt.nodeId})`,
+        data: [{ x: pt.x, y: pt.y }],
+        backgroundColor: POINT_E_COLORS[i % POINT_E_COLORS.length],
+        pointRadius: 8,
+        pointHoverRadius: 10,
+        pointStyle: 'rectRot',
+      })),
     ],
   };
 
@@ -130,9 +147,9 @@ const LinearGraph = ({ currentLanguage = 'fr', onClose }) => {
             const datasetLabel = context.dataset.label;
             const x = context.parsed.x;
             const y = context.parsed.y;
-            
-            if (datasetLabel === t.pointE) {
-              return `${t.pointE}: (${x} kg/h, ${y} MW)`;
+
+            if (datasetLabel.startsWith(t.pointE)) {
+              return `${datasetLabel}: (${x} kg/h, ${y} MW)`;
             } else {
               const pointLabels = ['A', 'B', 'C', 'D', 'A'];
               const pointLabel = pointLabels[context.dataIndex];
@@ -225,7 +242,7 @@ const LinearGraph = ({ currentLanguage = 'fr', onClose }) => {
         </button>
       )}
       <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>{t.title}</h2>
-      
+
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px', marginBottom: '20px', justifyContent: 'center' }}>
         {/* Point A */}
         <div style={{ border: '1px solid #ddd', padding: '10px', borderRadius: '5px', backgroundColor: 'rgba(255, 0, 0, 0.1)' }}>
@@ -233,21 +250,11 @@ const LinearGraph = ({ currentLanguage = 'fr', onClose }) => {
           <div style={{ display: 'flex', gap: '10px' }}>
             <label>
               {t.xLabel}
-              <input
-                type="number"
-                value={pointA.x}
-                onChange={(e) => handlePointChange('A', 'x', Number(e.target.value))}
-                style={{ marginLeft: '5px', width: '70px' }}
-              />
+              <input type="number" value={pointA.x} onChange={(e) => handlePointChange('A', 'x', Number(e.target.value))} style={{ marginLeft: '5px', width: '70px' }} />
             </label>
             <label>
               {t.yLabel}
-              <input
-                type="number"
-                value={pointA.y}
-                onChange={(e) => handlePointChange('A', 'y', Number(e.target.value))}
-                style={{ marginLeft: '5px', width: '70px' }}
-              />
+              <input type="number" value={pointA.y} onChange={(e) => handlePointChange('A', 'y', Number(e.target.value))} style={{ marginLeft: '5px', width: '70px' }} />
             </label>
           </div>
         </div>
@@ -258,21 +265,11 @@ const LinearGraph = ({ currentLanguage = 'fr', onClose }) => {
           <div style={{ display: 'flex', gap: '10px' }}>
             <label>
               {t.xLabel}
-              <input
-                type="number"
-                value={pointB.x}
-                onChange={(e) => handlePointChange('B', 'x', Number(e.target.value))}
-                style={{ marginLeft: '5px', width: '70px' }}
-              />
+              <input type="number" value={pointB.x} onChange={(e) => handlePointChange('B', 'x', Number(e.target.value))} style={{ marginLeft: '5px', width: '70px' }} />
             </label>
             <label>
               {t.yLabel}
-              <input
-                type="number"
-                value={pointB.y}
-                onChange={(e) => handlePointChange('B', 'y', Number(e.target.value))}
-                style={{ marginLeft: '5px', width: '70px' }}
-              />
+              <input type="number" value={pointB.y} onChange={(e) => handlePointChange('B', 'y', Number(e.target.value))} style={{ marginLeft: '5px', width: '70px' }} />
             </label>
           </div>
         </div>
@@ -283,21 +280,11 @@ const LinearGraph = ({ currentLanguage = 'fr', onClose }) => {
           <div style={{ display: 'flex', gap: '10px' }}>
             <label>
               {t.xLabel}
-              <input
-                type="number"
-                value={pointC.x}
-                onChange={(e) => handlePointChange('C', 'x', Number(e.target.value))}
-                style={{ marginLeft: '5px', width: '70px' }}
-              />
+              <input type="number" value={pointC.x} onChange={(e) => handlePointChange('C', 'x', Number(e.target.value))} style={{ marginLeft: '5px', width: '70px' }} />
             </label>
             <label>
               {t.yLabel}
-              <input
-                type="number"
-                value={pointC.y}
-                onChange={(e) => handlePointChange('C', 'y', Number(e.target.value))}
-                style={{ marginLeft: '5px', width: '70px' }}
-              />
+              <input type="number" value={pointC.y} onChange={(e) => handlePointChange('C', 'y', Number(e.target.value))} style={{ marginLeft: '5px', width: '70px' }} />
             </label>
           </div>
         </div>
@@ -308,59 +295,37 @@ const LinearGraph = ({ currentLanguage = 'fr', onClose }) => {
           <div style={{ display: 'flex', gap: '10px' }}>
             <label>
               {t.xLabel}
-              <input
-                type="number"
-                value={pointD.x}
-                onChange={(e) => handlePointChange('D', 'x', Number(e.target.value))}
-                style={{ marginLeft: '5px', width: '70px' }}
-              />
+              <input type="number" value={pointD.x} onChange={(e) => handlePointChange('D', 'x', Number(e.target.value))} style={{ marginLeft: '5px', width: '70px' }} />
             </label>
             <label>
               {t.yLabel}
-              <input
-                type="number"
-                value={pointD.y}
-                onChange={(e) => handlePointChange('D', 'y', Number(e.target.value))}
-                style={{ marginLeft: '5px', width: '70px' }}
-              />
+              <input type="number" value={pointD.y} onChange={(e) => handlePointChange('D', 'y', Number(e.target.value))} style={{ marginLeft: '5px', width: '70px' }} />
             </label>
           </div>
         </div>
 
-        {/* Point E */}
-        <div style={{ border: '1px solid #ddd', padding: '10px', borderRadius: '5px', backgroundColor: 'rgba(255, 165, 0, 0.1)' }}>
-          <h3 style={{ margin: '0 0 10px 0', color: 'orange' }}>{t.point} E</h3>
-          <div style={{ display: 'flex', gap: '10px' }}>
-            <label>
-              {t.xLabel}
-              <input
-                type="number"
-                value={pointE.x}
-                onChange={(e) => handlePointChange('E', 'x', Number(e.target.value))}
-                style={{ marginLeft: '5px', width: '70px' }}
-              />
-            </label>
-            <label>
-              {t.yLabel}
-              <input
-                type="number"
-                value={pointE.y}
-                onChange={(e) => handlePointChange('E', 'y', Number(e.target.value))}
-                style={{ marginLeft: '5px', width: '70px' }}
-              />
-            </label>
+        {/* Points E — read-only, computed by furnaces */}
+        {pointsE.map((pt, i) => (
+          <div key={pt.nodeId} style={{ border: '1px solid #ddd', padding: '10px', borderRadius: '5px', backgroundColor: `${POINT_E_COLORS[i % POINT_E_COLORS.length]}18` }}>
+            <h3 style={{ margin: '0 0 10px 0', color: POINT_E_COLORS[i % POINT_E_COLORS.length] }}>
+              {t.pointE} — {pt.label} ({pt.nodeId})
+            </h3>
+            <div style={{ display: 'flex', gap: '10px', fontSize: '13px' }}>
+              <span>{t.xLabel} <b>{pt.x != null ? fmt(pt.x, 1) : pt.x}</b></span>
+              <span>{t.yLabel} <b>{pt.y != null ? fmt(pt.y, 2) : pt.y}</b></span>
+            </div>
           </div>
-        </div>
+        ))}
 
         {/* Légende des points */}
         <div style={{ border: '1px solid #bbb', padding: '6px 10px', borderRadius: '5px', backgroundColor: '#f9f9f9', fontSize: '10px', lineHeight: '1.5', alignSelf: 'center' }}>
-<div><span style={{ color: 'red', fontWeight: 'bold' }}>A</span> — {t.legendA}</div>
+          <div><span style={{ color: 'red', fontWeight: 'bold' }}>A</span> — {t.legendA}</div>
           <div><span style={{ color: 'blue', fontWeight: 'bold' }}>B</span> — {t.legendB}</div>
           <div><span style={{ color: 'green', fontWeight: 'bold' }}>C</span> — {t.legendC}</div>
           <div><span style={{ color: 'purple', fontWeight: 'bold' }}>D</span> — {t.legendD}</div>
         </div>
       </div>
-      
+
       {isBelowThreshold && (
         <div style={{
           backgroundColor: '#ffdddd',

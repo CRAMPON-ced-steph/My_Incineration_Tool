@@ -5,7 +5,8 @@ import { h_fumee } from '../../A_Transverse_fonction/enthalpy_gas';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './WHB_traduction';
 
-const WHB_Parameters = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
+import { fmt } from '../../A_Transverse_fonction/formatNumber';
+const WHB_Parameters = ({ innerData, setInnerData, currentLanguage = 'fr', nodeId }) => {
   const languageCode = getLanguageCode(currentLanguage);
   const t = (key) => translations[languageCode]?.[key] || translations['fr']?.[key] || key;
 
@@ -31,12 +32,12 @@ const WHB_Parameters = ({ innerData, setInnerData, currentLanguage = 'fr' }) => 
   };
 
   const [WHBparameters, setWHBParameters] = useState(() => {
-    const savedParams = localStorage.getItem('boilerWHBParameters');
+    const savedParams = localStorage.getItem(`boilerWHBParameters_WHB_${nodeId}`);
     return savedParams ? JSON.parse(savedParams) : WHBinitialParameters;
   });
 
   useEffect(() => {
-    localStorage.setItem('boilerWHBParameters', JSON.stringify(WHBparameters));
+    localStorage.setItem(`boilerWHBParameters_WHB_${nodeId}`, JSON.stringify(WHBparameters));
   }, [WHBparameters]);
 
   const handleChange = (key, value) => {
@@ -78,32 +79,32 @@ const WHB_Parameters = ({ innerData, setInnerData, currentLanguage = 'fr' }) => 
   const flue_gas_calculation = [
     { text: t('flueGasTemperatureInlet'), value: T_IN },
     { text: t('flueGasEnthalpyIn'), value: H_in },
-    { text: t('flueGasEnthalpyOut'), value: H_out.toFixed(0) },
-    { text: t('flueGasEnthalpyDifference'), value: H_diff.toFixed(0) },
+    { text: t('flueGasEnthalpyOut'), value: fmt(H_out, 0) },
+    { text: t('flueGasEnthalpyDifference'), value: fmt(H_diff, 0) },
   ];
 
   const feed_water_calculation = [
-    { text: t('feedwaterFlow'), value: Q_feedwater_kg_h.toFixed(0) },
-    { text: t('feedwaterPressure'), value: P_feedwater.toFixed(2) },
-    { text: t('blowdownMassFlow'), value: Q_purge_kg_h.toFixed(0) },
-    { text: t('enthalpyFeedwater'), value: H_feedwater.toFixed(0) },
+    { text: t('feedwaterFlow'), value: fmt(Q_feedwater_kg_h, 0) },
+    { text: t('feedwaterPressure'), value: fmt(P_feedwater, 2) },
+    { text: t('blowdownMassFlow'), value: fmt(Q_purge_kg_h, 0) },
+    { text: t('enthalpyFeedwater'), value: fmt(H_feedwater, 0) },
   ];
 
   const steam_calculation = [
-    { text: t('saturatedSteamTemperature'), value: saturationSteamTemp.toFixed(0) },
-    { text: t('deltaEnthalpies'), value: H_diff.toFixed(0) },
-    { text: t('steamEnthalpy'), value: H_steam.toFixed(0) },
-    { text: t('steamFlow'), value: Q_steam_kg_h.toFixed(0) },
+    { text: t('saturatedSteamTemperature'), value: fmt(saturationSteamTemp, 0) },
+    { text: t('deltaEnthalpies'), value: fmt(H_diff, 0) },
+    { text: t('steamEnthalpy'), value: fmt(H_steam, 0) },
+    { text: t('steamFlow'), value: fmt(Q_steam_kg_h, 0) },
   ];
 
   const drum_calculation = [
-    { text: t('ventFlashSteamDrum'), value: Q_flash_drum_event_kg_h.toFixed(0) },
-    { text: t('liquidRejected'), value: Q_rejet_liquide_kg_h.toFixed(0) },
-    { text: t('steamFlow'), value: Q_steam_kg_h.toFixed(0) },
+    { text: t('ventFlashSteamDrum'), value: fmt(Q_flash_drum_event_kg_h, 0) },
+    { text: t('liquidRejected'), value: fmt(Q_rejet_liquide_kg_h, 0) },
+    { text: t('steamFlow'), value: fmt(Q_steam_kg_h, 0) },
   ];
 
   const clearMemory = useCallback(() => {
-    localStorage.removeItem('boilerWHBParameters');
+    localStorage.removeItem(`boilerWHBParameters_WHB_${nodeId}`);
     setWHBParameters(WHBinitialParameters);
   }, []);
 

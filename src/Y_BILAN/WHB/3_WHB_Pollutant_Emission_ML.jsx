@@ -6,7 +6,7 @@ import { getOpexData } from '../../A_Transverse_fonction/opexDataService';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './WHB_traduction';
 
-const WHBFlueGasPollutantEmission = ({ innerData, currentLanguage = 'fr' }) => {
+const WHBFlueGasPollutantEmission = ({ innerData, currentLanguage = 'fr', nodeId }) => {
   const languageCode = getLanguageCode(currentLanguage);
   const t = (key) => translations[languageCode]?.[key] || translations['fr']?.[key] || key;
 
@@ -24,12 +24,12 @@ const WHBFlueGasPollutantEmission = ({ innerData, currentLanguage = 'fr' }) => {
   };
 
   const [emissions2, setEmissions2] = useState(() => {
-    const savedEmissions = localStorage.getItem('emissions2_WHB');
+    const savedEmissions = localStorage.getItem(`emissions2_WHB_${nodeId}`);
     return savedEmissions ? JSON.parse(savedEmissions) : initialEmissions2;
   });
 
   useEffect(() => {
-    localStorage.setItem('emissions2_WHB', JSON.stringify(emissions2));
+    localStorage.setItem(`emissions2_WHB_${nodeId}`, JSON.stringify(emissions2));
   }, [emissions2]);
 
   const FlyAsh_g_Nm3 = emissions2['Fly ashes content outlet [g/Nm3]'];
@@ -170,7 +170,7 @@ const WHBFlueGasPollutantEmission = ({ innerData, currentLanguage = 'fr' }) => {
   };
 
   const clearMemory = useCallback(() => {
-    localStorage.removeItem('emissions2_WHB');
+    localStorage.removeItem(`emissions2_WHB_${nodeId}`);
     setEmissions2(initialEmissions2);
   }, []);
 

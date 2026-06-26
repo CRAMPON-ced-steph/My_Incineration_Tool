@@ -7,7 +7,7 @@ import '../../index.css';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './AIRINJECTION_traduction';
 
-const AIRINJECTIONMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLanguage = 'fr' }) => {
+const AIRINJECTIONMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLanguage = 'fr', nodeId }) => {
   const languageCode = getLanguageCode(currentLanguage);
   const t = (key) => {
     return translations[languageCode]?.[key] || translations['fr']?.[key] || key;
@@ -25,19 +25,19 @@ const AIRINJECTIONMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, 
   const tabs = [
     {
       name: t('Flue gases'),
-      content: <AIRINJECTIONFlueGasParameters innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} />
+      content: <AIRINJECTIONFlueGasParameters innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} nodeId={nodeId} />
     },
     {
       name: t('Pollutant Emissions'),
-      content: <AIRINJECTIONFlueGasPollutantEmission innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} />
+      content: <AIRINJECTIONFlueGasPollutantEmission innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} nodeId={nodeId} />
     },
     {
       name: t('Opex'),
-      content: <AIRINJECTIONOpex innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} />
+      content: <AIRINJECTIONOpex innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} nodeId={nodeId} />
     },
     {
       name: t('Rapport'),
-      content: <AIRINJECTION_Report innerData={innerData} currentLanguage={currentLanguage} />
+      content: <AIRINJECTION_Report innerData={innerData} currentLanguage={currentLanguage} nodeId={nodeId} />
     },
   ];
 

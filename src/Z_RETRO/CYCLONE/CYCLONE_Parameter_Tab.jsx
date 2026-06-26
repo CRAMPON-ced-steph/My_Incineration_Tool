@@ -14,14 +14,14 @@ import { translations } from './CYCLONE_traduction';
 import CYCLONE_Retro_Rapport from './CYCLONE_Retro_Rapport';
 import '../../index.css';
 
-// Constantes pour localStorage
-const STORAGE_KEYS = {
-  QAIR_PARASITE: 'Qair_parasite_CYCLONE',
-  T_AIR_PARASITE: 'T_air_parasite_CYCLONE',
-  T_AMONT_CYCLONE: 'T_amont_CYCLONE',
-  PDC_AERO: 'PDC_aero_CYCLONE',
-  CALCULATION_RESULT: 'CalculationResult_CYCLONE'
-};
+// Constantes pour localStorage (suffixées par nodeId)
+const getStorageKeys = (nodeId) => ({
+  QAIR_PARASITE: `Qair_parasite_CYCLONE_${nodeId}`,
+  T_AIR_PARASITE: `T_air_parasite_CYCLONE_${nodeId}`,
+  T_AMONT_CYCLONE: `T_amont_CYCLONE_${nodeId}`,
+  PDC_AERO: `PDC_aero_CYCLONE_${nodeId}`,
+  CALCULATION_RESULT: `CalculationResult_CYCLONE_${nodeId}`
+});
 
 // Valeurs par défaut
 const DEFAULT_VALUES = {
@@ -31,26 +31,28 @@ const DEFAULT_VALUES = {
   PDC_aero: '10'
 };
 
-const CYCLONE_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage, autoTrigger = false }) => {
+const CYCLONE_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage, nodeId, autoTrigger = false }) => {
+  const STORAGE_KEYS = useMemo(() => getStorageKeys(nodeId), [nodeId]);
+
   // États principaux
-  const [Qair_parasite, setQair_parasite] = useState(() => 
-    localStorage.getItem(STORAGE_KEYS.QAIR_PARASITE) || DEFAULT_VALUES.Qair_parasite
+  const [Qair_parasite, setQair_parasite] = useState(() =>
+    localStorage.getItem(getStorageKeys(nodeId).QAIR_PARASITE) || DEFAULT_VALUES.Qair_parasite
   );
-  const [T_air_parasite, setT_air_parasite] = useState(() => 
-    localStorage.getItem(STORAGE_KEYS.T_AIR_PARASITE) || DEFAULT_VALUES.T_air_parasite
+  const [T_air_parasite, setT_air_parasite] = useState(() =>
+    localStorage.getItem(getStorageKeys(nodeId).T_AIR_PARASITE) || DEFAULT_VALUES.T_air_parasite
   );
-  const [T_amont_CYCLONE, setT_amont_CYCLONE] = useState(() => 
-    localStorage.getItem(STORAGE_KEYS.T_AMONT_CYCLONE) || 
+  const [T_amont_CYCLONE, setT_amont_CYCLONE] = useState(() =>
+    localStorage.getItem(getStorageKeys(nodeId).T_AMONT_CYCLONE) ||
     nodeData?.result?.dataFlow?.T || DEFAULT_VALUES.T_amont_CYCLONE
   );
-  const [PDC_aero, setPDC_aero] = useState(() => 
-    localStorage.getItem(STORAGE_KEYS.PDC_AERO) || DEFAULT_VALUES.PDC_aero
+  const [PDC_aero, setPDC_aero] = useState(() =>
+    localStorage.getItem(getStorageKeys(nodeId).PDC_AERO) || DEFAULT_VALUES.PDC_aero
   );
 
   // États pour l'interface
   const [CalculationResult_CYCLONE, setCalculationResult_CYCLONE] = useState(() => {
     try {
-      const stored = localStorage.getItem(STORAGE_KEYS.CALCULATION_RESULT);
+      const stored = localStorage.getItem(getStorageKeys(nodeId).CALCULATION_RESULT);
       return stored ? JSON.parse(stored) : null;
     } catch (error) {
       console.warn('Erreur lors du chargement des résultats:', error);
@@ -272,7 +274,7 @@ const CYCLONE_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLa
           disabled={isCalculating || !nodeData?.result}
           currentLanguage={currentLanguage}
           isCalculating={isCalculating}
-          storageKey={`calcSent_${title}`}
+          storageKey={`calcSent_${title}_${nodeId}`}
         />
         
         <ShowResultButton 

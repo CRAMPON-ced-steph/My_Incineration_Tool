@@ -13,17 +13,17 @@ import { translations } from './DENOX_traduction';
 import DENOX_Retro_Rapport from './DENOX_Retro_Rapport';
 import '../../index.css';
 
-// Constantes pour localStorage
-const STORAGE_KEYS = {
-  TARGET_NOX: 'targetNOx_DENOX',
-  SPRAY_WATER_TEMP: 'sprayWaterTemp_DENOX',
-  COEFF_STOECH: 'coeffStoech_DENOX',
-  SOLUTION_CONC: 'solutionConc_DENOX',
-  SOLUTION_DENSITY: 'solutionDensity_DENOX',
-  SPRAY_FLOWRATE: 'sprayFlowrate_DENOX',
-  PDC: 'pdc_DENOX',
-  CALCULATION_RESULT: 'calculationResult_DENOX'
-};
+// Constantes pour localStorage (suffixées par nodeId)
+const getStorageKeys = (nodeId) => ({
+  TARGET_NOX: `targetNOx_DENOX_${nodeId}`,
+  SPRAY_WATER_TEMP: `sprayWaterTemp_DENOX_${nodeId}`,
+  COEFF_STOECH: `coeffStoech_DENOX_${nodeId}`,
+  SOLUTION_CONC: `solutionConc_DENOX_${nodeId}`,
+  SOLUTION_DENSITY: `solutionDensity_DENOX_${nodeId}`,
+  SPRAY_FLOWRATE: `sprayFlowrate_DENOX_${nodeId}`,
+  PDC: `pdc_DENOX_${nodeId}`,
+  CALCULATION_RESULT: `calculationResult_DENOX_${nodeId}`
+});
 
 // Valeurs par défaut
 const DEFAULT_VALUES = {
@@ -36,34 +36,36 @@ const DEFAULT_VALUES = {
   pdc: '50'
 };
 
-const DENOX_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage, autoTrigger = false }) => {
+const DENOX_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage, nodeId, autoTrigger = false }) => {
+  const STORAGE_KEYS = useMemo(() => getStorageKeys(nodeId), [nodeId]);
+
   // États principaux
-  const [targetNOx, setTargetNOx] = useState(() => 
-    localStorage.getItem(STORAGE_KEYS.TARGET_NOX) || DEFAULT_VALUES.targetNOx
+  const [targetNOx, setTargetNOx] = useState(() =>
+    localStorage.getItem(getStorageKeys(nodeId).TARGET_NOX) || DEFAULT_VALUES.targetNOx
   );
-  const [sprayWaterTemp, setSprayWaterTemp] = useState(() => 
-    localStorage.getItem(STORAGE_KEYS.SPRAY_WATER_TEMP) || DEFAULT_VALUES.sprayWaterTemp
+  const [sprayWaterTemp, setSprayWaterTemp] = useState(() =>
+    localStorage.getItem(getStorageKeys(nodeId).SPRAY_WATER_TEMP) || DEFAULT_VALUES.sprayWaterTemp
   );
-  const [coeffStoech, setCoeffStoech] = useState(() => 
-    localStorage.getItem(STORAGE_KEYS.COEFF_STOECH) || DEFAULT_VALUES.coeffStoech
+  const [coeffStoech, setCoeffStoech] = useState(() =>
+    localStorage.getItem(getStorageKeys(nodeId).COEFF_STOECH) || DEFAULT_VALUES.coeffStoech
   );
-  const [solutionConc, setSolutionConc] = useState(() => 
-    localStorage.getItem(STORAGE_KEYS.SOLUTION_CONC) || DEFAULT_VALUES.solutionConc
+  const [solutionConc, setSolutionConc] = useState(() =>
+    localStorage.getItem(getStorageKeys(nodeId).SOLUTION_CONC) || DEFAULT_VALUES.solutionConc
   );
-  const [solutionDensity, setSolutionDensity] = useState(() => 
-    localStorage.getItem(STORAGE_KEYS.SOLUTION_DENSITY) || DEFAULT_VALUES.solutionDensity
+  const [solutionDensity, setSolutionDensity] = useState(() =>
+    localStorage.getItem(getStorageKeys(nodeId).SOLUTION_DENSITY) || DEFAULT_VALUES.solutionDensity
   );
-  const [sprayFlowrate, setSprayFlowrate] = useState(() => 
-    localStorage.getItem(STORAGE_KEYS.SPRAY_FLOWRATE) || DEFAULT_VALUES.sprayFlowrate
+  const [sprayFlowrate, setSprayFlowrate] = useState(() =>
+    localStorage.getItem(getStorageKeys(nodeId).SPRAY_FLOWRATE) || DEFAULT_VALUES.sprayFlowrate
   );
-  const [pdc, setPdc] = useState(() => 
-    localStorage.getItem(STORAGE_KEYS.PDC) || DEFAULT_VALUES.pdc
+  const [pdc, setPdc] = useState(() =>
+    localStorage.getItem(getStorageKeys(nodeId).PDC) || DEFAULT_VALUES.pdc
   );
 
   // États pour l'interface
   const [calculationResult_DENOX, setCalculationResult_DENOX] = useState(() => {
     try {
-      const stored = localStorage.getItem(STORAGE_KEYS.CALCULATION_RESULT);
+      const stored = localStorage.getItem(getStorageKeys(nodeId).CALCULATION_RESULT);
       return stored ? JSON.parse(stored) : nodeData?.calculationResult || null;
     } catch (error) {
       console.warn('Erreur lors du chargement des résultats:', error);
@@ -328,7 +330,7 @@ const DENOX_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLang
           disabled={isCalculating || (!nodeData?.result && !nodeData)}
           currentLanguage={currentLanguage}
           isCalculating={isCalculating}
-          storageKey={`calcSent_${title}`}
+          storageKey={`calcSent_${title}_${nodeId}`}
         />
         
         <ShowResultButton 

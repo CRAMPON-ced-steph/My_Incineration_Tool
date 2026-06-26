@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { performCalculation_IACT } from './IACT_calculations';
 
 import InputField from '../../C_Components/input_retro';
@@ -12,28 +12,40 @@ import CalculateSendButton from '../../C_Components/CalculateSendButton';
 import IACT_Retro_Rapport from './IACT_Retro_Rapport';
 import '../../index.css';
 
-const IACT_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage, autoTrigger = false }) => {
-  const [T_air_ambiant, setT_air_ambiant]       = useState(() => parseFloat(localStorage.getItem('T_air_decolmatation_IACT')) || 15);
-  const [T_air_chauffe, setT_air_chauffe]       = useState(() => parseFloat(localStorage.getItem('T_air_chauffe_IACT')) || 150);
-  const [Rendement_echange, setRendement_echange] = useState(() => parseFloat(localStorage.getItem('Rendement_echange_IACT')) || 95);
-  const [T_amont_IACT, setT_amont_IACT]         = useState(() => parseFloat(localStorage.getItem('T_amont_IACT')) || nodeData?.result?.dataFlow?.T || 200);
-  const [PDC_aero, setPDC_aero]                 = useState(() => parseFloat(localStorage.getItem('PDC_aero_IACT')) || 10);
+// Constantes pour localStorage (suffixées par nodeId)
+const getStorageKeys = (nodeId) => ({
+  T_AIR_DECOLMATATION: `T_air_decolmatation_IACT_${nodeId}`,
+  T_AIR_CHAUFFE: `T_air_chauffe_IACT_${nodeId}`,
+  RENDEMENT_ECHANGE: `Rendement_echange_IACT_${nodeId}`,
+  T_AMONT_IACT: `T_amont_IACT_${nodeId}`,
+  PDC_AERO: `PDC_aero_IACT_${nodeId}`,
+  CALCULATION_RESULT: `CalculationResult_IACT_${nodeId}`
+});
+
+const IACT_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage, nodeId, autoTrigger = false }) => {
+  const STORAGE_KEYS = useMemo(() => getStorageKeys(nodeId), [nodeId]);
+
+  const [T_air_ambiant, setT_air_ambiant]       = useState(() => parseFloat(localStorage.getItem(getStorageKeys(nodeId).T_AIR_DECOLMATATION)) || 15);
+  const [T_air_chauffe, setT_air_chauffe]       = useState(() => parseFloat(localStorage.getItem(getStorageKeys(nodeId).T_AIR_CHAUFFE)) || 150);
+  const [Rendement_echange, setRendement_echange] = useState(() => parseFloat(localStorage.getItem(getStorageKeys(nodeId).RENDEMENT_ECHANGE)) || 95);
+  const [T_amont_IACT, setT_amont_IACT]         = useState(() => parseFloat(localStorage.getItem(getStorageKeys(nodeId).T_AMONT_IACT)) || nodeData?.result?.dataFlow?.T || 200);
+  const [PDC_aero, setPDC_aero]                 = useState(() => parseFloat(localStorage.getItem(getStorageKeys(nodeId).PDC_AERO)) || 10);
 
   const [CalculationResult_IACT, setCalculationResult] = useState(null);
   const [isSliderOpen, setIsSliderOpen] = useState(false);
   const [showReport, setShowReport] = useState(false);
 
-  useEffect(() => { localStorage.setItem('T_air_decolmatation_IACT', T_air_ambiant); }, [T_air_ambiant]);
-  useEffect(() => { localStorage.setItem('T_air_chauffe_IACT', T_air_chauffe); }, [T_air_chauffe]);
-  useEffect(() => { localStorage.setItem('Rendement_echange_IACT', Rendement_echange); }, [Rendement_echange]);
-  useEffect(() => { localStorage.setItem('T_amont_IACT', T_amont_IACT); }, [T_amont_IACT]);
-  useEffect(() => { localStorage.setItem('PDC_aero_IACT', PDC_aero); }, [PDC_aero]);
+  useEffect(() => { localStorage.setItem(STORAGE_KEYS.T_AIR_DECOLMATATION, T_air_ambiant); }, [T_air_ambiant, STORAGE_KEYS]);
+  useEffect(() => { localStorage.setItem(STORAGE_KEYS.T_AIR_CHAUFFE, T_air_chauffe); }, [T_air_chauffe, STORAGE_KEYS]);
+  useEffect(() => { localStorage.setItem(STORAGE_KEYS.RENDEMENT_ECHANGE, Rendement_echange); }, [Rendement_echange, STORAGE_KEYS]);
+  useEffect(() => { localStorage.setItem(STORAGE_KEYS.T_AMONT_IACT, T_amont_IACT); }, [T_amont_IACT, STORAGE_KEYS]);
+  useEffect(() => { localStorage.setItem(STORAGE_KEYS.PDC_AERO, PDC_aero); }, [PDC_aero, STORAGE_KEYS]);
 
   useEffect(() => {
     if (CalculationResult_IACT) {
-      localStorage.setItem('CalculationResult_IACT', JSON.stringify(CalculationResult_IACT));
+      localStorage.setItem(STORAGE_KEYS.CALCULATION_RESULT, JSON.stringify(CalculationResult_IACT));
     }
-  }, [CalculationResult_IACT]);
+  }, [CalculationResult_IACT, STORAGE_KEYS]);
 
   useEffect(() => {
     if (nodeData?.result) {
@@ -90,12 +102,7 @@ const IACT_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLangu
     setPDC_aero(10);
     setCalculationResult(null);
     setIsSliderOpen(false);
-    localStorage.removeItem('T_air_decolmatation_IACT');
-    localStorage.removeItem('T_air_chauffe_IACT');
-    localStorage.removeItem('Rendement_echange_IACT');
-    localStorage.removeItem('T_amont_IACT');
-    localStorage.removeItem('PDC_aero_IACT');
-    localStorage.removeItem('CalculationResult_IACT');
+    Object.values(STORAGE_KEYS).forEach(key => localStorage.removeItem(key));
   };
 
   const hasCalculatedOnce = useRef(false);
@@ -121,7 +128,7 @@ const IACT_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLangu
       </div>
 
       <div className="prez-3-buttons">
-        <CalculateSendButton onClick={handleSendData} currentLanguage={currentLanguage} storageKey={`calcSent_${title}`} />
+        <CalculateSendButton onClick={handleSendData} currentLanguage={currentLanguage} storageKey={`calcSent_${title}_${nodeId}`} />
         <ShowResultButton isOpen={isSliderOpen} onToggle={() => setIsSliderOpen(!isSliderOpen)} currentLanguage={currentLanguage} />
         <ClearButton onClick={clearMemory} currentLanguage={currentLanguage} />
       </div>

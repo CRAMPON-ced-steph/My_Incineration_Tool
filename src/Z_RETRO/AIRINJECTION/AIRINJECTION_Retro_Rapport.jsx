@@ -1,9 +1,5 @@
 import React from 'react';
-
-const fmt = (v, decimals = 2) => {
-  const n = parseFloat(v);
-  return isNaN(n) ? '—' : n.toFixed(decimals);
-};
+import { fmt } from '../../A_Transverse_fonction/formatNumber';
 
 const Section = ({ title, children }) => (
   <div style={styles.section}>

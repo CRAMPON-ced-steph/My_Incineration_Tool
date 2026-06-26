@@ -7,6 +7,7 @@ import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './AIRINJECTION_traduction';
 import '../../index.css';
 
+import { fmt } from '../../A_Transverse_fonction/formatNumber';
 const AIRINJECTIONDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
   const languageCode = getLanguageCode(currentLanguage);
   const t = (key) => {
@@ -180,13 +181,13 @@ const AIRINJECTIONDesign = ({ innerData, setInnerData, currentLanguage = 'fr' })
   }));
 
   const elementsHeadLosses = [
-    { text: t('a x b / d^2'), value: headLosses.coeff?.toFixed(4) || '0' },
-    { text: t('Dzeta'), value: headLosses.dzeta?.toFixed(2) || '0' },
-    { text: t('RHO [kg/m3]'), value: headLosses.RHO_fumee?.toFixed(2) || '0' },
-    { text: t('Pin [mmCE]'), value: P_in_mmCE.toFixed(1) || '0' },
-    { text: t('PDC [Pa]'), value: headLosses.PDC?.toFixed(1) || '0' },
-    { text: t('PDC [mmCE]'), value: PDC_mmCE?.toFixed(2) || '0' },
-    { text: t('Pout [mmCE]'), value: P_out_mmCE?.toFixed(2) || '0' },
+    { text: t('a x b / d^2'), value: (headLosses.coeff != null ? fmt(headLosses.coeff, 4) : '') || '0' },
+    { text: t('Dzeta'), value: (headLosses.dzeta != null ? fmt(headLosses.dzeta, 2) : '') || '0' },
+    { text: t('RHO [kg/m3]'), value: (headLosses.RHO_fumee != null ? fmt(headLosses.RHO_fumee, 2) : '') || '0' },
+    { text: t('Pin [mmCE]'), value: fmt(P_in_mmCE, 1) || '0' },
+    { text: t('PDC [Pa]'), value: (headLosses.PDC != null ? fmt(headLosses.PDC, 1) : '') || '0' },
+    { text: t('PDC [mmCE]'), value: (PDC_mmCE != null ? fmt(PDC_mmCE, 2) : '') || '0' },
+    { text: t('Pout [mmCE]'), value: (P_out_mmCE != null ? fmt(P_out_mmCE, 2) : '') || '0' },
   ];
 
   // Update innerData
@@ -402,11 +403,11 @@ const AIRINJECTIONDesign = ({ innerData, setInnerData, currentLanguage = 'fr' })
           marginBottom: '20px'
         }}>
           <p><strong>{t('Model')}:</strong> {selectedModel}</p>
-          <p><strong>{t('Cyclone Diameter [m]')}:</strong> {constants.D?.toFixed(3)} m</p>
-          <p><strong>{t('Velocity Section [m/s]')}:</strong> {constants.velocitySection?.toFixed(2)} m/s</p>
-          <p><strong>{t('Pressure Drop [Pa]')}:</strong> {headLosses.PDC?.toFixed(1)} Pa</p>
-          <p><strong>{t('Pressure Drop [mmCE]')}:</strong> {PDC_mmCE?.toFixed(2)} mmCE</p>
-          <p><strong>{t('Outlet Pressure [mmCE]')}:</strong> {P_out_mmCE?.toFixed(2)} mmCE</p>
+          <p><strong>{t('Cyclone Diameter [m]')}:</strong> {(constants.D != null ? fmt(constants.D, 3) : '')} m</p>
+          <p><strong>{t('Velocity Section [m/s]')}:</strong> {(constants.velocitySection != null ? fmt(constants.velocitySection, 2) : '')} m/s</p>
+          <p><strong>{t('Pressure Drop [Pa]')}:</strong> {(headLosses.PDC != null ? fmt(headLosses.PDC, 1) : '')} Pa</p>
+          <p><strong>{t('Pressure Drop [mmCE]')}:</strong> {(PDC_mmCE != null ? fmt(PDC_mmCE, 2) : '')} mmCE</p>
+          <p><strong>{t('Outlet Pressure [mmCE]')}:</strong> {(P_out_mmCE != null ? fmt(P_out_mmCE, 2) : '')} mmCE</p>
         </div>
       </div>
     </div>

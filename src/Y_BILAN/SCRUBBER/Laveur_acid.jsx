@@ -4,6 +4,7 @@ import TableGeneric from '../../C_Components/Tableau_generique';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './SCRUBBER_traduction';
 
+import { fmt } from '../../A_Transverse_fonction/formatNumber';
 // ===== CONSTANTES =====
 const constantes = {
   chaleurAbs: 850,
@@ -292,14 +293,14 @@ const HClScrubberCalculator = ({ innerData, setInnerData, currentLanguage = 'fr'
       // Avertissements avec traductions
       let avert = '';
       if (simulatedResults.Vitesse_m_s < 10 || simulatedResults.Vitesse_m_s > 15) {
-        avert += `⚠️ ${t('WARN_column_speed')} ${simulatedResults.Vitesse_m_s.toFixed(2)} m/s ${t('WARN_out_of_range')} (10-15 m/s). `;
+        avert += `⚠️ ${t('WARN_column_speed')} ${fmt(simulatedResults.Vitesse_m_s, 2)} m/s ${t('WARN_out_of_range')} (10-15 m/s). `;
       }
       if (simulatedResults.Vpassage_m_s < 30 || simulatedResults.Vpassage_m_s > 40) {
-        avert += `⚠️ ${t('WARN_cone_speed')} ${simulatedResults.Vpassage_m_s.toFixed(2)} m/s ${t('WARN_out_of_range')} (30-40 m/s). `;
+        avert += `⚠️ ${t('WARN_cone_speed')} ${fmt(simulatedResults.Vpassage_m_s, 2)} m/s ${t('WARN_out_of_range')} (30-40 m/s). `;
       }
       const qmLiqArMax = diametreMap[parametres['Diamètre Quench (m)']] || 0;
       if (debMasLiqAr > qmLiqArMax) {
-        avert += `⚠️ ${t('WARN_liquid_flow')} ${debMasLiqAr.toFixed(0)} kg/h ${t('WARN_exceeds_max')} ${qmLiqArMax} kg/h. `;
+        avert += `⚠️ ${t('WARN_liquid_flow')} ${fmt(debMasLiqAr, 0)} kg/h ${t('WARN_exceeds_max')} ${qmLiqArMax} kg/h. `;
       }
       if (avert) setAvertissement(avert);
 

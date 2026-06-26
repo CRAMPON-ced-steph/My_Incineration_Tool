@@ -4,6 +4,7 @@ import gfZonesImg from '../../B_Images/GF_zones.png';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './GF_traduction';
 
+import { fmt } from '../../A_Transverse_fonction/formatNumber';
 const DimensionnementTab = ({ innerData = {}, innerDataTick, currentLanguage = 'fr' }) => {
   void innerDataTick;
 
@@ -108,7 +109,7 @@ const DimensionnementTab = ({ innerData = {}, innerDataTick, currentLanguage = '
               <div style={{ display: 'flex', width: '100%', fontSize: 11 }}>
                 {zoneWidths.map((w, i) => (
                   <div key={i} style={{ width: `${w / sumW * 100}%`, textAlign: 'center', borderLeft: i > 0 ? '1px solid #ccc' : 'none', padding: '4px 2px' }}>
-                    <div style={{ fontWeight: 'bold', color: '#1a3a6b' }}>{airValues[i].toFixed(0)} kg/h</div>
+                    <div style={{ fontWeight: 'bold', color: '#1a3a6b' }}>{fmt(airValues[i], 0)} kg/h</div>
                     <div style={{ marginTop: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 2 }}>
                       <input
                         type="number"
@@ -126,8 +127,8 @@ const DimensionnementTab = ({ innerData = {}, innerDataTick, currentLanguage = '
 
               {/* Total */}
               <div style={{ marginTop: 8, fontSize: 12, color: '#555', display: 'flex', justifyContent: 'space-between' }}>
-                <span>Total : <b>{sumW.toFixed(0)}%</b></span>
-                <span>Air combustion total : <b>{totalAir.toFixed(0)} kg/h</b></span>
+                <span>Total : <b>{fmt(sumW, 0)}%</b></span>
+                <span>Air combustion total : <b>{fmt(totalAir, 0)} kg/h</b></span>
               </div>
             </div>
           );

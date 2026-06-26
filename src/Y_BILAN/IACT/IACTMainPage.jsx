@@ -6,7 +6,7 @@ import '../../index.css';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './IACT_traduction';
 
-const IACTMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLanguage = 'fr' }) => {
+const IACTMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLanguage = 'fr', nodeId }) => {
   const languageCode = getLanguageCode(currentLanguage);
   const t = (key) => {
     return translations[languageCode]?.[key] || translations['fr']?.[key] || key;
@@ -29,11 +29,12 @@ const IACTMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentL
         upstreamFG_IN={FG_IN_upstream}
         upstreamP_IN={P_IN_upstream}
         currentLanguage={currentLanguage}
+        nodeId={nodeId}
       />
     },
     {
       name: 'Rapport',
-      content: <IACT_Report innerData={innerData} currentLanguage={currentLanguage} />
+      content: <IACT_Report innerData={innerData} currentLanguage={currentLanguage} nodeId={nodeId} />
     },
   ];
 

@@ -1,4 +1,5 @@
 import React from 'react';
+import { fmt } from '../A_Transverse_fonction/formatNumber';
 
 const GasTable = ({ data }) => {
   const gases = ['CO2', 'H2O', 'O2', 'N2','Q_dry_tot','Q_wet_tot'];
@@ -19,7 +20,7 @@ const GasTable = ({ data }) => {
             {gases.map(gas => (
               <td key={`${gas}-${unit}`}>
                 {data[unit] && data[unit][gas] !== undefined
-                  ? data[unit][gas].toFixed(2)
+                  ? fmt(data[unit][gas], 2)
                   : '-'}
               </td>
             ))}

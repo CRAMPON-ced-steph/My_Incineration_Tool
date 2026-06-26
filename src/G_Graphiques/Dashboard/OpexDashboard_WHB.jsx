@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getOpexData } from '../../A_Transverse_fonction/opexDataService';
+import { fmt } from '../../A_Transverse_fonction/formatNumber';
 
 const OpexDashboard = ({ 
   equipmentType, 
@@ -512,7 +513,7 @@ const OpexDashboard = ({
           return 'kWé';
         case 'energie':
         case 'energieProduite':
-          return 'kW';
+          return 'MW';
         case 'gainEnergie':
           return currency;
         case 'eau':
@@ -722,7 +723,7 @@ const OpexDashboard = ({
           alignItems: 'center'
         }}>
           <span>{title} {unit && `[${unit}]`}</span>
-          <span>Total: {displaySum.toFixed(2)}</span>
+          <span>Total: {fmt(displaySum)}</span>
         </div>
         <div style={{ 
           border: `1px solid ${color}`, 
@@ -817,7 +818,7 @@ const OpexDashboard = ({
               borderRadius: '4px',
               border: '1px solid #ddd'
             }}>
-              Total: {displaySum.toFixed(2)} {unit}
+              Total: {fmt(displaySum)} {unit}
             </div>
           </div>
         </div>
@@ -862,7 +863,7 @@ const OpexDashboard = ({
           }}>
             <div>Électricité [{getUnit('elec')}]</div>
             <div style={{ fontSize: '24px', fontWeight: 'bold' }}>
-              {activeNodes_Elec[0].data.consommationElec.toFixed(2)}
+              {fmt(activeNodes_Elec[0].data.consommationElec)}
             </div>
           </div>
           <div style={{ 
@@ -875,7 +876,7 @@ const OpexDashboard = ({
           }}>
             <div>Eau [{getUnit('eau')}]</div>
             <div style={{ fontSize: '24px', fontWeight: 'bold' }}>
-              {activeNodes_Eau[0].data.consommationEau.toFixed(2)}
+              {fmt(activeNodes_Eau[0].data.consommationEau)}
             </div>
           </div>
           <div style={{ 
@@ -888,7 +889,7 @@ const OpexDashboard = ({
           }}>
             <div>Réactifs [{getUnit('reactifs')}]</div>
             <div style={{ fontSize: '24px', fontWeight: 'bold' }}>
-              {activeNodes_Reactifs[0].data.consommationReactifs.toFixed(2)}
+              {fmt(activeNodes_Reactifs[0].data.consommationReactifs)}
             </div>
           </div>
           <div style={{ 
@@ -901,7 +902,7 @@ const OpexDashboard = ({
           }}>
             <div>Énergie [{getUnit('energie')}]</div>
             <div style={{ fontSize: '24px', fontWeight: 'bold' }}>
-              {activeNodes_Energie[0].data.consommationEnergie.toFixed(2)}
+              {fmt(activeNodes_Energie[0].data.consommationEnergie)}
             </div>
           </div>
           <div style={{ 
@@ -914,7 +915,7 @@ const OpexDashboard = ({
           }}>
             <div>Énergie Produite [{getUnit('energieProduite')}]</div>
             <div style={{ fontSize: '24px', fontWeight: 'bold' }}>
-              {activeNodes_EnergieProduite[0].data.energieProduite.toFixed(2)}
+              {fmt(activeNodes_EnergieProduite[0].data.energieProduite)}
             </div>
           </div>
           <div style={{ 
@@ -927,7 +928,7 @@ const OpexDashboard = ({
           }}>
             <div>Gain Énergie [{getUnit('gainEnergie')}]</div>
             <div style={{ fontSize: '24px', fontWeight: 'bold' }}>
-              {activeNodes_GainEnergie[0].data.gainEnergie.toFixed(2)}
+              {fmt(activeNodes_GainEnergie[0].data.gainEnergie)}
             </div>
           </div>
           <div style={{ 
@@ -940,7 +941,7 @@ const OpexDashboard = ({
           }}>
             <div>CO2 [{getUnit('co2')}]</div>
             <div style={{ fontSize: '24px', fontWeight: 'bold' }}>
-              {activeNodes_CO2[0].data.emissionsCO2.toFixed(2)}
+              {fmt(activeNodes_CO2[0].data.emissionsCO2)}
             </div>
           </div>
           <div style={{ 
@@ -953,7 +954,7 @@ const OpexDashboard = ({
           }}>
             <div>Coût [{getUnit('cout')}]</div>
             <div style={{ fontSize: '24px', fontWeight: 'bold' }}>
-              {activeNodes_cout[0].data.cout.toFixed(2)}
+              {fmt(activeNodes_cout[0].data.cout)}
             </div>
           </div>
         </div>

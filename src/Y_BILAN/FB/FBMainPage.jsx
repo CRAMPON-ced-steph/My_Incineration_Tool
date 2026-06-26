@@ -2,6 +2,7 @@ import React, { useState, useRef, useCallback, useMemo } from 'react';
 import BouesTab from './1_BouesTab';
 import CombustionTab from './2_CombustionTab';
 import FB_Report from './FB_Report';
+import { fmt } from '../../A_Transverse_fonction/formatNumber';
 
 //import CombustionTab from './2_CombustionTabTequi';
 
@@ -14,7 +15,7 @@ import FBCalcOpex from './5_1_FB_calcul_Opex';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './FB_traduction';
 
-const FBMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLanguage = 'fr' }) => {
+const FBMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLanguage = 'fr', nodeId }) => {
   // ============================================================
   // LANGUAGE MANAGEMENT
   // ============================================================
@@ -249,18 +250,19 @@ const FBMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
     setCombustionResults({});
 
     // Supprimer les données du localStorage
+    const suffix = nodeId ? `_${nodeId}` : '';
     const keys = [
-      'bouesTab_fonctionnement_FB',
-      'bouesTab_boue_FB',
-      'bouesTab_chons_FB',
-      'bouesTab_heavyMetals_FB',
-      'emissions_FB',
-      'Temperatures_imposees',
-      'thermalParams_FB',
-      'airComposition_FB',
-      'emissions2_FB',
-      'freeParams_HX_FB',
-      'opexDashboard_FB',
+      `bouesTab_fonctionnement_FB${suffix}`,
+      `bouesTab_boue_FB${suffix}`,
+      `bouesTab_chons_FB${suffix}`,
+      `bouesTab_heavyMetals_FB${suffix}`,
+      `emissions_FB${suffix}`,
+      `Temperatures_imposees${suffix}`,
+      `thermalParams_FB${suffix}`,
+      `airComposition_FB${suffix}`,
+      `emissions2_FB${suffix}`,
+      `freeParams_HX_FB${suffix}`,
+      `opexDashboard_FB${suffix}`,
     ];
     keys.forEach((k) => {
       try {
@@ -300,7 +302,7 @@ const FBMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
       '💨 FUMÉES',
       `• Débit humide: ${d.FG_OUT_Nm3_h?.wet ?? 0} Nm³/h`,
       `• Débit sec: ${d.FG_OUT_Nm3_h?.dry ?? 0} Nm³/h`,
-      `• O₂ calculé: ${((d.O2_calcule ?? 0) * 100).toFixed(2)}%`,
+      `• O₂ calculé: ${fmt((d.O2_calcule ?? 0) * 100)}%`,
     ].join('\n');
 
     // Afficher l'alerte
@@ -343,6 +345,7 @@ const FBMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
           <BouesTab
             innerData={innerDataRef.current}
             currentLanguage={currentLanguage}
+            nodeId={nodeId}
           />
         );
 
@@ -353,6 +356,7 @@ const FBMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
             onInnerDataChange={notifyInnerDataChanged}
             onResultsChange={setCombustionResults}
             currentLanguage={currentLanguage}
+            nodeId={nodeId}
           />
         );
 
@@ -367,6 +371,7 @@ const FBMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
             }}
             onInnerDataChange={notifyInnerDataChanged}
             currentLanguage={currentLanguage}
+            nodeId={nodeId}
           />
         );
 
@@ -377,6 +382,7 @@ const FBMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
             innerDataTick={innerDataTick}
             onDataChange={handleDimensionnementData}
             currentLanguage={currentLanguage}
+            nodeId={nodeId}
           />
         );
 
@@ -387,6 +393,7 @@ const FBMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
             combustionResults={combustionResults}
             currentLanguage={currentLanguage}
             onInnerDataChange={notifyInnerDataChanged}
+            nodeId={nodeId}
           />
         );
 
@@ -401,6 +408,7 @@ const FBMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
               notifyInnerDataChanged();
             }}
             currentLanguage={currentLanguage}
+            nodeId={nodeId}
           />
         );
 
@@ -409,6 +417,7 @@ const FBMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
           <FB_Report
             innerData={innerDataRef.current}
             currentLanguage={currentLanguage}
+            nodeId={nodeId}
           />
         );
 
@@ -530,6 +539,7 @@ const FBMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
         innerData={innerDataRef.current}
         innerDataTick={innerDataTick}
         setInnerData={setInnerDataForCalcOpex}
+        nodeId={nodeId}
       />
 
       {/* ════════════════════════════════════════ CONTENT ════════════════════════════════════════ */}

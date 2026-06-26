@@ -4,7 +4,7 @@ import TableGeneric from '../../C_Components/Tableau_generique';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './STACK_traduction';
 
-const STACKFlueGasPollutantEmission = ({ innerData, currentLanguage = 'fr', setInnerData }) => {
+const STACKFlueGasPollutantEmission = ({ innerData, currentLanguage = 'fr', setInnerData, nodeId }) => {
   // Translation setup
   const languageCode = getLanguageCode(currentLanguage);
   const t = (key) => {
@@ -18,13 +18,13 @@ const STACKFlueGasPollutantEmission = ({ innerData, currentLanguage = 'fr', setI
   };
 
   const [emissions2, setEmissions2] = useState(() => {
-    const savedEmissions = localStorage.getItem('emissions2_STACK');
+    const savedEmissions = localStorage.getItem(`emissions2_STACK_${nodeId}`);
     return savedEmissions ? JSON.parse(savedEmissions) : initialEmissions2;
   });
 
   // Save to localStorage whenever emissions change
   useEffect(() => {
-    localStorage.setItem('emissions2_STACK', JSON.stringify(emissions2));
+    localStorage.setItem(`emissions2_STACK_${nodeId}`, JSON.stringify(emissions2));
   }, [emissions2]);
 
   // Extract input data with safe fallbacks
@@ -45,7 +45,7 @@ const STACKFlueGasPollutantEmission = ({ innerData, currentLanguage = 'fr', setI
 
   // Clear stored data
   const clearMemory = useCallback(() => {
-    localStorage.removeItem('emissions2_STACK');
+    localStorage.removeItem(`emissions2_STACK_${nodeId}`);
     setEmissions2(initialEmissions2);
   }, []);
 

@@ -32,24 +32,24 @@ const AIR_BALANCE_TYPES = {
   O2_MEASUREMENT: 'O2_MEASUREMENT'
 };
 
-// Constantes pour localStorage
-const STORAGE_KEYS = {
-  T_EAU_ALIMENTATION: 'T_eau_alimentation_C_WHB',
-  Q_AIR_PARASITE: 'Q_air_parasite_Nm3_h_WHB',
-  Q_EAU_PURGE: 'Q_eau_purge_pourcent_WHB',
-  T_AIR_EXTERIEUR: 'T_air_exterieur_C_WHB',
-  P_TH: 'P_th_pourcent_WHB',
-  P_VAPEUR: 'P_vapeur_bar_WHB',
-  T_VAPEUR: 'T_vapeur_WHB',
-  T_VAPEUR_SURCHAUFFEE: 'T_vapeur_surchauffee_C_WHB',
-  T_AMONT_WHB: 'T_amont_WHB_C',
-  Q_EAU_ALIMENTATION: 'Q_eau_alimentation_WHB',
-  O2_MESURE: 'O2_mesure_WHB',
-  BILAN_TYPE_VAPEUR: 'bilanTypeVapeur_WHB',
-  BILAN_TYPE: 'WHB_bilanType',
-  BILAN_TYPE_AIR: 'bilanTypeAir_WHB',
-  CALCULATION_RESULT: 'calculationResult_WHB'
-};
+// Constantes pour localStorage — suffixées par nodeId à l'exécution
+const getStorageKeys = (nodeId) => ({
+  T_EAU_ALIMENTATION: `T_eau_alimentation_C_WHB_${nodeId}`,
+  Q_AIR_PARASITE: `Q_air_parasite_Nm3_h_WHB_${nodeId}`,
+  Q_EAU_PURGE: `Q_eau_purge_pourcent_WHB_${nodeId}`,
+  T_AIR_EXTERIEUR: `T_air_exterieur_C_WHB_${nodeId}`,
+  P_TH: `P_th_pourcent_WHB_${nodeId}`,
+  P_VAPEUR: `P_vapeur_bar_WHB_${nodeId}`,
+  T_VAPEUR: `T_vapeur_WHB_${nodeId}`,
+  T_VAPEUR_SURCHAUFFEE: `T_vapeur_surchauffee_C_WHB_${nodeId}`,
+  T_AMONT_WHB: `T_amont_WHB_C_${nodeId}`,
+  Q_EAU_ALIMENTATION: `Q_eau_alimentation_WHB_${nodeId}`,
+  O2_MESURE: `O2_mesure_WHB_${nodeId}`,
+  BILAN_TYPE_VAPEUR: `bilanTypeVapeur_WHB_${nodeId}`,
+  BILAN_TYPE: `WHB_bilanType_${nodeId}`,
+  BILAN_TYPE_AIR: `bilanTypeAir_WHB_${nodeId}`,
+  CALCULATION_RESULT: `calculationResult_WHB_${nodeId}`,
+});
 
 // Valeurs par défaut
 const DEFAULT_VALUES = {
@@ -69,51 +69,52 @@ const DEFAULT_VALUES = {
   bilanTypeAir: AIR_BALANCE_TYPES.PARASITIC_AIR
 };
 
-const WHB_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage, autoTrigger = false }) => {
+const WHB_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage, nodeId, autoTrigger = false }) => {
+  const STORAGE_KEYS = getStorageKeys(nodeId);
   // États principaux
-  const [T_eau_alimentation_C, setT_eau_alimentation_C] = useState(() => 
+  const [T_eau_alimentation_C, setT_eau_alimentation_C] = useState(() =>
     localStorage.getItem(STORAGE_KEYS.T_EAU_ALIMENTATION) || DEFAULT_VALUES.T_eau_alimentation_C
   );
-  const [Q_air_parasite_Nm3_h, setQ_air_parasite_Nm3_h] = useState(() => 
+  const [Q_air_parasite_Nm3_h, setQ_air_parasite_Nm3_h] = useState(() =>
     localStorage.getItem(STORAGE_KEYS.Q_AIR_PARASITE) || DEFAULT_VALUES.Q_air_parasite_Nm3_h
   );
-  const [Q_eau_purge_pourcent, setQ_eau_purge_pourcent] = useState(() => 
+  const [Q_eau_purge_pourcent, setQ_eau_purge_pourcent] = useState(() =>
     localStorage.getItem(STORAGE_KEYS.Q_EAU_PURGE) || DEFAULT_VALUES.Q_eau_purge_pourcent
   );
-  const [T_air_exterieur_C, setT_air_exterieur_C] = useState(() => 
+  const [T_air_exterieur_C, setT_air_exterieur_C] = useState(() =>
     localStorage.getItem(STORAGE_KEYS.T_AIR_EXTERIEUR) || DEFAULT_VALUES.T_air_exterieur_C
   );
-  const [P_th_pourcent, setP_th_pourcent] = useState(() => 
+  const [P_th_pourcent, setP_th_pourcent] = useState(() =>
     localStorage.getItem(STORAGE_KEYS.P_TH) || DEFAULT_VALUES.P_th_pourcent
   );
-  const [P_vapeur_bar, setP_vapeur_bar] = useState(() => 
+  const [P_vapeur_bar, setP_vapeur_bar] = useState(() =>
     localStorage.getItem(STORAGE_KEYS.P_VAPEUR) || DEFAULT_VALUES.P_vapeur_bar
   );
-  const [T_vapeur, setT_vapeur] = useState(() => 
+  const [T_vapeur, setT_vapeur] = useState(() =>
     localStorage.getItem(STORAGE_KEYS.T_VAPEUR) || DEFAULT_VALUES.T_vapeur
   );
-  const [T_vapeur_surchauffee_C, setT_vapeur_surchauffee_C] = useState(() => 
+  const [T_vapeur_surchauffee_C, setT_vapeur_surchauffee_C] = useState(() =>
     localStorage.getItem(STORAGE_KEYS.T_VAPEUR_SURCHAUFFEE) || DEFAULT_VALUES.T_vapeur_surchauffee_C
   );
-  const [T_amont_WHB_C, setT_amont_WHB_C] = useState(() => 
+  const [T_amont_WHB_C, setT_amont_WHB_C] = useState(() =>
     localStorage.getItem(STORAGE_KEYS.T_AMONT_WHB) || DEFAULT_VALUES.T_amont_WHB_C
   );
-  const [Q_eau_alimentation, setQ_eau_alimentation] = useState(() => 
+  const [Q_eau_alimentation, setQ_eau_alimentation] = useState(() =>
     localStorage.getItem(STORAGE_KEYS.Q_EAU_ALIMENTATION) || DEFAULT_VALUES.Q_eau_alimentation
   );
-  const [O2_mesure, setO2_mesure] = useState(() => 
+  const [O2_mesure, setO2_mesure] = useState(() =>
     localStorage.getItem(STORAGE_KEYS.O2_MESURE) || nodeData?.result?.dataFlow?.O2_dry_pourcent || DEFAULT_VALUES.O2_mesure
   );
 
   // États pour les modes de calcul
-  const [bilanTypeVapeur, setBilanTypeVapeur] = useState(() => 
+  const [bilanTypeVapeur, setBilanTypeVapeur] = useState(() =>
     localStorage.getItem(STORAGE_KEYS.BILAN_TYPE_VAPEUR) || DEFAULT_VALUES.bilanTypeVapeur
   );
   const [bilanType, setBilanType] = useState(() => {
     const stored = localStorage.getItem(STORAGE_KEYS.BILAN_TYPE);
     return Object.values(BALANCE_TYPES).includes(stored) ? stored : DEFAULT_VALUES.bilanType;
   });
-  const [bilanTypeAir, setBilanTypeAir] = useState(() => 
+  const [bilanTypeAir, setBilanTypeAir] = useState(() =>
     localStorage.getItem(STORAGE_KEYS.BILAN_TYPE_AIR) || DEFAULT_VALUES.bilanTypeAir
   );
 
@@ -539,7 +540,7 @@ const WHB_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLangua
           disabled={isCalculating || !nodeData?.result}
           currentLanguage={currentLanguage}
           isCalculating={isCalculating}
-          storageKey={`calcSent_${title}`}
+          storageKey={`calcSent_${title}_${nodeId}`}
         />
         
         <ShowResultButton 

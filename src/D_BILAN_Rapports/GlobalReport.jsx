@@ -43,20 +43,44 @@ const REPORT_MAP = {
   WATER_INJECTION: WATER_INJECTION_Report,
 };
 
-const EQUIPMENT_ORDER = ['RK+SCC', 'GF', 'FB', 'WHB', 'QUENCH', 'DENOX', 'BHF', 'REACTOR', 'SCRUBBER', 'ELECTROFILTER', 'CYCLONE', 'COOLINGTOWER', 'IDFAN', 'STACK', 'AIRINJECTION', 'IACT', 'HX_TubeAndShell', 'WATER_INJECTION'];
+const LINE_COLORS = [
+  { bg: 'rgba(74,144,226,0.15)', border: '#4a90e2', title: '#a0cfff', sep: 'linear-gradient(90deg, #1a3a6b 0%, #2c5aa0 100%)' },
+  { bg: 'rgba(231,76,60,0.15)',  border: '#e74c3c', title: '#ffb3aa', sep: 'linear-gradient(90deg, #6b1a1a 0%, #a02c2c 100%)' },
+  { bg: 'rgba(46,204,113,0.15)', border: '#2ecc71', title: '#a0ffc8', sep: 'linear-gradient(90deg, #1a6b3a 0%, #2ca05a 100%)' },
+  { bg: 'rgba(243,156,18,0.15)', border: '#f39c12', title: '#ffe0a0', sep: 'linear-gradient(90deg, #6b4e1a 0%, #a07a2c 100%)' },
+  { bg: 'rgba(155,89,182,0.15)', border: '#9b59b6', title: '#d5a0ff', sep: 'linear-gradient(90deg, #3d1a6b 0%, #6b2ca0 100%)' },
+];
+
+const buildProcessLines = (allNodes, edges) => {
+  const edgeList = edges || [];
+  const allIds = new Set(allNodes.map(n => n.id));
+  const parent = {};
+  const find = (x) => { if (parent[x] !== x) parent[x] = find(parent[x]); return parent[x]; };
+  const union = (a, b) => { parent[find(a)] = find(b); };
+  for (const n of allNodes) parent[n.id] = n.id;
+  for (const e of edgeList) { if (allIds.has(e.source) && allIds.has(e.target)) union(e.source, e.target); }
+  const adj = {}, inDeg = {};
+  for (const n of allNodes) { adj[n.id] = []; inDeg[n.id] = 0; }
+  for (const e of edgeList) {
+    if (allIds.has(e.source) && allIds.has(e.target)) { adj[e.source].push(e.target); inDeg[e.target] = (inDeg[e.target] || 0) + 1; }
+  }
+  const topoOrder = [];
+  const queue = allNodes.filter(n => inDeg[n.id] === 0).map(n => n.id);
+  while (queue.length) { const id = queue.shift(); topoOrder.push(id); for (const next of (adj[id] || [])) { inDeg[next]--; if (inDeg[next] === 0) queue.push(next); } }
+  for (const n of allNodes) { if (!topoOrder.includes(n.id)) topoOrder.push(n.id); }
+  const topoRank = {}; topoOrder.forEach((id, i) => { topoRank[id] = i; });
+  const reportable = allNodes.filter(n => n.data?.isActive && REPORT_MAP[n.data?.label]);
+  const groups = {};
+  for (const n of reportable) { const root = find(n.id); if (!groups[root]) groups[root] = []; groups[root].push(n); }
+  for (const root in groups) { groups[root].sort((a, b) => (topoRank[a.id] || 0) - (topoRank[b.id] || 0)); }
+  return Object.values(groups).sort((a, b) => (topoRank[a[0]?.id] || 0) - (topoRank[b[0]?.id] || 0));
+};
+
+const getLineName = (line, idx) => line[0]?.data?.lineName || `Ligne ${idx + 1}`;
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-const fmt2 = (v) => {
-  const n = parseFloat(v);
-  return isNaN(n) ? '0.00' : n.toFixed(2);
-};
-
-const fmtInt = (v) => {
-  const n = parseFloat(v);
-  if (isNaN(n)) return '0';
-  return Math.round(n).toLocaleString('fr-FR');
-};
+import { fmt, fmt2, fmtInt } from '../A_Transverse_fonction/formatNumber';
 
 // ─── OPEX Summary Section ─────────────────────────────────────────────────────
 
@@ -231,17 +255,12 @@ const opexStyles = {
 
 // ─── GlobalReport ─────────────────────────────────────────────────────────────
 
-const GlobalReport = ({ nodes, onClose }) => {
+const GlobalReport = ({ nodes, edges, onClose }) => {
   const reportRef = useRef();
   const [generating, setGenerating] = useState(false);
 
-  const activeNodes = [...nodes]
-    .filter(n => n.data?.isActive && REPORT_MAP[n.data?.label])
-    .sort((a, b) => {
-      const ia = EQUIPMENT_ORDER.indexOf(a.data.label);
-      const ib = EQUIPMENT_ORDER.indexOf(b.data.label);
-      return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
-    });
+  const lines = buildProcessLines(nodes, edges);
+  const activeNodes = lines.flat();
 
   // ── PDF generation — block-level capture to avoid mid-table cuts ─────────
   const generatePDF = async () => {
@@ -409,30 +428,66 @@ const GlobalReport = ({ nodes, onClose }) => {
                   Généré le {new Date().toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
                 </p>
                 <div style={styles.coverEquipList}>
-                  <h3 style={styles.coverEquipTitle}>Équipements inclus :</h3>
-                  {activeNodes.map(n => (
-                    <div key={n.id} style={styles.coverEquipItem}>
-                      ▸ {n.data.label}{n.data.title ? ` — ${n.data.title}` : ''}
+                  {lines.map((line, li) => (
+                    <div key={li} style={{
+                      marginBottom: li < lines.length - 1 ? 16 : 0,
+                      background: lines.length > 1 ? LINE_COLORS[li % LINE_COLORS.length].bg : 'rgba(255,255,255,0.1)',
+                      borderLeft: lines.length > 1 ? `4px solid ${LINE_COLORS[li % LINE_COLORS.length].border}` : 'none',
+                      borderRadius: 6, padding: '12px 16px',
+                    }}>
+                      <h3 style={{
+                        ...styles.coverEquipTitle,
+                        color: lines.length > 1 ? LINE_COLORS[li % LINE_COLORS.length].title : '#e0ecff',
+                      }}>
+                        {lines.length > 1 ? getLineName(line, li) : 'Équipements inclus'}
+                      </h3>
+                      {line.map(n => (
+                        <div key={n.id} style={styles.coverEquipItem}>
+                          ▸ {n.data.label}{n.data.title ? ` — ${n.data.title}` : ''}
+                        </div>
+                      ))}
                     </div>
                   ))}
                 </div>
               </div>
 
-              {/* One section per active node */}
-              {activeNodes.map((node, idx) => {
-                const Component = REPORT_MAP[node.data.label];
-                return (
-                  <div key={node.id} data-pdf-section style={styles.equipSection}>
-                    <div data-pdf-separator style={styles.equipSeparator}>
-                      <span style={styles.equipIndex}>{idx + 1}</span>
-                      <span style={styles.equipLabel}>{node.data.label}</span>
-                    </div>
-                    <div data-pdf-blocks-parent>
-                      <Component innerData={node.data.result || {}} />
-                    </div>
-                  </div>
-                );
-              })}
+              {/* Une section par ligne de process */}
+              {lines.map((line, lineIdx) => (
+                <div key={lineIdx}>
+                  {lines.length > 1 && (() => {
+                    const lc = LINE_COLORS[lineIdx % LINE_COLORS.length];
+                    return (
+                      <div data-pdf-section style={{ ...styles.lineSeparator, background: lc.sep, borderLeft: `5px solid ${lc.border}` }}>
+                        <span style={{ ...styles.lineLabel, color: lc.title }}>{getLineName(line, lineIdx)}</span>
+                        <span style={styles.lineDesc}>{line.map(n => n.data.label).join(' → ')}</span>
+                      </div>
+                    );
+                  })()}
+                  {line.map((node, idx) => {
+                    const globalIdx = lines.slice(0, lineIdx).reduce((s, l) => s + l.length, 0) + idx;
+                    const Component = REPORT_MAP[node.data.label];
+                    const lineColor = lines.length > 1 ? LINE_COLORS[lineIdx % LINE_COLORS.length].border : undefined;
+                    return (
+                      <div key={node.id} data-pdf-section style={{
+                        ...styles.equipSection,
+                        ...(lineColor ? { borderLeft: `4px solid ${lineColor}` } : {}),
+                      }}>
+                        <div data-pdf-separator style={styles.equipSeparator}>
+                          <span style={{
+                            ...styles.equipIndex,
+                            ...(lineColor ? { background: lineColor } : {}),
+                          }}>{globalIdx + 1}</span>
+                          <span style={styles.equipLabel}>{node.data.label}</span>
+                          {node.data.title && <span style={styles.equipTitle}> — {node.data.title}</span>}
+                        </div>
+                        <div data-pdf-blocks-parent>
+                          <Component innerData={node.data.result || {}} />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ))}
 
               {/* OPEX summary — always last */}
               <div data-pdf-section style={styles.opexSection}>
@@ -492,6 +547,13 @@ const styles = {
   },
   coverEquipTitle: { margin: '0 0 10px 0', fontSize: 15, color: '#e0ecff' },
   coverEquipItem: { padding: '4px 0', fontSize: 14, color: '#fff' },
+  lineSeparator: {
+    display: 'flex', alignItems: 'center', gap: 12,
+    background: 'linear-gradient(90deg, #1a3a6b 0%, #2c5aa0 100%)',
+    padding: '14px 20px', color: '#fff',
+  },
+  lineLabel: { fontSize: 17, fontWeight: 'bold', color: '#fff' },
+  lineDesc: { fontSize: 13, color: '#adc8f0', marginLeft: 8 },
   equipSection: { borderBottom: '3px solid #e0e8f4' },
   equipSeparator: {
     display: 'flex', alignItems: 'center', gap: 12,
@@ -503,6 +565,7 @@ const styles = {
     fontWeight: 'bold', fontSize: 13, flexShrink: 0,
   },
   equipLabel: { fontSize: 16, fontWeight: 'bold', color: '#1a3a6b' },
+  equipTitle: { fontSize: 14, color: '#555' },
   opexSection: { borderTop: '3px solid #1a3a6b', marginTop: 0 },
 };
 

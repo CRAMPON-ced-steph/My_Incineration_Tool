@@ -7,6 +7,7 @@ import TableGeneric from '../../C_Components/Tableau_generique';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './WHB_traduction';
 
+import { fmt } from '../../A_Transverse_fonction/formatNumber';
 const WHBDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
   const languageCode = getLanguageCode(currentLanguage);
   const t = (key) => translations[languageCode]?.[key] || translations['fr']?.[key] || key;
@@ -589,18 +590,18 @@ const WHBDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
 
   const formatNumber = (value, decimals = 2) => {
     if (typeof value !== 'number' || isNaN(value) || !isFinite(value)) return '---';
-    return value.toFixed(decimals);
+    return fmt(value, decimals);
   };
 
   const exporterResultats = () => {
     if (!resultats || donneesGraphique.length === 0) return;
 
     const csvData = donneesGraphique.map(point => ({
-      Position: point.position.toFixed(3),
-      Temperature: point.temperature.toFixed(2),
+      Position: fmt(point.position, 3),
+      Temperature: fmt(point.temperature, 2),
       Passage: point.passage,
-      Emissivite: point.emissivity.toFixed(4),
-      Chaleur_Echangee: point.heat_exchanged.toFixed(2)
+      Emissivite: fmt(point.emissivity, 4),
+      Chaleur_Echangee: fmt(point.heat_exchanged, 2)
     }));
 
     const csvContent = "data:text/csv;charset=utf-8," +
@@ -887,7 +888,7 @@ const WHBDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
               <span style={styles.label}>frac_mol_CO₂</span>
               <input
                 type="text"
-                value={calculerFractionsMolaires(parametres.CO2_kg, parametres.H2O_kg, parametres.CO_kg, parametres.N2_kg, parametres.O2_kg).frac_mol_CO2.toFixed(4)}
+                value={fmt(calculerFractionsMolaires(parametres.CO2_kg, parametres.H2O_kg, parametres.CO_kg, parametres.N2_kg, parametres.O2_kg).frac_mol_CO2, 4)}
                 readOnly
                 style={{...styles.input, backgroundColor: '#f0f0f0', color: '#666666'}}
               />
@@ -897,7 +898,7 @@ const WHBDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
               <span style={styles.label}>frac_mol_H₂O</span>
               <input
                 type="text"
-                value={calculerFractionsMolaires(parametres.CO2_kg, parametres.H2O_kg, parametres.CO_kg, parametres.N2_kg, parametres.O2_kg).frac_mol_H2O.toFixed(4)}
+                value={fmt(calculerFractionsMolaires(parametres.CO2_kg, parametres.H2O_kg, parametres.CO_kg, parametres.N2_kg, parametres.O2_kg).frac_mol_H2O, 4)}
                 readOnly
                 style={{...styles.input, backgroundColor: '#f0f0f0', color: '#666666'}}
               />
@@ -907,7 +908,7 @@ const WHBDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
               <span style={styles.label}>frac_mol_CO</span>
               <input
                 type="text"
-                value={calculerFractionsMolaires(parametres.CO2_kg, parametres.H2O_kg, parametres.CO_kg, parametres.N2_kg, parametres.O2_kg).frac_mol_CO.toFixed(4)}
+                value={fmt(calculerFractionsMolaires(parametres.CO2_kg, parametres.H2O_kg, parametres.CO_kg, parametres.N2_kg, parametres.O2_kg).frac_mol_CO, 4)}
                 readOnly
                 style={{...styles.input, backgroundColor: '#f0f0f0', color: '#666666'}}
               />
@@ -917,7 +918,7 @@ const WHBDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
               <span style={styles.label}>frac_mol_N₂</span>
               <input
                 type="text"
-                value={calculerFractionsMolaires(parametres.CO2_kg, parametres.H2O_kg, parametres.CO_kg, parametres.N2_kg, parametres.O2_kg).frac_mol_N2.toFixed(4)}
+                value={fmt(calculerFractionsMolaires(parametres.CO2_kg, parametres.H2O_kg, parametres.CO_kg, parametres.N2_kg, parametres.O2_kg).frac_mol_N2, 4)}
                 readOnly
                 style={{...styles.input, backgroundColor: '#f0f0f0', color: '#666666'}}
               />
@@ -927,7 +928,7 @@ const WHBDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
               <span style={styles.label}>frac_mol_O₂</span>
               <input
                 type="text"
-                value={calculerFractionsMolaires(parametres.CO2_kg, parametres.H2O_kg, parametres.CO_kg, parametres.N2_kg, parametres.O2_kg).frac_mol_O2.toFixed(4)}
+                value={fmt(calculerFractionsMolaires(parametres.CO2_kg, parametres.H2O_kg, parametres.CO_kg, parametres.N2_kg, parametres.O2_kg).frac_mol_O2, 4)}
                 readOnly
                 style={{...styles.input, backgroundColor: '#f0f0f0', color: '#666666'}}
               />
@@ -1209,7 +1210,7 @@ const WHBDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
                     type="number"
                     scale="linear"
                     domain={['dataMin', 'dataMax']}
-                    tickFormatter={(value) => value.toFixed(1)}
+                    tickFormatter={(value) => fmt(value, 1)}
                     label={{ value: 'Position (m)', position: 'insideBottom', offset: -5 }}
                   />
                   <YAxis
@@ -1217,10 +1218,10 @@ const WHBDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
                   />
                   <Tooltip
                     formatter={(value, name) => [
-                      typeof value === 'number' ? value.toFixed(2) : value,
+                      typeof value === 'number' ? fmt(value, 2) : value,
                       name
                     ]}
-                    labelFormatter={(value) => `Position: ${value.toFixed(1)} m`}
+                    labelFormatter={(value) => `Position: ${fmt(value, 1)} m`}
                   />
                   <Legend verticalAlign="top" height={36} />
                   <Line
@@ -1245,7 +1246,7 @@ const WHBDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
                     type="number"
                     scale="linear"
                     domain={['dataMin', 'dataMax']}
-                    tickFormatter={(value) => value.toFixed(1)}
+                    tickFormatter={(value) => fmt(value, 1)}
                     label={{ value: 'Position (m)', position: 'insideBottom', offset: -5 }}
                   />
                   <YAxis
@@ -1253,10 +1254,10 @@ const WHBDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
                   />
                   <Tooltip
                     formatter={(value, name) => [
-                      typeof value === 'number' ? value.toFixed(4) : value,
+                      typeof value === 'number' ? fmt(value, 4) : value,
                       name
                     ]}
-                    labelFormatter={(value) => `Position: ${value.toFixed(1)} m`}
+                    labelFormatter={(value) => `Position: ${fmt(value, 1)} m`}
                   />
                   <Legend verticalAlign="top" height={36} />
                   <Line

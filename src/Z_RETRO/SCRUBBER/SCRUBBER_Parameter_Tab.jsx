@@ -22,14 +22,14 @@ const BALANCE_TYPES = {
   TIN_TSAT: 'TIN_TSAT'
 };
 
-// Constantes pour localStorage
-const STORAGE_KEYS = {
-  T_EAU: 'Teau_SCRUBBER',
-  T_AMONT_SCRUBBER: 'T_amont_SCRUBBER',
-  PDC_AERO: 'PDC_aero_SCRUBBER',
-  BILAN_TYPE: 'SCRUBBER_bilanType',
-  CALCULATION_RESULT: 'calculationResult_SCRUBBER'
-};
+// Constantes pour localStorage (nodeId-aware)
+const getStorageKeys = (nodeId) => ({
+  T_EAU: `Teau_SCRUBBER_${nodeId}`,
+  T_AMONT_SCRUBBER: `T_amont_SCRUBBER_${nodeId}`,
+  PDC_AERO: `PDC_aero_SCRUBBER_${nodeId}`,
+  BILAN_TYPE: `SCRUBBER_bilanType_${nodeId}`,
+  CALCULATION_RESULT: `calculationResult_SCRUBBER_${nodeId}`
+});
 
 // Valeurs par défaut
 const DEFAULT_VALUES = {
@@ -39,7 +39,8 @@ const DEFAULT_VALUES = {
   bilanType: BALANCE_TYPES.TIN_TOUT
 };
 
-const SCRUBBER_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage, autoTrigger = false }) => {
+const SCRUBBER_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage, autoTrigger = false, nodeId }) => {
+  const STORAGE_KEYS = useMemo(() => getStorageKeys(nodeId), [nodeId]);
   // États principaux
   const [Teau, setT_eau] = useState(() => 
     localStorage.getItem(STORAGE_KEYS.T_EAU) || DEFAULT_VALUES.Teau
@@ -325,7 +326,7 @@ const SCRUBBER_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentL
           disabled={isCalculating || !nodeData?.result}
           currentLanguage={currentLanguage}
           isCalculating={isCalculating}
-          storageKey={`calcSent_${title}`}
+          storageKey={`calcSent_${title}_${nodeId}`}
         />
         
         <ShowResultButton 

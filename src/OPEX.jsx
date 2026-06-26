@@ -3,6 +3,7 @@ import InputField from './C_Components/input_retro';
 import DropdownField from './C_Components/input_retro_deroulant';
 import CountryDropdown from './C_Components/input_retro_double_deroulant';
 import { updateOpexData, DEFAULT_OPEX_DATA } from './A_Transverse_fonction/opexDataService';
+import { fmt } from './A_Transverse_fonction/formatNumber';
 import { getOPEXTranslations } from './OPEX_traduction';
 import { getLanguageCode } from './F_Gestion_Langues/Fonction_Traduction';
 
@@ -886,12 +887,12 @@ const OPEX_form = ({ onClose, currentLanguage = 'fr' }) => {
                           </td>
                           <td style={{...styles.tableCell, background: '#F3F4F6'}}>
                             <div style={{textAlign: 'center', fontSize: '12px'}}>
-                              {getCO2PerTKm(item.truckType).toFixed(3)}
+                              {fmt(getCO2PerTKm(item.truckType), 3)}
                             </div>
                           </td>
                           <td style={{...styles.tableCell, background: '#F3F4F6'}}>
                             <div style={{textAlign: 'center', fontSize: '12px'}}>
-                              {item.co2PerTrip.toFixed(2)}
+                              {fmt(item.co2PerTrip)}
                             </div>
                           </td>
                         </tr>

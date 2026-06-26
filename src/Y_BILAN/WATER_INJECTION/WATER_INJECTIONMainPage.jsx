@@ -10,7 +10,7 @@ import '../../index.css';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './WATER_INJECTION_traduction';
 
-const WATER_INJECTIONMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLanguage = 'fr' }) => {
+const WATER_INJECTIONMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLanguage = 'fr', nodeId }) => {
 
   // ✅ FIX: Normaliser le code de langue
   const normalizeLanguageCode = (lang) => {
@@ -44,23 +44,23 @@ const WATER_INJECTIONMainPage = ({ nodeData, title, onSendData, onClose, onGoBac
   const tabs = [
     {
       name: t('Flue gases'),
-      content: <WATER_INJECTIONFlueGasParameters innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} />
+      content: <WATER_INJECTIONFlueGasParameters innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} nodeId={nodeId} />
     },
     {
       name: t('Pollutant Emissions'),
-      content: <WATER_INJECTIONFlueGasPollutantEmission innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} />
+      content: <WATER_INJECTIONFlueGasPollutantEmission innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} nodeId={nodeId} />
     },
     {
       name: t('Design'),
-      content: <WATER_INJECTIONDesign innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} />
+      content: <WATER_INJECTIONDesign innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} nodeId={nodeId} />
     },
     {
       name: t('Opex'),
-      content: <WATER_INJECTIONOpex innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} />
+      content: <WATER_INJECTIONOpex innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} nodeId={nodeId} />
     },
     {
       name: 'Rapport',
-      content: <WATER_INJECTION_Report innerData={innerData} />
+      content: <WATER_INJECTION_Report innerData={innerData} nodeId={nodeId} />
     },
   ];
 

@@ -6,7 +6,8 @@ import { getOpexData } from '../../A_Transverse_fonction/opexDataService';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './WATER_INJECTION_traduction';
 
-const WATER_INJECTIONFlueGasPollutantEmission = ({ innerData, currentLanguage = 'fr' }) => {
+import { fmt } from '../../A_Transverse_fonction/formatNumber';
+const WATER_INJECTIONFlueGasPollutantEmission = ({ innerData, currentLanguage = 'fr', nodeId }) => {
   const languageCode = getLanguageCode(currentLanguage);
   const t = (key) => {
     return translations[languageCode]?.[key] || translations['fr']?.[key] || key;
@@ -28,14 +29,14 @@ const WATER_INJECTIONFlueGasPollutantEmission = ({ innerData, currentLanguage = 
   };
 
   const [emissions2_WATER_INJECTION, setEmissions2] = useState(() => {
-    const savedEmissions = localStorage.getItem('emissions2_WATER_INJECTION');
+    const savedEmissions = localStorage.getItem(`emissions2_WATER_INJECTION_${nodeId}`);
     return savedEmissions ? JSON.parse(savedEmissions) : initialEmissions_WATER_INJECTION;
   });
 
   const { reagentsTypes } = getOpexData();
 
   useEffect(() => {
-    localStorage.setItem('emissions2_WATER_INJECTION', JSON.stringify(emissions2_WATER_INJECTION));
+    localStorage.setItem(`emissions2_WATER_INJECTION_${nodeId}`, JSON.stringify(emissions2_WATER_INJECTION));
   }, [emissions2_WATER_INJECTION]);
 
   // Extract parameters from state
@@ -226,17 +227,17 @@ const WATER_INJECTIONFlueGasPollutantEmission = ({ innerData, currentLanguage = 
   };
 
   const elementsGeneric = [
-    { text: t('Waste Flow [kg/h]'), value: masse_dechets.toFixed(2) },
-    { text: t('Flue gas Flow Wet [Nm3/h]'), value: Debit_fumees_humide_Nm3_h.toFixed(0) },
-    { text: t('Flue gas Flow Dry [Nm3/h]'), value: Debit_fumees_sec_Nm3_h.toFixed(0) },
-    { text: t('O2 calculated [%]'), value: FG_O2_calcule.toFixed(2) },
-    { text: t('inert mass [kg/h]'), value: Inert_kg_h.toFixed(2) },
+    { text: t('Waste Flow [kg/h]'), value: fmt(masse_dechets, 2) },
+    { text: t('Flue gas Flow Wet [Nm3/h]'), value: fmt(Debit_fumees_humide_Nm3_h, 0) },
+    { text: t('Flue gas Flow Dry [Nm3/h]'), value: fmt(Debit_fumees_sec_Nm3_h, 0) },
+    { text: t('O2 calculated [%]'), value: fmt(FG_O2_calcule, 2) },
+    { text: t('inert mass [kg/h]'), value: fmt(Inert_kg_h, 2) },
   ];
 
   const residusCalculations = [
-    { text: t('Dry residus [kg/h]'), value: DryBottomAsh_kg_h.toFixed(2) },
-    { text: t('Wet residus [kg/h]'), value: WetBottomAsh_kg_h.toFixed(2) },
-    { text: t('Fly ash [kg/h]'), value: FlyAsh_kg_h.toFixed(2) },
+    { text: t('Dry residus [kg/h]'), value: fmt(DryBottomAsh_kg_h, 2) },
+    { text: t('Wet residus [kg/h]'), value: fmt(WetBottomAsh_kg_h, 2) },
+    { text: t('Fly ash [kg/h]'), value: fmt(FlyAsh_kg_h, 2) },
   ];
 
   // Update innerData
@@ -259,7 +260,7 @@ const WATER_INJECTIONFlueGasPollutantEmission = ({ innerData, currentLanguage = 
   };
 
   const clearMemory = useCallback(() => {
-    localStorage.removeItem('emissions2_WATER_INJECTION');
+    localStorage.removeItem(`emissions2_WATER_INJECTION_${nodeId}`);
     setEmissions2(initialEmissions_WATER_INJECTION);
   }, []);
 
@@ -393,7 +394,7 @@ const WATER_INJECTIONFlueGasPollutantEmission = ({ innerData, currentLanguage = 
                 </select>
               </td>
               <td style={{ padding: '8px', textAlign: 'center', width: '11.11%' }}>
-                {SOx_reactif !== 'None' ? masses_pollutant_output.SO2.toFixed(3) : '0.000'}
+                {SOx_reactif !== 'None' ? fmt(masses_pollutant_output.SO2, 3) : '0.000'}
               </td>
               <td style={{ padding: '4px', textAlign: 'center', width: '11.11%' }}>
                 <input
@@ -418,16 +419,16 @@ const WATER_INJECTIONFlueGasPollutantEmission = ({ innerData, currentLanguage = 
                 />
               </td>
               <td style={{ padding: '8px', textAlign: 'center', width: '11.11%' }}>
-                {masses_pollutant_output.SO2.toFixed(3)}
+                {fmt(masses_pollutant_output.SO2, 3)}
               </td>
               <td style={{ padding: '8px', textAlign: 'center', width: '11.11%' }}>
-                {SOx_reactif !== 'None' ? mass_residus_SOx.toFixed(3) : '0.000'}
+                {SOx_reactif !== 'None' ? fmt(mass_residus_SOx, 3) : '0.000'}
               </td>
               <td style={{ padding: '8px', textAlign: 'center', width: '11.11%' }}>
-                {SOx_reactif !== 'None' ? mass_reactif_reel_SOx.toFixed(3) : '0.000'}
+                {SOx_reactif !== 'None' ? fmt(mass_reactif_reel_SOx, 3) : '0.000'}
               </td>
               <td style={{ padding: '8px', textAlign: 'center', width: '11.11%' }}>
-                {SOx_reactif !== 'None' ? mass_reduction_SOx.toFixed(3) : '0.000'}
+                {SOx_reactif !== 'None' ? fmt(mass_reduction_SOx, 3) : '0.000'}
               </td>
             </tr>
 
@@ -448,7 +449,7 @@ const WATER_INJECTIONFlueGasPollutantEmission = ({ innerData, currentLanguage = 
                 </select>
               </td>
               <td style={{ padding: '8px', textAlign: 'center', width: '11.11%' }}>
-                {HCl_reactif !== 'None' ? masses_pollutant_output.HCl.toFixed(3) : '0.000'}
+                {HCl_reactif !== 'None' ? fmt(masses_pollutant_output.HCl, 3) : '0.000'}
               </td>
               <td style={{ padding: '4px', textAlign: 'center', width: '11.11%' }}>
                 <input
@@ -473,16 +474,16 @@ const WATER_INJECTIONFlueGasPollutantEmission = ({ innerData, currentLanguage = 
                 />
               </td>
               <td style={{ padding: '8px', textAlign: 'center', width: '11.11%' }}>
-                {masses_pollutant_output.HCl.toFixed(3)}
+                {fmt(masses_pollutant_output.HCl, 3)}
               </td>
               <td style={{ padding: '8px', textAlign: 'center', width: '11.11%' }}>
-                {HCl_reactif !== 'None' ? mass_residus_HCl.toFixed(3) : '0.000'}
+                {HCl_reactif !== 'None' ? fmt(mass_residus_HCl, 3) : '0.000'}
               </td>
               <td style={{ padding: '8px', textAlign: 'center', width: '11.11%' }}>
-                {HCl_reactif !== 'None' ? mass_reactif_reel_HCl.toFixed(3) : '0.000'}
+                {HCl_reactif !== 'None' ? fmt(mass_reactif_reel_HCl, 3) : '0.000'}
               </td>
               <td style={{ padding: '8px', textAlign: 'center', width: '11.11%' }}>
-                {HCl_reactif !== 'None' ? mass_reduction_HCl.toFixed(3) : '0.000'}
+                {HCl_reactif !== 'None' ? fmt(mass_reduction_HCl, 3) : '0.000'}
               </td>
             </tr>
 
@@ -503,7 +504,7 @@ const WATER_INJECTIONFlueGasPollutantEmission = ({ innerData, currentLanguage = 
                 </select>
               </td>
               <td style={{ padding: '8px', textAlign: 'center', width: '11.11%' }}>
-                {HF_reactif !== 'None' ? masses_pollutant_output.HF.toFixed(3) : '0.000'}
+                {HF_reactif !== 'None' ? fmt(masses_pollutant_output.HF, 3) : '0.000'}
               </td>
               <td style={{ padding: '4px', textAlign: 'center', width: '11.11%' }}>
                 <input
@@ -528,16 +529,16 @@ const WATER_INJECTIONFlueGasPollutantEmission = ({ innerData, currentLanguage = 
                 />
               </td>
               <td style={{ padding: '8px', textAlign: 'center', width: '11.11%' }}>
-                {masses_pollutant_output.HF.toFixed(3)}
+                {fmt(masses_pollutant_output.HF, 3)}
               </td>
               <td style={{ padding: '8px', textAlign: 'center', width: '11.11%' }}>
-                {HF_reactif !== 'None' ? mass_residus_HF.toFixed(3) : '0.000'}
+                {HF_reactif !== 'None' ? fmt(mass_residus_HF, 3) : '0.000'}
               </td>
               <td style={{ padding: '8px', textAlign: 'center', width: '11.11%' }}>
-                {HF_reactif !== 'None' ? mass_reactif_reel_HF.toFixed(3) : '0.000'}
+                {HF_reactif !== 'None' ? fmt(mass_reactif_reel_HF, 3) : '0.000'}
               </td>
               <td style={{ padding: '8px', textAlign: 'center', width: '11.11%' }}>
-                {HF_reactif !== 'None' ? mass_reduction_HF.toFixed(3) : '0.000'}
+                {HF_reactif !== 'None' ? fmt(mass_reduction_HF, 3) : '0.000'}
               </td>
             </tr>
           </tbody>

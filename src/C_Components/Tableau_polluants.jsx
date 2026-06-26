@@ -1,6 +1,7 @@
 import React from 'react';
 import {conv_O2_ref} from '../A_Transverse_fonction/conv_calculation';
 import {molarMasses} from '../A_Transverse_fonction/constantes';
+import { fmt } from '../A_Transverse_fonction/formatNumber';
 
 
 const PollutantCalculator = ({ masses, O2_mesure, O2_ref,Debit_fumees_sec_Nm3_h}) => {
@@ -142,11 +143,11 @@ const pollutant_mass_repartition = {
           {['HCl', 'HF', 'Cl', 'S', 'SO2','N2', 'NOx', 'CO2','NH3', 'DustFlyAsh', 'Mercury', 'PCDDF', 'Cd_Ti','Sb_As_Pb_Cr_Co_Cu_Mn_Ni_V' ].map((element) => (
             <tr key={element}>
               <td>{element}</td>
-              <td>{results.pollutant_initial_mass[element]?.toFixed(4)}</td>
-              <td>{results.pollutant_kmole[element]?.toFixed(4)}</td>
-              <td>{results.pollutant_mass_repartition[element]?.toFixed(4)}</td>
-              <td>{results.pollutant_concentration[element]?.toFixed(0)}</td>
-              <td>{results.pollutant_concentration_O2ref[element]?.toFixed(0)}</td>
+              <td>{results.pollutant_initial_mass[element] != null ? fmt(results.pollutant_initial_mass[element], 4) : ''}</td>
+              <td>{results.pollutant_kmole[element] != null ? fmt(results.pollutant_kmole[element], 4) : ''}</td>
+              <td>{results.pollutant_mass_repartition[element] != null ? fmt(results.pollutant_mass_repartition[element], 4) : ''}</td>
+              <td>{results.pollutant_concentration[element] != null ? fmt(results.pollutant_concentration[element], 0) : ''}</td>
+              <td>{results.pollutant_concentration_O2ref[element] != null ? fmt(results.pollutant_concentration_O2ref[element], 0) : ''}</td>
             </tr>
           ))}
         </tbody>

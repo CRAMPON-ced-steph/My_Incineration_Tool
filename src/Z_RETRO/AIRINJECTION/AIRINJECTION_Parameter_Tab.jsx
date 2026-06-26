@@ -14,14 +14,14 @@ import { translations } from './AIRINJECTION_traduction';
 import AIRINJECTION_Retro_Rapport from './AIRINJECTION_Retro_Rapport';
 import '../../index.css';
 
-// Constantes pour localStorage
-const STORAGE_KEYS = {
-  QAIR_PARASITE: 'Qair_parasite_AIRINJECTION',
-  T_AIR_PARASITE: 'T_air_parasite_AIRINJECTION',
-  T_AMONT_AIRINJECTION: 'T_amont_AIRINJECTION',
-  PDC_AERO: 'PDC_aero_AIRINJECTION',
-  CALCULATION_RESULT: 'calculationResult_AIRINJECTION'
-};
+// Constantes pour localStorage (suffixées par nodeId)
+const getStorageKeys = (nodeId) => ({
+  QAIR_PARASITE: `Qair_parasite_AIRINJECTION_${nodeId}`,
+  T_AIR_PARASITE: `T_air_parasite_AIRINJECTION_${nodeId}`,
+  T_AMONT_AIRINJECTION: `T_amont_AIRINJECTION_${nodeId}`,
+  PDC_AERO: `PDC_aero_AIRINJECTION_${nodeId}`,
+  CALCULATION_RESULT: `calculationResult_AIRINJECTION_${nodeId}`
+});
 
 // Valeurs par défaut
 const DEFAULT_VALUES = {
@@ -31,26 +31,28 @@ const DEFAULT_VALUES = {
   PDC_aero: '10'
 };
 
-const AIRINJECTION_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage, autoTrigger = false }) => {
+const AIRINJECTION_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage, nodeId, autoTrigger = false }) => {
+  const STORAGE_KEYS = useMemo(() => getStorageKeys(nodeId), [nodeId]);
+
   // États principaux
   const [Qair_parasite, setQair_parasite] = useState(() =>
-    localStorage.getItem(STORAGE_KEYS.QAIR_PARASITE) || DEFAULT_VALUES.Qair_parasite
+    localStorage.getItem(getStorageKeys(nodeId).QAIR_PARASITE) || DEFAULT_VALUES.Qair_parasite
   );
   const [T_air_parasite, setT_air_parasite] = useState(() =>
-    localStorage.getItem(STORAGE_KEYS.T_AIR_PARASITE) || DEFAULT_VALUES.T_air_parasite
+    localStorage.getItem(getStorageKeys(nodeId).T_AIR_PARASITE) || DEFAULT_VALUES.T_air_parasite
   );
   const [T_amont_AIRINJECTION, setT_amont_AIRINJECTION] = useState(() =>
-    localStorage.getItem(STORAGE_KEYS.T_AMONT_AIRINJECTION) ||
+    localStorage.getItem(getStorageKeys(nodeId).T_AMONT_AIRINJECTION) ||
     nodeData?.result?.dataFlow?.T || DEFAULT_VALUES.T_amont_AIRINJECTION
   );
   const [PDC_aero, setPDC_aero] = useState(() =>
-    localStorage.getItem(STORAGE_KEYS.PDC_AERO) || DEFAULT_VALUES.PDC_aero
+    localStorage.getItem(getStorageKeys(nodeId).PDC_AERO) || DEFAULT_VALUES.PDC_aero
   );
 
   // États pour l'interface
   const [CalculationResult_AIRINJECTION, setCalculationResult_AIRINJECTION] = useState(() => {
     try {
-      const stored = localStorage.getItem(STORAGE_KEYS.CALCULATION_RESULT);
+      const stored = localStorage.getItem(getStorageKeys(nodeId).CALCULATION_RESULT);
       return stored ? JSON.parse(stored) : null;
     } catch (error) {
       console.warn('Erreur lors du chargement des résultats:', error);
@@ -272,7 +274,7 @@ const AIRINJECTION_Parameter_Tab = ({ nodeData, title, onSendData, onClose, curr
           disabled={isCalculating || !nodeData?.result}
           currentLanguage={currentLanguage}
           isCalculating={isCalculating}
-          storageKey={`calcSent_${title}`}
+          storageKey={`calcSent_${title}_${nodeId}`}
         />
 
         <ShowResultButton

@@ -12,26 +12,26 @@ import CalculateSendButton from '../../C_Components/CalculateSendButton';
 import BHF_Retro_Rapport from './BHF_Retro_Rapport';
 import '../../index.css';
 
-const BHF_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage, autoTrigger = false }) => {
-  const [Qair_decolmatation, setQair_decolmatation] = useState(() => parseFloat(localStorage.getItem('Qair_decolmatation_BHF')) || 500);
-  const [T_air_decolmatation, setT_air_decolmatation] = useState(() => parseFloat(localStorage.getItem('T_air_decolmatation_BHF')) || 15);
-  const [T_amont_BHF, setT_amont_BHF] = useState(() => parseFloat(localStorage.getItem('T_amont_BHF')) || nodeData?.result?.dataFlow?.T || '10');
-  const [PDC_aero, setPDC_aero] = useState(() => localStorage.getItem('PDC_aero_BHF') || '200');
+const BHF_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage, autoTrigger = false, nodeId }) => {
+  const [Qair_decolmatation, setQair_decolmatation] = useState(() => parseFloat(localStorage.getItem(`Qair_decolmatation_BHF_${nodeId}`)) || 500);
+  const [T_air_decolmatation, setT_air_decolmatation] = useState(() => parseFloat(localStorage.getItem(`T_air_decolmatation_BHF_${nodeId}`)) || 15);
+  const [T_amont_BHF, setT_amont_BHF] = useState(() => parseFloat(localStorage.getItem(`T_amont_BHF_${nodeId}`)) || nodeData?.result?.dataFlow?.T || '10');
+  const [PDC_aero, setPDC_aero] = useState(() => localStorage.getItem(`PDC_aero_BHF_${nodeId}`) || '200');
 
   const [CalculationResult_BHF, setCalculationResult] = useState(null);
   const [isSliderOpen, setIsSliderOpen] = useState(false);
   const [showReport, setShowReport] = useState(false);
 
-  useEffect(() => {localStorage.setItem('Qair_decolmatation_BHF', Qair_decolmatation);}, [Qair_decolmatation]);
-  useEffect(() => {localStorage.setItem('T_air_decolmatation_BHF', T_air_decolmatation);}, [T_air_decolmatation]);
-  useEffect(() => {localStorage.setItem('T_amont_BHF', T_amont_BHF);}, [T_amont_BHF]);
-  useEffect(() => { localStorage.setItem('PDC_aero_BHF', PDC_aero); }, [PDC_aero]);
+  useEffect(() => {localStorage.setItem(`Qair_decolmatation_BHF_${nodeId}`, Qair_decolmatation);}, [Qair_decolmatation, nodeId]);
+  useEffect(() => {localStorage.setItem(`T_air_decolmatation_BHF_${nodeId}`, T_air_decolmatation);}, [T_air_decolmatation, nodeId]);
+  useEffect(() => {localStorage.setItem(`T_amont_BHF_${nodeId}`, T_amont_BHF);}, [T_amont_BHF, nodeId]);
+  useEffect(() => { localStorage.setItem(`PDC_aero_BHF_${nodeId}`, PDC_aero); }, [PDC_aero, nodeId]);
 
   useEffect(() => {
     if (CalculationResult_BHF) {
-      localStorage.setItem('CalculationResult_BHF', JSON.stringify(CalculationResult_BHF));
+      localStorage.setItem(`CalculationResult_BHF_${nodeId}`, JSON.stringify(CalculationResult_BHF));
     }
-  }, [CalculationResult_BHF]);
+  }, [CalculationResult_BHF, nodeId]);
 
   useEffect(() => {
     if (nodeData?.result) {
@@ -91,11 +91,11 @@ const BHF_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLangua
     setPDC_aero('200');
     setCalculationResult(null);
     setIsSliderOpen(false);
-    localStorage.removeItem('PDC_aero_BHF');
-    localStorage.removeItem('Qair_decolmatation_BHF');
-    localStorage.removeItem('T_air_decolmatation_BHF');
-    localStorage.removeItem('T_amont_BHF');
-    localStorage.removeItem('CalculationResult_BHF');
+    localStorage.removeItem(`PDC_aero_BHF_${nodeId}`);
+    localStorage.removeItem(`Qair_decolmatation_BHF_${nodeId}`);
+    localStorage.removeItem(`T_air_decolmatation_BHF_${nodeId}`);
+    localStorage.removeItem(`T_amont_BHF_${nodeId}`);
+    localStorage.removeItem(`CalculationResult_BHF_${nodeId}`);
   };
 
   const hasCalculatedOnce = useRef(false);
@@ -124,7 +124,7 @@ const BHF_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLangua
       </div>
 
       <div className="prez-3-buttons">
-        <CalculateSendButton onClick={handleSendData} currentLanguage={currentLanguage} storageKey={`calcSent_${title}`} />
+        <CalculateSendButton onClick={handleSendData} currentLanguage={currentLanguage} storageKey={`calcSent_${title}_${nodeId}`} />
         <ShowResultButton isOpen={isSliderOpen} onToggle={toggleSlider} currentLanguage={currentLanguage} />
         <ClearButton onClick={clearMemory} currentLanguage={currentLanguage} />
       </div>

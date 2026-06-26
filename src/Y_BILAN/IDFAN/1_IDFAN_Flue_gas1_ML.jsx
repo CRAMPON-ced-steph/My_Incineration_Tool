@@ -6,7 +6,8 @@ import { h_fumee } from '../../A_Transverse_fonction/enthalpy_mix_gas';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './IDFAN_traduction';
 
-const IDFANFlueGasParameters = ({ innerData, upstreamT_IN, upstreamFG_IN, upstreamP_IN, currentLanguage = 'fr' }) => {
+import { fmt } from '../../A_Transverse_fonction/formatNumber';
+const IDFANFlueGasParameters = ({ innerData, upstreamT_IN, upstreamFG_IN, upstreamP_IN, currentLanguage = 'fr', nodeId }) => {
   const initialEmissions_IDFAN = {
     'Electrical yield [%]': 70,
     'Radiative losses [%]': 5,
@@ -26,7 +27,7 @@ const IDFANFlueGasParameters = ({ innerData, upstreamT_IN, upstreamFG_IN, upstre
   const [transmissionType, setTransmissionType] = useState('courroies');
 
   const [emissions_IDFAN, setEmissions_IDFAN] = useState(() => {
-    const savedEmissions = localStorage.getItem('emissions_IDFAN');
+    const savedEmissions = localStorage.getItem(`emissions_IDFAN_${nodeId}`);
     return savedEmissions ? JSON.parse(savedEmissions) : initialEmissions_IDFAN;
   });
 
@@ -50,7 +51,7 @@ const IDFANFlueGasParameters = ({ innerData, upstreamT_IN, upstreamFG_IN, upstre
   };
 
   useEffect(() => {
-    localStorage.setItem('emissions_IDFAN', JSON.stringify(emissions_IDFAN));
+    localStorage.setItem(`emissions_IDFAN_${nodeId}`, JSON.stringify(emissions_IDFAN));
   }, [emissions_IDFAN]);
 
   // Données amont — transmises depuis IDFANMainPage, stables à travers les changements d'onglet
@@ -161,22 +162,22 @@ const IDFANFlueGasParameters = ({ innerData, upstreamT_IN, upstreamFG_IN, upstre
   };
 
   const elementsGeneric = [
-    { text: t('Flow rate [m³/h at conditions]'), value: FG_humide_CONV.toFixed(0) },
-    { text: t('Total pressure drop [mmCE]'), value: delta_P_total_mmCE.toFixed(0) },
-    { text: t('Aeraulic power [kW]'), value: P_aeraulique_kW.toFixed(3) },
-    { text: t('Mechanical power [kW]'), value: P_mecanique_kW.toFixed(3) },
-    { text: t('Electrical power (before safety) [kWe]'), value: P_elec_brute_kW.toFixed(3) },
-    { text: t('Electrical power (with safety) [kWe]'), value: P_elec_kW.toFixed(2) },
-    { text: t('Fan efficiency [%]'), value: (eta_ventilateur * 100).toFixed(1) },
-    { text: t('Motor efficiency [%]'), value: (eta_moteur * 100).toFixed(1) },
-    { text: t('Transmission efficiency [%]'), value: (eta_transmission * 100).toFixed(1) },
+    { text: t('Flow rate [m³/h at conditions]'), value: fmt(FG_humide_CONV, 0) },
+    { text: t('Total pressure drop [mmCE]'), value: fmt(delta_P_total_mmCE, 0) },
+    { text: t('Aeraulic power [kW]'), value: fmt(P_aeraulique_kW, 3) },
+    { text: t('Mechanical power [kW]'), value: fmt(P_mecanique_kW, 3) },
+    { text: t('Electrical power (before safety) [kWe]'), value: fmt(P_elec_brute_kW, 3) },
+    { text: t('Electrical power (with safety) [kWe]'), value: fmt(P_elec_kW, 2) },
+    { text: t('Fan efficiency [%]'), value: fmt((eta_ventilateur * 100), 1) },
+    { text: t('Motor efficiency [%]'), value: fmt((eta_moteur * 100), 1) },
+    { text: t('Transmission efficiency [%]'), value: fmt((eta_transmission * 100), 1) },
     { text: t('Global efficiency [%]'), value: ((eta_ventilateur * eta_moteur * eta_transmission) * 100).toFixed(1) },
-    { text: t('Temperature inlet IDFAN [°C]'), value: T_in.toFixed(1) },
-    { text: t('Temperature outlet IDFAN [°C]'), value: T_out.toFixed(1) },
-    { text: t('Temperature rise (calculated) [°C]'), value: delta_T_fumees.toFixed(3) },
-    { text: t('Power transmitted to flue gas [kW]'), value: P_vers_fumees.toFixed(3) },
-    { text: t('Power lost to ambient [kW]'), value: P_vers_ambiance.toFixed(3) },
-    { text: t('Pressure inlet [mmCE]'), value: P_inlet.toFixed(0) },
+    { text: t('Temperature inlet IDFAN [°C]'), value: fmt(T_in, 1) },
+    { text: t('Temperature outlet IDFAN [°C]'), value: fmt(T_out, 1) },
+    { text: t('Temperature rise (calculated) [°C]'), value: fmt(delta_T_fumees, 3) },
+    { text: t('Power transmitted to flue gas [kW]'), value: fmt(P_vers_fumees, 3) },
+    { text: t('Power lost to ambient [kW]'), value: fmt(P_vers_ambiance, 3) },
+    { text: t('Pressure inlet [mmCE]'), value: fmt(P_inlet, 0) },
   ];
 
   const handleChange = (name, value) => {
@@ -192,7 +193,7 @@ const IDFANFlueGasParameters = ({ innerData, upstreamT_IN, upstreamFG_IN, upstre
   };
 
   const clearMemory = useCallback(() => {
-    localStorage.removeItem('emissions_IDFAN');
+    localStorage.removeItem(`emissions_IDFAN_${nodeId}`);
     setEmissions_IDFAN(initialEmissions_IDFAN);
     setFanType('centrifuge_standard');
     setMotorType('standard');
@@ -379,10 +380,10 @@ const IDFANFlueGasParameters = ({ innerData, upstreamT_IN, upstreamFG_IN, upstre
       <TableGeneric elements={elementsGeneric} />
       
       <h3>{t('Flue gas composition')}</h3>
-      <h4>{t('Flue gas inlet at inlet temperature')} ({T_in.toFixed(1)}°C)</h4>
+      <h4>{t('Flue gas inlet at inlet temperature')} ({fmt(T_in, 1)}°C)</h4>
       <MassCalculator masses={masses_FG_in_IDFAN} TemperatureImposee={T_in} />
 
-      <h4>{t('Flue gas outlet at outlet temperature')} ({T_out.toFixed(1)}°C)</h4>
+      <h4>{t('Flue gas outlet at outlet temperature')} ({fmt(T_out, 1)}°C)</h4>
       <MassCalculator masses={masses_FG_in_IDFAN} TemperatureImposee={T_out} />
     </div>
   );

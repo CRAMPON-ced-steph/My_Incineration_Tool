@@ -7,6 +7,7 @@ import fond_transparent from '../../B_Images/fond_transparent.jpg';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './BHF_traduction';
 
+import { fmt } from '../../A_Transverse_fonction/formatNumber';
 const BHFDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
   const getInitialValue = (paramName, defaultValue) => {
     return innerData?.[paramName] !== undefined ? innerData[paramName] : defaultValue;
@@ -96,12 +97,12 @@ const BHFDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
   let cout_transport_total = cendres_kg_h === 0 ? 0 : cout_transport_euro_km * distance_km;
 
   const elementsGeneric = [
-    { text: t('Surface des manches [m²]'), value: surfaceManches.toFixed(2) },
-    { text: t('Consommation air comprimé [Nm3/h]'), value: conso_air_co_Nm3_h.toFixed(2) },
-    { text: t('Pression air comprimé [Bar]'), value: pression_air_comprime_bar.toFixed(1) },
-    { text: t('Residus du BHF [kg/h]'), value: cendres_kg_h.toFixed(2) },
-    { text: t('CO2 transport total [kg]'), value: CO2_transport_total.toFixed(2) },
-    { text: t('Coût transport total [€]'), value: cout_transport_total.toFixed(2) },
+    { text: t('Surface des manches [m²]'), value: fmt(surfaceManches, 2) },
+    { text: t('Consommation air comprimé [Nm3/h]'), value: fmt(conso_air_co_Nm3_h, 2) },
+    { text: t('Pression air comprimé [Bar]'), value: fmt(pression_air_comprime_bar, 1) },
+    { text: t('Residus du BHF [kg/h]'), value: fmt(cendres_kg_h, 2) },
+    { text: t('CO2 transport total [kg]'), value: fmt(CO2_transport_total, 2) },
+    { text: t('Coût transport total [€]'), value: fmt(cout_transport_total, 2) },
   ];
 
   const handleParametresChange = (name, value) => {
@@ -212,7 +213,7 @@ const BHFDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
   return (
     <div className="cadre_pour_onglet">
       {/* Pertes de charge aéraulique */}
-      <Section title={t('Pertes de charge aéraulique')} results={[{ text: t('Pression de sortie [mmCE]'), value: P_out_mmCE.toFixed(2) }]}>
+      <Section title={t('Pertes de charge aéraulique')} results={[{ text: t('Pression de sortie [mmCE]'), value: fmt(P_out_mmCE, 2) }]}>
         <ParameterInput translationKey="Pression aéraulique [mmCE]" value={PDC_calcul['Pression aéraulique [mmCE]']} 
           onChange={(v) => handleParametresChange('Pression aéraulique [mmCE]', v)} />
         <ParameterInput translationKey="PDC [mmCE]" value={PDC_calcul['PDC [mmCE]']} 
@@ -223,8 +224,8 @@ const BHFDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
       <Section 
         title={t('Dimensionnement du FAM')}
         results={[
-          { text: t('Surface des manches [m²]'), value: surfaceManches.toFixed(2) },
-          { text: t('Pression de sortie [mmCE]'), value: P_out_mmCE.toFixed(2) },
+          { text: t('Surface des manches [m²]'), value: fmt(surfaceManches, 2) },
+          { text: t('Pression de sortie [mmCE]'), value: fmt(P_out_mmCE, 2) },
         ]}
       >
         <div style={{ display: 'flex', gap: '20px', marginBottom: '20px' }}>
@@ -242,7 +243,7 @@ const BHFDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
 
       {/* Consommation électrique vis */}
       <Section title={t('Consommation électrique de la vis sans fin')} results={[
-        { text: t('conso elec vis de transport [kW]'), value: Conso_elec_vis_transport_kW.toFixed(2) },
+        { text: t('conso elec vis de transport [kW]'), value: fmt(Conso_elec_vis_transport_kW, 2) },
       ]}>
         <ParameterInput translationKey="conso elec vis de transport [kW]" value={Conso_elec_vis_transport_kW} 
           onChange={(v) => handleParametresChange('conso elec vis de transport [kW]', v)} />
@@ -250,8 +251,8 @@ const BHFDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
 
       {/* Consommation air comprimé */}
       <Section title={t('Consommation d\'air comprimé')} results={[
-        { text: t('Consommation air comprimé [Nm3/h]'), value: conso_air_co_Nm3_h.toFixed(2) },
-        { text: t('Conso élec air comprimé [kW]'), value: Conso_elec_air_co_kW.toFixed(2) },
+        { text: t('Consommation air comprimé [Nm3/h]'), value: fmt(conso_air_co_Nm3_h, 2) },
+        { text: t('Conso élec air comprimé [kW]'), value: fmt(Conso_elec_air_co_kW, 2) },
       ]}>
         <ParameterInput translationKey="Nombre de cycles [Nb]" value={nombre_cycle_nb} 
           onChange={(v) => handleParametresChange('Nombre de cycles [Nb]', v)} />
@@ -264,11 +265,11 @@ const BHFDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
 
       {/* Évacuation résidus */}
       <Section title={t('Évacuation des residus BHF')} results={[
-        { text: t('Residus du BHF [kg/h]'), value: cendres_kg_h.toFixed(2) },
+        { text: t('Residus du BHF [kg/h]'), value: fmt(cendres_kg_h, 2) },
         { text: t('Type de camion'), value: type_camion },
-        { text: t('Distance [km]'), value: distance_km.toFixed(0) },
-        { text: t('CO2 transport total [kg]'), value: CO2_transport_total.toFixed(2) },
-        { text: t('Coût transport total [€]'), value: cout_transport_total.toFixed(2) },
+        { text: t('Distance [km]'), value: fmt(distance_km, 0) },
+        { text: t('CO2 transport total [kg]'), value: fmt(CO2_transport_total, 2) },
+        { text: t('Coût transport total [€]'), value: fmt(cout_transport_total, 2) },
       ]}>
         <ParameterInput translationKey="Type de camion" value={type_camion} 
           onChange={(v) => handleParametresChange('Type de camion', v)}
@@ -281,13 +282,13 @@ const BHFDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
       <div style={{ padding: '20px', maxWidth: '1000px', margin: '0 auto', backgroundColor: '#e8f4f8', borderRadius: '8px' }}>
         <h3>{t('Résumé des paramètres principaux')}</h3>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '20px' }}>
-          <p><strong>{t('Surface des manches [m²]')}:</strong> {surfaceManches.toFixed(2)} m²</p>
+          <p><strong>{t('Surface des manches [m²]')}:</strong> {fmt(surfaceManches, 2)} m²</p>
           <p><strong>{t('Rendement de capture [%]')}:</strong> {Rdt_capture}%</p>
           <p><strong>{t('Vitesse de filtration [m/h]')}:</strong> {Vitesse_filtration_m_h} m/h</p>
           <p><strong>{t('Pression air comprimé [Bar]')}:</strong> {pression_air_comprime_bar} Bar</p>
-          <p><strong>{t('Consommation air comprimé [Nm3/h]')}:</strong> {conso_air_co_Nm3_h.toFixed(2)} Nm³/h</p>
-          <p><strong>{t('Conso élec air comprimé [kW]')}:</strong> {Conso_elec_air_co_kW.toFixed(2)} kW</p>
-          <p><strong>{t('Residus du BHF [kg/h]')}:</strong> {cendres_kg_h.toFixed(2)} kg/h</p>
+          <p><strong>{t('Consommation air comprimé [Nm3/h]')}:</strong> {fmt(conso_air_co_Nm3_h, 2)} Nm³/h</p>
+          <p><strong>{t('Conso élec air comprimé [kW]')}:</strong> {fmt(Conso_elec_air_co_kW, 2)} kW</p>
+          <p><strong>{t('Residus du BHF [kg/h]')}:</strong> {fmt(cendres_kg_h, 2)} kg/h</p>
           <p><strong>{t('Type de camion')}:</strong> {type_camion}</p>
         </div>
         <h4>{t('Paramètres calculés détaillés')}</h4>

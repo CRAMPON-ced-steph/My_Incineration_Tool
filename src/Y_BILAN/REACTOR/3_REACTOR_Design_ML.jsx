@@ -7,6 +7,7 @@ import REACTORimage from '/src/B_Images/SDA_img.png';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './REACTOR_traduction';
 
+import { fmt } from '../../A_Transverse_fonction/formatNumber';
 const REACTORDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
   const getInitialValue = (paramName, defaultValue) => {
     return innerData?.[paramName] !== undefined ? innerData[paramName] : defaultValue;
@@ -161,15 +162,15 @@ const REACTORDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
 
   // Generic table elements
   const elementsGeneric = [
-    { text: t('Reactor Volume [m³]'), value: reactorResults.reactorVolume.toFixed(1) },
-    { text: t('Reactor Diameter [m]'), value: reactorResults.diameter.toFixed(2) },
-    { text: t('Reactor Height [m]'), value: reactorResults.height.toFixed(2) },
-    { text: t('Residence Time [s]'), value: reactorResults.residenceTime.toFixed(1) },
-    { text: t('Compressed Air Consumption [Nm3/h]'), value: conso_air_co_Nm3_h.toFixed(2) },
-    { text: t('Compressed Air Pressure [Bar]'), value: pression_air_comprime_bar.toFixed(1) },
-    { text: t('Residues [kg/h]'), value: cendres_kg_h.toFixed(2) },
-    { text: t('CO2 Transport Total [kg]'), value: CO2_transport_total.toFixed(2) },
-    { text: t('Cost Transport Total [€]'), value: cout_transport_total.toFixed(2) },
+    { text: t('Reactor Volume [m³]'), value: fmt(reactorResults.reactorVolume, 1) },
+    { text: t('Reactor Diameter [m]'), value: fmt(reactorResults.diameter, 2) },
+    { text: t('Reactor Height [m]'), value: fmt(reactorResults.height, 2) },
+    { text: t('Residence Time [s]'), value: fmt(reactorResults.residenceTime, 1) },
+    { text: t('Compressed Air Consumption [Nm3/h]'), value: fmt(conso_air_co_Nm3_h, 2) },
+    { text: t('Compressed Air Pressure [Bar]'), value: fmt(pression_air_comprime_bar, 1) },
+    { text: t('Residues [kg/h]'), value: fmt(cendres_kg_h, 2) },
+    { text: t('CO2 Transport Total [kg]'), value: fmt(CO2_transport_total, 2) },
+    { text: t('Cost Transport Total [€]'), value: fmt(cout_transport_total, 2) },
   ];
 
   // Event handlers
@@ -315,7 +316,7 @@ const REACTORDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
             onChange={(v) => handleChange('PDC [mmCE]', v)} />
         </div>
         <div style={{ flex: 1 }}>
-          <TableGeneric elements={[{ text: t('Output Pressure [mmCE]'), value: P_out_mmCE.toFixed(2) }]} />
+          <TableGeneric elements={[{ text: t('Output Pressure [mmCE]'), value: fmt(P_out_mmCE, 2) }]} />
         </div>
       </Section>
 
@@ -338,12 +339,12 @@ const REACTORDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
             options={['mechanical', 'air']} />
           <h4 style={{ marginTop: '15px' }}>{t('Design Results')}</h4>
           <TableGeneric elements={[
-            { text: t('Reactor Volume [m³]'), value: reactorResults.reactorVolume.toFixed(1) },
-            { text: t('Diameter [m]'), value: reactorResults.diameter.toFixed(2) },
-            { text: t('Height [m]'), value: reactorResults.height.toFixed(2) },
-            { text: t('Agitation Power [kW]'), value: reactorResults.agitationPower.toFixed(2) },
+            { text: t('Reactor Volume [m³]'), value: fmt(reactorResults.reactorVolume, 1) },
+            { text: t('Diameter [m]'), value: fmt(reactorResults.diameter, 2) },
+            { text: t('Height [m]'), value: fmt(reactorResults.height, 2) },
+            { text: t('Agitation Power [kW]'), value: fmt(reactorResults.agitationPower, 2) },
             ...(reactorParams['Agitation Type'] === 'air' ? [
-              { text: t('Air Consumption [Nm3/h]'), value: reactorResults.reactorAirConsumption.toFixed(0) },
+              { text: t('Air Consumption [Nm3/h]'), value: fmt(reactorResults.reactorAirConsumption, 0) },
             ] : []),
           ]} />
         </div>
@@ -356,7 +357,7 @@ const REACTORDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
             onChange={(v) => handleChange('Electric consumption belt [kW]', v)} />
         </div>
         <div style={{ flex: 1 }}>
-          <TableGeneric elements={[{ text: t('Belt Consumption [kW]'), value: Conso_elec_vis_transport_kW.toFixed(2) }]} />
+          <TableGeneric elements={[{ text: t('Belt Consumption [kW]'), value: fmt(Conso_elec_vis_transport_kW, 2) }]} />
         </div>
       </Section>
 
@@ -373,8 +374,8 @@ const REACTORDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
         </div>
         <div style={{ flex: 1 }}>
           <TableGeneric elements={[
-            { text: t('Air Consumption [Nm3/h]'), value: conso_air_co_Nm3_h.toFixed(2) },
-            { text: t('Electric Consumption [kW]'), value: Conso_elec_air_co_kW.toFixed(2) },
+            { text: t('Air Consumption [Nm3/h]'), value: fmt(conso_air_co_Nm3_h, 2) },
+            { text: t('Electric Consumption [kW]'), value: fmt(Conso_elec_air_co_kW, 2) },
           ]} />
         </div>
       </Section>
@@ -390,11 +391,11 @@ const REACTORDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
         </div>
         <div style={{ flex: 1 }}>
           <TableGeneric elements={[
-            { text: t('Residues [kg/h]'), value: cendres_kg_h.toFixed(2) },
+            { text: t('Residues [kg/h]'), value: fmt(cendres_kg_h, 2) },
             { text: t('Truck Type'), value: type_camion },
-            { text: t('Distance [km]'), value: distance_km.toFixed(0) },
-            { text: t('CO2 Transport [kg]'), value: CO2_transport_total.toFixed(2) },
-            { text: t('Cost Transport [€]'), value: cout_transport_total.toFixed(2) },
+            { text: t('Distance [km]'), value: fmt(distance_km, 0) },
+            { text: t('CO2 Transport [kg]'), value: fmt(CO2_transport_total, 2) },
+            { text: t('Cost Transport [€]'), value: fmt(cout_transport_total, 2) },
           ]} />
         </div>
       </Section>
@@ -403,13 +404,13 @@ const REACTORDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
       <div style={{ padding: '20px', maxWidth: '1000px', margin: '0 auto', backgroundColor: '#e8f4f8', borderRadius: '8px' }}>
         <h3>{t('Summary of Main Parameters')}</h3>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '20px' }}>
-          <p><strong>{t('Reactor Volume [m³]')}:</strong> {reactorResults.reactorVolume.toFixed(1)} m³</p>
-          <p><strong>{t('Diameter [m]')}:</strong> {reactorResults.diameter.toFixed(2)} m</p>
-          <p><strong>{t('Height [m]')}:</strong> {reactorResults.height.toFixed(2)} m</p>
+          <p><strong>{t('Reactor Volume [m³]')}:</strong> {fmt(reactorResults.reactorVolume, 1)} m³</p>
+          <p><strong>{t('Diameter [m]')}:</strong> {fmt(reactorResults.diameter, 2)} m</p>
+          <p><strong>{t('Height [m]')}:</strong> {fmt(reactorResults.height, 2)} m</p>
           <p><strong>{t('L/D Ratio')}:</strong> {reactorParams['L/D Ratio']}</p>
           <p><strong>{t('Compressed Air Pressure [Bar]')}:</strong> {pression_air_comprime_bar} Bar</p>
-          <p><strong>{t('Air Consumption [Nm3/h]')}:</strong> {conso_air_co_Nm3_h.toFixed(2)} Nm³/h</p>
-          <p><strong>{t('Electric Consumption [kW]')}:</strong> {Conso_elec_air_co_kW.toFixed(2)} kW</p>
+          <p><strong>{t('Air Consumption [Nm3/h]')}:</strong> {fmt(conso_air_co_Nm3_h, 2)} Nm³/h</p>
+          <p><strong>{t('Electric Consumption [kW]')}:</strong> {fmt(Conso_elec_air_co_kW, 2)} kW</p>
           <p><strong>{t('Truck Type')}:</strong> {type_camion}</p>
         </div>
         <h4>{t('Detailed Calculated Parameters')}</h4>

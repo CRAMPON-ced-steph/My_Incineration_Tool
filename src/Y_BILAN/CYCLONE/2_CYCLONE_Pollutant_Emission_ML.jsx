@@ -5,7 +5,8 @@ import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './CYCLONE_traduction';
 import '../../index.css';
 
-const CYCLONEFlueGasPollutantEmission = ({ innerData, currentLanguage = 'fr' }) => {
+import { fmt } from '../../A_Transverse_fonction/formatNumber';
+const CYCLONEFlueGasPollutantEmission = ({ innerData, nodeId, currentLanguage = 'fr' }) => {
   const initialEmission_pollutant_cyclone = {
     'Fly residus content outlet [g/Nm3]': 1,
     'siccity bottom ash [%]': 66,
@@ -18,12 +19,12 @@ const CYCLONEFlueGasPollutantEmission = ({ innerData, currentLanguage = 'fr' }) 
   };
 
   const [emission_pollutant_cyclone, setEmission_pollutant_cyclone] = useState(() => {
-    const savedEmissions = localStorage.getItem('emission_pollutant_cyclone_CYCLONE');
+    const savedEmissions = localStorage.getItem(`emission_pollutant_cyclone_CYCLONE_${nodeId}`);
     return savedEmissions ? JSON.parse(savedEmissions) : initialEmission_pollutant_cyclone;
   });
 
   useEffect(() => {
-    localStorage.setItem('emission_pollutant_cyclone_CYCLONE', JSON.stringify(emission_pollutant_cyclone));
+    localStorage.setItem(`emission_pollutant_cyclone_CYCLONE_${nodeId}`, JSON.stringify(emission_pollutant_cyclone));
   }, [emission_pollutant_cyclone]);
 
   // Extract parameters from state
@@ -76,15 +77,15 @@ const CYCLONEFlueGasPollutantEmission = ({ innerData, currentLanguage = 'fr' }) 
   }
 
   const elementsGeneric = [
-    { text: t('Waste Flow [kg/h]'), value: masse_dechets.toFixed(2) },
-    { text: t('Flue gas Flow Wet [Nm3/h]'), value: Debit_fumees_humide_Nm3_h.toFixed(0) },
-    { text: t('Flue gas Flow Dry [Nm3/h]'), value: Debit_fumees_sec_Nm3_h.toFixed(0) },
-    { text: t('O2 calculated [%]'), value: FG_O2_calcule.toFixed(2) },
-    { text: t('Fly ash inlet [kg/h]'), value: Fly_ash_in_kg_h.toFixed(2) },
+    { text: t('Waste Flow [kg/h]'), value: fmt(masse_dechets, 2) },
+    { text: t('Flue gas Flow Wet [Nm3/h]'), value: fmt(Debit_fumees_humide_Nm3_h, 0) },
+    { text: t('Flue gas Flow Dry [Nm3/h]'), value: fmt(Debit_fumees_sec_Nm3_h, 0) },
+    { text: t('O2 calculated [%]'), value: fmt(FG_O2_calcule, 2) },
+    { text: t('Fly ash inlet [kg/h]'), value: fmt(Fly_ash_in_kg_h, 2) },
   ];
 
   const residusCalculations = [
-    { text: t('Cyclone residus [kg/h]'), value: CYCLONE_Ash_kg_h.toFixed(2) },
+    { text: t('Cyclone residus [kg/h]'), value: fmt(CYCLONE_Ash_kg_h, 2) },
   ];
 
   const handleChange = (name, value) => {
@@ -105,13 +106,13 @@ const CYCLONEFlueGasPollutantEmission = ({ innerData, currentLanguage = 'fr' }) 
   };
 
   const clearMemory = useCallback(() => {
-    localStorage.removeItem('emission_pollutant_cyclone_CYCLONE');
+    localStorage.removeItem(`emission_pollutant_cyclone_CYCLONE_${nodeId}`);
     setEmission_pollutant_cyclone(initialEmission_pollutant_cyclone);
   }, []);
 
   const handleReset = () => {
     setEmission_pollutant_cyclone(initialEmission_pollutant_cyclone);
-    localStorage.removeItem('emission_pollutant_cyclone_CYCLONE');
+    localStorage.removeItem(`emission_pollutant_cyclone_CYCLONE_${nodeId}`);
   };
 
   return (

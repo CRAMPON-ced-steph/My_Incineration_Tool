@@ -6,7 +6,8 @@ import { h_fumee, TEMP_FUMEE } from '../../../A_Transverse_fonction/enthalpy_mix
 import { CpL_T } from '../../../A_Transverse_fonction/steam_table3';
 import { cp_air_kWh_m3_degree, D_TLM, Fact_UA, Surface_echange } from '../../../A_Transverse_fonction/bilan_fct_FB';
 
-const STORAGE_KEY = 'TUBEANDSHELL_params';
+import { fmt } from '../../../A_Transverse_fonction/formatNumber';
+const getStorageKey = (nodeId) => `TUBEANDSHELL_params_${nodeId}`;
 
 const DEFAULT = {
   fluide: 'eau',
@@ -93,10 +94,10 @@ const SectionTitle = ({ text }) => (
 );
 
 // ─── Composant principal ───────────────────────────────────────────────────────
-const TubeAndShellParameters = ({ innerData, upstreamT_IN, upstreamFG_IN, upstreamP_IN }) => {
+const TubeAndShellParameters = ({ innerData, upstreamT_IN, upstreamFG_IN, upstreamP_IN, nodeId }) => {
   const [params, setParams] = useState(() => {
     try {
-      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+      const saved = JSON.parse(localStorage.getItem(getStorageKey(nodeId)) || '{}');
       const defaultT_out = (upstreamT_IN ?? 200) - 200;
       const bilanType = saved.bilanType === 'T_fumee_sortie' ? 'T_sortie' : saved.bilanType;
       return {
@@ -112,7 +113,7 @@ const TubeAndShellParameters = ({ innerData, upstreamT_IN, upstreamFG_IN, upstre
   });
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(params));
+    localStorage.setItem(getStorageKey(nodeId), JSON.stringify(params));
   }, [params]);
 
   const set = useCallback((key, val) => setParams(prev => ({ ...prev, [key]: val })), []);
@@ -237,7 +238,7 @@ const TubeAndShellParameters = ({ innerData, upstreamT_IN, upstreamFG_IN, upstre
   }
 
   const clearMemory = useCallback(() => {
-    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(getStorageKey(nodeId));
     setParams({ ...DEFAULT });
   }, []);
 
@@ -284,8 +285,8 @@ const TubeAndShellParameters = ({ innerData, upstreamT_IN, upstreamFG_IN, upstre
         {/* Côté fumées */}
         <div style={sectionStyle}>
           <SectionTitle text="Côté fumées" />
-          <InputRow label="T fumées entrée"          disabled value={T_FG_in.toFixed(1)}       unit="[°C]" />
-          <InputRow label="Débit vol. fumées entrée" disabled value={FG_tot_Nm3_h.toFixed(0)}   unit="[Nm³/h]" />
+          <InputRow label="T fumées entrée"          disabled value={fmt(T_FG_in, 1)}       unit="[°C]" />
+          <InputRow label="Débit vol. fumées entrée" disabled value={fmt(FG_tot_Nm3_h, 0)}   unit="[Nm³/h]" />
           <InputRow label="T fumées sortie"          value={params.T_fumee_out ?? 0} onChange={(v) => set('T_fumee_out', v)} unit="[°C]" />
           <InputRow label="PDC écono"                value={params.PDC_econo}        onChange={(v) => set('PDC_econo', v)}   unit="[mmCE]" />
           <InputRowCalc label="Enthalpie fumées entrée"  value={H_FG_in_kWh}  unit="[kWh]" />

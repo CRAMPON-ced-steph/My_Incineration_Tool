@@ -2,13 +2,7 @@ import React from 'react';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './RK_traduction';
 import { getOpexData } from '../../A_Transverse_fonction/opexDataService';
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
-const fmt = (v, decimals = 2) => {
-  const n = parseFloat(v);
-  return isNaN(n) ? '—' : n.toFixed(decimals);
-};
+import { fmt } from '../../A_Transverse_fonction/formatNumber';
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 

@@ -11,7 +11,8 @@ import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './DENOX_traduction';
 import { calculerCombustion } from '../../A_Transverse_fonction/TflammeAdia';
 
-const DENOXFlueGasParameters = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
+import { fmt } from '../../A_Transverse_fonction/formatNumber';
+const DENOXFlueGasParameters = ({ innerData, setInnerData, currentLanguage = 'fr', nodeId }) => {
   // ============ ÉTATS PRINCIPAUX ============
   const initialEmissions_DENOX = {
     'Flue gas temperature before reheating [°C]': 400,
@@ -29,22 +30,22 @@ const DENOXFlueGasParameters = ({ innerData, setInnerData, currentLanguage = 'fr
 
   // États séparés pour meilleure réactivité
   const [emissions_DENOX, setEmissions_DENOX] = useState(() => {
-    const saved = localStorage.getItem('emissions_DENOX');
+    const saved = localStorage.getItem(`emissions_DENOX_${nodeId}`);
     return saved ? JSON.parse(saved) : initialEmissions_DENOX;
   });
 
   const [waterInjection, setWaterInjection] = useState(() => {
-    const saved = localStorage.getItem('water_injection_DENOX');
+    const saved = localStorage.getItem(`water_injection_DENOX_${nodeId}`);
     return saved ? JSON.parse(saved) : true;
   });
 
   const [gasType, setGasType] = useState(() => {
-    const saved = localStorage.getItem('gas_type_DENOX');
+    const saved = localStorage.getItem(`gas_type_DENOX_${nodeId}`);
     return saved ? JSON.parse(saved) : 'gaz H';
   });
 
   const [waterType, setWaterType] = useState(() => {
-    const saved = localStorage.getItem('water_type_DENOX');
+    const saved = localStorage.getItem(`water_type_DENOX_${nodeId}`);
     return saved ? JSON.parse(saved) : 'potable';
   });
 
@@ -61,19 +62,19 @@ const DENOXFlueGasParameters = ({ innerData, setInnerData, currentLanguage = 'fr
 
   // ============ USEEFFECTS POUR LOCALSTORAGE ============
   useEffect(() => {
-    localStorage.setItem('emissions_DENOX', JSON.stringify(emissions_DENOX));
+    localStorage.setItem(`emissions_DENOX_${nodeId}`, JSON.stringify(emissions_DENOX));
   }, [emissions_DENOX]);
 
   useEffect(() => {
-    localStorage.setItem('water_injection_DENOX', JSON.stringify(waterInjection));
+    localStorage.setItem(`water_injection_DENOX_${nodeId}`, JSON.stringify(waterInjection));
   }, [waterInjection]);
 
   useEffect(() => {
-    localStorage.setItem('gas_type_DENOX', JSON.stringify(gasType));
+    localStorage.setItem(`gas_type_DENOX_${nodeId}`, JSON.stringify(gasType));
   }, [gasType]);
 
   useEffect(() => {
-    localStorage.setItem('water_type_DENOX', JSON.stringify(waterType));
+    localStorage.setItem(`water_type_DENOX_${nodeId}`, JSON.stringify(waterType));
   }, [waterType]);
 
   // ============ EXTRACTION DES PARAMÈTRES ============
@@ -316,16 +317,16 @@ const DENOXFlueGasParameters = ({ innerData, setInnerData, currentLanguage = 'fr
   // ============ ÉLÉMENTS DE TABLEAU ============
   const elementsGeneric = [
     { text: t('Temperature inlet DENOX [°C]'), value: T_IN },
-    { text: t('Delta enthalpies [kJ/h]'), value: flueGasCalculations.Delta_H.toFixed(0) },
-    { text: `${t('Sprayed/cooling water [kg/h]')} ${waterInjection ? '(Active)' : '(Disabled)'}`, value: flueGasCalculations.Q_eau_kg_h.toFixed(0) },
-    { text: t('Total humid flue gas output [m³/h]'), value: flueGasCalculations.FG_humide_EAU_tot_m3_h.toFixed(1) },
+    { text: t('Delta enthalpies [kJ/h]'), value: fmt(flueGasCalculations.Delta_H, 0) },
+    { text: `${t('Sprayed/cooling water [kg/h]')} ${waterInjection ? '(Active)' : '(Disabled)'}`, value: fmt(flueGasCalculations.Q_eau_kg_h, 0) },
+    { text: t('Total humid flue gas output [m³/h]'), value: fmt(flueGasCalculations.FG_humide_EAU_tot_m3_h, 1) },
     { text: t('Temperature before reheating [°C]'), value: T_out },
     { text: t('Temperature after reheating [°C]'), value: T_reheat },
-    { text: t('Adiabatic flame temperature [°C]'), value: reheatingCombustionResults.temperature_flamme.toFixed(1) },
-    { text: t('Air factor [-]'), value: reheatingCombustionResults.facteur_air.toFixed(3) },
-    { text: t('Combustion air volume [m³/h]'), value: reheatingCombustionResults.volume_air.toFixed(1) },
-    { text: t('Combustion flue gas volume [m³/h]'), value: reheatingCombustionResults.volume_fumees.toFixed(1) },
-    { text: t('Gas flow rate for reheating [Nm³/h]'), value: reheatingCalculations.debit_gaz_rechauffage.toFixed(1) },
+    { text: t('Adiabatic flame temperature [°C]'), value: fmt(reheatingCombustionResults.temperature_flamme, 1) },
+    { text: t('Air factor [-]'), value: fmt(reheatingCombustionResults.facteur_air, 3) },
+    { text: t('Combustion air volume [m³/h]'), value: fmt(reheatingCombustionResults.volume_air, 1) },
+    { text: t('Combustion flue gas volume [m³/h]'), value: fmt(reheatingCombustionResults.volume_fumees, 1) },
+    { text: t('Gas flow rate for reheating [Nm³/h]'), value: fmt(reheatingCalculations.debit_gaz_rechauffage, 1) },
     { text: t('Calculated mixing temperature [°C]'), value: reheatingCalculations.T_melange_calcule_C }
   ];
 
@@ -338,10 +339,10 @@ const DENOXFlueGasParameters = ({ innerData, setInnerData, currentLanguage = 'fr
   }, []);
 
   const clearMemory = useCallback(() => {
-    localStorage.removeItem('emissions_DENOX');
-    localStorage.removeItem('water_injection_DENOX');
-    localStorage.removeItem('gas_type_DENOX');
-    localStorage.removeItem('water_type_DENOX');
+    localStorage.removeItem(`emissions_DENOX_${nodeId}`);
+    localStorage.removeItem(`water_injection_DENOX_${nodeId}`);
+    localStorage.removeItem(`gas_type_DENOX_${nodeId}`);
+    localStorage.removeItem(`water_type_DENOX_${nodeId}`);
     setEmissions_DENOX(initialEmissions_DENOX);
     setWaterInjection(true);
     setGasType('gaz H');

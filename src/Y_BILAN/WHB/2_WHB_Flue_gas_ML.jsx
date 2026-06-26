@@ -7,7 +7,7 @@ import { translations } from './WHB_traduction';
 import { H2O_kg_m3, CO2_kg_m3, O2_kg_m3, N2_kg_m3, CO2_m3_kg, H2O_m3_kg, N2_m3_kg, O2_m3_kg } from '../../A_Transverse_fonction/conv_calculation';
 import { h_fumee } from '../../A_Transverse_fonction/enthalpy_mix_gas';
 
-const WHBFlueGasParameters = ({ innerData, currentLanguage = 'fr' }) => {
+const WHBFlueGasParameters = ({ innerData, currentLanguage = 'fr', nodeId }) => {
   const languageCode = getLanguageCode(currentLanguage);
   const t = (key) => translations[languageCode]?.[key] || translations['fr']?.[key] || key;
 
@@ -25,12 +25,12 @@ const WHBFlueGasParameters = ({ innerData, currentLanguage = 'fr' }) => {
   };
 
   const [emissions_WHB, setEmissions_WHB] = useState(() => {
-    const savedEmissions = localStorage.getItem('emissions_WHB');
+    const savedEmissions = localStorage.getItem(`emissions_WHB_${nodeId}`);
     return savedEmissions ? JSON.parse(savedEmissions) : initialEmissions_WHB;
   });
 
   useEffect(() => {
-    localStorage.setItem('emissions_WHB', JSON.stringify(emissions_WHB));
+    localStorage.setItem(`emissions_WHB_${nodeId}`, JSON.stringify(emissions_WHB));
   }, [emissions_WHB]);
 
   const T_without_air_ingrease_out = emissions_WHB['Flue gas temperature outlet [°C]'];
@@ -100,7 +100,7 @@ const WHBFlueGasParameters = ({ innerData, currentLanguage = 'fr' }) => {
   };
 
   const clearMemory = useCallback(() => {
-    localStorage.removeItem('emissions_WHB');
+    localStorage.removeItem(`emissions_WHB_${nodeId}`);
     setEmissions_WHB(initialEmissions_WHB);
   }, [initialEmissions_WHB]);
 

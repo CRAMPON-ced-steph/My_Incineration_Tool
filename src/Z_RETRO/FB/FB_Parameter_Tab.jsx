@@ -50,7 +50,7 @@ const DEFAULT_VALUES = {
   MV_percent: '70'
 };
 
-const FB_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage, autoTrigger = false }) => {
+const FB_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage, autoTrigger = false, nodeId }) => {
   // Refs stables — évite de recréer handleSendData à chaque update parent
   const nodeDataRef = useRef(nodeData);
   nodeDataRef.current = nodeData;
@@ -59,38 +59,38 @@ const FB_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguag
 
   // États principaux existants
   const [Tair_FB_C, setTair_FB_C] = useState(() =>
-    localStorage.getItem('Tair_FB_C') || DEFAULT_VALUES.Tair_FB_C
+    localStorage.getItem(`Tair_FB_C_${nodeId}`) || DEFAULT_VALUES.Tair_FB_C
   );
-  const [Thermal_losses_MW, setThermal_losses_MW] = useState(() => 
-    localStorage.getItem('Thermal_losses_MW_FB') || DEFAULT_VALUES.Thermal_losses_MW
+  const [Thermal_losses_MW, setThermal_losses_MW] = useState(() =>
+    localStorage.getItem(`Thermal_losses_MW_FB_${nodeId}`) || DEFAULT_VALUES.Thermal_losses_MW
   );
-  const [NCV_kcal_kg, setNCV_kcal_kg] = useState(() => 
-    localStorage.getItem('NCV_kcal_kg_FB') || DEFAULT_VALUES.NCV_kcal_kg
+  const [NCV_kcal_kg, setNCV_kcal_kg] = useState(() =>
+    localStorage.getItem(`NCV_kcal_kg_FB_${nodeId}`) || DEFAULT_VALUES.NCV_kcal_kg
   );
-  const [Masse_dechet_kg_h, setMasse_dechet_kg_h] = useState(() => 
-    localStorage.getItem('Masse_dechet_kg_h_FB') || DEFAULT_VALUES.Masse_dechet_kg_h
+  const [Masse_dechet_kg_h, setMasse_dechet_kg_h] = useState(() =>
+    localStorage.getItem(`Masse_dechet_kg_h_FB_${nodeId}`) || DEFAULT_VALUES.Masse_dechet_kg_h
   );
 
   // États pour les types de calcul
-  const [bilanType, setBilanType] = useState(() => 
-    (() => { const s = localStorage.getItem('FB_bilanType'); return Object.values(BALANCE_TYPES).includes(s) ? s : DEFAULT_VALUES.bilanType; })()
+  const [bilanType, setBilanType] = useState(() =>
+    (() => { const s = localStorage.getItem(`FB_bilanType_${nodeId}`); return Object.values(BALANCE_TYPES).includes(s) ? s : DEFAULT_VALUES.bilanType; })()
   );
 
   // Nouveaux états pour les paramètres ajoutés
   const [wasteType, setWasteType] = useState(() =>
-    localStorage.getItem('wasteType_FB') || DEFAULT_VALUES.wasteType
+    localStorage.getItem(`wasteType_FB_${nodeId}`) || DEFAULT_VALUES.wasteType
   );
   const [Q_boue_kg_h, setQ_boue_kg_h] = useState(() =>
-    localStorage.getItem('Q_boue_kg_h_FB') || DEFAULT_VALUES.Q_boue_kg_h
+    localStorage.getItem(`Q_boue_kg_h_FB_${nodeId}`) || DEFAULT_VALUES.Q_boue_kg_h
   );
   const [MS_percent, setMS_percent] = useState(() =>
-    localStorage.getItem('MS_percent_FB') || DEFAULT_VALUES.MS_percent
+    localStorage.getItem(`MS_percent_FB_${nodeId}`) || DEFAULT_VALUES.MS_percent
   );
   const [MV_percent, setMV_percent] = useState(() =>
-    localStorage.getItem('MV_percent_FB') || DEFAULT_VALUES.MV_percent
+    localStorage.getItem(`MV_percent_FB_${nodeId}`) || DEFAULT_VALUES.MV_percent
   );
   const [diagramMode, setDiagramMode] = useState(() =>
-    localStorage.getItem('FB_diagramMode') || DEFAULT_VALUES.diagramMode
+    localStorage.getItem(`FB_diagramMode_${nodeId}`) || DEFAULT_VALUES.diagramMode
   );
 
   // États pour l'interface
@@ -110,17 +110,17 @@ const FB_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguag
   useEffect(() => {
     const saveToLocalStorage = () => {
       try {
-        localStorage.setItem('Tair_FB_C', Tair_FB_C);
-        localStorage.setItem('Thermal_losses_MW_FB', Thermal_losses_MW);
-        localStorage.setItem('NCV_kcal_kg_FB', NCV_kcal_kg);
-        localStorage.setItem('Masse_dechet_kg_h_FB', Masse_dechet_kg_h);
-        localStorage.setItem('FB_bilanType', bilanType);
-        localStorage.setItem('FB_diagramMode', diagramMode);
+        localStorage.setItem(`Tair_FB_C_${nodeId}`, Tair_FB_C);
+        localStorage.setItem(`Thermal_losses_MW_FB_${nodeId}`, Thermal_losses_MW);
+        localStorage.setItem(`NCV_kcal_kg_FB_${nodeId}`, NCV_kcal_kg);
+        localStorage.setItem(`Masse_dechet_kg_h_FB_${nodeId}`, Masse_dechet_kg_h);
+        localStorage.setItem(`FB_bilanType_${nodeId}`, bilanType);
+        localStorage.setItem(`FB_diagramMode_${nodeId}`, diagramMode);
         // Nouveaux paramètres
-        localStorage.setItem('wasteType_FB', wasteType);
-        localStorage.setItem('Q_boue_kg_h_FB', Q_boue_kg_h);
-        localStorage.setItem('MS_percent_FB', MS_percent);
-        localStorage.setItem('MV_percent_FB', MV_percent);
+        localStorage.setItem(`wasteType_FB_${nodeId}`, wasteType);
+        localStorage.setItem(`Q_boue_kg_h_FB_${nodeId}`, Q_boue_kg_h);
+        localStorage.setItem(`MS_percent_FB_${nodeId}`, MS_percent);
+        localStorage.setItem(`MV_percent_FB_${nodeId}`, MV_percent);
       } catch (error) {
         console.warn('Erreur lors de la sauvegarde dans localStorage:', error);
       }
@@ -135,7 +135,7 @@ const FB_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguag
   useEffect(() => {
     if (calculationResult_FB) {
       try {
-        localStorage.setItem('calculationResult_FB', JSON.stringify(calculationResult_FB));
+        localStorage.setItem(`calculationResult_FB_${nodeId}`, JSON.stringify(calculationResult_FB));
       } catch (error) {
         console.warn('Erreur lors de la sauvegarde des résultats:', error);
       }
@@ -208,8 +208,8 @@ const FB_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguag
       setCalculationResult_FB(resultWithFlow);
       hasCalculatedOnce.current = true;
       if (diagramMode === DIAGRAM_MODES.YES) {
-        const pointE = { x: result.MasseDechet || 0, y: result.P_incinerateur_MWH || 0 };
-        localStorage.setItem('pointE', JSON.stringify(pointE));
+        const pointE = { x: result.MasseDechet || 0, y: result.P_incinerateur_MWH || 0, label: 'FB', nodeId };
+        localStorage.setItem(`pointE_${nodeId}`, JSON.stringify(pointE));
       }
       onSendDataRef.current({ result: resultWithFlow, inputData: { Tair_FB_C, Thermal_losses_MW, bilanType, wasteType, Q_boue_kg_h, MS_percent, MV_percent, NCV_kcal_kg } });
 
@@ -247,7 +247,12 @@ const FB_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguag
   // Effacement de la mémoire mis à jour
   const clearMemory = useCallback(() => {
     try {
-      localStorage.clear();
+      [
+        `Tair_FB_C_${nodeId}`, `Thermal_losses_MW_FB_${nodeId}`, `NCV_kcal_kg_FB_${nodeId}`,
+        `Masse_dechet_kg_h_FB_${nodeId}`, `FB_bilanType_${nodeId}`, `FB_diagramMode_${nodeId}`,
+        `wasteType_FB_${nodeId}`, `Q_boue_kg_h_FB_${nodeId}`, `MS_percent_FB_${nodeId}`,
+        `MV_percent_FB_${nodeId}`, `calculationResult_FB_${nodeId}`,
+      ].forEach(k => localStorage.removeItem(k));
       setCalculationResult_FB(null);
       
       // Réinitialisation aux valeurs par défaut
@@ -499,7 +504,7 @@ const FB_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguag
           disabled={isCalculating}
           currentLanguage={currentLanguage}
           isCalculating={isCalculating}
-          storageKey={`calcSent_${title}`}
+          storageKey={`calcSent_${title}_${nodeId}`}
         />
         
         <ShowResultButton 

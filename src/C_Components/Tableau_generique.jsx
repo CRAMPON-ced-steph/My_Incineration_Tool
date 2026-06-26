@@ -1,4 +1,5 @@
 import React from 'react';
+import { fmt } from '../A_Transverse_fonction/formatNumber';
 
 const TableGeneric = ({ elements }) => {
   // Vérifie que des données valides sont fournies
@@ -13,7 +14,7 @@ const TableGeneric = ({ elements }) => {
   // Fonction pour formater les valeurs numériques
   const formatValue = (value) => {
     if (typeof value === 'number') {
-      return value.toFixed(3);
+      return fmt(value, 3);
     }
     return value;
   };

@@ -8,7 +8,8 @@ import { h_fumee, Qeau_added_to_be_at_T } from '../../A_Transverse_fonction/enth
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './QUENCH_traduction';
 
-const QUENCHFlueGasParameters = ({ innerData, currentLanguage = 'fr' }) => {
+import { fmt } from '../../A_Transverse_fonction/formatNumber';
+const QUENCHFlueGasParameters = ({ innerData, currentLanguage = 'fr', nodeId }) => {
 
 
 
@@ -26,12 +27,12 @@ const QUENCHFlueGasParameters = ({ innerData, currentLanguage = 'fr' }) => {
   };
 
   const [emissions_QUENCH, setEmissions_QUENCH] = useState(() => {
-    const savedEmissions = localStorage.getItem('emissions_QUENCH');
+    const savedEmissions = localStorage.getItem(`emissions_QUENCH_${nodeId}`);
     return savedEmissions ? JSON.parse(savedEmissions) : initialEmissions_QUENCH;
   });
 
   useEffect(() => {
-    localStorage.setItem('emissions_QUENCH', JSON.stringify(emissions_QUENCH));
+    localStorage.setItem(`emissions_QUENCH_${nodeId}`, JSON.stringify(emissions_QUENCH));
   }, [emissions_QUENCH]);
 
   // Input data with fallback values
@@ -130,10 +131,10 @@ const QUENCHFlueGasParameters = ({ innerData, currentLanguage = 'fr' }) => {
   };
 
   const elementsGeneric = [
-    { text: t('Temperature inlet QUENCH [°C]'), value: T_IN.toFixed(1) },
-    { text: t('Delta enthalpies [kJ/kg]'), value: Delta_H.toFixed(0) },
-    { text: t('Sprayed/cooling water [kg/h]'), value: Q_eau_kg_h.toFixed(0) },
-    { text: t('Outlet flue gas volume [Nm3/h]'), value: FG_humide_EAU_tot_m3_h.toFixed(2) },
+    { text: t('Temperature inlet QUENCH [°C]'), value: fmt(T_IN, 1) },
+    { text: t('Delta enthalpies [kJ/kg]'), value: fmt(Delta_H, 0) },
+    { text: t('Sprayed/cooling water [kg/h]'), value: fmt(Q_eau_kg_h, 0) },
+    { text: t('Outlet flue gas volume [Nm3/h]'), value: fmt(FG_humide_EAU_tot_m3_h, 2) },
   ];
 
   const handleChange = (name, value) => {
@@ -147,7 +148,7 @@ const QUENCHFlueGasParameters = ({ innerData, currentLanguage = 'fr' }) => {
   };
 
   const clearMemory = useCallback(() => {
-    localStorage.removeItem('emissions_QUENCH');
+    localStorage.removeItem(`emissions_QUENCH_${nodeId}`);
     setEmissions_QUENCH(initialEmissions_QUENCH);
   }, []);
 

@@ -5,7 +5,7 @@ import SEP21FlueGasPollutantEmission from './SEP21_Pollutant_Emission';
 import { getLanguageCode } from '../../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './SEP21_traduction';
 
-const SEP21MainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLanguage = 'fr' }) => {
+const SEP21MainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLanguage = 'fr', nodeId }) => {
   
   const languageCode = getLanguageCode(currentLanguage);
   const t = (key) => {
@@ -37,6 +37,7 @@ const SEP21MainPage = ({ nodeData, title, onSendData, onClose, onGoBack, current
           upstreamT_IN={T_IN_upstream}
           upstreamFG_IN={FG_IN_upstream}
           currentLanguage={currentLanguage}
+          nodeId={nodeId}
         />
       ),
     },
@@ -44,10 +45,11 @@ const SEP21MainPage = ({ nodeData, title, onSendData, onClose, onGoBack, current
       name: 'pollutantEmissions',
       label: t('Pollutant Emissions'),
       content: (
-        <SEP21FlueGasPollutantEmission 
-          innerData={innerData} 
+        <SEP21FlueGasPollutantEmission
+          innerData={innerData}
           setInnerData={setInnerData}
-          currentLanguage={currentLanguage} 
+          currentLanguage={currentLanguage}
+          nodeId={nodeId}
         />
       ),
     },

@@ -7,11 +7,12 @@ import { h_fumee } from '../../../A_Transverse_fonction/enthalpy_mix_gas';
 import { getLanguageCode } from '../../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './SEP21_traduction';
 
-const SEP21FlueGasMixer = ({ innerData, setInnerData, upstreamT_IN, upstreamFG_IN, currentLanguage = 'fr' }) => {
+import { fmt } from '../../../A_Transverse_fonction/formatNumber';
+const SEP21FlueGasMixer = ({ innerData, setInnerData, upstreamT_IN, upstreamFG_IN, currentLanguage = 'fr', nodeId }) => {
 
   // État pour la composition manuelle à ajouter
   const [manualComposition_SEP21, setManualComposition_SEP21] = useState(() => {
-    const saved = localStorage.getItem('manualComposition_SEP21');
+    const saved = localStorage.getItem(`manualComposition_SEP21_${nodeId}`);
     return saved ? JSON.parse(saved) : {
       'CO2 [kg/h]': 100,
       'H2O [kg/h]': 50,
@@ -27,7 +28,7 @@ const SEP21FlueGasMixer = ({ innerData, setInnerData, upstreamT_IN, upstreamFG_I
   };
 
   useEffect(() => {
-    localStorage.setItem('manualComposition_SEP21', JSON.stringify(manualComposition_SEP21));
+    localStorage.setItem(`manualComposition_SEP21_${nodeId}`, JSON.stringify(manualComposition_SEP21));
   }, [manualComposition_SEP21]);
 
   // Données amont — transmises depuis SEP21MainPage, stables à travers les changements d'onglet
@@ -133,16 +134,16 @@ const FG_wet_Nm3_h = FG_dry_Nm3_h+FG_H2O_Nm3_h;
   };
 
   const elementsGeneric = [
-    { text: t('Inlet stream 1 temperature [°C]'), value: T_IN_1.toFixed(1) },
-    { text: t('Inlet stream 2 temperature [°C]'), value: T_IN_2.toFixed(1) },
-    { text: t('Mixed outlet temperature [°C]'), value: calculatedData.T_OUT_mixed.toFixed(1) },
-    { text: t('Total mass flow [kg/h]'), value: calculatedData.FG_total_kg_h.toFixed(0) },
-    { text: t('Outlet volumetric flow (wet) [Nm3/h]'), value: calculatedData.FG_humide_tot_m3_h.toFixed(2) },
-    { text: t('Outlet volumetric flow (dry) [Nm3/h]'), value: calculatedData.FG_sec_tot_m3_h.toFixed(2) },
-    { text: t('CO2 mass fraction [%]'), value: (calculatedData.x_CO2 * 100).toFixed(2) },
-    { text: t('H2O mass fraction [%]'), value: (calculatedData.x_H2O * 100).toFixed(2) },
-    { text: t('O2 mass fraction [%]'), value: (calculatedData.x_O2 * 100).toFixed(2) },
-    { text: t('N2 mass fraction [%]'), value: (calculatedData.x_N2 * 100).toFixed(2) },
+    { text: t('Inlet stream 1 temperature [°C]'), value: fmt(T_IN_1, 1) },
+    { text: t('Inlet stream 2 temperature [°C]'), value: fmt(T_IN_2, 1) },
+    { text: t('Mixed outlet temperature [°C]'), value: fmt(calculatedData.T_OUT_mixed, 1) },
+    { text: t('Total mass flow [kg/h]'), value: fmt(calculatedData.FG_total_kg_h, 0) },
+    { text: t('Outlet volumetric flow (wet) [Nm3/h]'), value: fmt(calculatedData.FG_humide_tot_m3_h, 2) },
+    { text: t('Outlet volumetric flow (dry) [Nm3/h]'), value: fmt(calculatedData.FG_sec_tot_m3_h, 2) },
+    { text: t('CO2 mass fraction [%]'), value: fmt((calculatedData.x_CO2 * 100), 2) },
+    { text: t('H2O mass fraction [%]'), value: fmt((calculatedData.x_H2O * 100), 2) },
+    { text: t('O2 mass fraction [%]'), value: fmt((calculatedData.x_O2 * 100), 2) },
+    { text: t('N2 mass fraction [%]'), value: fmt((calculatedData.x_N2 * 100), 2) },
   ];
 
 
@@ -187,10 +188,10 @@ const FG_wet_Nm3_h = FG_dry_Nm3_h+FG_H2O_Nm3_h;
           </div>
         </div>
         <TableGeneric elements={[
-          { text: 'CO2 [kg/h]', value: FG_IN_1.CO2.toFixed(2) },
-          { text: 'H2O [kg/h]', value: FG_IN_1.H2O.toFixed(2) },
-          { text: 'O2 [kg/h]', value: FG_IN_1.O2.toFixed(2) },
-          { text: 'N2 [kg/h]', value: FG_IN_1.N2.toFixed(2) },
+          { text: 'CO2 [kg/h]', value: fmt(FG_IN_1.CO2, 2) },
+          { text: 'H2O [kg/h]', value: fmt(FG_IN_1.H2O, 2) },
+          { text: 'O2 [kg/h]', value: fmt(FG_IN_1.O2, 2) },
+          { text: 'N2 [kg/h]', value: fmt(FG_IN_1.N2, 2) },
         ]} />
       </div>
 
@@ -242,13 +243,13 @@ const FG_wet_Nm3_h = FG_dry_Nm3_h+FG_H2O_Nm3_h;
       {/* Composition des flux */}
       <h3>{t('Flue gas composition')}</h3>
 
-      <h4>{t('Inlet Stream 1')} ({T_IN_1.toFixed(1)}°C)</h4>
+      <h4>{t('Inlet Stream 1')} ({fmt(T_IN_1, 1)}°C)</h4>
       <MassCalculator masses={masses_FG_in_1} TemperatureImposee={T_IN_1} />
 
-      <h4>{t('Inlet Stream 2')} ({T_IN_2.toFixed(1)}°C)</h4>
+      <h4>{t('Inlet Stream 2')} ({fmt(T_IN_2, 1)}°C)</h4>
       <MassCalculator masses={masses_FG_in_2} TemperatureImposee={T_IN_2} />
 
-      <h4>{t('Mixed Outlet')} ({calculatedData.T_OUT_mixed.toFixed(1)}°C)</h4>
+      <h4>{t('Mixed Outlet')} ({fmt(calculatedData.T_OUT_mixed, 1)}°C)</h4>
       <MassCalculator masses={masses_FG_out} TemperatureImposee={calculatedData.T_OUT_mixed} />
     </div>
   );

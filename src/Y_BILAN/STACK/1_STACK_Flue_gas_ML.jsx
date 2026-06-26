@@ -4,7 +4,7 @@ import { H2O_kg_m3, CO2_kg_m3, O2_kg_m3, N2_kg_m3, coeff_Nm3_to_m3 } from '../..
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './STACK_traduction';
 
-const STACKFlueGasParameters = ({ innerData, currentLanguage = 'fr', setInnerData }) => {
+const STACKFlueGasParameters = ({ innerData, currentLanguage = 'fr', setInnerData, nodeId }) => {
   // Translation setup
   const languageCode = getLanguageCode(currentLanguage);
   const t = (key) => {
@@ -15,13 +15,13 @@ const STACKFlueGasParameters = ({ innerData, currentLanguage = 'fr', setInnerDat
   const initialEmissions_STACK = {};
 
   const [emissions_STACK, setEmissions_STACK] = useState(() => {
-    const savedEmissions = localStorage.getItem('emissions_STACK');
+    const savedEmissions = localStorage.getItem(`emissions_STACK_${nodeId}`);
     return savedEmissions ? JSON.parse(savedEmissions) : initialEmissions_STACK;
   });
 
   // Save to localStorage whenever emissions change
   useEffect(() => {
-    localStorage.setItem('emissions_STACK', JSON.stringify(emissions_STACK));
+    localStorage.setItem(`emissions_STACK_${nodeId}`, JSON.stringify(emissions_STACK));
   }, [emissions_STACK]);
 
   // Extract input data
@@ -84,7 +84,7 @@ const STACKFlueGasParameters = ({ innerData, currentLanguage = 'fr', setInnerDat
 
   // Clear stored data
   const clearMemory = useCallback(() => {
-    localStorage.removeItem('emissions_STACK');
+    localStorage.removeItem(`emissions_STACK_${nodeId}`);
     setEmissions_STACK(initialEmissions_STACK);
   }, []);
 

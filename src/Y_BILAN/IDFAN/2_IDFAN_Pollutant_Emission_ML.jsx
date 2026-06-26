@@ -4,7 +4,8 @@ import TableGeneric from '../../C_Components/Tableau_generique';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './IDFAN_traduction';
 
-const IDFANFlueGasPollutantEmission = ({ innerData, currentLanguage = 'fr' }) => {
+import { fmt } from '../../A_Transverse_fonction/formatNumber';
+const IDFANFlueGasPollutantEmission = ({ innerData, currentLanguage = 'fr', nodeId }) => {
   const initialEmissions2 = {
     'Fly ashes content outlet [g/Nm3]': 0.1,
     'siccity bottom ash [%]': 66,
@@ -17,12 +18,12 @@ const IDFANFlueGasPollutantEmission = ({ innerData, currentLanguage = 'fr' }) =>
   };
 
   const [emissions2, setEmissions2] = useState(() => {
-    const savedEmissions = localStorage.getItem('emissions2_IDFAN');
+    const savedEmissions = localStorage.getItem(`emissions2_IDFAN_${nodeId}`);
     return savedEmissions ? JSON.parse(savedEmissions) : initialEmissions2;
   });
 
   useEffect(() => {
-    localStorage.setItem('emissions2_IDFAN', JSON.stringify(emissions2));
+    localStorage.setItem(`emissions2_IDFAN_${nodeId}`, JSON.stringify(emissions2));
   }, [emissions2]);
 
   // Extract parameters from state
@@ -75,16 +76,16 @@ const IDFANFlueGasPollutantEmission = ({ innerData, currentLanguage = 'fr' }) =>
   }
 
   const elementsGeneric = [
-    { text: t('Waste Flow [kg/h]'), value: masse_dechets.toFixed(2) },
-    { text: t('Flue gas Flow Wet [Nm3/h]'), value: Debit_fumees_humide_Nm3_h.toFixed(0) },
-    { text: t('Flue gas Flow Dry [Nm3/h]'), value: Debit_fumees_sec_Nm3_h.toFixed(0) },
-    { text: t('O2 calculated [%]'), value: FG_O2_calcule.toFixed(2) },
-    { text: t('Fly ash inlet [kg/h]'), value: Fly_ash_in_kg_h.toFixed(3) },
-    { text: t('Fly ash outlet [kg/h]'), value: Fly_ash_out_kg_h.toFixed(3) },
+    { text: t('Waste Flow [kg/h]'), value: fmt(masse_dechets, 2) },
+    { text: t('Flue gas Flow Wet [Nm3/h]'), value: fmt(Debit_fumees_humide_Nm3_h, 0) },
+    { text: t('Flue gas Flow Dry [Nm3/h]'), value: fmt(Debit_fumees_sec_Nm3_h, 0) },
+    { text: t('O2 calculated [%]'), value: fmt(FG_O2_calcule, 2) },
+    { text: t('Fly ash inlet [kg/h]'), value: fmt(Fly_ash_in_kg_h, 3) },
+    { text: t('Fly ash outlet [kg/h]'), value: fmt(Fly_ash_out_kg_h, 3) },
   ];
 
   const residusCalculations = [
-    { text: t('IDFAN ash collected [kg/h]'), value: IDFAN_Ash_kg_h.toFixed(3) },
+    { text: t('IDFAN ash collected [kg/h]'), value: fmt(IDFAN_Ash_kg_h, 3) },
   ];
 
   const handleChange = (name, value) => {
@@ -105,7 +106,7 @@ const IDFANFlueGasPollutantEmission = ({ innerData, currentLanguage = 'fr' }) =>
   };
 
   const clearMemory = useCallback(() => {
-    localStorage.removeItem('emissions2_IDFAN');
+    localStorage.removeItem(`emissions2_IDFAN_${nodeId}`);
     setEmissions2(initialEmissions2);
   }, []);
 

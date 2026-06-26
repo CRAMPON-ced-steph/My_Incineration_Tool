@@ -11,7 +11,8 @@ import { translations } from './SCRUBBER_traduction';
 import { H2O_kg_m3, CO2_kg_m3, O2_kg_m3, N2_kg_m3 } from '../../A_Transverse_fonction/conv_calculation';
 import { h_fumee, Qeau_added_to_be_at_T } from '../../A_Transverse_fonction/enthalpy_mix_gas';
 
-const SCRUBBERFlueGasParameters = ({ innerData, currentLanguage = 'fr', onDataUpdate }) => {
+import { fmt } from '../../A_Transverse_fonction/formatNumber';
+const SCRUBBERFlueGasParameters = ({ innerData, currentLanguage = 'fr', onDataUpdate, nodeId }) => {
   const initialEmissions_SCRUBBER = {
     'Flue gas temperature outlet [°C]': innerData?.T_OUT - 150 || 1,
     'Ambient air temperature [°C]': 20,
@@ -26,12 +27,12 @@ const SCRUBBERFlueGasParameters = ({ innerData, currentLanguage = 'fr', onDataUp
   };
 
   const [emissions_SCRUBBER, setEmissions_SCRUBBER] = useState(() => {
-    const savedEmissions = localStorage.getItem('emissions_SCRUBBER');
+    const savedEmissions = localStorage.getItem(`emissions_SCRUBBER_${nodeId}`);
     return savedEmissions ? JSON.parse(savedEmissions) : initialEmissions_SCRUBBER;
   });
 
   useEffect(() => {
-    localStorage.setItem('emissions_SCRUBBER', JSON.stringify(emissions_SCRUBBER));
+    localStorage.setItem(`emissions_SCRUBBER_${nodeId}`, JSON.stringify(emissions_SCRUBBER));
   }, [emissions_SCRUBBER]);
 
   // Utiliser le callback fourni si disponible, sinon modifier directement
@@ -157,10 +158,10 @@ const SCRUBBERFlueGasParameters = ({ innerData, currentLanguage = 'fr', onDataUp
   };
 
   const elementsGeneric = [
-    { text: t('Temperature inlet SCRUBBER [°C]'), value: T_in.toFixed(0) },
-    { text: t('Delta enthalpies [kJ/h]'), value: Delta_H.toFixed(0) },
-    { text: t('Sprayed/cooling water [kg/h]'), value: Q_eau_kg_h.toFixed(0) },
-    { text: t('Flue gas volume outlet [Nm3/h]'), value: FG_humide_EAU_tot_m3_h.toFixed(0) },
+    { text: t('Temperature inlet SCRUBBER [°C]'), value: fmt(T_in, 0) },
+    { text: t('Delta enthalpies [kJ/h]'), value: fmt(Delta_H, 0) },
+    { text: t('Sprayed/cooling water [kg/h]'), value: fmt(Q_eau_kg_h, 0) },
+    { text: t('Flue gas volume outlet [Nm3/h]'), value: fmt(FG_humide_EAU_tot_m3_h, 0) },
   ];
 
   const handleChange = (name, value) => {
@@ -174,7 +175,7 @@ const SCRUBBERFlueGasParameters = ({ innerData, currentLanguage = 'fr', onDataUp
   };
 
   const clearMemory = useCallback(() => {
-    localStorage.removeItem('emissions_SCRUBBER');
+    localStorage.removeItem(`emissions_SCRUBBER_${nodeId}`);
     setEmissions_SCRUBBER(initialEmissions_SCRUBBER);
   }, []);
 
@@ -226,17 +227,17 @@ const SCRUBBERFlueGasParameters = ({ innerData, currentLanguage = 'fr', onDataUp
 
       <h3>{t('Flue gas composition')}</h3>
       <h4>
-        {t('Flue gas inlet at inlet temperature')} (&nbsp;{T_in.toFixed(0)}°C)
+        {t('Flue gas inlet at inlet temperature')} (&nbsp;{fmt(T_in, 0)}°C)
       </h4>
       <MassCalculator masses={masses_FG_in_SCRUBBER} TemperatureImposee={T_in} />
 
       <h4>
-        {t('Air ingress at ambient temperature')} (&nbsp;{T_air.toFixed(0)}°C)
+        {t('Air ingress at ambient temperature')} (&nbsp;{fmt(T_air, 0)}°C)
       </h4>
       <MassCalculator masses={masses_Air_ingress} TemperatureImposee={T_air} />
 
       <h4>
-        {t('Flue gas outlet at outlet temperature')} (&nbsp;{T_out.toFixed(0)}°C)
+        {t('Flue gas outlet at outlet temperature')} (&nbsp;{fmt(T_out, 0)}°C)
       </h4>
       <MassCalculator masses={masses_FG_out_SCRUBBER} TemperatureImposee={T_out} />
     </div>

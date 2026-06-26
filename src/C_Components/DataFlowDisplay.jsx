@@ -1,4 +1,5 @@
 import React from 'react';
+import { fmt } from '../A_Transverse_fonction/formatNumber';
 
 const DataFlowDisplay = ({ nodes, onClose }) => {
   // Filter nodes that have dataFlow in their result
@@ -12,8 +13,8 @@ nodeId: node.id,
     ...node.data.result.dataFlow
   }));
 
-  // Get all unique keys from all dataFlow objects
-  const allKeys = [...new Set(mergedDataFlow.flatMap(Object.keys))];
+  // Get all unique keys from all dataFlow objects (exclude metadata)
+  const allKeys = [...new Set(mergedDataFlow.flatMap(Object.keys))].filter(k => k !== 'nodeId' && k !== 'nodeName');
   
   //              {data.nodeName} (ID: {data.nodeId})
   return (
@@ -70,7 +71,7 @@ nodeId: node.id,
                 position: 'sticky',
                 top: 0
               }}>
-                {data.nodeName}
+                {data.nodeName} ({data.nodeId})
               </th>
             ))}
           </tr>
@@ -90,9 +91,9 @@ nodeId: node.id,
                   border: '1px solid #ddd',
                   textAlign: 'right'
                 }}>
-                  {data[key] !== undefined ? 
-                    (typeof data[key] === 'number' ? 
-                      data[key].toFixed(2) : 
+                  {data[key] !== undefined ?
+                    (typeof data[key] === 'number' ?
+                      fmt(data[key], 2) :
                       data[key].toString()
                     ) : '-'}
                 </td>

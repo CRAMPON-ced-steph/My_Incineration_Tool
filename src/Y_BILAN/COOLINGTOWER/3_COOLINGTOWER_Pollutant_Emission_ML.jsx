@@ -4,7 +4,8 @@ import TableGeneric from '../../C_Components/Tableau_generique';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './COOLINGTOWER_traduction';
 
-const COOLINGTOWERFlueGasPollutantEmission = ({ innerData, currentLanguage = 'fr' }) => {
+import { fmt } from '../../A_Transverse_fonction/formatNumber';
+const COOLINGTOWERFlueGasPollutantEmission = ({ innerData, currentLanguage = 'fr', nodeId }) => {
   const initialEmissions_Pollutants = {
     'Fly ashes content outlet [g/Nm3]': 0.1,
     'siccity bottom ash [%]': 66,
@@ -17,12 +18,12 @@ const COOLINGTOWERFlueGasPollutantEmission = ({ innerData, currentLanguage = 'fr
   };
 
   const [emissionsPollutants, setEmissionsPollutants] = useState(() => {
-    const savedEmissions = localStorage.getItem('emissionsPollutants_COOLINGTOWER');
+    const savedEmissions = localStorage.getItem(`emissionsPollutants_COOLINGTOWER_${nodeId}`);
     return savedEmissions ? JSON.parse(savedEmissions) : initialEmissions_Pollutants;
   });
 
   useEffect(() => {
-    localStorage.setItem('emissionsPollutants_COOLINGTOWER', JSON.stringify(emissionsPollutants));
+    localStorage.setItem(`emissionsPollutants_COOLINGTOWER_${nodeId}`, JSON.stringify(emissionsPollutants));
   }, [emissionsPollutants]);
 
   // ========== EXTRACT PARAMETERS FROM STATE ==========
@@ -69,15 +70,15 @@ const COOLINGTOWERFlueGasPollutantEmission = ({ innerData, currentLanguage = 'fr
 
   // ========== UI DATA ==========
   const elementsGeneric = [
-    { text: t('Waste Flow [kg/h]'), value: masse_dechets.toFixed(2) },
-    { text: t('Flue gas Flow Wet [Nm3/h]'), value: Debit_fumees_humide_Nm3_h.toFixed(0) },
-    { text: t('Flue gas Flow Dry [Nm3/h]'), value: Debit_fumees_sec_Nm3_h.toFixed(0) },
-    { text: t('O2 calculated [%]'), value: FG_O2_calcule.toFixed(2) },
-    { text: t('Fly ash content [g/Nm3]'), value: FlyAsh_g_Nm3.toFixed(2) },
+    { text: t('Waste Flow [kg/h]'), value: fmt(masse_dechets, 2) },
+    { text: t('Flue gas Flow Wet [Nm3/h]'), value: fmt(Debit_fumees_humide_Nm3_h, 0) },
+    { text: t('Flue gas Flow Dry [Nm3/h]'), value: fmt(Debit_fumees_sec_Nm3_h, 0) },
+    { text: t('O2 calculated [%]'), value: fmt(FG_O2_calcule, 2) },
+    { text: t('Fly ash content [g/Nm3]'), value: fmt(FlyAsh_g_Nm3, 2) },
   ];
 
   const residusCalculations = [
-    { text: t('COOLINGTOWER ash [kg/h]'), value: COOLINGTOWER_Ash_kg_h.toFixed(2) },
+    { text: t('COOLINGTOWER ash [kg/h]'), value: fmt(COOLINGTOWER_Ash_kg_h, 2) },
   ];
 
   // ========== EVENT HANDLERS ==========
@@ -100,7 +101,7 @@ const COOLINGTOWERFlueGasPollutantEmission = ({ innerData, currentLanguage = 'fr
 
   const handleReset = useCallback(() => {
     setEmissionsPollutants(initialEmissions_Pollutants);
-    localStorage.removeItem('emissionsPollutants_COOLINGTOWER');
+    localStorage.removeItem(`emissionsPollutants_COOLINGTOWER_${nodeId}`);
   }, []);
 
   return (

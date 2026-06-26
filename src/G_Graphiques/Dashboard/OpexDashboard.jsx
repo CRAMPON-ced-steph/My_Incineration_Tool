@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getOpexData } from '../../A_Transverse_fonction/opexDataService';
+import { fmt } from '../../A_Transverse_fonction/formatNumber';
 
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './OpexDashboard_traduction';
@@ -89,7 +90,7 @@ const DataTable = ({ title, color, data, setData, type, convertValue, getUnit, t
     <div style={{ marginBottom: '30px' }}>
       <div style={{ backgroundColor: color, padding: '10px 15px', borderRadius: '5px 5px 0 0', color: 'white', fontWeight: 'bold', fontSize: '18px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <span>{title} {unit && `[${unit}]`}</span>
-        <span>{t('total')}: {displaySum.toFixed(2)}</span>
+        <span>{t('total')}: {fmt(displaySum)}</span>
       </div>
       <div style={{ border: `1px solid ${color}`, borderTop: 'none', padding: '15px', borderRadius: '0 0 5px 5px' }}>
         {visibleRows.length > 0 ? (
@@ -128,7 +129,7 @@ const DataTable = ({ title, color, data, setData, type, convertValue, getUnit, t
             {t('addRow')}
           </button>
           <div style={{ fontWeight: 'bold', fontSize: '16px', padding: '8px 12px', backgroundColor: '#f0f0f0', borderRadius: '4px', border: '1px solid #ddd' }}>
-            {t('total')}: {displaySum.toFixed(2)} {unit}
+            {t('total')}: {fmt(displaySum)} {unit}
           </div>
         </div>
       </div>
@@ -397,22 +398,21 @@ const OpexDashboard = ({
     ];
 
     const initialCo2Data = [
-      { key: 'row1', label: t('consumptionElec'), value: derived.CO2_conso_elec_kg.toFixed(2) },
-      { key: 'row2', label: t('consumptionGasFuel'), value: (derived.CO2_conso_gaz + derived.CO2_fuel).toFixed(2) },
-      { key: 'row3', label: t('consumptionCompressedAir'), value: derived.CO2_air_co_kg.toFixed(3) },
-      { key: 'row4', label: t('transportReagents'), value: derived.CO2_transport_reactifs_calc.toFixed(2)  },
-      { key: 'row5', label: t('transportResiduesAsh'), value: derived.CO2_transport_refidis_kg.toFixed(2)  },
+      { key: 'row1', label: t('consumptionElec'), value: fmt(derived.CO2_conso_elec_kg) },
+      { key: 'row2', label: t('consumptionGasFuel'), value: fmt(derived.CO2_conso_gaz + derived.CO2_fuel) },
+      { key: 'row3', label: t('consumptionCompressedAir'), value: fmt(derived.CO2_air_co_kg, 3) },
+      { key: 'row4', label: t('transportReagents'), value: fmt(derived.CO2_transport_reactifs_calc) },
+      { key: 'row5', label: t('transportResiduesAsh'), value: fmt(derived.CO2_transport_refidis_kg) },
     ];
 
-    // CORRECTION: Utilisation des bonnes variables calculées
     const initialcoutData = [
-      { key: 'row1', label: t('consumptionElec'), value: derived.cout_conso_elec.toFixed(2) },
-      { key: 'row2', label: t('consumptionGasFuel'), value: (derived.cout_gaz + derived.cout_fuel).toFixed(2)  },
-      { key: 'row3', label: t('consumptionCompressedAir'), value: derived.cout_air_co.toFixed(2)  },
-      { key: 'row4', label: t('consumptionWater'), value: derived.cout_Eau.toFixed(2) },
-      { key: 'row5', label: t('consumptionReagents'), value: derived.cout_reactifs.toFixed(2) },
-      { key: 'row6', label: t('transportReagents'), value: derived.cout_transport_reactifs.toFixed(2)  },
-      { key: 'row7', label: t('transportResiduesAsh'), value: derived.cout_transport_refidis.toFixed(2)  },
+      { key: 'row1', label: t('consumptionElec'), value: fmt(derived.cout_conso_elec) },
+      { key: 'row2', label: t('consumptionGasFuel'), value: fmt(derived.cout_gaz + derived.cout_fuel) },
+      { key: 'row3', label: t('consumptionCompressedAir'), value: fmt(derived.cout_air_co) },
+      { key: 'row4', label: t('consumptionWater'), value: fmt(derived.cout_Eau) },
+      { key: 'row5', label: t('consumptionReagents'), value: fmt(derived.cout_reactifs) },
+      { key: 'row6', label: t('transportReagents'), value: fmt(derived.cout_transport_reactifs) },
+      { key: 'row7', label: t('transportResiduesAsh'), value: fmt(derived.cout_transport_refidis) },
     ];
 
     return {
@@ -590,7 +590,7 @@ const OpexDashboard = ({
         case 'elec':
           return 'kWé';
         case 'energie':
-          return 'kW';
+          return 'MW';
         case 'eau':
           return 'm3';
         case 'cout':
@@ -691,27 +691,27 @@ const OpexDashboard = ({
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '15px' }}>
           <div style={{ flex: '1 1 30%', padding: '10px', backgroundColor: '#4a90e2', color: 'white', borderRadius: '4px', minWidth: '150px' }}>
             <div>{t('electricity')} [{getUnit('elec')}]</div>
-            <div style={{ fontSize: '24px', fontWeight: 'bold' }}>{elecValue.toFixed(2)}</div>
+            <div style={{ fontSize: '24px', fontWeight: 'bold' }}>{fmt(elecValue)}</div>
           </div>
           <div style={{ flex: '1 1 30%', padding: '10px', backgroundColor: '#2ecc71', color: 'white', borderRadius: '4px', minWidth: '150px' }}>
             <div>{t('water')} [{getUnit('eau')}]</div>
-            <div style={{ fontSize: '24px', fontWeight: 'bold' }}>{eauValue.toFixed(2)}</div>
+            <div style={{ fontSize: '24px', fontWeight: 'bold' }}>{fmt(eauValue)}</div>
           </div>
           <div style={{ flex: '1 1 30%', padding: '10px', backgroundColor: '#e74c3c', color: 'white', borderRadius: '4px', minWidth: '150px' }}>
             <div>{t('reagents')} [{getUnit('reactifs')}]</div>
-            <div style={{ fontSize: '24px', fontWeight: 'bold' }}>{reactifsValue.toFixed(2)}</div>
+            <div style={{ fontSize: '24px', fontWeight: 'bold' }}>{fmt(reactifsValue)}</div>
           </div>
           <div style={{ flex: '1 1 30%', padding: '10px', backgroundColor: '#f39c12', color: 'white', borderRadius: '4px', minWidth: '150px' }}>
             <div>{t('energy')} [{getUnit('energie')}]</div>
-            <div style={{ fontSize: '24px', fontWeight: 'bold' }}>{energieValue.toFixed(2)}</div>
+            <div style={{ fontSize: '24px', fontWeight: 'bold' }}>{fmt(energieValue)}</div>
           </div>
           <div style={{ flex: '1 1 30%', padding: '10px', backgroundColor: '#9b59b6', color: 'white', borderRadius: '4px', minWidth: '150px' }}>
             <div>CO2 [{getUnit('co2')}]</div>
-            <div style={{ fontSize: '24px', fontWeight: 'bold' }}>{co2Value.toFixed(2)}</div>
+            <div style={{ fontSize: '24px', fontWeight: 'bold' }}>{fmt(co2Value)}</div>
           </div>
           <div style={{ flex: '1 1 30%', padding: '10px', backgroundColor: '#34495e', color: 'white', borderRadius: '4px', minWidth: '150px' }}>
             <div>{t('cost')} [{getUnit('cout')}]</div>
-            <div style={{ fontSize: '24px', fontWeight: 'bold' }}>{coutValue.toFixed(2)}</div>
+            <div style={{ fontSize: '24px', fontWeight: 'bold' }}>{fmt(coutValue)}</div>
           </div>
         </div>
       </div>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 
+import { fmt } from '../../A_Transverse_fonction/formatNumber';
 import {
   calculDebitPT, D_TLM,
   Coef_Hext, Coef_Hint, Fact_U, Fact_U_Encrasse, Fact_A, DP_RecupAir,
@@ -16,7 +17,6 @@ const useTranslation = (currentLanguage = 'fr') => {
   }, [currentLanguage]);
 };
 
-const LS_KEY = 'freeParams_HX_FB';
 const DEFAULT_FREE_PARAMS = {
   Encrassement_pourcent: 10,
   vitesse_des_fumees_m_s: 16,
@@ -29,8 +29,9 @@ const DEFAULT_FREE_PARAMS = {
   Rendement_ventilateur: 0.7,
 };
 
-const Recuperateur = ({ innerData = {}, combustionResults = {}, currentLanguage = 'fr', onInnerDataChange }) => {
+const Recuperateur = ({ innerData = {}, combustionResults = {}, currentLanguage = 'fr', onInnerDataChange, nodeId }) => {
   const t = useTranslation(currentLanguage);
+  const LS_KEY = `freeParams_HX_FB_${nodeId}`;
 
   const [freeParams, setFreeParams] = useState(() => {
     try {
@@ -272,12 +273,12 @@ const Recuperateur = ({ innerData = {}, combustionResults = {}, currentLanguage 
               {t('Entrée') || 'Entrée'}
             </div>
             {[
-              { label: t('Temp. fumée voûte / Freeboard [°C]') || 'Temp. fumée voûte / Freeboard [°C]', val: T_entree_fumee_C.toFixed(1), unit: '°C' },
-              { label: t('Débit humide des fumées [Nm3/h]') || 'Débit humide des fumées [Nm3/h]', val: Q_FG_wet_Nm3_h.toFixed(0), unit: 'Nm³/h' },
+              { label: t('Temp. fumée voûte / Freeboard [°C]') || 'Temp. fumée voûte / Freeboard [°C]', val: fmt(T_entree_fumee_C, 1), unit: '°C' },
+              { label: t('Débit humide des fumées [Nm3/h]') || 'Débit humide des fumées [Nm3/h]', val: fmt(Q_FG_wet_Nm3_h, 0), unit: 'Nm³/h' },
               null,
-              { label: t('Pression au freeboard [mmCE]') || 'Pression au freeboard [mmCE]', val: P_freeboard_mmCE.toFixed(0), unit: 'mmCE' },
-              { label: t('Débit fumées humides entrée [m3/h]') || 'Débit fumées humides entrée [m3/h]', val: Q_FG_wet_entree_m3_h.toFixed(0), unit: 'm³/h' },
-              { label: t('H fumées entrée [kW]') || 'H fumées entrée [kW]', val: H_fumees_in_kW.toFixed(0), unit: 'kW' },
+              { label: t('Pression au freeboard [mmCE]') || 'Pression au freeboard [mmCE]', val: fmt(P_freeboard_mmCE, 0), unit: 'mmCE' },
+              { label: t('Débit fumées humides entrée [m3/h]') || 'Débit fumées humides entrée [m3/h]', val: fmt(Q_FG_wet_entree_m3_h, 0), unit: 'm³/h' },
+              { label: t('H fumées entrée [kW]') || 'H fumées entrée [kW]', val: fmt(H_fumees_in_kW, 0), unit: 'kW' },
             ].map((item, i) =>
               item === null ? (
                 <div key={`space-l-${i}`} style={{ height: '55px' }} />
@@ -296,7 +297,7 @@ const Recuperateur = ({ innerData = {}, combustionResults = {}, currentLanguage 
             </div>
             <div>
               <label style={labelStyle}>{t('Temp. fumées ap HX [°C]') || 'Temp. fumées ap HX [°C]'}</label>
-              <input type="text" value={`${Tf_voute_ap_HX_C.toFixed(1)} °C`} readOnly style={readOnlyStyle} />
+              <input type="text" value={`${fmt(Tf_voute_ap_HX_C, 1)} °C`} readOnly style={readOnlyStyle} />
             </div>
             <div style={{ height: '55px' }} />
             <div>
@@ -306,15 +307,15 @@ const Recuperateur = ({ innerData = {}, combustionResults = {}, currentLanguage 
             </div>
             <div>
               <label style={labelStyle}>P = P_freeboard − PDC_HX_FG (mmCE)</label>
-              <input type="text" value={`${P_sortie_HX_fg_mmCE.toFixed(0)} mmCE`} readOnly style={readOnlyStyle} />
+              <input type="text" value={`${fmt(P_sortie_HX_fg_mmCE, 0)} mmCE`} readOnly style={readOnlyStyle} />
             </div>
             <div>
               <label style={labelStyle}>{t('Débit fumées humides sortie') || 'Débit fumées humides sortie'}</label>
-              <input type="text" value={`${Q_FG_wet_sortie_m3_h.toFixed(0)} m³/h`} readOnly style={readOnlyStyle} />
+              <input type="text" value={`${fmt(Q_FG_wet_sortie_m3_h, 0)} m³/h`} readOnly style={readOnlyStyle} />
             </div>
             <div>
               <label style={labelStyle}>{t('Hf fumées ap HX [kW]') || 'Hf fumées ap HX [kW]'}</label>
-              <input type="text" value={`${Hf_voute_ap_HX_kW.toFixed(0)} kW`} readOnly style={readOnlyStyle} />
+              <input type="text" value={`${fmt(Hf_voute_ap_HX_kW, 0)} kW`} readOnly style={readOnlyStyle} />
             </div>
           </div>
 
@@ -333,28 +334,28 @@ const Recuperateur = ({ innerData = {}, combustionResults = {}, currentLanguage 
             </div>
             <div>
               <label style={labelStyle}>{t('Temp. air soufflante') || 'Temp. air soufflante'}</label>
-              <input type="text" value={`${Temp_air_soufflante_C.toFixed(1)} °C`} readOnly style={readOnlyStyle} />
+              <input type="text" value={`${fmt(Temp_air_soufflante_C, 1)} °C`} readOnly style={readOnlyStyle} />
             </div>
             <div>
               <label style={labelStyle}>{t("Débit d'air humide [Nm3/h]") || "Débit d'air humide [Nm3/h]"}</label>
-              <input type="text" value={`${Q_Air_dry_Nm3_h.toFixed(0)} Nm³/h`} readOnly style={readOnlyStyle} />
+              <input type="text" value={`${fmt(Q_Air_dry_Nm3_h, 0)} Nm³/h`} readOnly style={readOnlyStyle} />
             </div>
             <div style={{ height: '55px' }} />
             <div>
               <label style={labelStyle}>{t('PDC HX côté air') || 'PDC HX côté air'} (mmCE)</label>
-              <input type="text" value={`${PDC_HX_cote_air_mmCE.toFixed(1)} mmCE`} readOnly style={readOnlyStyle} />
+              <input type="text" value={`${fmt(PDC_HX_cote_air_mmCE, 1)} mmCE`} readOnly style={readOnlyStyle} />
             </div>
             <div>
               <label style={labelStyle}>P côté air entrée = P voûte + PDC_HX (mmCE)</label>
-              <input type="text" value={`${P_cote_air_entree_mmCE.toFixed(0)} mmCE`} readOnly style={readOnlyStyle} />
+              <input type="text" value={`${fmt(P_cote_air_entree_mmCE, 0)} mmCE`} readOnly style={readOnlyStyle} />
             </div>
             <div>
               <label style={labelStyle}>{t("Débit d'air en entrée de l'échangeur [m3/h]") || "Débit d'air en entrée de l'échangeur [m3/h]"}</label>
-              <input type="text" value={`${Q_air_entree_HX_m3_h.toFixed(0)} m³/h`} readOnly style={readOnlyStyle} />
+              <input type="text" value={`${fmt(Q_air_entree_HX_m3_h, 0)} m³/h`} readOnly style={readOnlyStyle} />
             </div>
             <div>
               <label style={labelStyle}>{t('H air in HX [kW]') || 'H air in HX [kW]'}</label>
-              <input type="text" value={`${H_air_soufflante_kW.toFixed(0)} kW`} readOnly style={readOnlyStyle} />
+              <input type="text" value={`${fmt(H_air_soufflante_kW, 0)} kW`} readOnly style={readOnlyStyle} />
             </div>
           </div>
 
@@ -365,22 +366,22 @@ const Recuperateur = ({ innerData = {}, combustionResults = {}, currentLanguage 
             </div>
             <div>
               <label style={labelStyle}>{t('Temp. air flu. ap. préch.') || 'Temp. air flu. ap. préch.'}</label>
-              <input type="text" value={`${Tair_ap_prechauffe_C.toFixed(1)} °C`} readOnly style={readOnlyStyle} />
+              <input type="text" value={`${fmt(Tair_ap_prechauffe_C, 1)} °C`} readOnly style={readOnlyStyle} />
             </div>
             <div style={{ height: '55px' }} />
             <div>
               <label style={labelStyle}>{t('Pression niveau Voûte par Défaut [mmCE]') || 'Pression niveau Voûte par Défaut [mmCE]'}</label>
-              <input type="text" value={`${P_voute_defaut_mmCE.toFixed(0)} mmCE`} readOnly style={readOnlyStyle} />
+              <input type="text" value={`${fmt(P_voute_defaut_mmCE, 0)} mmCE`} readOnly style={readOnlyStyle} />
             </div>
             <div style={{ height: '55px' }} />
             <div style={{ height: '55px' }} />
             <div>
               <label style={labelStyle}>{t("Débit air en sortie de l'échangeur [m3/h]") || "Débit air en sortie de l'échangeur [m3/h]"}</label>
-              <input type="text" value={`${Q_air_sortie_HX_m3_h.toFixed(0)} m³/h`} readOnly style={readOnlyStyle} />
+              <input type="text" value={`${fmt(Q_air_sortie_HX_m3_h, 0)} m³/h`} readOnly style={readOnlyStyle} />
             </div>
             <div>
               <label style={labelStyle}>{t('H air out HX [kW]') || 'H air out HX [kW]'}</label>
-              <input type="text" value={`${Hair_ap_prechauffage_kW.toFixed(0)} kW`} readOnly style={readOnlyStyle} />
+              <input type="text" value={`${fmt(Hair_ap_prechauffage_kW, 0)} kW`} readOnly style={readOnlyStyle} />
             </div>
           </div>
 
@@ -394,22 +395,22 @@ const Recuperateur = ({ innerData = {}, combustionResults = {}, currentLanguage 
 
           <div>
             <label style={labelStyle}>{t("Débit d'air à pulser [Nm3/h]") || "Débit d'air à pulser [Nm3/h]"}</label>
-            <input type="text" value={`${Q_air_pulser_Nm3_h.toFixed(0)} Nm³/h`} readOnly style={readOnlyStyle} />
+            <input type="text" value={`${fmt(Q_air_pulser_Nm3_h, 0)} Nm³/h`} readOnly style={readOnlyStyle} />
           </div>
 
           <div>
             <label style={labelStyle}>{t('Pression ventilateur [mmCE]') || 'Pression ventilateur [mmCE]'}</label>
-            <input type="text" value={`${P_cote_air_entree_mmCE.toFixed(0)} mmCE`} readOnly style={readOnlyStyle} />
+            <input type="text" value={`${fmt(P_cote_air_entree_mmCE, 0)} mmCE`} readOnly style={readOnlyStyle} />
           </div>
 
           <div>
             <label style={labelStyle}>{t('Temp. air soufflante') || 'Temp. air soufflante'}</label>
-            <input type="text" value={`${Temp_air_soufflante_C.toFixed(1)} °C`} readOnly style={readOnlyStyle} />
+            <input type="text" value={`${fmt(Temp_air_soufflante_C, 1)} °C`} readOnly style={readOnlyStyle} />
           </div>
 
           <div>
             <label style={labelStyle}>{t('Débit air total sortie ventilateur [m3/h]') || 'Débit air total sortie ventilateur [m3/h]'}</label>
-            <div style={resultBox}>{Q_air_ventilateur_m3_h.toFixed(0)} m³/h</div>
+            <div style={resultBox}>{fmt(Q_air_ventilateur_m3_h, 0)} m³/h</div>
           </div>
 
           <div>
@@ -422,7 +423,7 @@ const Recuperateur = ({ innerData = {}, combustionResults = {}, currentLanguage 
 
           <div>
             <label style={labelStyle}>{t('Puissance électrique consommée [kW]') || 'Puissance électrique consommée [kW]'}</label>
-            <div style={resultBox}>{Puissance_elec_ventilateur_kW.toFixed(1)} kW</div>
+            <div style={resultBox}>{fmt(Puissance_elec_ventilateur_kW, 1)} kW</div>
           </div>
 
         </div>
@@ -444,17 +445,17 @@ const Recuperateur = ({ innerData = {}, combustionResults = {}, currentLanguage 
 
                 <div>
                   <label style={labelStyle}>{t("Rendement de l'échangeur") || "Rendement de l'échangeur"} (%)</label>
-                  <input type="text" value={`${(Rdt_HX * 100).toFixed(1)} %`} readOnly style={readOnlyStyle} />
+                  <input type="text" value={`${fmt((Rdt_HX * 100), 1)} %`} readOnly style={readOnlyStyle} />
                 </div>
 
                 <div>
                   <label style={labelStyle}>{t('Q chaleur apportée par les fumées') || 'Q chaleur apportée par les fumées'} (kW)</label>
-                  <div style={resultBox}>{(H_fumees_in_kW - Hf_voute_ap_HX_kW).toFixed(1)} kW</div>
+                  <div style={resultBox}>{fmt((H_fumees_in_kW - Hf_voute_ap_HX_kW), 1)} kW</div>
                 </div>
 
                 <div>
                   <label style={labelStyle}>DTLM (K)</label>
-                  <div style={resultBox}>{designRecup.DTLM?.toFixed(2) ?? '-'} K</div>
+                  <div style={resultBox}>{(designRecup.DTLM != null ? fmt(designRecup.DTLM, 2) : '') ?? '-'} K</div>
                 </div>
 
                 <div>
@@ -465,17 +466,17 @@ const Recuperateur = ({ innerData = {}, combustionResults = {}, currentLanguage 
 
                 <div>
                   <label style={labelStyle}>{t('Hext') || 'Hext'} (kCal/m².°C)</label>
-                  <div style={resultBoxAlt}>{designRecup.Coeff_Hext?.toFixed(4) ?? '-'} kCal/m².°C</div>
+                  <div style={resultBoxAlt}>{(designRecup.Coeff_Hext != null ? fmt(designRecup.Coeff_Hext, 4) : '') ?? '-'} kCal/m².°C</div>
                 </div>
 
                 <div>
                   <label style={labelStyle}>{t('Facteur UA') || 'Facteur UA'} (W/K)</label>
-                  <div style={resultBoxAlt}>{designRecup.Facteur_UA?.toFixed(4) ?? '-'} W/K</div>
+                  <div style={resultBoxAlt}>{(designRecup.Facteur_UA != null ? fmt(designRecup.Facteur_UA, 4) : '') ?? '-'} W/K</div>
                 </div>
 
                 <div>
                   <label style={labelStyle}>{t('Section calandre') || 'Section calandre'} (m²)</label>
-                  <div style={resultBoxAlt}>{designRecup.Section_calandre_m2?.toFixed(4) ?? '-'} m²</div>
+                  <div style={resultBoxAlt}>{(designRecup.Section_calandre_m2 != null ? fmt(designRecup.Section_calandre_m2, 4) : '') ?? '-'} m²</div>
                 </div>
 
               </div>
@@ -492,7 +493,7 @@ const Recuperateur = ({ innerData = {}, combustionResults = {}, currentLanguage 
 
                 <div>
                   <label style={labelStyle}>{t("Q chaleur reçue par l'air") || "Q chaleur reçue par l'air"} (kW)</label>
-                  <div style={resultBox}>{(Hair_ap_prechauffage_kW - H_air_soufflante_kW).toFixed(1)} kW</div>
+                  <div style={resultBox}>{fmt((Hair_ap_prechauffage_kW - H_air_soufflante_kW), 1)} kW</div>
                 </div>
 
                 <div>
@@ -510,17 +511,17 @@ const Recuperateur = ({ innerData = {}, combustionResults = {}, currentLanguage 
 
                 <div>
                   <label style={labelStyle}>{t('Hint') || 'Hint'} (kCal/m².°C)</label>
-                  <div style={resultBoxAlt}>{designRecup.coeff_Hint?.toFixed(4) ?? '-'} kCal/m².°C</div>
+                  <div style={resultBoxAlt}>{(designRecup.coeff_Hint != null ? fmt(designRecup.coeff_Hint, 4) : '') ?? '-'} kCal/m².°C</div>
                 </div>
 
                 <div>
                   <label style={labelStyle}>{t('U encrassé') || 'U encrassé'} (kCal/m².°C)</label>
-                  <div style={resultBoxAlt}>{designRecup.FactUEncrasse?.toFixed(4) ?? '-'} kCal/m².°C</div>
+                  <div style={resultBoxAlt}>{(designRecup.FactUEncrasse != null ? fmt(designRecup.FactUEncrasse, 4) : '') ?? '-'} kCal/m².°C</div>
                 </div>
 
                 <div>
                   <label style={labelStyle}>{t("Surface d'échange") || "Surface d'échange"} (m²)</label>
-                  <div style={resultBoxAlt}>{designRecup.S_echange_m2?.toFixed(4) ?? '-'} m²</div>
+                  <div style={resultBoxAlt}>{(designRecup.S_echange_m2 != null ? fmt(designRecup.S_echange_m2, 4) : '') ?? '-'} m²</div>
                 </div>
 
               </div>

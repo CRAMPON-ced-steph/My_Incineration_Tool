@@ -17,7 +17,7 @@ import IDFAN_Report from './IDFAN_Report';
 import '../../index.css';
 
 
-const IDFANMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLanguage = 'fr'  }) => {
+const IDFANMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLanguage = 'fr', nodeId  }) => {
 
   const languageCode = getLanguageCode(currentLanguage);
   const t = (key) => translations[languageCode]?.[key] || translations['fr']?.[key] || key;
@@ -38,13 +38,14 @@ const IDFANMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, current
     upstreamFG_IN={FG_IN_upstream}
     upstreamP_IN={P_IN_upstream}
     currentLanguage={currentLanguage}
+    nodeId={nodeId}
   /> },
-  {name: t('Pollutant Emissions'), content: <IDFANFlueGasPollutantEmission  innerData={innerData}setInnerData={setInnerData}currentLanguage={currentLanguage}/>,},
+  {name: t('Pollutant Emissions'), content: <IDFANFlueGasPollutantEmission  innerData={innerData}setInnerData={setInnerData}currentLanguage={currentLanguage} nodeId={nodeId}/>,},
  // {name: 'Design', content: < IDFANDesign innerData={innerData}/> },
 
  //{name: 'Design', content: < IDFANDesign innerData={innerData}setInnerData={setInnerData}/> },
- {name: t('Opex'), content: < IDFANOpex innerData={innerData}setInnerData={setInnerData}currentLanguage={currentLanguage} /> },
- {name: t('Rapport'), content: <IDFAN_Report innerData={innerData} currentLanguage={currentLanguage} />},
+ {name: t('Opex'), content: < IDFANOpex innerData={innerData}setInnerData={setInnerData}currentLanguage={currentLanguage} nodeId={nodeId} /> },
+ {name: t('Rapport'), content: <IDFAN_Report innerData={innerData} currentLanguage={currentLanguage} nodeId={nodeId} />},
 
   ];
 

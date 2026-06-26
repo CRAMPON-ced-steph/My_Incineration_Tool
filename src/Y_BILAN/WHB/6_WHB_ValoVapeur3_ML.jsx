@@ -4,6 +4,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './WHB_traduction';
 
+import { fmt } from '../../A_Transverse_fonction/formatNumber';
 const TurbineCalculator = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
   const languageCode = getLanguageCode(currentLanguage);
   const t = (key) => translations[languageCode]?.[key] || translations['fr']?.[key] || key;
@@ -489,7 +490,7 @@ const TurbineCalculator = ({ innerData, setInnerData, currentLanguage = 'fr' }) 
               <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr auto', gap: '10px'}}>
                 <input type="number" value={parameters.niveau1Pression} onChange={(e) => handleParameterChange('niveau1Pression', e.target.value)} style={styles.input} min="0.1" max="200" step="0.1" />
                 <input type="number" value={parameters.niveau1Debit} onChange={(e) => handleParameterChange('niveau1Debit', e.target.value)} style={styles.input} min="1" max="100" step="1" />
-                <span style={{fontSize: '12px', color: '#6b7280', fontWeight: '500'}}> = {(parameters.debitVapeur * parameters.niveau1Debit / 100).toFixed(1)} {t('tonperH')}</span>
+                <span style={{fontSize: '12px', color: '#6b7280', fontWeight: '500'}}> = {fmt((parameters.debitVapeur * parameters.niveau1Debit / 100), 1)} {t('tonperH')}</span>
               </div>
             </div>
             <div style={{marginBottom: '15px'}}>
@@ -497,7 +498,7 @@ const TurbineCalculator = ({ innerData, setInnerData, currentLanguage = 'fr' }) 
               <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr auto', gap: '10px'}}>
                 <input type="number" value={parameters.niveau2Pression} onChange={(e) => handleParameterChange('niveau2Pression', e.target.value)} style={styles.input} min="0.1" max="200" step="0.1" />
                 <input type="number" value={parameters.niveau2Debit} onChange={(e) => handleParameterChange('niveau2Debit', e.target.value)} style={styles.input} min="1" max="100" step="1" />
-                <span style={{fontSize: '12px', color: '#6b7280', fontWeight: '500'}}> = {(parameters.debitVapeur * parameters.niveau2Debit / 100).toFixed(1)} {t('tonperH')}</span>
+                <span style={{fontSize: '12px', color: '#6b7280', fontWeight: '500'}}> = {fmt((parameters.debitVapeur * parameters.niveau2Debit / 100), 1)} {t('tonperH')}</span>
               </div>
             </div>
             <div style={{marginBottom: '15px'}}>
@@ -505,11 +506,11 @@ const TurbineCalculator = ({ innerData, setInnerData, currentLanguage = 'fr' }) 
               <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr auto', gap: '10px'}}>
                 <input type="number" value={parameters.niveau3Pression} onChange={(e) => handleParameterChange('niveau3Pression', e.target.value)} style={styles.input} min="0.05" max="200" step="0.01" />
                 <input type="number" value={parameters.niveau3Debit} onChange={(e) => handleParameterChange('niveau3Debit', e.target.value)} style={styles.input} min="1" max="100" step="1" />
-                <span style={{fontSize: '12px', color: '#6b7280', fontWeight: '500'}}> = {(parameters.debitVapeur * parameters.niveau3Debit / 100).toFixed(1)} {t('tonperH')}</span>
+                <span style={{fontSize: '12px', color: '#6b7280', fontWeight: '500'}}> = {fmt((parameters.debitVapeur * parameters.niveau3Debit / 100), 1)} {t('tonperH')}</span>
               </div>
             </div>
             <div style={{fontSize: '12px', color: '#6b7280', fontStyle: 'italic', marginTop: '10px'}}>
-              {t('totalFlows')}: {(parameters.niveau1Debit + parameters.niveau2Debit + parameters.niveau3Debit).toFixed(0)}{t('percent')}
+              {t('totalFlows')}: {fmt((parameters.niveau1Debit + parameters.niveau2Debit + parameters.niveau3Debit), 0)}{t('percent')}
               {(parameters.niveau1Debit + parameters.niveau2Debit + parameters.niveau3Debit) !== 100 && <span style={{color: '#dc2626', fontWeight: '500'}}> (≠ 100%)</span>}
             </div>
           </div>
@@ -528,7 +529,7 @@ const TurbineCalculator = ({ innerData, setInnerData, currentLanguage = 'fr' }) 
                   <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr auto', gap: '10px', marginLeft: '28px', marginBottom: '10px'}}>
                     <input type="number" value={parameters.soutirage1Pression} onChange={(e) => handleParameterChange('soutirage1Pression', e.target.value)} style={styles.input} min={parameters.pressionSortie + 0.1} max={parameters.pressionEntree - 0.1} step="0.1" />
                     <input type="number" value={parameters.soutirage1Debit} onChange={(e) => handleParameterChange('soutirage1Debit', e.target.value)} style={styles.input} min="1" max="50" step="0.5" />
-                    <span style={{fontSize: '12px', color: '#6b7280', fontWeight: '500'}}> = {(parameters.debitVapeur * parameters.soutirage1Debit / 100).toFixed(1)} {t('tonperH')}</span>
+                    <span style={{fontSize: '12px', color: '#6b7280', fontWeight: '500'}}> = {fmt((parameters.debitVapeur * parameters.soutirage1Debit / 100), 1)} {t('tonperH')}</span>
                   </div>
                 )}
               </div>
@@ -543,7 +544,7 @@ const TurbineCalculator = ({ innerData, setInnerData, currentLanguage = 'fr' }) 
                   <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr auto', gap: '10px', marginLeft: '28px', marginBottom: '10px'}}>
                     <input type="number" value={parameters.soutirage2Pression} onChange={(e) => handleParameterChange('soutirage2Pression', e.target.value)} style={styles.input} min={parameters.pressionSortie + 0.1} max={parameters.pressionEntree - 0.1} step="0.1" />
                     <input type="number" value={parameters.soutirage2Debit} onChange={(e) => handleParameterChange('soutirage2Debit', e.target.value)} style={styles.input} min="1" max="50" step="0.5" />
-                    <span style={{fontSize: '12px', color: '#6b7280', fontWeight: '500'}}> = {(parameters.debitVapeur * parameters.soutirage2Debit / 100).toFixed(1)} {t('tonperH')}</span>
+                    <span style={{fontSize: '12px', color: '#6b7280', fontWeight: '500'}}> = {fmt((parameters.debitVapeur * parameters.soutirage2Debit / 100), 1)} {t('tonperH')}</span>
                   </div>
                 )}
               </div>
@@ -558,7 +559,7 @@ const TurbineCalculator = ({ innerData, setInnerData, currentLanguage = 'fr' }) 
                   <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr auto', gap: '10px', marginLeft: '28px', marginBottom: '10px'}}>
                     <input type="number" value={parameters.soutirage3Pression} onChange={(e) => handleParameterChange('soutirage3Pression', e.target.value)} style={styles.input} min={parameters.pressionSortie + 0.1} max={parameters.pressionEntree - 0.1} step="0.1" />
                     <input type="number" value={parameters.soutirage3Debit} onChange={(e) => handleParameterChange('soutirage3Debit', e.target.value)} style={styles.input} min="1" max="50" step="0.5" />
-                    <span style={{fontSize: '12px', color: '#6b7280', fontWeight: '500'}}> = {(parameters.debitVapeur * parameters.soutirage3Debit / 100).toFixed(1)} {t('tonperH')}</span>
+                    <span style={{fontSize: '12px', color: '#6b7280', fontWeight: '500'}}> = {fmt((parameters.debitVapeur * parameters.soutirage3Debit / 100), 1)} {t('tonperH')}</span>
                   </div>
                 )}
               </div>
@@ -578,19 +579,19 @@ const TurbineCalculator = ({ innerData, setInnerData, currentLanguage = 'fr' }) 
                 <div style={{display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '15px'}}>
                   <div style={styles.resultCard}>
                     <div style={styles.resultTitle}>{t('inletEnthalpy')}</div>
-                    <div style={styles.resultValue}>{results.enthalpieEntree.toFixed(0)}<span style={styles.resultUnit}>{t('kJperKg')}</span></div>
+                    <div style={styles.resultValue}>{fmt(results.enthalpieEntree, 0)}<span style={styles.resultUnit}>{t('kJperKg')}</span></div>
                   </div>
                   <div style={styles.resultCard}>
                     <div style={styles.resultTitle}>{t('inletEntropy')}</div>
-                    <div style={styles.resultValue}>{results.entropieEntree.toFixed(2)}<span style={styles.resultUnit}>{t('kJperKgK')}</span></div>
+                    <div style={styles.resultValue}>{fmt(results.entropieEntree, 2)}<span style={styles.resultUnit}>{t('kJperKgK')}</span></div>
                   </div>
                   <div style={styles.resultCard}>
                     <div style={styles.resultTitle}>{t('saturationTemperature')}</div>
-                    <div style={styles.resultValue}>{results.temperatureSaturation.toFixed(0)}<span style={styles.resultUnit}>{t('degreeC')}</span></div>
+                    <div style={styles.resultValue}>{fmt(results.temperatureSaturation, 0)}<span style={styles.resultUnit}>{t('degreeC')}</span></div>
                   </div>
                   <div style={styles.resultCard}>
                     <div style={styles.resultTitle}>{t('superheating')}</div>
-                    <div style={styles.resultValue}>{results.surchauffe.toFixed(0)}<span style={styles.resultUnit}>{t('degreeC')}</span></div>
+                    <div style={styles.resultValue}>{fmt(results.surchauffe, 0)}<span style={styles.resultUnit}>{t('degreeC')}</span></div>
                   </div>
                 </div>
               </div>
@@ -602,14 +603,14 @@ const TurbineCalculator = ({ innerData, setInnerData, currentLanguage = 'fr' }) 
                 {results.niveaux && results.niveaux.map((niveau, index) => (
                   <div key={index} style={{padding: '12px', backgroundColor: '#f0f9ff', border: '1px solid #bae6fd', borderRadius: '6px', marginBottom: '10px'}}>
                     <div style={{fontSize: '14px', fontWeight: 'bold', color: '#0369a1', marginBottom: '8px'}}>
-                      {niveau.nom} - {niveau.pression} {t('bar')} ({niveau.debitPct}{t('percent')} = {(niveau.debitKgH/1000).toFixed(1)} {t('tonperH')})
+                      {niveau.nom} - {niveau.pression} {t('bar')} ({niveau.debitPct}{t('percent')} = {fmt((niveau.debitKgH/1000), 1)} {t('tonperH')})
                     </div>
                     <div style={{display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '8px'}}>
-                      <div style={{fontSize: '12px', color: '#374151'}}><strong>T sat:</strong> {niveau.temperatureSaturation.toFixed(0)}{t('degreeC')}</div>
-                      <div style={{fontSize: '12px', color: '#374151'}}><strong>{t('steamEnthalpy')}:</strong> {niveau.enthalpie.toFixed(0)} {t('kJperKg')}</div>
-                      <div style={{fontSize: '12px', color: '#374151'}}><strong>{t('inletEntropy')}:</strong> {niveau.entropie.toFixed(2)} {t('kJperKgK')}</div>
+                      <div style={{fontSize: '12px', color: '#374151'}}><strong>T sat:</strong> {fmt(niveau.temperatureSaturation, 0)}{t('degreeC')}</div>
+                      <div style={{fontSize: '12px', color: '#374151'}}><strong>{t('steamEnthalpy')}:</strong> {fmt(niveau.enthalpie, 0)} {t('kJperKg')}</div>
+                      <div style={{fontSize: '12px', color: '#374151'}}><strong>{t('inletEntropy')}:</strong> {fmt(niveau.entropie, 2)} {t('kJperKgK')}</div>
                       <div style={{fontSize: '12px', color: '#374151'}}><strong>{t('superheating')}:</strong> {niveau.surchauffe}{t('degreeC')}</div>
-                      <div style={{fontSize: '12px', color: '#374151'}}><strong>{t('quality')}:</strong> {(niveau.titre * 100).toFixed(1)}{t('percent')}</div>
+                      <div style={{fontSize: '12px', color: '#374151'}}><strong>{t('quality')}:</strong> {fmt((niveau.titre * 100), 1)}{t('percent')}</div>
                     </div>
                     {niveau.titre < 1 && <div style={{fontSize: '11px', color: '#dc2626', marginTop: '5px', fontStyle: 'italic'}}>⚠️ {t('wetSteamWarning')}</div>}
                   </div>
@@ -621,38 +622,38 @@ const TurbineCalculator = ({ innerData, setInnerData, currentLanguage = 'fr' }) 
               <div style={{display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '15px', marginBottom: '20px'}}>
                 <div style={styles.resultCard}>
                   <div style={styles.resultTitle}>{t('electricPower')}</div>
-                  <div style={styles.resultValue}>{(results.puissanceElectrique / 1000).toFixed(2)}<span style={styles.resultUnit}>{t('MW')}</span></div>
+                  <div style={styles.resultValue}>{fmt((results.puissanceElectrique / 1000), 2)}<span style={styles.resultUnit}>{t('MW')}</span></div>
                 </div>
                 <div style={styles.resultCard}>
                   <div style={styles.resultTitle}>{t('mechanicalPower')}</div>
-                  <div style={styles.resultValue}>{(results.puissanceMecanique / 1000).toFixed(2)}<span style={styles.resultUnit}>{t('MW')}</span></div>
+                  <div style={styles.resultValue}>{fmt((results.puissanceMecanique / 1000), 2)}<span style={styles.resultUnit}>{t('MW')}</span></div>
                 </div>
                 <div style={styles.resultCard}>
                   <div style={styles.resultTitle}>{t('specificWork')}</div>
-                  <div style={styles.resultValue}>{results.travailSpecifique.toFixed(0)}<span style={styles.resultUnit}>{t('kJperKg')}</span></div>
+                  <div style={styles.resultValue}>{fmt(results.travailSpecifique, 0)}<span style={styles.resultUnit}>{t('kJperKg')}</span></div>
                 </div>
                 <div style={styles.resultCard}>
                   <div style={styles.resultTitle}>{t('specificConsumption')}</div>
-                  <div style={styles.resultValue}>{results.consommationSpecifique.toFixed(2)}<span style={styles.resultUnit}>{t('kgperKWh')}</span></div>
+                  <div style={styles.resultValue}>{fmt(results.consommationSpecifique, 2)}<span style={styles.resultUnit}>{t('kgperKWh')}</span></div>
                 </div>
               </div>
 
               <div style={{display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '15px'}}>
                 <div style={styles.resultCard}>
                   <div style={styles.resultTitle}>{t('globalEfficiency')}</div>
-                  <div style={styles.resultValue}>{results.rendementGlobal.toFixed(1)}<span style={styles.resultUnit}>{t('percent')}</span></div>
+                  <div style={styles.resultValue}>{fmt(results.rendementGlobal, 1)}<span style={styles.resultUnit}>{t('percent')}</span></div>
                 </div>
                 <div style={styles.resultCard}>
                   <div style={styles.resultTitle}>{t('expansionRatio')}</div>
-                  <div style={styles.resultValue}>{results.rapportDetente.toFixed(1)}<span style={styles.resultUnit}>:1</span></div>
+                  <div style={styles.resultValue}>{fmt(results.rapportDetente, 1)}<span style={styles.resultUnit}>:1</span></div>
                 </div>
                 <div style={styles.resultCard}>
                   <div style={styles.resultTitle}>{t('carnotEfficiency')}</div>
-                  <div style={styles.resultValue}>{results.efficaciteCarnot.toFixed(1)}<span style={styles.resultUnit}>{t('percent')}</span></div>
+                  <div style={styles.resultValue}>{fmt(results.efficaciteCarnot, 1)}<span style={styles.resultUnit}>{t('percent')}</span></div>
                 </div>
                 <div style={styles.resultCard}>
                   <div style={styles.resultTitle}>{t('remainingFlow')}</div>
-                  <div style={styles.resultValue}>{results.debitRestantPct.toFixed(1)}<span style={styles.resultUnit}>{t('percent')}</span></div>
+                  <div style={styles.resultValue}>{fmt(results.debitRestantPct, 1)}<span style={styles.resultUnit}>{t('percent')}</span></div>
                 </div>
               </div>
 
@@ -664,10 +665,10 @@ const TurbineCalculator = ({ innerData, setInnerData, currentLanguage = 'fr' }) 
                       <div style={{fontSize: '14px', fontWeight: 'bold', color: '#0369a1', marginBottom: '8px'}}>{soutirage.nom}</div>
                       <div style={{display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px'}}>
                         <div style={{fontSize: '12px', color: '#374151'}}><strong>{t('inletPressure')}:</strong> {soutirage.pression} {t('bar')}</div>
-                        <div style={{fontSize: '12px', color: '#374151'}}><strong>{t('inletTemperature')}:</strong> {soutirage.temperature.toFixed(0)}{t('degreeC')}</div>
-                        <div style={{fontSize: '12px', color: '#374151'}}><strong>{t('steamFlow')}:</strong> {soutirage.debitKgH.toFixed(0)} kg/h ({soutirage.debitPct}{t('percent')})</div>
-                        <div style={{fontSize: '12px', color: '#374151'}}><strong>{t('steamEnthalpy')}:</strong> {soutirage.enthalpie.toFixed(0)} {t('kJperKg')}</div>
-                        <div style={{fontSize: '12px', color: '#374151'}}><strong>{t('specificWork')}:</strong> {soutirage.travailSpecifique.toFixed(0)} {t('kJperKg')}</div>
+                        <div style={{fontSize: '12px', color: '#374151'}}><strong>{t('inletTemperature')}:</strong> {fmt(soutirage.temperature, 0)}{t('degreeC')}</div>
+                        <div style={{fontSize: '12px', color: '#374151'}}><strong>{t('steamFlow')}:</strong> {fmt(soutirage.debitKgH, 0)} kg/h ({soutirage.debitPct}{t('percent')})</div>
+                        <div style={{fontSize: '12px', color: '#374151'}}><strong>{t('steamEnthalpy')}:</strong> {fmt(soutirage.enthalpie, 0)} {t('kJperKg')}</div>
+                        <div style={{fontSize: '12px', color: '#374151'}}><strong>{t('specificWork')}:</strong> {fmt(soutirage.travailSpecifique, 0)} {t('kJperKg')}</div>
                       </div>
                     </div>
                   ))}
@@ -687,7 +688,7 @@ const TurbineCalculator = ({ innerData, setInnerData, currentLanguage = 'fr' }) 
               <XAxis dataKey="debit" label={{ value: `${t('steamFlow')} (${t('tonperH')})`, position: 'insideBottom', offset: -5 }} />
               <YAxis yAxisId="left" label={{ value: `${t('electricPower')} (${t('MW')})`, angle: -90, position: 'insideLeft' }} />
               <YAxis yAxisId="right" orientation="right" label={{ value: `${t('globalEfficiency')} (${t('percent')})`, angle: 90, position: 'insideRight' }} />
-              <Tooltip formatter={(value) => typeof value === 'number' ? value.toFixed(2) : value} labelFormatter={(value) => `${t('steamFlow')}: ${value} ${t('tonperH')}`} />
+              <Tooltip formatter={(value) => typeof value === 'number' ? fmt(value, 2) : value} labelFormatter={(value) => `${t('steamFlow')}: ${value} ${t('tonperH')}`} />
               <Legend />
               <Line yAxisId="left" type="monotone" dataKey="puissanceElectrique" stroke="#2c5aa0" strokeWidth={3} name={`${t('electricPower')} (${t('MW')})`} dot={{fill: '#2c5aa0', strokeWidth: 2, r: 4}} />
               <Line yAxisId="left" type="monotone" dataKey="puissanceMecanique" stroke="#10b981" strokeWidth={2} name={`${t('mechanicalPower')} (${t('MW')})`} dot={{fill: '#10b981', strokeWidth: 2, r: 3}} />

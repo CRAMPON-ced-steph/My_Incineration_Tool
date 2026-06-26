@@ -10,7 +10,8 @@ import { h_fumee, Qeau_added_to_be_at_T } from '../../A_Transverse_fonction/enth
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './ELECTROFILTER_traduction';
 
-const ELECTROFILTERFlueGasParameters = ({ innerData, currentLanguage = 'fr' }) => {
+import { fmt } from '../../A_Transverse_fonction/formatNumber';
+const ELECTROFILTERFlueGasParameters = ({ innerData, nodeId, currentLanguage = 'fr' }) => {
  
   const languageCode = getLanguageCode(currentLanguage);
   
@@ -29,12 +30,12 @@ const ELECTROFILTERFlueGasParameters = ({ innerData, currentLanguage = 'fr' }) =
   };
 
   const [emissions_ELECTROFILTER, setEmissions_ELECTROFILTER] = useState(() => {
-    const savedEmissions = localStorage.getItem('emissions_ELECTROFILTER');
+    const savedEmissions = localStorage.getItem(`emissions_ELECTROFILTER_${nodeId}`);
     return savedEmissions ? JSON.parse(savedEmissions) : initialEmissions_ELECTROFILTER;
   });
 
   useEffect(() => {
-    localStorage.setItem('emissions_ELECTROFILTER', JSON.stringify(emissions_ELECTROFILTER));
+    localStorage.setItem(`emissions_ELECTROFILTER_${nodeId}`, JSON.stringify(emissions_ELECTROFILTER));
   }, [emissions_ELECTROFILTER]);
 
   // Extraction des données d'entrée
@@ -137,10 +138,10 @@ const ELECTROFILTERFlueGasParameters = ({ innerData, currentLanguage = 'fr' }) =
 
   // Éléments pour le tableau générique
   const elementsGeneric = [
-    { text: t('Temperature inlet ELECTROFILTER [°C]'), value: T_in.toFixed(1) },
-    { text: t('Delta enthalpies [kJ/kg]'), value: Delta_H.toFixed(0) },
-    { text: t('Sprayed/cooling water [kg/h]'), value: Q_eau_kg_h.toFixed(0) },
-    { text: t('Outlet flue gas volume [Nm3/h]'), value: FG_humide_EAU_tot_Nm3_h.toFixed(2) },
+    { text: t('Temperature inlet ELECTROFILTER [°C]'), value: fmt(T_in, 1) },
+    { text: t('Delta enthalpies [kJ/kg]'), value: fmt(Delta_H, 0) },
+    { text: t('Sprayed/cooling water [kg/h]'), value: fmt(Q_eau_kg_h, 0) },
+    { text: t('Outlet flue gas volume [Nm3/h]'), value: fmt(FG_humide_EAU_tot_Nm3_h, 2) },
   ];
 
   // Gestionnaire de changement
@@ -156,7 +157,7 @@ const ELECTROFILTERFlueGasParameters = ({ innerData, currentLanguage = 'fr' }) =
 
   // Fonction pour effacer la mémoire
   const clearMemory = useCallback(() => {
-    localStorage.removeItem('emissions_ELECTROFILTER');
+    localStorage.removeItem(`emissions_ELECTROFILTER_${nodeId}`);
     setEmissions_ELECTROFILTER(initialEmissions_ELECTROFILTER);
   }, []);
 

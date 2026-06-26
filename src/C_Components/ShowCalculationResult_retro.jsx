@@ -1,9 +1,10 @@
 import React from "react";
+import { fmt } from '../A_Transverse_fonction/formatNumber';
 
 const CalculationResults = ({ isOpen, results }) => {
   if (!isOpen || !results) return null;
 
-  const formatNumber = (num) => (typeof num === "number" ? Number(num.toFixed(2)) : num);
+  const formatNumber = (num) => (typeof num === "number" ? fmt(num, 2) : num);
 
   const formatResults = (obj) => {
     return Object.entries(obj).reduce((acc, [key, value]) => {

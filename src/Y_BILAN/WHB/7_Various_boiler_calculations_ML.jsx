@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { fmt } from '../../A_Transverse_fonction/formatNumber';
 import { 
   Calculator, 
   Settings, 
@@ -534,22 +535,22 @@ export default function CalculateurChaudiere({ currentLanguage = 'fr' }) {
                 </div>
                 <div style={contentStyle}>
                   <div style={{ marginBottom: '12px', padding: '12px', background: '#f8fafc', borderRadius: '8px' }}>
-                    <strong>{t('calculationPressure', lang)}:</strong> {resultats.pressionCalcul.toFixed(1)} {t('bar', lang)}
+                    <strong>{t('calculationPressure', lang)}:</strong> {fmt(resultats.pressionCalcul, 1)} {t('bar', lang)}
                   </div>
                   <div style={{ marginBottom: '12px', padding: '12px', background: '#f8fafc', borderRadius: '8px' }}>
-                    <strong>{t('bodyThickness', lang)}:</strong> {resultats.epaisseurCorps.toFixed(1)} mm
+                    <strong>{t('bodyThickness', lang)}:</strong> {fmt(resultats.epaisseurCorps, 1)} mm
                   </div>
                   <div style={{ marginBottom: '12px', padding: '12px', background: '#f8fafc', borderRadius: '8px' }}>
-                    <strong>{t('tubeThickness', lang)}:</strong> {resultats.epaisseurTubes.toFixed(1)} mm
+                    <strong>{t('tubeThickness', lang)}:</strong> {fmt(resultats.epaisseurTubes, 1)} mm
                   </div>
                   <div style={{ marginBottom: '12px', padding: '12px', background: '#f8fafc', borderRadius: '8px' }}>
-                    <strong>{t('steamPower', lang)}:</strong> {resultats.puissanceVapeur.toFixed(0)} kW
+                    <strong>{t('steamPower', lang)}:</strong> {fmt(resultats.puissanceVapeur, 0)} kW
                   </div>
                   <div style={{ marginBottom: '12px', padding: '12px', background: '#f8fafc', borderRadius: '8px' }}>
-                    <strong>{t('wasteFlow', lang)}:</strong> {resultats.debitDechets.toFixed(0)} kg/h
+                    <strong>{t('wasteFlow', lang)}:</strong> {fmt(resultats.debitDechets, 0)} kg/h
                   </div>
                   <div style={{ marginBottom: '12px', padding: '12px', background: '#f8fafc', borderRadius: '8px' }}>
-                    <strong>{t('globalEfficiency', lang)}:</strong> {resultats.rendementGlobal.toFixed(1)} {t('percent', lang)}
+                    <strong>{t('globalEfficiency', lang)}:</strong> {fmt(resultats.rendementGlobal, 1)} {t('percent', lang)}
                   </div>
                 </div>
               </div>

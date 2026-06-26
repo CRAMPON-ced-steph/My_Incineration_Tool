@@ -3,7 +3,7 @@ import SEP12FluegasSep from './SEP12_fluegas_sep';
 import { getLanguageCode } from '../../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './SEP12_traduction';
 
-const SEP12MainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLanguage = 'fr' }) => {
+const SEP12MainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLanguage = 'fr', nodeId }) => {
 
   const languageCode = getLanguageCode(currentLanguage);
   const t = (key) => {
@@ -112,6 +112,7 @@ const SEP12MainPage = ({ nodeData, title, onSendData, onClose, onGoBack, current
         <SEP12FluegasSep
           innerData={innerData}
           currentLanguage={currentLanguage}
+          nodeId={nodeId}
         />
       </div>
     </div>

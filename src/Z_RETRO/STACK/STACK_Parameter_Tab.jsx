@@ -14,16 +14,16 @@ import STACK_Retro_Rapport from './STACK_Retro_Rapport';
 
 import '../../index.css';
 
-// Constantes pour les clés localStorage (cohérence et maintenabilité)
-const STORAGE_KEYS = {
-  TSTACK: 'Tstack_STACK',
-  QV_WET: 'Qv_wet_Nm3_h_STACK',
-  O2_DRY: 'O2_dry_pourcent_STACK',
-  H2O: 'H2O_pourcent_STACK',
-  CO2_DRY: 'CO2_dry_pourcent_STACK',
-  P_OUT: 'P_out_mmCE_STACK',
-  CALCULATION_RESULT: 'calculationResult_STACK'
-};
+// Fonctions pour localStorage keys dynamiques
+const getStorageKeys = (nodeId) => ({
+  TSTACK: `Tstack_STACK_${nodeId}`,
+  QV_WET: `Qv_wet_Nm3_h_STACK_${nodeId}`,
+  O2_DRY: `O2_dry_pourcent_STACK_${nodeId}`,
+  H2O: `H2O_pourcent_STACK_${nodeId}`,
+  CO2_DRY: `CO2_dry_pourcent_STACK_${nodeId}`,
+  P_OUT: `P_out_mmCE_STACK_${nodeId}`,
+  CALCULATION_RESULT: `calculationResult_STACK_${nodeId}`,
+});
 
 // Valeurs par défaut centralisées
 const DEFAULT_VALUES = {
@@ -43,9 +43,10 @@ const getStorageValue = (key, defaultValue, nodeData = null) => {
   return defaultValue;
 };
 
-const STACK_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage, autoTrigger = false }) => {
+const STACK_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage, nodeId, autoTrigger = false }) => {
+  const STORAGE_KEYS = getStorageKeys(nodeId);
   // États principaux avec initialisation optimisée
-  const [Tstack, setTstack] = useState(() => 
+  const [Tstack, setTstack] = useState(() =>
     getStorageValue(STORAGE_KEYS.TSTACK, DEFAULT_VALUES.Tstack, nodeData)
   );
   const [Qv_wet_Nm3_h, setQv_wet_Nm3_h] = useState(() => 
@@ -310,7 +311,7 @@ const STACK_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLang
           disabled={isCalculating}
           currentLanguage={currentLanguage}
           isCalculating={isCalculating}
-          storageKey={`calcSent_${title}`}
+          storageKey={`calcSent_${title}_${nodeId}`}
         />
         
         <ShowResultButton 
