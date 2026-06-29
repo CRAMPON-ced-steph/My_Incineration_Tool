@@ -819,9 +819,10 @@ function Flow({
       {renderParameterTab()}
       
       {showDashboard && (
-        <DashboardWindow 
+        <DashboardWindow
           onClose={() => setShowDashboard(false)}
           nodes={nodes}
+          edges={edges}
           currentLanguage={currentLanguage}
         />
       )}   

@@ -3,7 +3,7 @@ import { fmt } from '../A_Transverse_fonction/formatNumber';
 
 const FURNACE_LABELS = ['RK+SCC', 'GF', 'FB'];
 
-const buildProcessLines = (allNodes, edgeList) => {
+export const buildProcessLines = (allNodes, edgeList) => {
   const edges = edgeList || [];
   const allIds = new Set(allNodes.map(n => n.id));
   const parent = {};
@@ -27,12 +27,12 @@ const buildProcessLines = (allNodes, edgeList) => {
   return Object.values(groups).sort((a, b) => (topoRank[a[0]?.id] || 0) - (topoRank[b[0]?.id] || 0));
 };
 
-const getLineName = (line, idx) => {
+export const getLineName = (line, idx) => {
   const furnace = line.find(n => FURNACE_LABELS.includes(n.data?.label));
   return furnace?.data?.lineName || line[0]?.data?.lineName || `Ligne ${idx + 1}`;
 };
 
-const LINE_COLORS = ['#4a90e2', '#e74c3c', '#2ecc71', '#f39c12', '#9b59b6'];
+export const LINE_COLORS = ['#4a90e2', '#e74c3c', '#2ecc71', '#f39c12', '#9b59b6'];
 
 const HIGHLIGHT_COLORS = [
   { bg: '#fff3a3', border: '#d4b106' }, // jaune

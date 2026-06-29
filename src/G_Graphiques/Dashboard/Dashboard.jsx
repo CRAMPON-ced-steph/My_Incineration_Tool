@@ -1,8 +1,9 @@
 
-import React, { useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from 'recharts';
+import { buildProcessLines, getLineName, LINE_COLORS } from '../../C_Components/DataFlowDisplay';
 
 // Fonction helper pour extraire les données du graphique
 const extractChartData = (nodes, key) => {
@@ -99,20 +100,45 @@ const DebugPanel = ({ activeNodes }) => {
   );
 };
 
-const DashboardWindow = ({ onClose, nodes }) => {
-  // Liste des métriques à afficher
-  const metrics = [
-    { key: 'consommationElec', label: 'Consommation électrique', unit: 'kWh', color: '#8884d8' },
-    { key: 'consommationEau', label: "Consommation d'eau", unit: 'L', color: '#82ca9d' },
-    { key: 'consommationReactifs', label: 'Consommation de réactifs', unit: 'g', color: '#ffc658' },
-    { key: 'consommationEnergie', label: "Consommation d'énergie", unit: 'kWh', color: '#ff7300' },
-    { key: 'emissionsCO2', label: 'Émissions de CO2', unit: 'kg', color: '#a93226' },
-    { key: 'cout', label: 'cout', unit: 'cout', color: '#6c3483' }
-  ];
+// Liste des métriques à afficher
+const METRICS = [
+  { key: 'consommationElec', label: 'Consommation électrique', unit: 'kWh', color: '#8884d8' },
+  { key: 'consommationEau', label: "Consommation d'eau", unit: 'L', color: '#82ca9d' },
+  { key: 'consommationReactifs', label: 'Consommation de réactifs', unit: 'g', color: '#ffc658' },
+  { key: 'consommationEnergie', label: "Consommation d'énergie", unit: 'kWh', color: '#ff7300' },
+  { key: 'emissionsCO2', label: 'Émissions de CO2', unit: 'kg', color: '#a93226' },
+  { key: 'cout', label: 'cout', unit: 'cout', color: '#6c3483' }
+];
 
-  // Filtrer les nœuds actifs
-  const activeNodes = nodes.filter(node => node.data && node.data.isActive);
-  
+// Grille des 6 graphiques de consommation pour un ensemble de nœuds
+const DashboardGrid = ({ activeNodes }) => (
+  <div style={{
+    flex: 1,
+    display: 'grid',
+    gridTemplateColumns: 'repeat(3, 1fr)',
+    gridTemplateRows: 'repeat(2, 1fr)',
+    gap: '16px',
+    minHeight: 0
+  }}>
+    {METRICS.map(({ key, label, unit, color }) => {
+      const data = extractChartData(activeNodes, key);
+      return (
+        <div key={key} style={{ display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+          {renderChartWithTable(data, label, unit, color)}
+        </div>
+      );
+    })}
+  </div>
+);
+
+const DashboardWindow = ({ onClose, nodes, edges }) => {
+  // Regrouper les nœuds par ligne de procédé (mêmes composantes connexes que DataFlowDisplay)
+  const lines = useMemo(() => buildProcessLines(nodes, edges), [nodes, edges]);
+  const [activeTab, setActiveTab] = useState(0);
+
+  // Nœuds actifs de la ligne sélectionnée (ou de tous les nœuds s'il n'y a qu'une ligne)
+  const lineNodes = lines.length > 1 ? (lines[activeTab] || []) : nodes;
+  const activeNodes = lineNodes.filter(node => node.data && node.data.isActive);
 
   return (
     <div style={{
@@ -152,24 +178,37 @@ const DashboardWindow = ({ onClose, nodes }) => {
         </button>
       </div>
 
-      <div style={{
-        flex: 1,
-        display: 'grid',
-        gridTemplateColumns: 'repeat(3, 1fr)',
-        gridTemplateRows: 'repeat(2, 1fr)',
-        gap: '16px',
-        minHeight: 0
-      }}>
-        {metrics.map(({ key, label, unit, color }) => {
-          const data = extractChartData(activeNodes, key);
-          return (
-            <div key={key} style={{ display: 'flex', flexDirection: 'column', minHeight: 0 }}>
-              {renderChartWithTable(data, label, unit, color)}
-            </div>
-          );
-        })}
-      </div>
-      
+      {lines.length > 1 && (
+        <div style={{ display: 'flex', gap: '0', borderBottom: '2px solid #ddd', marginBottom: '12px' }}>
+          {lines.map((line, i) => {
+            const color = LINE_COLORS[i % LINE_COLORS.length];
+            const isActive = activeTab === i;
+            return (
+              <button
+                key={i}
+                onClick={() => setActiveTab(i)}
+                style={{
+                  padding: '8px 16px',
+                  border: 'none',
+                  borderBottom: isActive ? `3px solid ${color}` : '3px solid transparent',
+                  background: isActive ? `${color}15` : 'transparent',
+                  color: isActive ? color : '#666',
+                  fontWeight: isActive ? 700 : 400,
+                  fontSize: '13px',
+                  cursor: 'pointer',
+                  marginBottom: '-2px',
+                  transition: 'all 0.15s',
+                }}
+              >
+                {getLineName(line, i)}
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      <DashboardGrid activeNodes={activeNodes} />
+
       {/* Panel de débogage */}
       <DebugPanel activeNodes={activeNodes} />
     </div>
