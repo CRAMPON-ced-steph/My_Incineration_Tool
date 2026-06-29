@@ -1,5 +1,6 @@
 
 import { psat_T } from './steam_table3';
+import { Lv } from './constantes';
 
 
 
@@ -11,7 +12,7 @@ export const cv_kj_kg = (C, H, O, N, S, Cl) => {
 
 // Function to calculate cv_waste
 export const cv_waste = (cv, comb, water) => {
-  let result = cv * (comb / 100) - 4.1868 * 590 * (water / 100);
+  let result = cv * (comb / 100) - Lv * (water / 100);
   return result < 0 ? 0 : result;
 };
 

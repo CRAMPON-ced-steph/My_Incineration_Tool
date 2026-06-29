@@ -2,6 +2,7 @@ import { fh_CO2, fh_H2O, fh_O2, fh_N2 } from '../../A_Transverse_fonction/enthal
 
 import {coeff_Nm3_to_m3} from '../../A_Transverse_fonction/conv_calculation';
 import { h_fumee } from '../../A_Transverse_fonction/enthalpy_mix_gas';
+import { Lv } from '../../A_Transverse_fonction/constantes';
 
 
 
@@ -96,7 +97,7 @@ while (H_IN_IDFAN > H_target) {
 
   // Calculate enthalpies
   const H_CO2_kj = fh_CO2(T) * Qm_CO2_kg_h;
-  const H_H2O_kj = (fh_H2O(T) + 540 * 4.18) * Qm_H2O_kg_h;
+  const H_H2O_kj = (fh_H2O(T) + Lv) * Qm_H2O_kg_h;
   const H_O2_kj = fh_O2(T) * Qm_O2_kg_h;
   const H_N2_kj = fh_N2(T) * Qm_N2_kg_h;
   const H_tot_kj = H_CO2_kj + H_H2O_kj + H_O2_kj + H_N2_kj;

@@ -3,7 +3,7 @@ import {AIR_DILUTION_T } from '../../A_Transverse_fonction/enthalpy_mix_gas';
 import {CO2_kg_m3, O2_kg_m3,N2_kg_m3, H2O_kg_m3} from '../../A_Transverse_fonction/conv_calculation';
 
 import {coeff_Nm3_to_m3} from '../../A_Transverse_fonction/conv_calculation';
-import {O2_masse_volume, rho_air} from '../../A_Transverse_fonction/constantes';
+import {O2_masse_volume, rho_air, Lv} from '../../A_Transverse_fonction/constantes';
 
 // performCalculation_ELECTROFILTER_option_T
 export const performCalculation_ELECTROFILTER = (nodeData, T_air_decolmatation, Q_air_decolmatation,T_amont_ELECTROFILTER, PDC_aero ) => {
@@ -83,7 +83,7 @@ const Qair_parasite = Qv_air_entrant_Nm3_h-Q_air_decolmatation;
 
   // Calculate enthalpies using the provided T
   const H_CO2_kj = fh_CO2(T_amont_ELECTROFILTER) * Qm_CO2_kg_h;
-  const H_H2O_kj = (fh_H2O(T_amont_ELECTROFILTER) + 540 * 4.18) * Qm_H2O_kg_h;
+  const H_H2O_kj = (fh_H2O(T_amont_ELECTROFILTER) + Lv) * Qm_H2O_kg_h;
   const H_O2_kj = fh_O2(T_amont_ELECTROFILTER) * Qm_O2_kg_h;
   const H_N2_kj = fh_N2(T_amont_ELECTROFILTER) * Qm_N2_kg_h;
   const H_tot_kj = H_CO2_kj + H_H2O_kj + H_O2_kj + H_N2_kj;

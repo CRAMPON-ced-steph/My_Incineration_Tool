@@ -801,6 +801,7 @@ function Flow({
         <div style={{ flex: 1, overflowY: 'auto', minWidth: 0, height: '100%' }}>
           <DataFlowDisplay
             nodes={nodes}
+            edges={edges}
             currentLanguage={currentLanguage}
             onClose={() => setShowDataFlowDisplay(false)}
           />

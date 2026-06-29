@@ -3,6 +3,7 @@ import { h_fumee, TEMP_FUMEE } from '../../A_Transverse_fonction/enthalpy_mix_ga
 import { fh_CO2, fh_H2O, fh_O2, fh_N2 } from '../../A_Transverse_fonction/enthalpy_gas';
 import { CpL_T } from '../../A_Transverse_fonction/steam_table3';
 import { cp_air_kWh_m3_degree, D_TLM, Fact_UA, Surface_echange } from '../../A_Transverse_fonction/bilan_fct_FB';
+import { Lv } from '../../A_Transverse_fonction/constantes';
 
 const rho_air      = 1.293;   // kg/Nm³
 const O2_mass_frac = 0.233;
@@ -157,7 +158,7 @@ export const performCalculation_TUBEANDSHELL = (
 
   // ── Enthalpies fumées à T_FG_in ───────────────────────────────────────────
   const H_CO2_kj = fh_CO2(T_FG_in) * Qm_CO2;
-  const H_H2O_kj = (fh_H2O(T_FG_in) + 540 * 4.18) * Qm_H2O;
+  const H_H2O_kj = (fh_H2O(T_FG_in) + Lv) * Qm_H2O;
   const H_O2_kj  = fh_O2(T_FG_in)  * Qm_O2;
   const H_N2_kj  = fh_N2(T_FG_in)  * Qm_N2;
   const H_tot_kj = H_CO2_kj + H_H2O_kj + H_O2_kj + H_N2_kj;

@@ -1,6 +1,7 @@
 import { CO2_m3_kg, H2O_m3_kg, O2_m3_kg, N2_m3_kg } from '../../A_Transverse_fonction/conv_calculation';
 import { fh_CO2, fh_H2O, fh_O2, fh_N2 } from '../../A_Transverse_fonction/enthalpy_gas';
 import {coeff_Nm3_to_m3} from '../../A_Transverse_fonction/conv_calculation';
+import { Lv } from '../../A_Transverse_fonction/constantes';
 
 
 export let performCalculation_STACK = (p1, p2, p3, p4, p5,p6) => {
@@ -41,7 +42,7 @@ export let performCalculation_STACK = (p1, p2, p3, p4, p5,p6) => {
     let Qm_tot_kg_h = Qm_CO2_kg_h + Qm_H2O_kg_h + Qm_O2_kg_h + Qm_N2_kg_h;
 
     // Calculate enthalpies
-    let H_H2O_kj = (fh_H2O(T) + 540 * 4.18) * Qm_H2O_kg_h;
+    let H_H2O_kj = (fh_H2O(T) + Lv) * Qm_H2O_kg_h;
     let H_O2_kj = fh_O2(T) * Qm_O2_kg_h;
     let H_N2_kj = fh_N2(T) * Qm_N2_kg_h;
     let H_CO2_kj = fh_CO2(T) * Qm_CO2_kg_h;

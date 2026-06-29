@@ -1,6 +1,7 @@
 import { fh_CO2, fh_H2O, fh_O2, fh_N2 } from '../../A_Transverse_fonction/enthalpy_gas';
 import { Qeau_remove_to_be_at_T, temp_bef_add_wat } from '../../A_Transverse_fonction/enthalpy_mix_gas';
 import { CO2_kg_m3, O2_kg_m3, N2_kg_m3, H2O_kg_m3, coeff_Nm3_to_m3,  conv_O2_ref } from '../../A_Transverse_fonction/conv_calculation';
+import { Lv } from '../../A_Transverse_fonction/constantes';
 
 export const performCalculation_DENOX_option_Qeau = (nodeData, targetNOx, sprayWaterTemp, coeffStoech, solutionConc, solutionDensity, sprayFlowrate, PDC) => {
   if (!nodeData?.result?.dataFlow) {
@@ -53,7 +54,7 @@ const Qv_wet_out_Nm3_h = nodeData.result.dataFlow.Qv_wet_Nm3_h;
 
   // CALCUL DES ENTHALPIES
   const H_CO2_kj = fh_CO2(T) * Qm_CO2_kg_h;
-  const H_H2O_kj = (fh_H2O(T) + 540 * 4.18) * Qm_H2O_total_kg_h;
+  const H_H2O_kj = (fh_H2O(T) + Lv) * Qm_H2O_total_kg_h;
   const H_O2_kj = fh_O2(T) * Qm_O2_kg_h;
   const H_N2_kj = fh_N2(T) * Qm_N2_kg_h;
   const H_tot_kj = H_CO2_kj + H_H2O_kj + H_O2_kj + H_N2_kj;

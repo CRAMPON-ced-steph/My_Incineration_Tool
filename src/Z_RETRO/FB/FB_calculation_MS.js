@@ -1,6 +1,7 @@
 import { fh_CO2, fh_H2O, fh_O2, fh_N2 } from '../../A_Transverse_fonction/enthalpy_gas';
 import { coeff_Nm3_to_m3 } from '../../A_Transverse_fonction/conv_calculation';
 import { PCI_kcal_kgMV, calculatePCI_kcal_kg } from '../../A_Transverse_fonction/FB_fonctions';
+import { Lv } from '../../A_Transverse_fonction/constantes';
 
 export const performCalculation_FB_MS = (
     nodeData,
@@ -43,7 +44,7 @@ export const performCalculation_FB_MS = (
     // Calcul de la puissance de l'incinérateur
 
     // Calculate enthalpies
-    let H_air_H2O_kj = (fh_H2O(Tair) + 540 * 4.18) * Qm_H2O_kg_h;
+    let H_air_H2O_kj = (fh_H2O(Tair) + Lv) * Qm_H2O_kg_h;
     let H_air_O2_kj = fh_O2(Tair) * Qm_O2_kg_h;
     let H_air_N2_kj = fh_N2(Tair) * Qm_N2_kg_h;
     let H_air_CO2_kj = fh_CO2(Tair) * Qm_CO2_kg_h;

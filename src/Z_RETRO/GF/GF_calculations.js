@@ -2,6 +2,7 @@ import { fh_CO2, fh_H2O, fh_O2, fh_N2 } from '../../A_Transverse_fonction/enthal
 import { hV_p, hL_T, h_pT, Tsat_p, hV_T } from '../../A_Transverse_fonction/steam_table3';
 import {coeff_Nm3_to_m3} from '../../A_Transverse_fonction/conv_calculation';
 import {CO2_kg_m3, O2_kg_m3,N2_kg_m3, H2O_kg_m3, O2_m3_kg, N2_m3_kg} from '../../A_Transverse_fonction/conv_calculation';
+import { Lv } from '../../A_Transverse_fonction/constantes';
 
 export const performCalculation_GF = (
     nodeData,
@@ -116,7 +117,7 @@ const rho_air = 0.21*32/22.4+0.79*28/22.4;
      CO2_humide_air_entrant_pourcent = Qv_CO2_air_entrant_Nm3_h / Qv_wet_air_entrant_Nm3_h * 100;
     // Calculate enthalpies using the provided T
      H_CO2_air_entrant_kj = 0;//fh_CO2(T_air_ingress_C ) * Qm_CO2_air_entrant_kg_h;
-     H_H2O_air_entrant_kj = 0;//(fh_H2O(T_air_ingress_C ) + 540 * 4.18) * Qm_H2O_air_entrant_kg_h;
+     H_H2O_air_entrant_kj = 0;//(fh_H2O(T_air_ingress_C ) + Lv) * Qm_H2O_air_entrant_kg_h;
      H_O2_air_entrant_kj = fh_O2(T_air_ingress_C ) * Qm_O2_air_entrant_kg_h;
      H_N2_air_entrant_kj = fh_N2(T_air_ingress_C ) * Qm_N2_air_entrant_kg_h;
      H_tot_air_entrant_kj = H_CO2_air_entrant_kj + H_H2O_air_entrant_kj + H_O2_air_entrant_kj + H_N2_air_entrant_kj;
@@ -229,7 +230,7 @@ const Qv_CO2_air_comb_Nm3_h = CO2_kg_m3( Qm_CO2_air_comb_kg_h );
 
 
     // Calculate enthalpies
-    let H_air_comb_H2O_kj = (fh_H2O(Measured_air_temperature_C) + 540 * 4.1868) * Qm_H2O_kg_h;
+    let H_air_comb_H2O_kj = (fh_H2O(Measured_air_temperature_C) + Lv) * Qm_H2O_kg_h;
     let H_air_comb_O2_kj = fh_O2(Measured_air_temperature_C) * Qm_O2_kg_h;
     let H_air_comb_N2_kj = fh_N2(Measured_air_temperature_C) * Qm_N2_kg_h;
     let H_air_comb_CO2_kj = fh_CO2(Measured_air_temperature_C) * Qm_CO2_kg_h;

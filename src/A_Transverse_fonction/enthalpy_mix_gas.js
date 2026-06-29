@@ -1,5 +1,6 @@
 import {fh_CO2,fh_H2O, fh_O2,fh_N2,fh_AIR} from '../A_Transverse_fonction/enthalpy_gas';
 import {CpL_T, hL_T}  from '../A_Transverse_fonction/steam_table3.js';
+import { Lv } from '../A_Transverse_fonction/constantes';
 
 
 // FONCTIONS UTILSEES POUR LE QUENCH
@@ -57,7 +58,7 @@ export const TEMP_FUMEE = (H, m_CO2, m_H2O, M_N2, M_O2) => {
 
 export const h_fumee = (T, m_CO2, m_H2O, M_N2, M_O2) => {
   const H_CO2 = fh_CO2(T) * m_CO2;
-  const H_H2O = (fh_H2O(T) + 590 * 4.1868) * m_H2O;
+  const H_H2O = (fh_H2O(T) + Lv) * m_H2O;
   const H_N2 = fh_N2(T) * M_N2;
   const H_O2 = fh_O2(T) * M_O2;
   
@@ -162,7 +163,7 @@ export const Qeau_added_to_be_at_T = (T_in, T_eau, T_out, Pth, m_CO2, m_H2O, M_N
   }
 
   Delta_H = H_in_quench * (1 - Pth / 100) - H_out_quench;
-  Q_eau_kg_h = Delta_H / (fh_H2O(T_out) - hL_T(T_eau) + 540 * 4.1868);
+  Q_eau_kg_h = Delta_H / (fh_H2O(T_out) - hL_T(T_eau) + Lv);
 
   return Q_eau_kg_h + qeau_ajout;
 };
