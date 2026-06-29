@@ -11,6 +11,9 @@ export const rho_air = 0.21*32/22.4+0.79*28/22.4;
 export const T_ref = 273.15; // Température de référence en Kelvin
 export const P_ref = 101325; // Pression de référence en Pascals
 
+export const Lv = 590 *4.1868;
+
+
 export const molarMasses = {
   C:12.01,
   H: 1.008,

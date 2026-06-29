@@ -43,7 +43,7 @@ export const performCalculation_BHF = (nodeData, T_air_decolmatation, Q_air_deco
 let Qv_air_entrant_tot_Nm3_h = AIR_DILUTION_T(Tair, T_amont_BHF, T_aval_BHF,Qm_CO2_out_kg_h, Qm_H2O_out_kg_h, Qm_N2_out_kg_h, Qm_O2_out_kg_h);
 
 if (Q_air_decolmatation <= 0.1) {
-  Qv_air_entrant_tot_Nm3_h = 0;
+ Q_air_decolmatation = 0;
 }
 
 
