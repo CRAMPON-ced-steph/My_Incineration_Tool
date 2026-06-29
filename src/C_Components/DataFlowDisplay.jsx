@@ -34,7 +34,21 @@ const getLineName = (line, idx) => {
 
 const LINE_COLORS = ['#4a90e2', '#e74c3c', '#2ecc71', '#f39c12', '#9b59b6'];
 
+const HIGHLIGHT_COLORS = [
+  { bg: '#fff3a3', border: '#d4b106' }, // jaune
+  { bg: '#c3f0ca', border: '#52c41a' }, // vert
+  { bg: '#bae7ff', border: '#1890ff' }, // bleu
+  { bg: '#ffd6e7', border: '#eb2f96' }, // rose
+  { bg: '#ffd8a8', border: '#fa8c16' }, // orange
+  { bg: '#d3adf7', border: '#722ed1' }, // violet
+  { bg: '#b5f5ec', border: '#13c2c2' }, // cyan
+  { bg: '#ffccc7', border: '#f5222d' }, // rouge
+];
+
 const LineTable = ({ lineNodes }) => {
+  const [highlighted, setHighlighted] = useState({});
+  const toggleHighlight = (key) => setHighlighted(prev => ({ ...prev, [key]: !prev[key] }));
+
   const nodesWithData = lineNodes.filter(n => n.data?.result?.dataFlow);
   const merged = nodesWithData.map(n => ({
     nodeId: n.id,
@@ -60,18 +74,39 @@ const LineTable = ({ lineNodes }) => {
         </tr>
       </thead>
       <tbody>
-        {allKeys.map((key, i) => (
-          <tr key={i}>
-            <td style={{ padding: '8px', border: '1px solid #ddd', backgroundColor: '#f8f8f8', fontWeight: 'bold' }}>{key}</td>
-            {merged.map((data, j) => (
-              <td key={j} style={{ padding: '8px', border: '1px solid #ddd', textAlign: 'right' }}>
-                {data[key] !== undefined
-                  ? (typeof data[key] === 'number' ? fmt(data[key], 2) : data[key].toString())
-                  : '-'}
+        {allKeys.map((key, i) => {
+          const isHi = !!highlighted[key];
+          const color = HIGHLIGHT_COLORS[i % HIGHLIGHT_COLORS.length];
+          return (
+            <tr key={i} style={isHi ? { backgroundColor: color.bg } : undefined}>
+              <td style={{ padding: '8px', border: '1px solid #ddd', backgroundColor: isHi ? color.bg : '#f8f8f8', fontWeight: 'bold' }}>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                  <button
+                    onClick={() => toggleHighlight(key)}
+                    title="Surligner la ligne"
+                    style={{
+                      width: '12px', height: '12px', flexShrink: 0, padding: 0,
+                      borderRadius: '50%', cursor: 'pointer',
+                      border: `1px solid ${isHi ? color.border : '#bbb'}`,
+                      background: isHi ? color.bg : 'transparent',
+                      transition: 'all 0.15s',
+                    }}
+                    onMouseEnter={(e) => { if (!isHi) e.currentTarget.style.background = color.bg; }}
+                    onMouseLeave={(e) => { if (!isHi) e.currentTarget.style.background = 'transparent'; }}
+                  />
+                  {key}
+                </span>
               </td>
-            ))}
-          </tr>
-        ))}
+              {merged.map((data, j) => (
+                <td key={j} style={{ padding: '8px', border: '1px solid #ddd', textAlign: 'right', backgroundColor: isHi ? color.bg : undefined }}>
+                  {data[key] !== undefined
+                    ? (typeof data[key] === 'number' ? fmt(data[key], 2) : data[key].toString())
+                    : '-'}
+                </td>
+              ))}
+            </tr>
+          );
+        })}
       </tbody>
     </table>
   );
