@@ -76,15 +76,17 @@ const buildProcessLines = (allNodes, edges) => {
   return Object.values(groups).sort((a, b) => (topoRank[a[0]?.id] || 0) - (topoRank[b[0]?.id] || 0));
 };
 
-const getLineName = (line, idx) => line[0]?.data?.lineName || `Ligne ${idx + 1}`;
+const getLineName = (line, idx, tr) => line[0]?.data?.lineName || `${tr ? tr('line') : 'Ligne'} ${idx + 1}`;
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 import { fmt, fmt2, fmtInt } from '../A_Transverse_fonction/formatNumber';
+import { makeReportT } from './report_traduction';
+import { getLanguageCode } from '../F_Gestion_Langues/Fonction_Traduction';
 
 // ─── OPEX Summary Section ─────────────────────────────────────────────────────
 
-const OpexSummarySection = ({ nodes }) => {
+const OpexSummarySection = ({ nodes, tr }) => {
   const {
     purchaseElectricityPrice,
     availability,
@@ -143,12 +145,12 @@ const OpexSummarySection = ({ nodes }) => {
   const curr     = currency || '€';
 
   const rows = [
-    { label: 'Électricité',         hourly: cout_elec,              bg: '#edf4ff' },
-    { label: 'Air comprimé',        hourly: cout_air,               bg: '#fff'    },
-    { label: 'Eau',                 hourly: cout_eau,               bg: '#edf4ff' },
-    { label: 'Réactifs chimiques',  hourly: cout_reactifs,          bg: '#fff'    },
-    { label: 'Gaz / Combustible',   hourly: cout_gaz + cout_fuel,   bg: '#edf4ff' },
-    { label: 'Transport / Résidus', hourly: cout_transport,         bg: '#fff'    },
+    { label: tr('electricity'),       hourly: cout_elec,              bg: '#edf4ff' },
+    { label: tr('compressedAir'),     hourly: cout_air,               bg: '#fff'    },
+    { label: tr('water'),             hourly: cout_eau,               bg: '#edf4ff' },
+    { label: tr('chemicalReagents'),  hourly: cout_reactifs,          bg: '#fff'    },
+    { label: tr('gasFuel'),           hourly: cout_gaz + cout_fuel,   bg: '#edf4ff' },
+    { label: tr('transportResidues'), hourly: cout_transport,         bg: '#fff'    },
   ];
 
   return (
@@ -156,7 +158,7 @@ const OpexSummarySection = ({ nodes }) => {
       {/* Section header */}
       <div style={opexStyles.header}>
         <span style={opexStyles.headerIcon}>📊</span>
-        <span style={opexStyles.headerTitle}>Synthèse des coûts OPEX — Total Process</span>
+        <span style={opexStyles.headerTitle}>{tr('opexSummaryTitle')}</span>
       </div>
 
       <div style={opexStyles.body}>
@@ -164,10 +166,10 @@ const OpexSummarySection = ({ nodes }) => {
         <table style={opexStyles.table}>
           <thead>
             <tr>
-              <th style={{ ...opexStyles.th, textAlign: 'left', width: '35%' }}>Poste de coût</th>
-              <th style={opexStyles.th}>Coût horaire<br /><span style={opexStyles.unit}>({curr}/h)</span></th>
-              <th style={opexStyles.th}>Coût annuel<br /><span style={opexStyles.unit}>({curr}/an)</span></th>
-              <th style={{ ...opexStyles.th, width: '15%' }}>Part du total</th>
+              <th style={{ ...opexStyles.th, textAlign: 'left', width: '35%' }}>{tr('costItem')}</th>
+              <th style={opexStyles.th}>{tr('hourlyCost')}<br /><span style={opexStyles.unit}>({curr}{tr('perHour')})</span></th>
+              <th style={opexStyles.th}>{tr('annualCost')}<br /><span style={opexStyles.unit}>({curr}{tr('perYear')})</span></th>
+              <th style={{ ...opexStyles.th, width: '15%' }}>{tr('shareOfTotal')}</th>
             </tr>
           </thead>
           <tbody>
@@ -199,8 +201,8 @@ const OpexSummarySection = ({ nodes }) => {
 
         {/* Footer note */}
         <div style={opexStyles.note}>
-          Disponibilité annuelle : {availability || 8760} h/an &nbsp;·&nbsp; Devise : {curr} &nbsp;·&nbsp;
-          Prix électricité : {purchaseElectricityPrice} {curr}/MWh
+          {tr('annualAvailability')} : {availability || 8760} {tr('hoursPerYear')} &nbsp;·&nbsp; {tr('currencyLabel')} : {curr} &nbsp;·&nbsp;
+          {tr('elecPrice')} : {purchaseElectricityPrice} {curr}/MWh
         </div>
       </div>
     </div>
@@ -255,9 +257,11 @@ const opexStyles = {
 
 // ─── GlobalReport ─────────────────────────────────────────────────────────────
 
-const GlobalReport = ({ nodes, edges, onClose }) => {
+const GlobalReport = ({ nodes, edges, onClose, currentLanguage }) => {
   const reportRef = useRef();
   const [generating, setGenerating] = useState(false);
+  const tr = makeReportT(currentLanguage);
+  const locale = getLanguageCode(currentLanguage);
 
   const lines = buildProcessLines(nodes, edges);
   const activeNodes = lines.flat();
@@ -393,20 +397,20 @@ const GlobalReport = ({ nodes, edges, onClose }) => {
       <div style={styles.modal}>
         {/* Header */}
         <div style={styles.header}>
-          <h2 style={styles.headerTitle}>Rapport Global — Synthèse des équipements</h2>
+          <h2 style={styles.headerTitle}>{tr('headerBilan')}</h2>
           <div style={styles.headerActions}>
             <span style={styles.nodeCount}>
-              {activeNodes.length} équipement{activeNodes.length > 1 ? 's' : ''} actif{activeNodes.length > 1 ? 's' : ''}
+              {activeNodes.length} {activeNodes.length > 1 ? tr('activeEquipMany') : tr('activeEquipOne')}
             </span>
             <button
               onClick={generatePDF}
               disabled={generating || activeNodes.length === 0}
               style={{ ...styles.btn, ...styles.btnPdf, ...(generating ? styles.btnDisabled : {}) }}
             >
-              {generating ? '⏳ Génération...' : '⬇ Télécharger PDF'}
+              {generating ? tr('generating') : tr('downloadPdf')}
             </button>
             <button onClick={onClose} style={{ ...styles.btn, ...styles.btnClose }}>
-              ✕ Fermer
+              {tr('close')}
             </button>
           </div>
         </div>
@@ -415,7 +419,7 @@ const GlobalReport = ({ nodes, edges, onClose }) => {
         <div style={styles.scrollArea}>
           {activeNodes.length === 0 ? (
             <div style={styles.empty}>
-              <p>Aucun équipement actif. Ouvrez un équipement, configurez-le et revenez au flow pour activer son rapport.</p>
+              <p>{tr('emptyBilan')}</p>
             </div>
           ) : (
             <div ref={reportRef} style={styles.reportContent}>
@@ -423,9 +427,9 @@ const GlobalReport = ({ nodes, edges, onClose }) => {
               {/* Cover page */}
               <div data-pdf-section style={styles.coverPage}>
                 <div style={styles.coverLogo}>⚙</div>
-                <h1 style={styles.coverTitle}>Rapport de Process — Incinération</h1>
+                <h1 style={styles.coverTitle}>{tr('coverTitleBilan')}</h1>
                 <p style={styles.coverDate}>
-                  Généré le {new Date().toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                  {tr('generatedOn')} {new Date().toLocaleDateString(locale, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
                 </p>
                 <div style={styles.coverEquipList}>
                   {lines.map((line, li) => (
@@ -439,7 +443,7 @@ const GlobalReport = ({ nodes, edges, onClose }) => {
                         ...styles.coverEquipTitle,
                         color: lines.length > 1 ? LINE_COLORS[li % LINE_COLORS.length].title : '#e0ecff',
                       }}>
-                        {lines.length > 1 ? getLineName(line, li) : 'Équipements inclus'}
+                        {lines.length > 1 ? getLineName(line, li, tr) : tr('equipmentsIncluded')}
                       </h3>
                       {line.map(n => (
                         <div key={n.id} style={styles.coverEquipItem}>
@@ -458,7 +462,7 @@ const GlobalReport = ({ nodes, edges, onClose }) => {
                     const lc = LINE_COLORS[lineIdx % LINE_COLORS.length];
                     return (
                       <div data-pdf-section style={{ ...styles.lineSeparator, background: lc.sep, borderLeft: `5px solid ${lc.border}` }}>
-                        <span style={{ ...styles.lineLabel, color: lc.title }}>{getLineName(line, lineIdx)}</span>
+                        <span style={{ ...styles.lineLabel, color: lc.title }}>{getLineName(line, lineIdx, tr)}</span>
                         <span style={styles.lineDesc}>{line.map(n => n.data.label).join(' → ')}</span>
                       </div>
                     );
@@ -481,7 +485,7 @@ const GlobalReport = ({ nodes, edges, onClose }) => {
                           {node.data.title && <span style={styles.equipTitle}> — {node.data.title}</span>}
                         </div>
                         <div data-pdf-blocks-parent>
-                          <Component innerData={node.data.result || {}} />
+                          <Component innerData={node.data.result || {}} currentLanguage={currentLanguage} />
                         </div>
                       </div>
                     );
@@ -491,7 +495,7 @@ const GlobalReport = ({ nodes, edges, onClose }) => {
 
               {/* OPEX summary — always last */}
               <div data-pdf-section style={styles.opexSection}>
-                <OpexSummarySection nodes={activeNodes} />
+                <OpexSummarySection nodes={activeNodes} tr={tr} />
               </div>
 
             </div>

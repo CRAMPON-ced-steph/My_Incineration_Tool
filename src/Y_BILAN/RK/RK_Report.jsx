@@ -3,6 +3,7 @@ import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './RK_traduction';
 import { getOpexData } from '../../A_Transverse_fonction/opexDataService';
 import { fmt } from '../../A_Transverse_fonction/formatNumber';
+import { makeReportT } from '../../D_BILAN_Rapports/report_traduction';
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
@@ -27,7 +28,7 @@ const KV = ({ label, value, unit = '' }) => (
   </div>
 );
 
-const GasTable = ({ title, data = {} }) => {
+const GasTable = ({ title, data = {}, tr }) => {
   const gases = ['CO2', 'H2O', 'O2', 'N2'];
   return (
     <div style={{ marginBottom: 8 }}>
@@ -37,7 +38,7 @@ const GasTable = ({ title, data = {} }) => {
           <tr>
             <th style={styles.th}></th>
             {gases.map(g => <th key={g} style={styles.th}>{g}</th>)}
-            <th style={styles.th}>Total</th>
+            <th style={styles.th}>{tr ? tr('total') : 'Total'}</th>
           </tr>
         </thead>
         <tbody>
@@ -82,12 +83,12 @@ const PollutantTable = ({ title, masses = {} }) => {
   );
 };
 
-const ElecTable = ({ rows }) => (
+const ElecTable = ({ rows, tr }) => (
   <table style={styles.table}>
     <thead>
       <tr>
-        <th style={styles.th}>Consommateur</th>
-        <th style={styles.th}>Consommation [kW]</th>
+        <th style={styles.th}>{tr('consumer')}</th>
+        <th style={styles.th}>{tr('consumptionKW')}</th>
       </tr>
     </thead>
     <tbody>
@@ -98,7 +99,7 @@ const ElecTable = ({ rows }) => (
         </tr>
       ))}
       <tr style={{ backgroundColor: '#eaf0fb', fontWeight: 'bold' }}>
-        <td style={styles.tdLabel}>Total</td>
+        <td style={styles.tdLabel}>{tr('total')}</td>
         <td style={styles.td}>{fmt(rows.reduce((s, r) => s + (parseFloat(r.value) || 0), 0))}</td>
       </tr>
     </tbody>
@@ -107,7 +108,7 @@ const ElecTable = ({ rows }) => (
 
 // ─── OPEX cost calculation (mirrors OpexDashboard logic) ──────────────────────
 
-const computeOpexCosts = (innerData) => {
+const computeOpexCosts = (innerData, tr) => {
   const {
     purchaseElectricityPrice = 0,
     ratioElec = 0,
@@ -146,11 +147,11 @@ const computeOpexCosts = (innerData) => {
 
   // ── Eau ───────────────────────────────────────────────────────────────────
   const eauRows = [
-    { label: 'Eau potable', m3h: d.Conso_EauPotable_m3 || 0, prix: waterPrices?.potable || 0 },
-    { label: 'Eau de refroidissement', m3h: d.Conso_EauRefroidissement_m3 || 0, prix: waterPrices?.cooling || 0 },
-    { label: 'Eau déminéralisée', m3h: d.Conso_EauDemin_m3 || 0, prix: waterPrices?.demineralized || 0 },
-    { label: 'Eau de rivière', m3h: d.Conso_EauRiviere_m3 || 0, prix: waterPrices?.river || 0 },
-    { label: 'Eau adoucie', m3h: d.Conso_EauAdoucie_m3 || 0, prix: waterPrices?.soft || 0 },
+    { label: tr('waterPotable'), m3h: d.Conso_EauPotable_m3 || 0, prix: waterPrices?.potable || 0 },
+    { label: tr('waterCooling'), m3h: d.Conso_EauRefroidissement_m3 || 0, prix: waterPrices?.cooling || 0 },
+    { label: tr('waterDemin'), m3h: d.Conso_EauDemin_m3 || 0, prix: waterPrices?.demineralized || 0 },
+    { label: tr('waterRiver'), m3h: d.Conso_EauRiviere_m3 || 0, prix: waterPrices?.river || 0 },
+    { label: tr('waterSoft'), m3h: d.Conso_EauAdoucie_m3 || 0, prix: waterPrices?.soft || 0 },
   ].filter(r => r.m3h > 0);
   const coutEau = eauRows.reduce((s, r) => s + r.m3h * r.prix, 0);
 
@@ -171,10 +172,10 @@ const computeOpexCosts = (innerData) => {
 
   // ── Énergie fossile ────────────────────────────────────────────────────────
   const energieRows = [
-    { label: 'Gaz haute valeur', MW: d.conso_gaz_H_MW || 0, prix: gasTypes?.naturalGasH?.molecule || 0, co2e: gasTypes?.naturalGasH?.co2Emission || 0 },
-    { label: 'Gaz basse valeur', MW: d.conso_gaz_L_MW || 0, prix: gasTypes?.naturalGasL?.molecule || 0, co2e: gasTypes?.naturalGasL?.co2Emission || 0 },
-    { label: 'Gaz process', MW: d.conso_gaz_Process_MW || 0, prix: gasTypes?.processGas?.molecule || 0, co2e: gasTypes?.processGas?.co2Emission || 0 },
-    { label: 'Fuel', MW: d.conso_fuel_MW || 0, prix: fuelTypes?.FOD?.liquid || 0, co2e: fuelTypes?.FOD?.co2Emission || 0 },
+    { label: tr('gasHighValue'), MW: d.conso_gaz_H_MW || 0, prix: gasTypes?.naturalGasH?.molecule || 0, co2e: gasTypes?.naturalGasH?.co2Emission || 0 },
+    { label: tr('gasLowValue'), MW: d.conso_gaz_L_MW || 0, prix: gasTypes?.naturalGasL?.molecule || 0, co2e: gasTypes?.naturalGasL?.co2Emission || 0 },
+    { label: tr('gasProcess'), MW: d.conso_gaz_Process_MW || 0, prix: gasTypes?.processGas?.molecule || 0, co2e: gasTypes?.processGas?.co2Emission || 0 },
+    { label: tr('fuel'), MW: d.conso_fuel_MW || 0, prix: fuelTypes?.FOD?.liquid || 0, co2e: fuelTypes?.FOD?.co2Emission || 0 },
   ].filter(r => r.MW > 0);
   const coutEnergie = energieRows.reduce((s, r) => s + r.MW * r.prix, 0);
   const co2Energie = energieRows.reduce((s, r) => s + r.MW * r.co2e, 0);
@@ -207,6 +208,7 @@ const computeOpexCosts = (innerData) => {
 const RK_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
   const languageCode = getLanguageCode(currentLanguage);
   const t = (key) => translations[languageCode]?.[key] || translations['fr']?.[key] || key;
+  const tr = makeReportT(currentLanguage);
 
   // ── Tab 1 : Combustion Parameters ────────────────────────────────────────────
   const masse = innerData.masse || 0;
@@ -254,11 +256,11 @@ const RK_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
   ].filter(r => r.value !== undefined && r.value !== null);
 
   const waterConsumption = [
-    { label: 'Eau potable [m³/h]', value: innerData.Conso_EauPotable_m3 },
-    { label: 'Eau de refroidissement [m³/h]', value: innerData.Conso_EauRefroidissement_m3 },
-    { label: 'Eau déminéralisée [m³/h]', value: innerData.Conso_EauDemin_m3 },
-    { label: 'Eau de rivière [m³/h]', value: innerData.Conso_EauRiviere_m3 },
-    { label: 'Eau adoucie [m³/h]', value: innerData.Conso_EauAdoucie_m3 },
+    { label: `${tr('waterPotable')} [m³/h]`, value: innerData.Conso_EauPotable_m3 },
+    { label: `${tr('waterCooling')} [m³/h]`, value: innerData.Conso_EauRefroidissement_m3 },
+    { label: `${tr('waterDemin')} [m³/h]`, value: innerData.Conso_EauDemin_m3 },
+    { label: `${tr('waterRiver')} [m³/h]`, value: innerData.Conso_EauRiviere_m3 },
+    { label: `${tr('waterSoft')} [m³/h]`, value: innerData.Conso_EauAdoucie_m3 },
   ].filter(r => parseFloat(r.value) > 0);
 
   const reactifConsumption = [
@@ -274,28 +276,30 @@ const RK_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
   ].filter(r => parseFloat(r.value) > 0);
 
   // ── Tab 5 : OPEX costs ────────────────────────────────────────────────────────
-  const opex = computeOpexCosts(innerData);
+  const opex = computeOpexCosts(innerData, tr);
+
+  const fractionLabels = { 'Comb [kg/h]': tr('fracComb'), 'Eau [kg/h]': tr('fracWater'), 'Inerte [kg/h]': tr('fracInert') };
 
   return (
     <div style={styles.container}>
-      <h1 style={styles.mainTitle}>{t('title')} — Rapport de synthèse</h1>
+      <h1 style={styles.mainTitle}>{t('title')} — {tr('summaryReport')}</h1>
 
       {/* ── SECTION 1 : Combustion ──────────────────────────────────────────────── */}
       <Section title={`1. ${t('combustionParameters')}`}>
         <div style={styles.twoCol}>
-          <SubSection title="Déchets — Masse et pouvoir calorifique">
+          <SubSection title={tr('wasteMassCV')}>
             <KV label={t('wasteFlow')} value={fmt(masse)} unit="kg/h" />
-            <KV label="PCI combustible [kJ/kg_comb]" value={fmt(cv_kJ_kg)} unit="kJ/kg" />
-            <KV label="PCI déchet [kJ/kg_déchet]" value={fmt(cvw_kJ_kg)} unit="kJ/kg" />
-            <KV label="PCI déchet [kcal/kg_déchet]" value={fmt(cvw_kcal_kg)} unit="kcal/kg" />
+            <KV label={tr('pciFuel')} value={fmt(cv_kJ_kg)} unit="kJ/kg" />
+            <KV label={tr('pciWaste')} value={fmt(cvw_kJ_kg)} unit="kJ/kg" />
+            <KV label={tr('pciWaste')} value={fmt(cvw_kcal_kg)} unit="kcal/kg" />
           </SubSection>
-          <SubSection title="Fractions massiques [kg/h]">
+          <SubSection title={tr('massFractions')}>
             {Object.entries(fractionsMasses).map(([k, v]) => (
-              <KV key={k} label={k} value={fmt(v)} />
+              <KV key={k} label={fractionLabels[k] || k} value={fmt(v)} />
             ))}
           </SubSection>
         </div>
-        <SubSection title="Éléments combustibles [kg/h]">
+        <SubSection title={tr('combustibleElements')}>
           <div style={styles.tagRow}>
             {Object.entries(elementsKgH).map(([k, v]) => (
               <div key={k} style={styles.tag}>
@@ -311,13 +315,14 @@ const RK_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
       <Section title={`2. ${t('flueGases')}`}>
         <div style={styles.twoCol}>
           <SubSection>
-            <KV label="Température de sortie" value={fmt(T_OUT, 0)} unit="°C" />
-            <KV label="O₂ mesuré (sec)" value={fmt(O2_calcule)} unit="%" />
-            <KV label="Débit sec" value={fmt(FG_RK_OUT_Nm3_h.dry, 0)} unit="Nm³/h" />
-            <KV label="Débit humide" value={fmt(FG_RK_OUT_Nm3_h.wet, 0)} unit="Nm³/h" />
+            <KV label={tr('outTemp')} value={fmt(T_OUT, 0)} unit="°C" />
+            <KV label={tr('o2Measured')} value={fmt(O2_calcule)} unit="%" />
+            <KV label={tr('flowDry')} value={fmt(FG_RK_OUT_Nm3_h.dry, 0)} unit="Nm³/h" />
+            <KV label={tr('flowWet')} value={fmt(FG_RK_OUT_Nm3_h.wet, 0)} unit="Nm³/h" />
           </SubSection>
-          <SubSection title="Composition sortie four + extracteur">
+          <SubSection title={tr('compKilnExtractor')}>
             <GasTable
+              tr={tr}
               data={{
                 'kg/h': FG_OUT_kg_h,
                 'Nm³/h': {
@@ -328,7 +333,7 @@ const RK_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
                 },
               }}
             />
-            <KV label="Débit humide total [kg/h]" value={fmt(FG_wet_total)} />
+            <KV label={tr('totalWetFlowKgh')} value={fmt(FG_wet_total)} />
           </SubSection>
         </div>
       </Section>
@@ -348,7 +353,7 @@ const RK_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
             <KV label={t('flyAsh')} value={fmt(Residus.FlyAsh_kg_h)} unit="kg/h" />
           </SubSection>
           {reactifConsumption.length > 0 && (
-            <SubSection title="Consommation réactifs de traitement">
+            <SubSection title={tr('reagentConsumption')}>
               {reactifConsumption.map(({ label, value }) => (
                 <KV key={label} label={label} value={fmt(value, 3)} />
               ))}
@@ -360,41 +365,41 @@ const RK_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
       {/* ── SECTION 4 : Design ─────────────────────────────────────────────────── */}
       <Section title={`4. ${t('design')}`}>
         <div style={styles.twoCol}>
-          <SubSection title="Consommations électriques">
+          <SubSection title={tr('elecConsumption')}>
             {elecRows.length > 0
-              ? <ElecTable rows={elecRows} />
-              : <span style={{ color: '#999', fontSize: 12 }}>Données non disponibles (ouvrir l'onglet Design)</span>
+              ? <ElecTable rows={elecRows} tr={tr} />
+              : <span style={{ color: '#999', fontSize: 12 }}>{tr('dataNotAvailableDesign')}</span>
             }
           </SubSection>
           <div>
             {waterConsumption.length > 0 && (
-              <SubSection title="Consommation d'eau">
+              <SubSection title={tr('waterConsumption')}>
                 {waterConsumption.map(({ label, value }) => (
                   <KV key={label} label={label} value={fmt(value, 3)} />
                 ))}
               </SubSection>
             )}
-            <SubSection title="Énergie auxiliaire">
-              <KV label="Gaz haute valeur [MW]" value={fmt(innerData.conso_gaz_H_MW)} />
-              <KV label="Fuel [MW]" value={fmt(innerData.conso_fuel_MW)} />
-              <KV label="Air comprimé [Nm³/h]" value={fmt(innerData.conso_air_co_N_m3)} />
+            <SubSection title={tr('auxEnergy')}>
+              <KV label={tr('gasHighMW')} value={fmt(innerData.conso_gaz_H_MW)} />
+              <KV label={tr('fuelMW')} value={fmt(innerData.conso_fuel_MW)} />
+              <KV label={tr('compAirNm3h')} value={fmt(innerData.conso_air_co_N_m3)} />
             </SubSection>
-            <SubSection title="Solides produits [kg/h]">
-              <KV label="Mâchefers (incinération)" value={fmt(innerData.conso_incineration_ash_kg_h)} />
-              <KV label="Cendres chaudière" value={fmt(innerData.conso_boiler_ash_kg_h)} />
-              <KV label="Cendres volantes" value={fmt(innerData.conso_fly_ash_kg_h)} />
+            <SubSection title={tr('solidsProduced')}>
+              <KV label={tr('bottomAshInc')} value={fmt(innerData.conso_incineration_ash_kg_h)} />
+              <KV label={tr('boilerAsh')} value={fmt(innerData.conso_boiler_ash_kg_h)} />
+              <KV label={tr('flyAshLabel')} value={fmt(innerData.conso_fly_ash_kg_h)} />
             </SubSection>
           </div>
         </div>
       </Section>
 
       {/* ── SECTION 5 : OPEX — coûts calculés ─────────────────────────────────── */}
-      <Section title={`5. ${t('opex')} — Coûts horaires`}>
-        <OpexCostSection opex={opex} />
+      <Section title={`5. ${t('opex')} — ${tr('hourlyCostsSuffix')}`}>
+        <OpexCostSection opex={opex} tr={tr} />
       </Section>
 
       <div style={styles.footer}>
-        Rapport généré automatiquement — {new Date().toLocaleDateString()}
+        {tr('autoGenerated')} {new Date().toLocaleDateString(languageCode)}
       </div>
     </div>
   );
@@ -402,7 +407,7 @@ const RK_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
 
 // ─── OPEX cost section ────────────────────────────────────────────────────────
 
-const OpexCostSection = ({ opex }) => {
+const OpexCostSection = ({ opex, tr }) => {
   const {
     elecRows, totalElec_kW, coutElec, co2Elec,
     conso_air, coutAir, co2Air,
@@ -419,7 +424,7 @@ const OpexCostSection = ({ opex }) => {
   if (noData) {
     return (
       <p style={{ color: '#999', fontSize: 12, padding: '10px 14px' }}>
-        Coûts OPEX non disponibles — ouvrir les onglets Design et Opex pour les calculer.
+        {tr('opexNotAvailable')}
       </p>
     );
   }
@@ -430,13 +435,13 @@ const OpexCostSection = ({ opex }) => {
       <div style={{ ...styles.subSection, paddingBottom: 4 }}>
         <div style={styles.tagRow}>
           {[
-            { label: `Électricité [${currency}/h]`, val: coutElec, color: '#4a90e2' },
-            { label: `Air comprimé [${currency}/h]`, val: coutAir, color: '#17a2b8' },
-            { label: `Eau [${currency}/h]`, val: coutEau, color: '#2ecc71' },
-            { label: `Réactifs [${currency}/h]`, val: coutReactifs, color: '#e74c3c' },
-            { label: `Énergie fossile [${currency}/h]`, val: coutEnergie, color: '#f39c12' },
-            { label: `Transport résidus [${currency}/h]`, val: coutTransportResidus, color: '#8e44ad' },
-            { label: `Transport réactifs [${currency}/h]`, val: coutTransportReactifs, color: '#9b59b6' },
+            { label: `${tr('electricity')} [${currency}/h]`, val: coutElec, color: '#4a90e2' },
+            { label: `${tr('compressedAir')} [${currency}/h]`, val: coutAir, color: '#17a2b8' },
+            { label: `${tr('water')} [${currency}/h]`, val: coutEau, color: '#2ecc71' },
+            { label: `${tr('reagents')} [${currency}/h]`, val: coutReactifs, color: '#e74c3c' },
+            { label: `${tr('fossilEnergy')} [${currency}/h]`, val: coutEnergie, color: '#f39c12' },
+            { label: `${tr('transportResiduesShort')} [${currency}/h]`, val: coutTransportResidus, color: '#8e44ad' },
+            { label: `${tr('transportReagentsShort')} [${currency}/h]`, val: coutTransportReactifs, color: '#9b59b6' },
           ].map(({ label, val, color }) => (
             <div key={label} style={{ ...styles.tag, borderLeft: `4px solid ${color}`, minWidth: 140 }}>
               <span style={styles.tagLabel}>{label}</span>
@@ -449,18 +454,18 @@ const OpexCostSection = ({ opex }) => {
       {/* Totaux ─────────────────────────────────────────────────────────── */}
       <div style={styles.twoCol}>
         <div style={{ ...styles.subSection, background: '#f0f5ff', margin: 8, borderRadius: 6 }}>
-          <h3 style={{ ...styles.subTitle, color: '#1a3a6b', fontSize: 14 }}>Total coût</h3>
-          <KV label={`Coût horaire [${currency}/h]`} value={fmt(totalCout_h, 2)} />
-          <KV label={`Coût annuel (${availability}h) [${currency}/an]`} value={fmt(totalCout_an, 0)} />
+          <h3 style={{ ...styles.subTitle, color: '#1a3a6b', fontSize: 14 }}>{tr('totalCost')}</h3>
+          <KV label={`${tr('hourlyCost')} [${currency}/h]`} value={fmt(totalCout_h, 2)} />
+          <KV label={`${tr('annualCost')} (${availability}h) [${currency}/an]`} value={fmt(totalCout_an, 0)} />
         </div>
         <div style={{ ...styles.subSection, background: '#f5f0ff', margin: 8, borderRadius: 6 }}>
-          <h3 style={{ ...styles.subTitle, color: '#6a1a6b', fontSize: 14 }}>Total CO₂</h3>
-          <KV label="CO₂ électricité [kg/h]" value={fmt(co2Elec, 3)} />
-          <KV label="CO₂ air comprimé [kg/h]" value={fmt(co2Air, 3)} />
-          <KV label="CO₂ énergie fossile [kg/h]" value={fmt(co2Energie, 3)} />
-          <KV label="CO₂ transport réactifs [kg/h]" value={fmt(co2TransportReactifs, 3)} />
-          <KV label="CO₂ transport résidus [kg/h]" value={fmt(co2TransportResidus, 3)} />
-          <KV label="Total CO₂ [kg/h]" value={fmt(totalCO2_kgh, 2)} />
+          <h3 style={{ ...styles.subTitle, color: '#6a1a6b', fontSize: 14 }}>{tr('totalCO2')}</h3>
+          <KV label={`${tr('co2Prefix')} ${tr('electricity')} [kg/h]`} value={fmt(co2Elec, 3)} />
+          <KV label={`${tr('co2Prefix')} ${tr('compressedAir')} [kg/h]`} value={fmt(co2Air, 3)} />
+          <KV label={`${tr('co2Prefix')} ${tr('fossilEnergy')} [kg/h]`} value={fmt(co2Energie, 3)} />
+          <KV label={`${tr('co2Prefix')} ${tr('transportReagentsShort')} [kg/h]`} value={fmt(co2TransportReactifs, 3)} />
+          <KV label={`${tr('co2Prefix')} ${tr('transportResiduesShort')} [kg/h]`} value={fmt(co2TransportResidus, 3)} />
+          <KV label={`${tr('totalCO2')} [kg/h]`} value={fmt(totalCO2_kgh, 2)} />
         </div>
       </div>
 
@@ -470,11 +475,11 @@ const OpexCostSection = ({ opex }) => {
         {/* Électricité */}
         {elecRows.length > 0 && (
           <div style={styles.subSection}>
-            <h3 style={styles.subTitle}>Électricité — détail</h3>
+            <h3 style={styles.subTitle}>{tr('electricity')} — {tr('detailSuffix')}</h3>
             <table style={styles.table}>
               <thead>
                 <tr>
-                  <th style={styles.th}>Poste</th>
+                  <th style={styles.th}>{tr('item')}</th>
                   <th style={styles.th}>kW</th>
                   <th style={styles.th}>{`${currency}/h`}</th>
                 </tr>
@@ -492,7 +497,7 @@ const OpexCostSection = ({ opex }) => {
                   );
                 })}
                 <tr style={{ fontWeight: 'bold', background: '#eaf0fb' }}>
-                  <td style={styles.tdLabel}>Total</td>
+                  <td style={styles.tdLabel}>{tr('total')}</td>
                   <td style={styles.td}>{fmt(totalElec_kW)}</td>
                   <td style={styles.td}>{fmt(coutElec, 2)}</td>
                 </tr>
@@ -504,11 +509,11 @@ const OpexCostSection = ({ opex }) => {
         {/* Eau */}
         {eauRows.length > 0 && (
           <div style={styles.subSection}>
-            <h3 style={styles.subTitle}>Eau — détail</h3>
+            <h3 style={styles.subTitle}>{tr('water')} — {tr('detailSuffix')}</h3>
             <table style={styles.table}>
               <thead>
                 <tr>
-                  <th style={styles.th}>Type</th>
+                  <th style={styles.th}>{tr('type')}</th>
                   <th style={styles.th}>m³/h</th>
                   <th style={styles.th}>{`${currency}/m³`}</th>
                   <th style={styles.th}>{`${currency}/h`}</th>
@@ -524,7 +529,7 @@ const OpexCostSection = ({ opex }) => {
                   </tr>
                 ))}
                 <tr style={{ fontWeight: 'bold', background: '#eafaf1' }}>
-                  <td style={styles.tdLabel}>Total</td>
+                  <td style={styles.tdLabel}>{tr('total')}</td>
                   <td style={styles.td}></td>
                   <td style={styles.td}></td>
                   <td style={styles.td}>{fmt(coutEau, 2)}</td>
@@ -537,11 +542,11 @@ const OpexCostSection = ({ opex }) => {
         {/* Réactifs */}
         {reactifRows.length > 0 && (
           <div style={styles.subSection}>
-            <h3 style={styles.subTitle}>Réactifs — détail</h3>
+            <h3 style={styles.subTitle}>{tr('reagents')} — {tr('detailSuffix')}</h3>
             <table style={styles.table}>
               <thead>
                 <tr>
-                  <th style={styles.th}>Réactif</th>
+                  <th style={styles.th}>{tr('reagent')}</th>
                   <th style={styles.th}>kg/h</th>
                   <th style={styles.th}>{`${currency}/T`}</th>
                   <th style={styles.th}>{`${currency}/h`}</th>
@@ -557,7 +562,7 @@ const OpexCostSection = ({ opex }) => {
                   </tr>
                 ))}
                 <tr style={{ fontWeight: 'bold', background: '#fdecea' }}>
-                  <td style={styles.tdLabel}>Total</td>
+                  <td style={styles.tdLabel}>{tr('total')}</td>
                   <td style={styles.td}></td>
                   <td style={styles.td}></td>
                   <td style={styles.td}>{fmt(coutReactifs, 2)}</td>
@@ -570,11 +575,11 @@ const OpexCostSection = ({ opex }) => {
         {/* Énergie fossile */}
         {energieRows.length > 0 && (
           <div style={styles.subSection}>
-            <h3 style={styles.subTitle}>Énergie fossile — détail</h3>
+            <h3 style={styles.subTitle}>{tr('fossilEnergy')} — {tr('detailSuffix')}</h3>
             <table style={styles.table}>
               <thead>
                 <tr>
-                  <th style={styles.th}>Type</th>
+                  <th style={styles.th}>{tr('type')}</th>
                   <th style={styles.th}>MW</th>
                   <th style={styles.th}>{`${currency}/MWh`}</th>
                   <th style={styles.th}>{`${currency}/h`}</th>
@@ -592,7 +597,7 @@ const OpexCostSection = ({ opex }) => {
                   </tr>
                 ))}
                 <tr style={{ fontWeight: 'bold', background: '#fff8e1' }}>
-                  <td style={styles.tdLabel}>Total</td>
+                  <td style={styles.tdLabel}>{tr('total')}</td>
                   <td style={styles.td}></td>
                   <td style={styles.td}></td>
                   <td style={styles.td}>{fmt(coutEnergie, 2)}</td>

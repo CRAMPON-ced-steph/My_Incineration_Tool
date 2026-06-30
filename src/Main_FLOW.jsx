@@ -826,6 +826,7 @@ function Flow({
           onClose={() => setShowAirParasite(false)}
           nodes={nodes}
           edges={edges}
+          currentLanguage={currentLanguage}
         />
       )}
 
@@ -849,6 +850,7 @@ function Flow({
         <GlobalReport
           nodes={nodes}
           edges={edges}
+          currentLanguage={currentLanguage}
           onClose={() => setShowRapportEditor(false)}
         />
       )}
@@ -857,6 +859,7 @@ function Flow({
         <GlobalRetroReport
           nodes={nodes}
           edges={edges}
+          currentLanguage={currentLanguage}
           onClose={() => setShowRetroRapportEditor(false)}
         />
       )}

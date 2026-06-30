@@ -418,7 +418,7 @@ const RKdesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
 
   const elements_Conso_extracteur = [
     { text: 'Consommation électrique extracteur [kW]', value: fmt(P_elec_extracteur_kW, 2) },
-    { text: 'Masse des imbrûlées [kg/h]', value: Masse_imbrûfmt(lees_kg_h, 2) },
+    { text: 'Masse des imbrûlées [kg/h]', value: fmt(Masse_imbrûlees_kg_h, 2) },
     { text: 'CO2 transport [kg/km]', value: fmt(CO2_transport_kg_km, 2) },
     { text: 'Coût transport [€/km]', value: fmt(cout_transport_euro_km, 2) },
     { text: 'CO2 transport total [kg]', value: fmt(CO2_transport_total, 2) },
@@ -751,7 +751,8 @@ const RKdesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
     }
   }, [
     // Dépendances principales
-    innerData,
+    // NOTE: ne PAS inclure innerData ici — cet effet appelle setInnerData(prev => …)
+    // ce qui recrée innerData ; l'avoir en dépendance provoque une boucle de re-render infinie.
     setInnerData,
     // Variables électriques
     P_elec_mise_en_rotation_du_RK_kW,
@@ -781,7 +782,8 @@ const RKdesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
     distance_km,
     CO2_transport_total,
     cout_transport_total,
-    consommation_reactifs,
+    // NOTE: consommation_reactifs est un objet recréé à chaque render (innerData?.Conso_reactifs || {…})
+    // donc l'inclure relancerait l'effet en boucle. L'effet lit sa valeur fraîche au remontage du tab.
     // États pour la persistance
     PDC_calcul,
     Parametres_dimensionnement,

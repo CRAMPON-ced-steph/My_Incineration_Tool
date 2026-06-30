@@ -1,13 +1,15 @@
 import React, { useState, useMemo } from 'react';
 import { fmt } from '../A_Transverse_fonction/formatNumber';
 import { buildProcessLines, getLineName, LINE_COLORS } from './DataFlowDisplay';
+import { getLanguageCode } from '../F_Gestion_Langues/Fonction_Traduction';
+import { getAirParasiteT } from './airParasite_traduction';
 
-// Colonnes affichées : libellé + clés candidates (cherchées dans l'ordre selon l'équipement)
+// Colonnes affichées : clé de libellé (i18n) + clés candidates (selon l'équipement)
 const COLUMNS = [
-  { label: 'Air injecté net', keys: ['Qv_air_injecté_net_Nm3_h'] },
-  { label: 'Air parasite', keys: ['Qv_air_parasite_Nm3_h'] },
-  { label: 'Air entrant', keys: ['Qv_air_entrant_Nm3_h', 'Qv_air_entrant_tot_Nm3_h'] },
-  { label: 'Air décolmatage', keys: ['Qv_air_decolmatage_Nm3_h'] },
+  { labelKey: 'airNet', keys: ['Qv_air_injecté_net_Nm3_h'] },
+  { labelKey: 'airParasite', keys: ['Qv_air_parasite_Nm3_h'] },
+  { labelKey: 'airIn', keys: ['Qv_air_entrant_Nm3_h', 'Qv_air_entrant_tot_Nm3_h'] },
+  { labelKey: 'airDecolm', keys: ['Qv_air_decolmatage_Nm3_h'] },
 ];
 
 // Cherche la première clé trouvée (parmi `keys`) dans les sous-objets data<EQ> du résultat
@@ -25,7 +27,7 @@ const extractValue = (node, keys) => {
   return null;
 };
 
-const LineTable = ({ lineNodes }) => {
+const LineTable = ({ lineNodes, t }) => {
   const rows = lineNodes
     .map(n => ({
       id: n.id,
@@ -35,7 +37,7 @@ const LineTable = ({ lineNodes }) => {
     .filter(r => r.values.some(v => v !== null && v !== undefined));
 
   if (rows.length === 0) {
-    return <div style={{ padding: '20px', color: '#888', fontStyle: 'italic' }}>Aucun débit d'air disponible pour cette ligne.</div>;
+    return <div style={{ padding: '20px', color: '#888', fontStyle: 'italic' }}>{t.noData}</div>;
   }
 
   const totals = COLUMNS.map((_, c) => rows.reduce((s, r) => s + (r.values[c] || 0), 0));
@@ -48,9 +50,9 @@ const LineTable = ({ lineNodes }) => {
     <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px', backgroundColor: 'white', boxShadow: '0 1px 3px rgba(0,0,0,0.2)' }}>
       <thead>
         <tr>
-          <th style={{ ...thBase, textAlign: 'left' }}>Équipement</th>
+          <th style={{ ...thBase, textAlign: 'left' }}>{t.equipment}</th>
           {COLUMNS.map((col) => (
-            <th key={col.label} style={{ ...thBase, textAlign: 'right' }}>{col.label}<br />[Nm³/h]</th>
+            <th key={col.labelKey} style={{ ...thBase, textAlign: 'right' }}>{t[col.labelKey]}<br />[Nm³/h]</th>
           ))}
         </tr>
       </thead>
@@ -64,9 +66,9 @@ const LineTable = ({ lineNodes }) => {
           </tr>
         ))}
         <tr style={{ fontWeight: 'bold', background: '#eaf0fb' }}>
-          <td style={cell}>Total</td>
-          {totals.map((t, c) => (
-            <td key={c} style={numCell}>{fmt(t, 0)}</td>
+          <td style={cell}>{t.total}</td>
+          {totals.map((tot, c) => (
+            <td key={c} style={numCell}>{fmt(tot, 0)}</td>
           ))}
         </tr>
       </tbody>
@@ -74,9 +76,10 @@ const LineTable = ({ lineNodes }) => {
   );
 };
 
-const AirParasiteDisplay = ({ nodes, edges, onClose }) => {
+const AirParasiteDisplay = ({ nodes, edges, onClose, currentLanguage }) => {
   const lines = useMemo(() => buildProcessLines(nodes, edges), [nodes, edges]);
   const [activeTab, setActiveTab] = useState(0);
+  const t = useMemo(() => getAirParasiteT(getLanguageCode(currentLanguage)), [currentLanguage]);
 
   const lineNodes = lines.length > 1 ? (lines[activeTab] || []) : (lines[0] || nodes);
 
@@ -88,12 +91,12 @@ const AirParasiteDisplay = ({ nodes, edges, onClose }) => {
       padding: '20px', zIndex: 1000, display: 'flex', flexDirection: 'column',
     }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-        <h2 style={{ fontSize: '1.4rem', margin: 0 }}>Air parasite par ligne</h2>
+        <h2 style={{ fontSize: '1.4rem', margin: 0 }}>{t.titlePanel}</h2>
         <button
           onClick={onClose}
           style={{ padding: '8px 16px', background: '#f44336', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
         >
-          Fermer
+          {t.close}
         </button>
       </div>
 
@@ -123,7 +126,7 @@ const AirParasiteDisplay = ({ nodes, edges, onClose }) => {
       )}
 
       <div style={{ flex: 1, overflowY: 'auto' }}>
-        <LineTable lineNodes={lineNodes} />
+        <LineTable lineNodes={lineNodes} t={t} />
       </div>
     </div>
   );

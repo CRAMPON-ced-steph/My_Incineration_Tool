@@ -136,6 +136,21 @@ function DropdownMenu({
         'Language': 'Lingua',
         'Screenshot': 'Screenshot',
         'Edit Rapport': 'Modifica Report'
+      },
+      'pt': {
+        'Air parasite': 'Ar parasita'
+      },
+      'ru': {
+        'Air parasite': 'Паразитный воздух'
+      },
+      'zh': {
+        'Air parasite': '寄生空气'
+      },
+      'ja': {
+        'Air parasite': '寄生空気'
+      },
+      'ar': {
+        'Air parasite': 'هواء طفيلي'
       }
     };
     

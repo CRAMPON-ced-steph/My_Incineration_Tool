@@ -291,10 +291,10 @@ const buildProcessLines = (allNodes, edges) => {
 
 // ─── Bilan air parasite par ligne ─────────────────────────────────────────────
 const AIR_COLUMNS = [
-  { label: 'Air injecté net', keys: ['Qv_air_injecté_net_Nm3_h'] },
-  { label: 'Air parasite', keys: ['Qv_air_parasite_Nm3_h'] },
-  { label: 'Air entrant', keys: ['Qv_air_entrant_Nm3_h', 'Qv_air_entrant_tot_Nm3_h'] },
-  { label: 'Air décolmatage', keys: ['Qv_air_decolmatage_Nm3_h'] },
+  { labelKey: 'airNet', keys: ['Qv_air_injecté_net_Nm3_h'] },
+  { labelKey: 'airParasite', keys: ['Qv_air_parasite_Nm3_h'] },
+  { labelKey: 'airIn', keys: ['Qv_air_entrant_Nm3_h', 'Qv_air_entrant_tot_Nm3_h'] },
+  { labelKey: 'airDecolm', keys: ['Qv_air_decolmatage_Nm3_h'] },
 ];
 
 const extractAirValue = (node, keys) => {
@@ -313,21 +313,21 @@ const airCell = { padding: '6px 10px', border: '1px solid #c5d5ea', fontSize: 12
 const airNumCell = { ...airCell, textAlign: 'right' };
 const airThCell = { ...airCell, background: '#eaf0fb', color: '#1a3a6b', fontWeight: 'bold' };
 
-const AirParasiteLineTable = ({ line }) => {
+const AirParasiteLineTable = ({ line, t }) => {
   const rows = line
     .map(n => ({ id: n.id, name: n.data?.label, values: AIR_COLUMNS.map(col => extractAirValue(n, col.keys)) }))
     .filter(r => r.values.some(v => v !== null && v !== undefined));
   if (rows.length === 0) {
-    return <div style={{ padding: '8px 0', color: '#888', fontStyle: 'italic', fontSize: 12 }}>Aucun débit d'air parasite sur cette ligne.</div>;
+    return <div style={{ padding: '8px 0', color: '#888', fontStyle: 'italic', fontSize: 12 }}>{t.noData}</div>;
   }
   const totals = AIR_COLUMNS.map((_, c) => rows.reduce((s, r) => s + (r.values[c] || 0), 0));
   return (
     <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: 12 }}>
       <thead>
         <tr>
-          <th style={{ ...airThCell, textAlign: 'left' }}>Équipement</th>
+          <th style={{ ...airThCell, textAlign: 'left' }}>{t.equipment}</th>
           {AIR_COLUMNS.map(col => (
-            <th key={col.label} style={{ ...airThCell, textAlign: 'right' }}>{col.label} [Nm³/h]</th>
+            <th key={col.labelKey} style={{ ...airThCell, textAlign: 'right' }}>{t[col.labelKey]} [Nm³/h]</th>
           ))}
         </tr>
       </thead>
@@ -341,9 +341,9 @@ const AirParasiteLineTable = ({ line }) => {
           </tr>
         ))}
         <tr style={{ fontWeight: 'bold', background: '#eaf0fb' }}>
-          <td style={airCell}>Total</td>
-          {totals.map((t, c) => (
-            <td key={c} style={airNumCell}>{fmt(t, 0)}</td>
+          <td style={airCell}>{t.total}</td>
+          {totals.map((tot, c) => (
+            <td key={c} style={airNumCell}>{fmt(tot, 0)}</td>
           ))}
         </tr>
       </tbody>
@@ -351,31 +351,34 @@ const AirParasiteLineTable = ({ line }) => {
   );
 };
 
-const AirParasiteSection = ({ lines }) => {
+const AirParasiteSection = ({ lines, currentLanguage }) => {
+  const t = getAirParasiteT(getLanguageCode(currentLanguage));
   const hasAny = lines.some(line => line.some(n => AIR_COLUMNS.some(c => extractAirValue(n, c.keys) !== null)));
   if (!hasAny) return null;
   return (
     <div>
       <h2 style={{ fontSize: 16, fontWeight: 'bold', color: '#1a3a6b', borderBottom: '2px solid #4a90e2', paddingBottom: 6, marginBottom: 14 }}>
-        Bilan air parasite par ligne
+        {t.titleReport}
       </h2>
       {lines.map((line, i) => (
         <div key={i} style={{ marginBottom: 16 }}>
           {lines.length > 1 && (
             <h3 style={{ fontSize: 13, fontWeight: 'bold', color: LINE_COLORS[i % LINE_COLORS.length].title, margin: '0 0 6px 0' }}>
-              {line[0]?.data?.lineName || `Ligne ${i + 1}`}
+              {line[0]?.data?.lineName || `${t.line} ${i + 1}`}
             </h3>
           )}
-          <AirParasiteLineTable line={line} />
+          <AirParasiteLineTable line={line} t={t} />
         </div>
       ))}
     </div>
   );
 };
 
-const GlobalRetroReport = ({ nodes, edges, onClose }) => {
+const GlobalRetroReport = ({ nodes, edges, onClose, currentLanguage }) => {
   const reportRef = useRef();
   const [generating, setGenerating] = useState(false);
+  const tr = makeReportT(currentLanguage);
+  const locale = getLanguageCode(currentLanguage);
 
   const lines = buildProcessLines(nodes, edges);
   const activeNodes = lines.flat();
@@ -451,11 +454,11 @@ const GlobalRetroReport = ({ nodes, edges, onClose }) => {
         {/* ── En-tête ─────────────────────────────────────────────────────── */}
         <div style={styles.header}>
           <h2 style={styles.headerTitle}>
-            Rapport Global — Rétro-calcul des équipements
+            {tr('headerRetroGlobal')}
           </h2>
           <div style={styles.headerActions}>
             <span style={styles.nodeCount}>
-              {activeNodes.length} équipement{activeNodes.length !== 1 ? 's' : ''} actif{activeNodes.length !== 1 ? 's' : ''}
+              {activeNodes.length} {activeNodes.length !== 1 ? tr('activeEquipMany') : tr('activeEquipOne')}
             </span>
             <button
               onClick={generatePDF}
@@ -465,10 +468,10 @@ const GlobalRetroReport = ({ nodes, edges, onClose }) => {
                 ...(generating || activeNodes.length === 0 ? styles.btnDisabled : {}),
               }}
             >
-              {generating ? '⏳ Génération...' : '⬇ Télécharger PDF'}
+              {generating ? tr('generating') : tr('downloadPdf')}
             </button>
             <button onClick={onClose} style={{ ...styles.btn, ...styles.btnClose }}>
-              ✕ Fermer
+              {tr('close')}
             </button>
           </div>
         </div>
@@ -477,10 +480,7 @@ const GlobalRetroReport = ({ nodes, edges, onClose }) => {
         <div style={styles.scrollArea}>
           {activeNodes.length === 0 ? (
             <div style={styles.empty}>
-              <p>
-                Aucun équipement rétro actif avec rapport disponible.<br />
-                Ouvrez un nœud (RK, STACK…), effectuez un calcul, puis revenez au flow.
-              </p>
+              <p>{tr('emptyRetro')}</p>
             </div>
           ) : (
             <div ref={reportRef} style={styles.reportContent}>
@@ -488,9 +488,9 @@ const GlobalRetroReport = ({ nodes, edges, onClose }) => {
               {/* Page de couverture */}
               <div data-pdf-section style={styles.coverPage}>
                 <div style={styles.coverLogo}>⚙</div>
-                <h1 style={styles.coverTitle}>Rapport de Rétro-calcul — Incinération</h1>
+                <h1 style={styles.coverTitle}>{tr('coverTitleRetro')}</h1>
                 <p style={styles.coverDate}>
-                  Généré le {new Date().toLocaleDateString('fr-FR', {
+                  {tr('generatedOn')} {new Date().toLocaleDateString(locale, {
                     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
                   })}
                 </p>
@@ -507,7 +507,7 @@ const GlobalRetroReport = ({ nodes, edges, onClose }) => {
                         ...styles.coverEquipTitle,
                         color: lines.length > 1 ? LINE_COLORS[li % LINE_COLORS.length].title : '#e0ecff',
                       }}>
-                        {lines.length > 1 ? (line[0]?.data?.lineName || `Ligne ${li + 1}`) : 'Équipements inclus'}
+                        {lines.length > 1 ? (line[0]?.data?.lineName || `${tr('line')} ${li + 1}`) : tr('equipmentsIncluded')}
                       </h3>
                       {line.map(n => (
                         <div key={n.id} style={styles.coverEquipItem}>
@@ -527,7 +527,7 @@ const GlobalRetroReport = ({ nodes, edges, onClose }) => {
                     const lc = LINE_COLORS[lineIdx % LINE_COLORS.length];
                     return (
                       <div data-pdf-section style={{ ...styles.lineSeparator, background: lc.sep, borderLeft: `5px solid ${lc.border}` }}>
-                        <span style={{ ...styles.lineLabel, color: lc.title }}>{line[0]?.data?.lineName || `Ligne ${lineIdx + 1}`}</span>
+                        <span style={{ ...styles.lineLabel, color: lc.title }}>{line[0]?.data?.lineName || `${tr('line')} ${lineIdx + 1}`}</span>
                         <span style={styles.lineDesc}>
                           {line.map(n => n.data.label).join(' → ')}
                         </span>
@@ -558,11 +558,10 @@ const GlobalRetroReport = ({ nodes, edges, onClose }) => {
                         </div>
 
                         {hasResult ? (
-                          <ReportBody node={node} />
+                          <ReportBody node={node} tr={tr} currentLanguage={currentLanguage} />
                         ) : (
                           <div style={styles.noData}>
-                            Aucun résultat disponible — ouvrir le nœud, lancer un calcul
-                            et revenir au flow.
+                            {tr('noResult')}
                           </div>
                         )}
                       </div>
@@ -578,7 +577,7 @@ const GlobalRetroReport = ({ nodes, edges, onClose }) => {
 
               {/* Bilan air parasite par ligne — après le diagramme de combustion */}
               <div data-pdf-section style={styles.diagSection}>
-                <AirParasiteSection lines={lines} />
+                <AirParasiteSection lines={lines} currentLanguage={currentLanguage} />
               </div>
 
             </div>
@@ -590,7 +589,7 @@ const GlobalRetroReport = ({ nodes, edges, onClose }) => {
 };
 
 // ── Renders only the inner report content (no modal overlay) ──────────────────
-const ReportBody = ({ node }) => {
+const ReportBody = ({ node, tr }) => {
   const label = node.data.label;
   const result    = node.data.result    || {};
   const inputData = node.data.inputData || {};
@@ -600,6 +599,7 @@ const ReportBody = ({ node }) => {
       <RKReportBody
         calculationResult={result}
         inputParams={inputData}
+        tr={tr}
       />
     );
   }
@@ -625,6 +625,9 @@ const ReportBody = ({ node }) => {
 
 // ── Inline body for RK (copy of RK_Retro_Rapport content without modal) ───────
 import { fmt } from '../A_Transverse_fonction/formatNumber';
+import { getLanguageCode } from '../F_Gestion_Langues/Fonction_Traduction';
+import { getAirParasiteT } from '../C_Components/airParasite_traduction';
+import { makeReportT } from './report_traduction';
 
 const Section = ({ title, children }) => (
   <div style={bodyStyles.section}>
@@ -647,18 +650,19 @@ const KV = ({ label, value, unit = '' }) => (
   </div>
 );
 
-const GasTableRK = ({ df }) => {
+const GasTableRK = ({ df, tr }) => {
   const rows = [
     { name: 'CO₂', nm3h: df.Qv_CO2_Nm3_h, kgh: df.Qm_CO2_kg_h, pW: df.CO2_humide_pourcent, pD: df.CO2_dry_pourcent },
     { name: 'H₂O', nm3h: df.Qv_H2O_Nm3_h, kgh: df.Qm_H2O_kg_h, pW: df.H2O_pourcent,        pD: undefined },
     { name: 'O₂',  nm3h: df.Qv_O2_Nm3_h,  kgh: df.Qm_O2_kg_h,  pW: df.O2_humide_pourcent,  pD: df.O2_dry_pourcent },
     { name: 'N₂',  nm3h: df.Qv_N2_Nm3_h,  kgh: df.Qm_N2_kg_h,  pW: df.N2_humide_pourcent,  pD: undefined },
   ];
+  const t = tr || ((k) => k);
   return (
     <table style={bodyStyles.table}>
       <thead>
         <tr>
-          {['Composant','Nm³/h','kg/h','% vol (humide)','% vol (sec)'].map(h =>
+          {[t('component'),'Nm³/h','kg/h',t('pctWet'),t('pctDry')].map(h =>
             <th key={h} style={bodyStyles.th}>{h}</th>)}
         </tr>
       </thead>
@@ -673,7 +677,7 @@ const GasTableRK = ({ df }) => {
           </tr>
         ))}
         <tr style={{ fontWeight: 'bold', background: '#eaf0fb' }}>
-          <td style={bodyStyles.tdLabel}>Total</td>
+          <td style={bodyStyles.tdLabel}>{t('total')}</td>
           <td style={bodyStyles.td}>{fmt(rows.reduce((s,r)=>s+(parseFloat(r.nm3h)||0),0),0)}</td>
           <td style={bodyStyles.td}>{fmt(rows.reduce((s,r)=>s+(parseFloat(r.kgh)||0),0),0)}</td>
           <td style={bodyStyles.td}>—</td><td style={bodyStyles.td}>—</td>
@@ -683,7 +687,7 @@ const GasTableRK = ({ df }) => {
   );
 };
 
-const RKReportBody = ({ calculationResult, inputParams }) => {
+const RKReportBody = ({ calculationResult, inputParams, tr }) => {
   const r  = calculationResult || {};
   const df = r.dataFlow || {};
   const p  = inputParams || {};
@@ -693,47 +697,47 @@ const RKReportBody = ({ calculationResult, inputParams }) => {
 
   return (
     <div style={bodyStyles.body}>
-      <h1 style={bodyStyles.mainTitle}>Four tournant (RK) — Rétro-calcul</h1>
-      <Section title="1. Paramètres d'entrée">
+      <h1 style={bodyStyles.mainTitle}>{tr('rkRetroTitle')}</h1>
+      <Section title={`1. ${tr('secInputParams')}`}>
         <div style={bodyStyles.twoCol}>
-          <Sub title="Conditions">
-            <KV label="Mode"          value={isWithWHB ? 'Avec WHB' : 'Sans WHB'} />
-            <KV label="Type bilan"    value={isNCV ? 'NCV connu → débit' : 'Débit connu → NCV'} />
-            <KV label="Température air" value={fmt(p.Tair_RK_C, 1)} unit="°C" />
-            <KV label="Pertes thermiques" value={fmt(p.Thermal_losses_MW, 2)} unit="MW" />
+          <Sub title={tr('conditions')}>
+            <KV label={tr('mode')}          value={isWithWHB ? tr('withWHB') : tr('withoutWHB')} />
+            <KV label={tr('balanceType')}    value={isNCV ? tr('ncvToFlow') : tr('flowToNcv')} />
+            <KV label={tr('airTemp')} value={fmt(p.Tair_RK_C, 1)} unit="°C" />
+            <KV label={tr('thermalLosses')} value={fmt(p.Thermal_losses_MW, 2)} unit="MW" />
           </Sub>
-          <Sub title="Données combustion">
+          <Sub title={tr('combustionData')}>
             {isNCV
-              ? <KV label="PCI (donné)"     value={fmt(p.NCV_kcal_kg, 0)} unit="kcal/kg" />
-              : <KV label="Débit (donné)"   value={fmt(p.Masse_dechet_kg_h, 0)} unit="kg/h" />}
+              ? <KV label={tr('pciGiven')}     value={fmt(p.NCV_kcal_kg, 0)} unit="kcal/kg" />
+              : <KV label={tr('flowGiven')}   value={fmt(p.Masse_dechet_kg_h, 0)} unit="kg/h" />}
           </Sub>
         </div>
       </Section>
-      <Section title="2. Gaz de fumée">
+      <Section title={`2. ${tr('secFlueGas')}`}>
         <div style={bodyStyles.twoCol}>
-          <Sub title="Débits">
-            <KV label="Humide"  value={fmt(df.Qv_wet_Nm3_h, 0)} unit="Nm³/h" />
-            <KV label="Sec"     value={fmt(df.Qv_sec_Nm3_h, 0)} unit="Nm³/h" />
-            <KV label="Réel"    value={fmt(r.Qv_wet_m3_h, 0)}   unit="m³/h"  />
+          <Sub title={tr('flows')}>
+            <KV label={tr('wet')}  value={fmt(df.Qv_wet_Nm3_h, 0)} unit="Nm³/h" />
+            <KV label={tr('dry')}     value={fmt(df.Qv_sec_Nm3_h, 0)} unit="Nm³/h" />
+            <KV label={tr('real')}    value={fmt(r.Qv_wet_m3_h, 0)}   unit="m³/h"  />
           </Sub>
-          <Sub title="Enthalpie">
-            <KV label="H sortie" value={fmt(df.H_tot_kW, 0)} unit="kW" />
-            {!isWithWHB && <KV label="H air entrée" value={fmt(r.H_air_kW, 0)} unit="kW" />}
+          <Sub title={tr('enthalpy')}>
+            <KV label={tr('hOut')} value={fmt(df.H_tot_kW, 0)} unit="kW" />
+            {!isWithWHB && <KV label={tr('hAirIn')} value={fmt(r.H_air_kW, 0)} unit="kW" />}
           </Sub>
         </div>
-        <Sub title="Composition">
-          <GasTableRK df={df} />
+        <Sub title={tr('composition')}>
+          <GasTableRK df={df} tr={tr} />
         </Sub>
       </Section>
-      <Section title="3. Résultats rétro-calcul">
+      <Section title={`3. ${tr('secRetroResults')}`}>
         <div style={bodyStyles.twoCol}>
-          <Sub title="Énergie">
-            <KV label="Puissance incinérateur" value={fmt(r.P_incinerateur_MWH, 3)} unit="MW" />
+          <Sub title={tr('energy')}>
+            <KV label={tr('incineratorPower')} value={fmt(r.P_incinerateur_MWH, 3)} unit="MW" />
           </Sub>
-          <Sub title="Déchets">
-            <KV label="Débit déchets" value={fmt(r.MasseDechet, 0)}  unit="kg/h"    />
-            <KV label="PCI"           value={fmt(r.NCV, 0)}           unit="kcal/kg" />
-            <KV label="PCI"           value={fmt(NCV_kJ_kg, 0)}       unit="kJ/kg"   />
+          <Sub title={tr('waste')}>
+            <KV label={tr('wasteFlow')} value={fmt(r.MasseDechet, 0)}  unit="kg/h"    />
+            <KV label={tr('pci')}           value={fmt(r.NCV, 0)}           unit="kcal/kg" />
+            <KV label={tr('pci')}           value={fmt(NCV_kJ_kg, 0)}       unit="kJ/kg"   />
           </Sub>
         </div>
       </Section>

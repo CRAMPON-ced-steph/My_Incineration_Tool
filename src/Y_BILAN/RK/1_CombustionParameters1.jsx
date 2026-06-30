@@ -390,7 +390,12 @@ const CombustionParameters = ({ innerData, currentLanguage = 'fr', nodeId }) => 
 
   useEffect(() => {
     const updatedRows = parameters.map(row => ({...row, data: updateRow({...row.data})}));
-    setParameters(updatedRows);
+    // Garde de convergence : ne ré-écrire `parameters` que si les valeurs recalculées
+    // diffèrent réellement. Sinon setParameters recrée un nouveau tableau à chaque passe
+    // → l'effet (dép. [parameters]) se relance en boucle ("Maximum update depth exceeded").
+    if (JSON.stringify(updatedRows) !== JSON.stringify(parameters)) {
+      setParameters(updatedRows);
+    }
     updateSecondTable();
     saveToLocalStorage(updatedRows);
   }, [parameters]);
