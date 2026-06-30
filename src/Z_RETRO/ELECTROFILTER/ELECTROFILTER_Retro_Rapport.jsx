@@ -101,7 +101,7 @@ export default function ELECTROFILTER_Retro_Rapport({ calculationResult, inputPa
                 </div>
                 <div style={styles.tag}>
                   <span style={styles.tagLabel}>Air parasite</span>
-                  <span style={styles.tagValue}>{fmt(de.Qair_parasite, 0)} Nm³/h</span>
+                  <span style={styles.tagValue}>{fmt(de.Qv_air_injecté_net_Nm3_h, 0)} Nm³/h</span>
                 </div>
                 <div style={styles.tag}>
                   <span style={styles.tagLabel}>Puissance</span>
@@ -158,7 +158,7 @@ export default function ELECTROFILTER_Retro_Rapport({ calculationResult, inputPa
               <SubSection>
                 <div style={styles.twoCol}>
                   <div>
-                    <KV label="Air parasite (fuite)" value={fmt(de.Qair_parasite, 0)} unit="Nm³/h" />
+                    <KV label="Air parasite (fuite)" value={fmt(de.Qv_air_injecté_net_Nm3_h, 0)} unit="Nm³/h" />
                     <KV label="Débit air entrant" value={fmt(de.Qv_air_entrant_Nm3_h, 0)} unit="Nm³/h" />
                     <KV label="Débit air entrant" value={fmt(de.Qm_air_entrant_kg_h, 0)} unit="kg/h" />
                   </div>

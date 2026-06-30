@@ -289,6 +289,90 @@ const buildProcessLines = (allNodes, edges) => {
   return lines;
 };
 
+// ─── Bilan air parasite par ligne ─────────────────────────────────────────────
+const AIR_COLUMNS = [
+  { label: 'Air injecté net', keys: ['Qv_air_injecté_net_Nm3_h'] },
+  { label: 'Air parasite', keys: ['Qv_air_parasite_Nm3_h'] },
+  { label: 'Air entrant', keys: ['Qv_air_entrant_Nm3_h', 'Qv_air_entrant_tot_Nm3_h'] },
+  { label: 'Air décolmatage', keys: ['Qv_air_decolmatage_Nm3_h'] },
+];
+
+const extractAirValue = (node, keys) => {
+  const result = node.data?.result;
+  if (!result || typeof result !== 'object') return null;
+  for (const k of keys) {
+    for (const sub of Object.values(result)) {
+      if (sub && typeof sub === 'object' && typeof sub[k] === 'number' && !Number.isNaN(sub[k])) return sub[k];
+    }
+    if (typeof result[k] === 'number' && !Number.isNaN(result[k])) return result[k];
+  }
+  return null;
+};
+
+const airCell = { padding: '6px 10px', border: '1px solid #c5d5ea', fontSize: 12 };
+const airNumCell = { ...airCell, textAlign: 'right' };
+const airThCell = { ...airCell, background: '#eaf0fb', color: '#1a3a6b', fontWeight: 'bold' };
+
+const AirParasiteLineTable = ({ line }) => {
+  const rows = line
+    .map(n => ({ id: n.id, name: n.data?.label, values: AIR_COLUMNS.map(col => extractAirValue(n, col.keys)) }))
+    .filter(r => r.values.some(v => v !== null && v !== undefined));
+  if (rows.length === 0) {
+    return <div style={{ padding: '8px 0', color: '#888', fontStyle: 'italic', fontSize: 12 }}>Aucun débit d'air parasite sur cette ligne.</div>;
+  }
+  const totals = AIR_COLUMNS.map((_, c) => rows.reduce((s, r) => s + (r.values[c] || 0), 0));
+  return (
+    <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: 12 }}>
+      <thead>
+        <tr>
+          <th style={{ ...airThCell, textAlign: 'left' }}>Équipement</th>
+          {AIR_COLUMNS.map(col => (
+            <th key={col.label} style={{ ...airThCell, textAlign: 'right' }}>{col.label} [Nm³/h]</th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map(r => (
+          <tr key={r.id}>
+            <td style={airCell}>{r.name} ({r.id})</td>
+            {r.values.map((v, c) => (
+              <td key={c} style={airNumCell}>{v !== null && v !== undefined ? fmt(v, 0) : '-'}</td>
+            ))}
+          </tr>
+        ))}
+        <tr style={{ fontWeight: 'bold', background: '#eaf0fb' }}>
+          <td style={airCell}>Total</td>
+          {totals.map((t, c) => (
+            <td key={c} style={airNumCell}>{fmt(t, 0)}</td>
+          ))}
+        </tr>
+      </tbody>
+    </table>
+  );
+};
+
+const AirParasiteSection = ({ lines }) => {
+  const hasAny = lines.some(line => line.some(n => AIR_COLUMNS.some(c => extractAirValue(n, c.keys) !== null)));
+  if (!hasAny) return null;
+  return (
+    <div>
+      <h2 style={{ fontSize: 16, fontWeight: 'bold', color: '#1a3a6b', borderBottom: '2px solid #4a90e2', paddingBottom: 6, marginBottom: 14 }}>
+        Bilan air parasite par ligne
+      </h2>
+      {lines.map((line, i) => (
+        <div key={i} style={{ marginBottom: 16 }}>
+          {lines.length > 1 && (
+            <h3 style={{ fontSize: 13, fontWeight: 'bold', color: LINE_COLORS[i % LINE_COLORS.length].title, margin: '0 0 6px 0' }}>
+              {line[0]?.data?.lineName || `Ligne ${i + 1}`}
+            </h3>
+          )}
+          <AirParasiteLineTable line={line} />
+        </div>
+      ))}
+    </div>
+  );
+};
+
 const GlobalRetroReport = ({ nodes, edges, onClose }) => {
   const reportRef = useRef();
   const [generating, setGenerating] = useState(false);
@@ -490,6 +574,11 @@ const GlobalRetroReport = ({ nodes, edges, onClose }) => {
               {/* Diagramme de combustion — toujours en dernier */}
               <div data-pdf-section style={styles.diagSection}>
                 <CombustionDiagramSection />
+              </div>
+
+              {/* Bilan air parasite par ligne — après le diagramme de combustion */}
+              <div data-pdf-section style={styles.diagSection}>
+                <AirParasiteSection lines={lines} />
               </div>
 
             </div>
@@ -771,7 +860,7 @@ const BHFReportBody = ({ calculationResult, inputParams }) => {
           <Sub title="Débits">
             <KV label="Q air entrant"  value={fmt(d.Qv_air_entrant_Nm3_h, 0)} unit="Nm³/h" />
             <KV label="Q air entrant"  value={fmt(d.Qm_air_entrant_kg_h, 0)}  unit="kg/h"  />
-            <KV label="Q air parasite" value={fmt(d.Qair_parasite, 0)}         unit="Nm³/h" />
+            <KV label="Q air parasite" value={fmt(d.Qv_air_injecté_net_Nm3_h, 0)} unit="Nm³/h" />
           </Sub>
           <Sub title="Composition air">
             <KV label="Q O₂ air entrant" value={fmt(d.Qm_O2_air_entrant_kg_h, 0)}  unit="kg/h"   />
@@ -797,7 +886,7 @@ const BHFReportBody = ({ calculationResult, inputParams }) => {
         <div style={bodyStyles.tagRow}>
           {[
             { label:'Q air décolmatage [Nm³/h]', val:fmt(d.Qv_air_entrant_Nm3_h,0), color:'#4a90e2' },
-            { label:'Q air parasite [Nm³/h]',    val:fmt(d.Qair_parasite,0),          color:'#e74c3c' },
+            { label:'Q air parasite [Nm³/h]',    val:fmt(d.Qv_air_injecté_net_Nm3_h,0), color:'#e74c3c' },
             { label:'PDC aéro [mmCE]',            val:fmt(d.PDC_aero,0),               color:'#2ecc71' },
             { label:'T amont [°C]',               val:fmt(df.T,1),                     color:'#f39c12' },
           ].map(({ label, val, color }) => (
@@ -908,7 +997,7 @@ const CYCLONEReportBody = ({ calculationResult, inputParams }) => {
         <div style={bodyStyles.twoCol}>
           <Sub title="Débits volumiques">
             <KV label="Q air entrant"  value={fmt(d.Qv_air_entrant_Nm3_h, 0)}  unit="Nm³/h" />
-            <KV label="Q air parasite" value={fmt(d.Qair_parasite, 0)}           unit="Nm³/h" />
+            <KV label="Q air parasite" value={fmt(d.Qv_air_injecté_net_Nm3_h, 0)} unit="Nm³/h" />
             <KV label="Q O₂ air (vol)" value={fmt(d.Qv_O2_air_entrant_Nm3_h, 0)} unit="Nm³/h" />
             <KV label="Q N₂ air (vol)" value={fmt(d.Qv_N2_air_entrant_Nm3_h, 0)} unit="Nm³/h" />
           </Sub>
@@ -935,7 +1024,7 @@ const CYCLONEReportBody = ({ calculationResult, inputParams }) => {
         <div style={bodyStyles.tagRow}>
           {[
             { label:'Q air entrant [Nm³/h]', val:fmt(d.Qv_air_entrant_Nm3_h,0), color:'#4a90e2' },
-            { label:'Q air parasite [Nm³/h]', val:fmt(d.Qair_parasite,0),        color:'#e74c3c' },
+            { label:'Q air parasite [Nm³/h]', val:fmt(d.Qv_air_injecté_net_Nm3_h,0), color:'#e74c3c' },
             { label:'PDC aéro [mmCE]',         val:fmt(p.PDC_aero,0),            color:'#2ecc71' },
             { label:'T amont [°C]',            val:fmt(df.T,1),                  color:'#f39c12' },
           ].map(({ label, val, color }) => (
@@ -1047,7 +1136,7 @@ const ELECTROFILTERReportBody = ({ calculationResult, inputParams }) => {
         <div style={bodyStyles.twoCol}>
           <Sub title="Débits volumiques">
             <KV label="Q air entrant"  value={fmt(d.Qv_air_entrant_Nm3_h, 0)}  unit="Nm³/h" />
-            <KV label="Q air parasite" value={fmt(d.Qair_parasite, 0)}           unit="Nm³/h" />
+            <KV label="Q air parasite" value={fmt(d.Qv_air_injecté_net_Nm3_h, 0)} unit="Nm³/h" />
             <KV label="Q O₂ air (vol)" value={fmt(d.Qv_O2_air_entrant_Nm3_h, 0)} unit="Nm³/h" />
             <KV label="Q N₂ air (vol)" value={fmt(d.Qv_N2_air_entrant_Nm3_h, 0)} unit="Nm³/h" />
           </Sub>
@@ -1074,7 +1163,7 @@ const ELECTROFILTERReportBody = ({ calculationResult, inputParams }) => {
         <div style={bodyStyles.tagRow}>
           {[
             { label:'Q air entrant [Nm³/h]',  val:fmt(d.Qv_air_entrant_Nm3_h,0), color:'#4a90e2' },
-            { label:'Q air parasite [Nm³/h]', val:fmt(d.Qair_parasite,0),          color:'#e74c3c' },
+            { label:'Q air parasite [Nm³/h]', val:fmt(d.Qv_air_injecté_net_Nm3_h,0), color:'#e74c3c' },
             { label:'PDC aéro [mmCE]',         val:fmt(p.PDC_aero,0),              color:'#2ecc71' },
             { label:'T amont [°C]',            val:fmt(df.T,1),                    color:'#f39c12' },
           ].map(({ label, val, color }) => (
@@ -1444,6 +1533,7 @@ const REACTORReportBody = ({ calculationResult, inputParams }) => {
             <KV label="T fumées amont"     value={fmt(p.T_amont_REACTOR, 1)} unit="°C"   />
             <KV label="T air"              value={fmt(p.T_air, 1)}            unit="°C"   />
             <KV label="PDC aérodynamique"  value={fmt(p.PDC_aero, 0)}         unit="mmCE" />
+            <KV label="Débit air parasite" value={fmt(p.Qv_air_parasite_Nm3_h, 0)} unit="Nm³/h" />
           </Sub>
           <Sub title="Paramètres réactif">
             {isCAP ? (
@@ -1463,6 +1553,8 @@ const REACTORReportBody = ({ calculationResult, inputParams }) => {
       <Section title="2. Air d'injection">
         <Sub>
           <KV label="Q air entrant total" value={fmt(d.Qv_air_entrant_tot_Nm3_h, 0)} unit="Nm³/h" />
+          <KV label="Q air parasite"      value={fmt(d.Qv_air_parasite_Nm3_h, 0)}    unit="Nm³/h" />
+          <KV label="Q air injecté net"   value={fmt(d.Qv_air_injecté_net_Nm3_h, 0)} unit="Nm³/h" />
         </Sub>
       </Section>
       <Section title="3. Consommation réactifs">
@@ -1621,7 +1713,7 @@ const AIRINJECTIONReportBody = ({ calculationResult, inputParams }) => {
         <div style={bodyStyles.twoCol}>
           <Sub title="Débits volumiques">
             <KV label="Q air entrant"  value={fmt(d.Qv_air_entrant_Nm3_h, 0)}   unit="Nm³/h" />
-            <KV label="Q air parasite" value={fmt(d.Qair_parasite, 0)}            unit="Nm³/h" />
+            <KV label="Q air parasite" value={fmt(d.Qv_air_injecté_net_Nm3_h, 0)} unit="Nm³/h" />
             <KV label="Q O₂ air (vol)" value={fmt(d.Qv_O2_air_entrant_Nm3_h, 0)} unit="Nm³/h" />
             <KV label="Q N₂ air (vol)" value={fmt(d.Qv_N2_air_entrant_Nm3_h, 0)} unit="Nm³/h" />
           </Sub>
@@ -1648,7 +1740,7 @@ const AIRINJECTIONReportBody = ({ calculationResult, inputParams }) => {
         <div style={bodyStyles.tagRow}>
           {[
             { label:'Q air entrant [Nm³/h]', val:fmt(d.Qv_air_entrant_Nm3_h,0), color:'#4a90e2' },
-            { label:'Q air parasite [Nm³/h]', val:fmt(d.Qair_parasite,0),        color:'#e74c3c' },
+            { label:'Q air parasite [Nm³/h]', val:fmt(d.Qv_air_injecté_net_Nm3_h,0), color:'#e74c3c' },
             { label:'PDC aéro [mmCE]',         val:fmt(p.PDC_aero,0),            color:'#2ecc71' },
             { label:'T amont [°C]',            val:fmt(df.T,1),                  color:'#f39c12' },
           ].map(({ label, val, color }) => (

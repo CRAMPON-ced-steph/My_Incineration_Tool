@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { molarMasses, massVolumique } from '../../A_Transverse_fonction/constantes';
+import { molarMasses, massVolumique, cp_ref } from '../../A_Transverse_fonction/constantes';
 
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './FB_traduction';
@@ -269,10 +269,10 @@ function runIterativeCalc({
     const Maire_sec_comb_tot = Maire_sec_comb_gaz + Maire_sec_comb_boue;
     const Meau_air_comburant = Teneur_en_eau_kgH2O_kgAS * Maire_sec_comb_tot;
 
-    const H_MV = (PCI_boue_kcal_kgMV * Masse_volatile_kg_h * 4.1868) / 3600;
+    const H_MV = (PCI_boue_kcal_kgMV * Masse_volatile_kg_h * cp_ref) / 3600;
     const H_MS = fh_MS_kW(Temp_boue_entree_C, Masse_seche_kg_h) || 0;
-    const H_Evap = (Masse_eau_kg_h * (4.1868 * Temp_boue_entree_C - 2501.6)) / 3600;
-    const H_Evap_add = (eau_add_kg_h * (4.1868 * 15 - 2501.6)) / 3600;
+    const H_Evap = (Masse_eau_kg_h * (cp_ref * Temp_boue_entree_C - 2501.6)) / 3600;
+    const H_Evap_add = (eau_add_kg_h * (cp_ref * 15 - 2501.6)) / 3600;
     const H_MM = fh_MM_kW(Temp_fumee_voute_C, Masse_mineral_kg_h) || 0;
     const H_NET_BOUE = H_MV + H_MS + H_Evap;
 
@@ -284,7 +284,7 @@ function runIterativeCalc({
     const Meau_air3 = Teneur_en_eau_kgH2O_kgAS * Masse_air_tertiaire_kg_h;
     const H_air3 = cp_air(Temp_air_tertiaire_C) * Masse_air_tertiaire_kg_h + cp_dt_h2o(Temp_air_tertiaire_C) * Meau_air3;
 
-    const Pertes = ((PCI_boue_kcal_kgMV * Masse_volatile_kg_h * (Pertes_thermiques_pourcent / 100)) / 3600) * 4.1868;
+    const Pertes = ((PCI_boue_kcal_kgMV * Masse_volatile_kg_h * (Pertes_thermiques_pourcent / 100)) / 3600) * cp_ref;
 
     const T_soufflante = Temp_air_fluidisation_av_prechauffe_C + 45;
 
@@ -301,7 +301,7 @@ function runIterativeCalc({
     const Tf_voute_ap_HX_C = TempSortieFumees(FG_CO, FG_CO2, FG_H2O, FG_H2, FG_N2, FG_O2exc, FG_SO2reel, FG_HCl, hTarget) || 0;
     const Hf_voute_HX = Hfvoute_kW(Tf_voute_ap_HX_C, FG_HCl, FG_CO2, FG_CO, FG_H2O, FG_H2, FG_O2exc, FG_N2, FG_SO2reel) || 0;
 
-    const PCI_gaz_kWh_Nm3 = (PCI_combustible_kcal_kg * 4.1868) / 3600;
+    const PCI_gaz_kWh_Nm3 = (PCI_combustible_kcal_kg * cp_ref) / 3600;
     const H_gaz_inter = (Masse_gaz_kg_h / densite_combustible) * PCI_gaz_kWh_Nm3;
 
     const H_in = H_NET_BOUE + H_Evap_add + H_air_prech + H_balayage + H_gaz_inter;
@@ -1677,7 +1677,7 @@ const CombustionTab = ({ innerData = {}, onInnerDataChange, onResultsChange, cur
                     { label: 'Efficacité [%]',                  vals: [null, null, null, null, null, null, null, null, null, null, null, null, null, thermalParams.Rdt_HX * 100, null, null] },
                     { label: 'Énergie cédée par les fumées [kWh]', vals: [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null] },
                     { label: 'Énergie transmise [kWh]',         vals: [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null] },
-                    { label: 'Enthalpie [kWh]',                 vals: [(emissions.Masse_volatile_kg_h * emissions.PCI_boue_kcal_kgMV * 4.1868) / 3600, fh_MS_kW(thermalParams.Temp_boue_entree_C, emissions.Masse_seche_kg_h), (emissions.Masse_eau_kg_h * (4.1868 * thermalParams.Temp_boue_entree_C - 2501.6)) / 3600, results.H_matiere_minerale_kW, results.H_NETTE_BOUE_kW, results.H_air_fluidisation_av_prechauffe_kW, results.H_air_secondaire_kW, results.H_air_tertiaire_kW, results.H_gaz_inter, results.Pertes_thermiques_kW, results.H_air_balayage_instrumentation_kW, results.Hair_ap_prechauffage_kW, results.H_air_soufflante_kW, results.Hf_voute_kW, results.Hf_voute_ap_HX_kW, results.H_imbrule_kW] },
+                    { label: 'Enthalpie [kWh]',                 vals: [(emissions.Masse_volatile_kg_h * emissions.PCI_boue_kcal_kgMV * cp_ref) / 3600, fh_MS_kW(thermalParams.Temp_boue_entree_C, emissions.Masse_seche_kg_h), (emissions.Masse_eau_kg_h * (cp_ref * thermalParams.Temp_boue_entree_C - 2501.6)) / 3600, results.H_matiere_minerale_kW, results.H_NETTE_BOUE_kW, results.H_air_fluidisation_av_prechauffe_kW, results.H_air_secondaire_kW, results.H_air_tertiaire_kW, results.H_gaz_inter, results.Pertes_thermiques_kW, results.H_air_balayage_instrumentation_kW, results.Hair_ap_prechauffage_kW, results.H_air_soufflante_kW, results.Hf_voute_kW, results.Hf_voute_ap_HX_kW, results.H_imbrule_kW] },
                   ].map((row, ri) => (
                     <tr key={ri} style={{ backgroundColor: ri % 2 === 0 ? '#FAFAFA' : '#fff' }}>
                       <td style={{ ...TD, fontWeight: 'bold', textAlign: 'left', position: 'sticky', left: 0, backgroundColor: ri % 2 === 0 ? '#FAFAFA' : '#fff', zIndex: 1 }}>{row.label}</td>

@@ -1,7 +1,7 @@
 import { fh_CO2, fh_H2O, fh_O2, fh_N2 } from '../../A_Transverse_fonction/enthalpy_gas';
 import { coeff_Nm3_to_m3 } from '../../A_Transverse_fonction/conv_calculation';
 import { PCI_kcal_kgMV, calculatePCI_kcal_kg } from '../../A_Transverse_fonction/FB_fonctions';
-import { Lv } from '../../A_Transverse_fonction/constantes';
+import { Lv, cp_ref } from '../../A_Transverse_fonction/constantes';
 
 export const performCalculation_FB_Qboue = (
     nodeData,
@@ -55,20 +55,20 @@ export const performCalculation_FB_Qboue = (
     let PCIkcalkgMV = PCI_kcal_kgMV(wasteType);
     let calculatePCIkcalkg = calculatePCI_kcal_kg(MS, MV, PCIkcalkgMV);
     let Hboue_kcal = calculatePCIkcalkg * Q_boue_kg_h;
-    let Hboue_kW = Hboue_kcal * 4.1868 / 3600;
+    let Hboue_kW = Hboue_kcal * cp_ref / 3600;
 
     // Boucle corrigée
     let _iter3 = 0;
     do {
         Hboue_kcal = calculatePCIkcalkg * Q_boue_kg_h;
-        Hboue_kW = Hboue_kcal * 4.1868 / 3600;
+        Hboue_kW = Hboue_kcal * cp_ref / 3600;
         Q_boue_kg_h = Q_boue_kg_h + 1;
         _iter3++;
     } while (Hboue_kW < P_incinerateur_MWH * 1000 && _iter3 < 100000); // Conversion MW en kW
 
     Q_boue_kg_h = Q_boue_kg_h - 1;
     Hboue_kcal = calculatePCIkcalkg * Q_boue_kg_h;
-    Hboue_kW = Hboue_kcal * 4.1868 / 3600;
+    Hboue_kW = Hboue_kcal * cp_ref / 3600;
 
     const MasseDechet = Q_boue_kg_h;
 

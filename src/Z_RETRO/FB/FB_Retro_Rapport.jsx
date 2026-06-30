@@ -1,5 +1,6 @@
 import React from 'react';
 import { fmt } from '../../A_Transverse_fonction/formatNumber';
+import { cp_ref } from '../../A_Transverse_fonction/constantes';
 
 const Section = ({ title, children }) => (
   <div style={styles.section}>
@@ -64,7 +65,7 @@ const FB_Retro_Rapport = ({ calculationResult, nodeData, inputParams, onClose })
 
   const isDS = p.bilanType === 'DRY SOLIDS';
 
-  const NCV_kJ_kg = (parseFloat(r.calculatePCIkcalkg) || 0) * 4.1868;
+  const NCV_kJ_kg = (parseFloat(r.calculatePCIkcalkg) || 0) * cp_ref;
 
   const gasRows = [
     {

@@ -30,6 +30,7 @@ import Sidebar from './C_Components/SidebarV1';
 import OPEX_form from './OPEX';
 import LinearGraph from './G_Graphiques/Combustion_diagramme/LinearGraph';
 import DataFlowDisplay from './C_Components/DataFlowDisplay';
+import AirParasiteDisplay from './C_Components/AirParasiteDisplay';
 import DashboardWindow from './G_Graphiques/Dashboard/Dashboard';
 import GlobalReport from './D_BILAN_Rapports/GlobalReport';
 import GlobalRetroReport from './D_BILAN_Rapports/GlobalRetroReport';
@@ -173,6 +174,7 @@ function Flow({
   const [showGraph, setShowGraph] = useState(false);
   const [showOPEX, setShowOPEX] = useState(false);
   const [showDashboard, setShowDashboard] = useState(false);
+  const [showAirParasite, setShowAirParasite] = useState(false);
   const [isEraserActive, setIsEraserActive] = useState(false);
   const [showSaveDialog, setShowSaveDialog] = useState(false);
   const [saveProjectTitle, setSaveProjectTitle] = useState('');
@@ -708,6 +710,7 @@ function Flow({
         onToggleMode={toggleMode}
         onToggleDataFlow={() => setShowDataFlowDisplay(!showDataFlowDisplay)}
         onToggleGraph={() => setShowGraph(!showGraph)}
+        onShowAirParasite={() => setShowAirParasite(true)}
         onShowDashboard={() => setShowDashboard(true)}
         onShowEmailManagement={onShowEmailManagement}
         onToggleOPEX={toggleOPEX}
@@ -818,6 +821,14 @@ function Flow({
       
       {renderParameterTab()}
       
+      {showAirParasite && (
+        <AirParasiteDisplay
+          onClose={() => setShowAirParasite(false)}
+          nodes={nodes}
+          edges={edges}
+        />
+      )}
+
       {showDashboard && (
         <DashboardWindow
           onClose={() => setShowDashboard(false)}

@@ -12,6 +12,7 @@ const COLORS = {
   CHOCOLATE: '#D2691E',
   TEAL: '#008080', // Couleur pour le screenshot
   DARKORANGE: '#FF8C00', // Couleur pour l'édition de rapport
+  SLATEGRAY: '#607D8B', // Couleur pour Air parasite
 };
 
 function DropdownMenu({ 
@@ -24,6 +25,7 @@ function DropdownMenu({
   onToggleMode,
   onToggleDataFlow,
   onToggleGraph,
+  onShowAirParasite,
   onShowDashboard,
   onShowEmailManagement,
   onToggleOPEX,
@@ -47,6 +49,7 @@ function DropdownMenu({
         'Show Combined Data': 'Afficher Données Combinées',
         'Hide Graph': 'Masquer Graphique',
         'Show Graph': 'Afficher Graphique',
+        'Air parasite': 'Air parasite',
         'Consommations': 'Consommations',
         'Gérer Utilisateurs': 'Gérer Utilisateurs',
         'Fermer OPEX': 'Fermer OPEX',
@@ -65,6 +68,7 @@ function DropdownMenu({
         'Show Combined Data': 'Show Combined Data',
         'Hide Graph': 'Hide Graph',
         'Show Graph': 'Show Graph',
+        'Air parasite': 'Parasitic Air',
         'Consommations': 'Consumption',
         'Gérer Utilisateurs': 'Manage Users',
         'Fermer OPEX': 'Close OPEX',
@@ -83,6 +87,7 @@ function DropdownMenu({
         'Show Combined Data': 'Kombinierte Daten anzeigen',
         'Hide Graph': 'Diagramm ausblenden',
         'Show Graph': 'Diagramm anzeigen',
+        'Air parasite': 'Falschluft',
         'Consommations': 'Verbrauch',
         'Gérer Utilisateurs': 'Benutzer verwalten',
         'Fermer OPEX': 'OPEX schließen',
@@ -101,6 +106,7 @@ function DropdownMenu({
         'Show Combined Data': 'Mostrar Datos Combinados',
         'Hide Graph': 'Ocultar Gráfico',
         'Show Graph': 'Mostrar Gráfico',
+        'Air parasite': 'Aire parásito',
         'Consommations': 'Consumos',
         'Gérer Utilisateurs': 'Gestionar Usuarios',
         'Fermer OPEX': 'Cerrar OPEX',
@@ -119,6 +125,7 @@ function DropdownMenu({
         'Show Combined Data': 'Mostra Dati Combinati',
         'Hide Graph': 'Nascondi Grafico',
         'Show Graph': 'Mostra Grafico',
+        'Air parasite': 'Aria parassita',
         'Consommations': 'Consumi',
         'Gérer Utilisatori': 'Gestisci Utenti',
         'Fermer OPEX': 'Chiudi OPEX',
@@ -166,6 +173,12 @@ function DropdownMenu({
       label: translate(showGraph ? 'Hide Graph' : 'Show Graph'),
       onClick: onToggleGraph,
       backgroundColor: COLORS.GREEN,
+    },
+    {
+      id: 'airParasite',
+      label: translate('Air parasite'),
+      onClick: onShowAirParasite,
+      backgroundColor: COLORS.SLATEGRAY,
     },
     {
       id: 'dashboard',

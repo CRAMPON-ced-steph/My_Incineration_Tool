@@ -102,7 +102,8 @@ export const batchCalcMap = {
       ls(`reagentType_REACTOR_${nodeId}`, 'CAP'),
       f(`Besoin_air_pulverisation_lime_Nm3_kg_REACTOR_${nodeId}`, '0.5'),
       f(`Besoin_air_pulverisation_cap_Nm3_kg_REACTOR_${nodeId}`, '0.5'),
-      f(`Concentration_cap_mg_cap_Nm3_FG_REACTOR_${nodeId}`, '0.1')
+      f(`Concentration_cap_mg_cap_Nm3_FG_REACTOR_${nodeId}`, '0.1'),
+      f(`Qv_air_parasite_Nm3_h_REACTOR_${nodeId}`, '0')
     );
   },
 

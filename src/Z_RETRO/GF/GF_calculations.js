@@ -2,7 +2,7 @@ import { fh_CO2, fh_H2O, fh_O2, fh_N2 } from '../../A_Transverse_fonction/enthal
 import { hV_p, hL_T, h_pT, Tsat_p, hV_T } from '../../A_Transverse_fonction/steam_table3';
 import {coeff_Nm3_to_m3} from '../../A_Transverse_fonction/conv_calculation';
 import {CO2_kg_m3, O2_kg_m3,N2_kg_m3, H2O_kg_m3, O2_m3_kg, N2_m3_kg} from '../../A_Transverse_fonction/conv_calculation';
-import { Lv } from '../../A_Transverse_fonction/constantes';
+import { Lv, cp_ref } from '../../A_Transverse_fonction/constantes';
 
 export const performCalculation_GF = (
     nodeData,
@@ -199,7 +199,7 @@ const H_pertes_thermiques_kW = 0.022 * Math.pow(H_superheated_steam_kW + H_satur
 const cp_machefer = 0.84; //kJ/kg/C
 const cp_fumees = 1.39; // kJ/Nm3/C
 
-const H_imbrule_kJ = (Bottom_ash_pourcent/100)*Waste_flow_rate_kg_h*(cp_machefer* Bottom_ash_temperature_C+Unburnt_bottom_ash_pourcent/100*Unburnt_LCV_kcal_kg*4.1868);
+const H_imbrule_kJ = (Bottom_ash_pourcent/100)*Waste_flow_rate_kg_h*(cp_machefer* Bottom_ash_temperature_C+Unburnt_bottom_ash_pourcent/100*Unburnt_LCV_kcal_kg*cp_ref);
 const H_imbrule_kW = H_imbrule_kJ/3600;
 
 
@@ -253,8 +253,8 @@ H_air_comb_kW
 
 const Energie_recuperee_chaudiere_kW = H_saturated_steam_kW+H_superheated_steam_kW+H_superheated_water_kW+H_blowdown_kW-H_feed_water_kW;
 
-const PCI_kCal_kg = Waste_flow_rate_kg_h !== 0 ? P_incinerateur_kWH/Waste_flow_rate_kg_h*3600/4.1868 : 0;
-const Energie_du_dechet_kW = PCI_kCal_kg * Waste_flow_rate_kg_h*4.1868/3600;
+const PCI_kCal_kg = Waste_flow_rate_kg_h !== 0 ? P_incinerateur_kWH/Waste_flow_rate_kg_h*3600/cp_ref : 0;
+const Energie_du_dechet_kW = PCI_kCal_kg * Waste_flow_rate_kg_h*cp_ref/3600;
 const WHB_yield_pourcent = Energie_du_dechet_kW !== 0 ? Energie_recuperee_chaudiere_kW/Energie_du_dechet_kW*100 : 0;
 
  const INCI = {

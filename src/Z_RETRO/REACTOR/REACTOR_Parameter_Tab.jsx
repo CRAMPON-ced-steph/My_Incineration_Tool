@@ -25,6 +25,7 @@ const getStorageKeys = (nodeId) => ({
   T_AMONT_REACTOR: `T_amont_REACTOR_${nodeId}`,
   T_AIR: `T_air_REACTOR_${nodeId}`,
   PDC_AERO: `PDC_aero_REACTOR_${nodeId}`,
+  QV_AIR_PARASITE: `Qv_air_parasite_Nm3_h_REACTOR_${nodeId}`,
   REAGENT_TYPE: `reagentType_REACTOR_${nodeId}`,
   BESOIN_AIR_LIME: `Besoin_air_pulverisation_lime_Nm3_kg_REACTOR_${nodeId}`,
   CONCENTRATION_LIME: `Concentration_Lime_kg_lime_Nm3_FG_REACTOR_${nodeId}`,
@@ -38,6 +39,7 @@ const DEFAULT_VALUES = {
   T_amont_REACTOR: '10',
   T_air: '20',
   PDC_aero: '20',
+  Qv_air_parasite_Nm3_h: '0',
   reagentType: REAGENT_TYPES.CAP,
   Besoin_air_pulverisation_lime_Nm3_kg: '0.5',
   Concentration_Lime_kg_lime_Nm3_FG: '0.1',
@@ -59,6 +61,9 @@ const REACTOR_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLa
   );
   const [PDC_aero, setPDC_aero] = useState(() =>
     localStorage.getItem(getStorageKeys(nodeId).PDC_AERO) || DEFAULT_VALUES.PDC_aero
+  );
+  const [Qv_air_parasite_Nm3_h, setQv_air_parasite_Nm3_h] = useState(() =>
+    localStorage.getItem(getStorageKeys(nodeId).QV_AIR_PARASITE) || DEFAULT_VALUES.Qv_air_parasite_Nm3_h
   );
 
   // Paramètres spécifiques aux réactifs
@@ -115,6 +120,7 @@ const REACTOR_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLa
           [STORAGE_KEYS.T_AMONT_REACTOR]: T_amont_REACTOR,
           [STORAGE_KEYS.T_AIR]: T_air,
           [STORAGE_KEYS.PDC_AERO]: PDC_aero,
+          [STORAGE_KEYS.QV_AIR_PARASITE]: Qv_air_parasite_Nm3_h,
           [STORAGE_KEYS.REAGENT_TYPE]: reagentType,
           [STORAGE_KEYS.BESOIN_AIR_LIME]: Besoin_air_pulverisation_lime_Nm3_kg,
           [STORAGE_KEYS.CONCENTRATION_LIME]: Concentration_Lime_kg_lime_Nm3_FG,
@@ -132,7 +138,7 @@ const REACTOR_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLa
 
     saveToLocalStorage();
   }, [
-    T_amont_REACTOR, T_air, PDC_aero, reagentType,
+    T_amont_REACTOR, T_air, PDC_aero, Qv_air_parasite_Nm3_h, reagentType,
     Besoin_air_pulverisation_lime_Nm3_kg, Concentration_Lime_kg_lime_Nm3_FG,
     Besoin_air_pulverisation_cap_Nm3_kg, Concentration_cap_mg_cap_Nm3_FG
   ]);
@@ -154,6 +160,7 @@ const REACTOR_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLa
       T_amont_REACTOR: parseFloat(T_amont_REACTOR),
       T_air: parseFloat(T_air),
       PDC_aero: parseFloat(PDC_aero),
+      Qv_air_parasite_Nm3_h: parseFloat(Qv_air_parasite_Nm3_h),
       Besoin_air_pulverisation_lime_Nm3_kg: parseFloat(Besoin_air_pulverisation_lime_Nm3_kg),
       Concentration_Lime_kg_lime_Nm3_FG: parseFloat(Concentration_Lime_kg_lime_Nm3_FG),
       Besoin_air_pulverisation_cap_Nm3_kg: parseFloat(Besoin_air_pulverisation_cap_Nm3_kg),
@@ -177,6 +184,9 @@ const REACTOR_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLa
     if (inputs.PDC_aero < 0) {
       throw new Error(`${t.InvalidInput}: Pressure drop cannot be negative`);
     }
+    if (inputs.Qv_air_parasite_Nm3_h < 0) {
+      throw new Error(`${t.InvalidInput}: Parasitic air flow rate cannot be negative`);
+    }
     if (inputs.Concentration_Lime_kg_lime_Nm3_FG < 0) {
       throw new Error(`${t.InvalidInput}: Lime concentration cannot be negative`);
     }
@@ -192,7 +202,7 @@ const REACTOR_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLa
 
     return inputs;
   }, [
-    T_amont_REACTOR, T_air, PDC_aero,
+    T_amont_REACTOR, T_air, PDC_aero, Qv_air_parasite_Nm3_h,
     Besoin_air_pulverisation_lime_Nm3_kg, Concentration_Lime_kg_lime_Nm3_FG,
     Besoin_air_pulverisation_cap_Nm3_kg, Concentration_cap_mg_cap_Nm3_FG, t
   ]);
@@ -217,12 +227,13 @@ const REACTOR_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLa
         reagentType,
         validatedInputs.Besoin_air_pulverisation_lime_Nm3_kg,
         validatedInputs.Besoin_air_pulverisation_cap_Nm3_kg,
-        validatedInputs.Concentration_cap_mg_cap_Nm3_FG
+        validatedInputs.Concentration_cap_mg_cap_Nm3_FG,
+        validatedInputs.Qv_air_parasite_Nm3_h
       );
 
       setCalculationResult_REACTOR(result);
       hasCalculatedOnce.current = true;
-      onSendData({ result, inputData: { T_amont_REACTOR, T_air, PDC_aero, reagentType, Besoin_air_pulverisation_lime_Nm3_kg, Concentration_Lime_kg_lime_Nm3_FG, Besoin_air_pulverisation_cap_Nm3_kg, Concentration_cap_mg_cap_Nm3_FG } });
+      onSendData({ result, inputData: { T_amont_REACTOR, T_air, PDC_aero, Qv_air_parasite_Nm3_h, reagentType, Besoin_air_pulverisation_lime_Nm3_kg, Concentration_Lime_kg_lime_Nm3_FG, Besoin_air_pulverisation_cap_Nm3_kg, Concentration_cap_mg_cap_Nm3_FG } });
 
     } catch (error) {
       console.error('Erreur lors du calcul:', error);
@@ -257,6 +268,7 @@ const REACTOR_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLa
       setT_amont_REACTOR(nodeData?.result?.dataFlow?.T?.toString() || DEFAULT_VALUES.T_amont_REACTOR);
       setT_air(DEFAULT_VALUES.T_air);
       setPDC_aero(DEFAULT_VALUES.PDC_aero);
+      setQv_air_parasite_Nm3_h(DEFAULT_VALUES.Qv_air_parasite_Nm3_h);
       setBesoin_air_pulverisation_lime_Nm3_kg(DEFAULT_VALUES.Besoin_air_pulverisation_lime_Nm3_kg);
       setConcentration_Lime_kg_lime_Nm3_FG(DEFAULT_VALUES.Concentration_Lime_kg_lime_Nm3_FG);
       setBesoin_air_pulverisation_cap_Nm3_kg(DEFAULT_VALUES.Besoin_air_pulverisation_cap_Nm3_kg);
@@ -276,6 +288,7 @@ const REACTOR_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLa
   const handleTAmontChange = createInputHandler(setT_amont_REACTOR, DEFAULT_VALUES.T_amont_REACTOR);
   const handleTAirChange = createInputHandler(setT_air, DEFAULT_VALUES.T_air);
   const handlePDCChange = createInputHandler(setPDC_aero, DEFAULT_VALUES.PDC_aero);
+  const handleQvAirParasiteChange = createInputHandler(setQv_air_parasite_Nm3_h, DEFAULT_VALUES.Qv_air_parasite_Nm3_h);
   const handleBesoinAirLimeChange = createInputHandler(setBesoin_air_pulverisation_lime_Nm3_kg, DEFAULT_VALUES.Besoin_air_pulverisation_lime_Nm3_kg);
   const handleConcentrationLimeChange = createInputHandler(setConcentration_Lime_kg_lime_Nm3_FG, DEFAULT_VALUES.Concentration_Lime_kg_lime_Nm3_FG);
   const handleBesoinAirCapChange = createInputHandler(setBesoin_air_pulverisation_cap_Nm3_kg, DEFAULT_VALUES.Besoin_air_pulverisation_cap_Nm3_kg);
@@ -340,13 +353,22 @@ const REACTOR_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLa
           aria-label={`${t.T_air} en ${t.celsius}`}
         />
         
-        <InputField 
-          label={t.PDC_aero} 
-          unit={`[${t.mmCE}]`} 
-          value={PDC_aero} 
+        <InputField
+          label={t.PDC_aero}
+          unit={`[${t.mmCE}]`}
+          value={PDC_aero}
           onChange={handlePDCChange}
           disabled={isCalculating}
           aria-label={`${t.PDC_aero} en ${t.mmCE}`}
+        />
+
+        <InputField
+          label={t.Qv_air_parasite}
+          unit="[Nm³/h]"
+          value={Qv_air_parasite_Nm3_h}
+          onChange={handleQvAirParasiteChange}
+          disabled={isCalculating}
+          aria-label={`${t.Qv_air_parasite} en Nm³/h`}
         />
 
         {/* Toggle type de réactif */}
@@ -455,7 +477,7 @@ const REACTOR_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLa
       {showReport && calculationResult_REACTOR && (
         <REACTOR_Retro_Rapport
           calculationResult={calculationResult_REACTOR}
-          inputParams={{ T_amont_REACTOR, T_air, PDC_aero, reagentType, Besoin_air_pulverisation_lime_Nm3_kg, Concentration_Lime_kg_lime_Nm3_FG, Besoin_air_pulverisation_cap_Nm3_kg, Concentration_cap_mg_cap_Nm3_FG }}
+          inputParams={{ T_amont_REACTOR, T_air, PDC_aero, Qv_air_parasite_Nm3_h, reagentType, Besoin_air_pulverisation_lime_Nm3_kg, Concentration_Lime_kg_lime_Nm3_FG, Besoin_air_pulverisation_cap_Nm3_kg, Concentration_cap_mg_cap_Nm3_FG }}
           onClose={() => setShowReport(false)}
         />
       )}

@@ -1,6 +1,7 @@
 import { fh_CO2, fh_H2O, fh_O2, fh_N2 } from '../../A_Transverse_fonction/enthalpy_gas';
 import { hV_p, hL_T, h_pT, Tsat_p } from '../../A_Transverse_fonction/steam_table3';
 import {coeff_Nm3_to_m3} from '../../A_Transverse_fonction/conv_calculation';
+import { cp_ref } from '../../A_Transverse_fonction/constantes';
 
 export const performCalculation_RK_with_WHB = (
     nodeData,
@@ -53,10 +54,10 @@ const Energy_recuperee_kW = nodeData.result.data_Air_WHB.Energie_recuperee_WHB_k
     // Calculs basés sur bilanType_NCV_Masse
     if (bilanType_NCV_Masse === 'NET_CALORIFIC_VALUE') {
         // NCV imposé → on calcule le débit de déchets
-        MasseDechet = NCV > 0 ? (P_incinerateur_MWH * 1000) / (NCV * 4.1868 / 3600) : 0;
+        MasseDechet = NCV > 0 ? (P_incinerateur_MWH * 1000) / (NCV * cp_ref / 3600) : 0;
     } else if (bilanType_NCV_Masse === 'WASTE_FLOWRATE') {
         // Débit imposé → on calcule le NCV
-        NCV = MasseDechet > 0 ? (P_incinerateur_MWH * 1000) / (MasseDechet / 3600 * 4.1868) : 0;
+        NCV = MasseDechet > 0 ? (P_incinerateur_MWH * 1000) / (MasseDechet / 3600 * cp_ref) : 0;
     }
 
     return {

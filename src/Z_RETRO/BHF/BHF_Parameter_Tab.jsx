@@ -13,9 +13,9 @@ import BHF_Retro_Rapport from './BHF_Retro_Rapport';
 import '../../index.css';
 
 const BHF_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage, autoTrigger = false, nodeId }) => {
-  const [Qair_decolmatation, setQair_decolmatation] = useState(() => parseFloat(localStorage.getItem(`Qair_decolmatation_BHF_${nodeId}`)) || 500);
-  const [T_air_decolmatation, setT_air_decolmatation] = useState(() => parseFloat(localStorage.getItem(`T_air_decolmatation_BHF_${nodeId}`)) || 15);
-  const [T_amont_BHF, setT_amont_BHF] = useState(() => parseFloat(localStorage.getItem(`T_amont_BHF_${nodeId}`)) || nodeData?.result?.dataFlow?.T || '10');
+  const [Qair_decolmatation, setQair_decolmatation] = useState(() => { const v = localStorage.getItem(`Qair_decolmatation_BHF_${nodeId}`); return v !== null ? parseFloat(v) : 500; });
+  const [T_air_decolmatation, setT_air_decolmatation] = useState(() => { const v = localStorage.getItem(`T_air_decolmatation_BHF_${nodeId}`); return v !== null ? parseFloat(v) : 15; });
+  const [T_amont_BHF, setT_amont_BHF] = useState(() => { const v = localStorage.getItem(`T_amont_BHF_${nodeId}`); return v !== null ? parseFloat(v) : (nodeData?.result?.dataFlow?.T || 10); });
   const [PDC_aero, setPDC_aero] = useState(() => localStorage.getItem(`PDC_aero_BHF_${nodeId}`) || '200');
 
   const [CalculationResult_BHF, setCalculationResult] = useState(null);

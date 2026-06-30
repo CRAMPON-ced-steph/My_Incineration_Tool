@@ -49,7 +49,7 @@ const Qm_N2_air_entrant_kg_h = (1-O2_masse_volume) * Qm_air_entrant_kg_h;
 const Qv_O2_air_entrant_Nm3_h = O2_kg_m3( Qm_O2_air_entrant_kg_h );
 const Qv_N2_air_entrant_Nm3_h = N2_kg_m3( Qm_N2_air_entrant_kg_h );
 
-const Qair_parasite = Qv_air_entrant_Nm3_h-Q_air_decolmatation;
+const Qv_air_injecté_net_Nm3_h = Qv_air_entrant_Nm3_h-Q_air_decolmatation;
 
 
 
@@ -97,7 +97,8 @@ const Qair_parasite = Qv_air_entrant_Nm3_h-Q_air_decolmatation;
 
 
 const dataCYCLONE={
-  Qair_parasite,
+  Qv_air_injecté_net_Nm3_h,
+  Qv_air_parasite_Nm3_h: parseFloat(Q_air_decolmatation) || 0,
   Qv_air_entrant_Nm3_h,
   Qm_air_entrant_kg_h,
   Qm_O2_air_entrant_kg_h,

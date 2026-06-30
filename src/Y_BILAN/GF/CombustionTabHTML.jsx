@@ -6,6 +6,7 @@ import React from 'react';
 import SchemaProcessus from './SchemaProcessusGF';
 
 import { fmt } from '../../A_Transverse_fonction/formatNumber';
+import { cp_ref } from '../../A_Transverse_fonction/constantes';
 // ============================================================
 // TOGGLE SWITCH COMPONENT
 // ============================================================
@@ -659,7 +660,7 @@ const DetailedEnergyBalance = ({ results, thermalParams, emissions, f, secTitle,
     { label: 'Débit eau à évaporer [kg/h]',     vals: [null, null, emissions.Masse_eau_kg_h, null, null, null, null, null, null, null, null, null, null] },
     { label: 'Énergie cédée par les fumées [kWh]', vals: [null, null, null, null, null, null, null, null, null, null, null, null, null] },
     { label: 'Énergie transmise [kWh]',         vals: [null, null, null, null, null, null, null, null, null, null, null, null, null] },
-    { label: 'Enthalpie [kWh]',                 vals: [(emissions.Masse_brute_kg_h * emissions.PCI_OM_kcal_kgOM * 4.1868) / 3600, results.H_MS_kW, results.H_Evap_boue_entree_kW, results.H_matiere_minerale_kW, results.H_NETTE_OM_kW, results.H_air_fluidisation_av_prechauffe_kW, results.H_air_secondaire_kW, results.H_air_tertiaire_kW, results.H_gaz_inter, results.Pertes_thermiques_kW, results.H_air_balayage_instrumentation_kW, results.Hf_voute_kW, results.H_imbrule_kW] },
+    { label: 'Enthalpie [kWh]',                 vals: [(emissions.Masse_brute_kg_h * emissions.PCI_OM_kcal_kgOM * cp_ref) / 3600, results.H_MS_kW, results.H_Evap_boue_entree_kW, results.H_matiere_minerale_kW, results.H_NETTE_OM_kW, results.H_air_fluidisation_av_prechauffe_kW, results.H_air_secondaire_kW, results.H_air_tertiaire_kW, results.H_gaz_inter, results.Pertes_thermiques_kW, results.H_air_balayage_instrumentation_kW, results.Hf_voute_kW, results.H_imbrule_kW] },
   ];
   return (
     <div style={{ marginBottom: '25px' }}>

@@ -1,5 +1,6 @@
 import React from 'react';
 import { fmt } from '../../A_Transverse_fonction/formatNumber';
+import { cp_ref } from '../../A_Transverse_fonction/constantes';
 
 const Section = ({ title, children }) => (
   <div style={styles.section}>
@@ -98,7 +99,7 @@ const RK_Retro_Rapport = ({ calculationResult, nodeData, inputParams, onClose })
   ];
 
   // NCV en kcal/kg → kJ/kg
-  const NCV_kJ_kg = (parseFloat(r.NCV) || 0) * 4.1868;
+  const NCV_kJ_kg = (parseFloat(r.NCV) || 0) * cp_ref;
 
   return (
     <div style={styles.overlay}>

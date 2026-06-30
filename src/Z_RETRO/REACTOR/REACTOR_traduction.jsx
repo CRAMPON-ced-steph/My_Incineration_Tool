@@ -9,6 +9,7 @@ export const translations = {
     T_fumees_amont: "Température fumées amont",
     T_air: "Température air",
     PDC_aero: "Perte de charge aérodynamique",
+    Qv_air_parasite: "Débit air parasite",
     
     // Types de réactifs
     BilanType: "Type de réactif",
@@ -58,6 +59,7 @@ export const translations = {
     T_fumees_amont: "Upstream Flue Gas Temperature",
     T_air: "Air Temperature",
     PDC_aero: "Aerodynamic Pressure Drop",
+    Qv_air_parasite: "Parasitic Air Flow Rate",
     
     // Types de réactifs
     BilanType: "Reagent Type",
@@ -107,6 +109,7 @@ export const translations = {
     T_fumees_amont: "Temperatura Gases Aguas Arriba",
     T_air: "Temperatura del Aire",
     PDC_aero: "Pérdida de Carga Aerodinámica",
+    Qv_air_parasite: "Caudal Aire Parásito",
     
     // Types de réactifs
     BilanType: "Tipo de Reactivo",
@@ -156,6 +159,7 @@ export const translations = {
     T_fumees_amont: "Rauchgas-Eintrittstemperatur",
     T_air: "Lufttemperatur",
     PDC_aero: "Aerodynamischer Druckverlust",
+    Qv_air_parasite: "Parasitärer Luftdurchsatz",
     
     // Types de réactifs
     BilanType: "Reaktionsmitteltyp",
@@ -205,6 +209,7 @@ export const translations = {
     T_fumees_amont: "Temperatura Fumi Monte",
     T_air: "Temperatura Aria",
     PDC_aero: "Perdita di Carico Aerodinamica",
+    Qv_air_parasite: "Portata Aria Parassita",
     
     // Types de réactifs
     BilanType: "Tipo di Reagente",
@@ -254,6 +259,7 @@ export const translations = {
     T_fumees_amont: "Temperatura Gases Montante",
     T_air: "Temperatura do Ar",
     PDC_aero: "Perda de Carga Aerodinâmica",
+    Qv_air_parasite: "Vazão Ar Parasita",
     
     // Types de réactifs
     BilanType: "Tipo de Reagente",
@@ -303,6 +309,7 @@ export const translations = {
     T_fumees_amont: "上游烟气温度",
     T_air: "空气温度",
     PDC_aero: "空气动力压降",
+    Qv_air_parasite: "寄生空气流量",
     
     // Types de réactifs
     BilanType: "反应剂类型",
@@ -352,6 +359,7 @@ export const translations = {
     T_fumees_amont: "上流排ガス温度",
     T_air: "空気温度",
     PDC_aero: "空力圧力損失",
+    Qv_air_parasite: "寄生空気流量",
     
     // Types de réactifs
     BilanType: "反応剤タイプ",
@@ -401,6 +409,7 @@ export const translations = {
     T_fumees_amont: "Температура дымовых газов на входе",
     T_air: "Температура воздуха",
     PDC_aero: "Аэродинамическое сопротивление",
+    Qv_air_parasite: "Расход паразитного воздуха",
     
     // Types de réactifs
     BilanType: "Тип реагента",
@@ -450,6 +459,7 @@ export const translations = {
     T_fumees_amont: "درجة حرارة الغازات المدخلة",
     T_air: "درجة حرارة الهواء",
     PDC_aero: "فقدان الضغط الديناميكي الهوائي",
+    Qv_air_parasite: "معدل تدفق الهواء الطفيلي",
     
     // Types de réactifs
     BilanType: "نوع المادة المتفاعلة",

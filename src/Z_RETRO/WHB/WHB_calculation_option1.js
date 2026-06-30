@@ -138,6 +138,7 @@ const  Teau_alim = parseFloat(T_eau_alimentation_C) || 0;
     H_tot_out_kj,
     Pth_pourcent,
     Tair,
+    Qv_air_parasite_Nm3_h: Qair_parasite_Nm3_h,
     Qv_air_entrant_Nm3_h,
     Qm_air_entrant_kg_h,
     Qm_O2_air_entrant_kg_h,

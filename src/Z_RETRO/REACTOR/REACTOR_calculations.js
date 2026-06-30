@@ -1,6 +1,6 @@
-import {fh_CO2, fh_H2O, fh_O2, fh_N2, fh_AIR} from '../../A_Transverse_fonction/enthalpy_gas';
+import {fh_CO2, fh_H2O, fh_O2, fh_N2} from '../../A_Transverse_fonction/enthalpy_gas';
 import {AIR_DILUTION_T} from '../../A_Transverse_fonction/enthalpy_mix_gas';
-import {CO2_kg_m3, O2_kg_m3, N2_kg_m3, H2O_kg_m3, O2_m3_kg, N2_m3_kg} from '../../A_Transverse_fonction/conv_calculation';
+import {CO2_kg_m3, O2_kg_m3, N2_kg_m3, H2O_kg_m3} from '../../A_Transverse_fonction/conv_calculation';
 
 import {coeff_Nm3_to_m3} from '../../A_Transverse_fonction/conv_calculation';
 import {O2_masse_volume, rho_air, Lv} from '../../A_Transverse_fonction/constantes';
@@ -13,12 +13,13 @@ export const performCalculation_REACTOR = (
     PDC_aero,
     reagentType,
     Besoin_air_pulverisation_lime_Nm3_kg,
-    Besoin_air_pulverisation_cap_Nm3_kg, 
-    Concentration_cap_mg_cap_Nm3_FG
+    Besoin_air_pulverisation_cap_Nm3_kg,
+    Concentration_cap_mg_cap_Nm3_FG,
+    Qv_air_parasite_Nm3_h
 ) => {
   
   // LECTURE DU NOEUD PRECEDENT
-  const T_aval_REACTOR = nodeData.result.T;
+  const T_aval_REACTOR = nodeData.result.dataFlow.T;
   const T = parseFloat(T_amont_REACTOR);
   const Tair = parseFloat(T_air);
 
@@ -46,6 +47,8 @@ export const performCalculation_REACTOR = (
   const Qv_air_entrant_tot_Nm3_h = AIR_DILUTION_T(Tair, T, T_aval_REACTOR, Qm_CO2_out_kg_h, Qm_H2O_out_kg_h, Qm_N2_out_kg_h, Qm_O2_out_kg_h);
 
   const Qv_air_entrant_Nm3_h = Qv_air_entrant_tot_Nm3_h;
+  const Qv_air_parasite_Nm3_h_value = parseFloat(Qv_air_parasite_Nm3_h) || 0;
+  const Qv_air_injecté_net_Nm3_h = Qv_air_entrant_Nm3_h - Qv_air_parasite_Nm3_h_value;
   const Qm_air_entrant_kg_h = Qv_air_entrant_Nm3_h * rho_air;
   const Qm_O2_air_entrant_kg_h = O2_masse_volume * Qm_air_entrant_kg_h;
   const Qm_N2_air_entrant_kg_h = (1-O2_masse_volume) * Qm_air_entrant_kg_h;
@@ -69,12 +72,12 @@ export const performCalculation_REACTOR = (
   const Qv_wet_Nm3_h = Qv_sec_Nm3_h + Qv_H2O_Nm3_h;
 
   // ON CALCULE LA REPARTITION POURCENT VOLUMIQUE
-  const O2_dry_pourcent = Qv_O2_Nm3_h / Qv_sec_Nm3_h * 100;
-  const O2_humide_pourcent = Qv_O2_Nm3_h / Qv_wet_Nm3_h * 100;
-  const H2O_pourcent = Qv_H2O_Nm3_h / Qv_wet_Nm3_h * 100;
-  const N2_humide_pourcent = Qv_N2_Nm3_h / Qv_wet_Nm3_h * 100;
-  const CO2_dry_pourcent = Qv_CO2_Nm3_h / Qv_sec_Nm3_h * 100;
-  const CO2_humide_pourcent = Qv_CO2_Nm3_h / Qv_wet_Nm3_h * 100;
+  const O2_dry_pourcent = Qv_sec_Nm3_h > 0 ? (Qv_O2_Nm3_h / Qv_sec_Nm3_h) * 100 : 0;
+  const O2_humide_pourcent = Qv_wet_Nm3_h > 0 ? (Qv_O2_Nm3_h / Qv_wet_Nm3_h) * 100 : 0;
+  const H2O_pourcent = Qv_wet_Nm3_h > 0 ? (Qv_H2O_Nm3_h / Qv_wet_Nm3_h) * 100 : 0;
+  const N2_humide_pourcent = Qv_wet_Nm3_h > 0 ? (Qv_N2_Nm3_h / Qv_wet_Nm3_h) * 100 : 0;
+  const CO2_dry_pourcent = Qv_sec_Nm3_h > 0 ? (Qv_CO2_Nm3_h / Qv_sec_Nm3_h) * 100 : 0;
+  const CO2_humide_pourcent = Qv_wet_Nm3_h > 0 ? (Qv_CO2_Nm3_h / Qv_wet_Nm3_h) * 100 : 0;
 
   // Calculate enthalpies using the provided T
   const H_CO2_kj = fh_CO2(T_amont_REACTOR) * Qm_CO2_kg_h;
@@ -92,14 +95,16 @@ export const performCalculation_REACTOR = (
   let conso_CAP_calcul_kg_h;
   let conso_LIME_calcul_kg_h;
 
-  if (reagentType === 'CAP') {conso_CAP_calcul_kg_h = Qv_air_entrant_tot_Nm3_h/Besoin_air_pulverisation_cap_Nm3_kg;}
-  
-  if (reagentType === 'LIME') {conso_LIME_calcul_kg_h = Qv_air_entrant_tot_Nm3_h/Besoin_air_pulverisation_lime_Nm3_kg;}
+  if (reagentType === 'CAP') {conso_CAP_calcul_kg_h = Besoin_air_pulverisation_cap_Nm3_kg > 0 ? Qv_air_injecté_net_Nm3_h/Besoin_air_pulverisation_cap_Nm3_kg : 0;}
+
+  if (reagentType === 'LIME') {conso_LIME_calcul_kg_h = Besoin_air_pulverisation_lime_Nm3_kg > 0 ? Qv_air_injecté_net_Nm3_h/Besoin_air_pulverisation_lime_Nm3_kg : 0;}
   
   const dataREACTOR = {
     Qv_air_entrant_tot_Nm3_h,
+    Qv_air_parasite_Nm3_h: Qv_air_parasite_Nm3_h_value,
+    Qv_air_injecté_net_Nm3_h,
     conso_CAP_calcul_kg_h,
-    conso_LIME_calcul_kg_h 
+    conso_LIME_calcul_kg_h
   };
 
   const dataFlow = {

@@ -7,6 +7,7 @@ import { CpL_T } from '../../../A_Transverse_fonction/steam_table3';
 import { cp_air_kWh_m3_degree, D_TLM, Fact_UA, Surface_echange } from '../../../A_Transverse_fonction/bilan_fct_FB';
 
 import { fmt } from '../../../A_Transverse_fonction/formatNumber';
+import { cp_ref } from '../../../A_Transverse_fonction/constantes';
 const getStorageKey = (nodeId) => `TUBEANDSHELL_params_${nodeId}`;
 
 const DEFAULT = {
@@ -25,7 +26,7 @@ const DEFAULT = {
 const rho_air     = 1.293;
 const O2_mass_frac = 0.233;
 const N2_mass_frac = 0.767;
-const cp_eau      = 4.1868;
+const cp_eau      = cp_ref;
 
 // ─── InputRow défini HORS du composant pour éviter la perte de focus ──────────
 const inputStyle = (disabled, readOnly) => ({
@@ -193,7 +194,7 @@ const TubeAndShellParameters = ({ innerData, upstreamT_IN, upstreamFG_IN, upstre
   let cp_fluide_val;
   if (fluide === 'eau') {
     const cpL_raw = T_moyen_eau > 0 && T_moyen_eau < 373 ? CpL_T(T_moyen_eau) : null;
-    cp_fluide_val = (cpL_raw instanceof Error || cpL_raw == null) ? 4.1868 : cpL_raw;
+    cp_fluide_val = (cpL_raw instanceof Error || cpL_raw == null) ? cp_ref : cpL_raw;
   } else {
     cp_fluide_val = cp_air_kWh_m3_degree(T_moyen_eau);
   }

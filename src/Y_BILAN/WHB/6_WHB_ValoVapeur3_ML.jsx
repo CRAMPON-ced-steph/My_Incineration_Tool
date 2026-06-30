@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { T_ref } from '../../A_Transverse_fonction/constantes';
+import { T_ref, cp_ref } from '../../A_Transverse_fonction/constantes';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar } from 'recharts';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './WHB_traduction';
@@ -92,7 +92,7 @@ const TurbineCalculator = ({ innerData, setInnerData, currentLanguage = 'fr' }) 
     const Tsat = 100 + 28.96 * Math.log(pression);
     const surchauffe = Math.max(0, temperature - Tsat);
     const hfg = 2256.4 - 2.3 * (Tsat - 100);
-    const hf = 4.18 * Tsat;
+    const hf = cp_ref * Tsat;
     const hg = hf + hfg;
     const cpVapeur = 2.1;
     const enthalpie = hg + cpVapeur * surchauffe;
@@ -104,7 +104,7 @@ const TurbineCalculator = ({ innerData, setInnerData, currentLanguage = 'fr' }) 
     const Tsat = 100 + 28.96 * Math.log(pression);
     const surchauffe = Math.max(0, temperature - Tsat);
     const sfg = 6.048 - 0.0157 * Tsat;
-    const sf = 4.18 * Math.log((T_ref + Tsat) / T_ref);
+    const sf = cp_ref * Math.log((T_ref + Tsat) / T_ref);
     const sg = sf + sfg;
     const cpVapeur = 2.1;
     const entropie = sg + cpVapeur * Math.log((T_ref + temperature) / (T_ref + Tsat));
@@ -114,9 +114,9 @@ const TurbineCalculator = ({ innerData, setInnerData, currentLanguage = 'fr' }) 
   const calculerEnthalpieIsentropique = (pressionSortie, entropieEntree) => {
     if (pressionSortie <= 0) return 0;
     const TsatSortie = 100 + 28.96 * Math.log(pressionSortie);
-    const hfSortie = 4.18 * TsatSortie;
+    const hfSortie = cp_ref * TsatSortie;
     const hfgSortie = 2256.4 - 2.3 * (TsatSortie - 100);
-    const sfSortie = 4.18 * Math.log((T_ref + TsatSortie) / T_ref);
+    const sfSortie = cp_ref * Math.log((T_ref + TsatSortie) / T_ref);
     const sfgSortie = 6.048 - 0.0157 * TsatSortie;
     const titre = Math.min(1, Math.max(0, (entropieEntree - sfSortie) / sfgSortie));
     return hfSortie + titre * hfgSortie;
@@ -160,7 +160,7 @@ const TurbineCalculator = ({ innerData, setInnerData, currentLanguage = 'fr' }) 
             niveau.enthalpie = calculerEnthalpieIsentropique(niveau.pression, s1);
             niveau.entropie = s1;
             niveau.surchauffe = 0;
-            niveau.titre = Math.min(1, Math.max(0, (niveau.enthalpie - 4.18 * niveau.temperatureSaturation) / (2256.4 - 2.3 * (niveau.temperatureSaturation - 100))));
+            niveau.titre = Math.min(1, Math.max(0, (niveau.enthalpie - cp_ref * niveau.temperatureSaturation) / (2256.4 - 2.3 * (niveau.temperatureSaturation - 100))));
           } else {
             niveau.enthalpie = calculerEnthalpieVapeur(niveau.pression, parameters.temperatureEntree);
             niveau.entropie = calculerEntropieVapeur(niveau.pression, parameters.temperatureEntree);

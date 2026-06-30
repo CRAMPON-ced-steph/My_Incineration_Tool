@@ -4,6 +4,7 @@ import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './RK_traduction';
 
 import { fmt } from '../../A_Transverse_fonction/formatNumber';
+import { cp_ref } from '../../A_Transverse_fonction/constantes';
 const CombustionParameters = ({ innerData, currentLanguage = 'fr', nodeId }) => {
   // Get translations
   const languageCode = getLanguageCode(currentLanguage);
@@ -225,7 +226,7 @@ const CombustionParameters = ({ innerData, currentLanguage = 'fr', nodeId }) => 
       rowData['%Comb'],
       rowData['%Water']
     ).toFixed(1);
-    rowData['Waste CV [kcal/kg]'] = fmt((rowData['Waste CV [kJ/kg]'] / 4.1868), 1);
+    rowData['Waste CV [kcal/kg]'] = fmt((rowData['Waste CV [kJ/kg]'] / cp_ref), 1);
     return rowData;
   };
 
@@ -382,7 +383,7 @@ const CombustionParameters = ({ innerData, currentLanguage = 'fr', nodeId }) => 
       (totalWaterMass / totalMass) * 100
     ) : 0;
     
-    updatedRows2[2].data['Waste CV tot [kcal/kg]'] = updatedRows2[2].data['Waste CV tot [kJ/kg]'] / 4.1868;
+    updatedRows2[2].data['Waste CV tot [kcal/kg]'] = updatedRows2[2].data['Waste CV tot [kJ/kg]'] / cp_ref;
   
     setParameters2(updatedRows2);
   };

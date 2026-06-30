@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { fmt } from '../../A_Transverse_fonction/formatNumber';
+import { cp_ref } from '../../A_Transverse_fonction/constantes';
 import { 
   Calculator, 
   Settings, 
@@ -100,7 +101,7 @@ export default function CalculateurChaudiere({ currentLanguage = 'fr' }) {
     const epaisseurTubes = (pressionCalcul * diametreTubeInt) / (2 * contrainteAdmissible * coeffSoudure - pressionCalcul) + suppCorrosion;
     
     const enthalpieVapeur = 2780 + 1.8 * tempService;
-    const enthalpieEau = 4.18 * tempEauAlim;
+    const enthalpieEau = cp_ref * tempEauAlim;
     const puissanceVapeur = (debitVapeur * (enthalpieVapeur - enthalpieEau)) / 3600;
     const puissanceCombustible = puissanceVapeur / rendement;
     const debitDechets = (puissanceCombustible / (pciDechets * 1000)) * 3600;

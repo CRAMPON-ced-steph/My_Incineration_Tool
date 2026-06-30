@@ -91,6 +91,7 @@ const REACTOR_Retro_Rapport = ({ calculationResult, inputParams, onClose }) => {
                   <KV label="T fumées sortie"        value={fmt(df.T_in, 1)}           unit="°C" />
                   <KV label="T air injecté"          value={fmt(p.T_air, 1)}           unit="°C" />
                   <KV label="PDC aérodynamique"     value={fmt(p.PDC_aero, 0)}        unit="mmCE" />
+                  <KV label="Débit air parasite"     value={fmt(p.Qv_air_parasite_Nm3_h, 0)} unit="Nm³/h" />
                 </SubSection>
                 <SubSection title="Gaz entrant">
                   <KV label="Débit volumique humide" value={fmt(df.Qv_wet_Nm3_h, 0)}  unit="Nm³/h" />
@@ -143,6 +144,8 @@ const REACTOR_Retro_Rapport = ({ calculationResult, inputParams, onClose }) => {
               <div style={styles.twoCol}>
                 <SubSection title="Air et réactifs">
                   <KV label="Volume air entrant total"    value={fmt(dr.Qv_air_entrant_tot_Nm3_h, 0)} unit="Nm³/h" />
+                  <KV label="Débit air parasite"          value={fmt(dr.Qv_air_parasite_Nm3_h, 0)}    unit="Nm³/h" />
+                  <KV label="Air injecté net"             value={fmt(dr.Qv_air_injecté_net_Nm3_h, 0)} unit="Nm³/h" />
                   <KV label="Conso. CAP calculée"         value={fmt(dr.conso_CAP_calcul_kg_h, 1)}    unit="kg/h" />
                   <KV label="Conso. LIME calculée"        value={fmt(dr.conso_LIME_calcul_kg_h, 1)}   unit="kg/h" />
                 </SubSection>

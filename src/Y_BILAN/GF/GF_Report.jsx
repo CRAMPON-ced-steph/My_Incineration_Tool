@@ -4,6 +4,7 @@ import { translations } from './GF_traduction';
 import { getOpexData } from '../../A_Transverse_fonction/opexDataService';
 import { CO2_kg_m3, H2O_kg_m3, O2_kg_m3, N2_kg_m3 } from '../../A_Transverse_fonction/conv_calculation';
 import { fmt } from '../../A_Transverse_fonction/formatNumber';
+import { cp_ref } from '../../A_Transverse_fonction/constantes';
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
@@ -496,7 +497,7 @@ const GF_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
   // H_NETTE_BOUE : stockée par CombustionTab, sinon calculée depuis les données OM
   const _eau_kg_h = MasseBoueBrute - MS_kg_h;  // humidité OM
   const _H_MV_kW  = (pciKJkgMV * MV_kg_h) / 3600;
-  const _H_Evap_kW = (_eau_kg_h * (4.1868 * 15 - 2501.6)) / 3600; // T_OM ≈ 15°C
+  const _H_Evap_kW = (_eau_kg_h * (cp_ref * 15 - 2501.6)) / 3600; // T_OM ≈ 15°C
   const H_NETTE_BOUE_kW = innerData.H_NETTE_BOUE_kW !== undefined && innerData.H_NETTE_BOUE_kW !== 0
     ? innerData.H_NETTE_BOUE_kW
     : _H_MV_kW + _H_Evap_kW;
