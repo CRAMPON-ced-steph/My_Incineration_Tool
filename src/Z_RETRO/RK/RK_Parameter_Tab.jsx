@@ -269,11 +269,6 @@ const RK_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguag
   }, []);
 
   // Mappings pour les traductions
-  const whbDisplayMapping = useMemo(() => ({
-    [CALCULATION_MODES.WITH_WHB]: t.WithWHB,
-    [CALCULATION_MODES.WITHOUT_WHB]: t.WithoutWHB
-  }), [t]);
-
   const balanceDisplayMapping = useMemo(() => ({
     [BALANCE_TYPES.NET_CALORIFIC_VALUE]: t.NetCalorificValue,
     [BALANCE_TYPES.WASTE_FLOWRATE]: t.WasteFlowrate
@@ -307,36 +302,45 @@ const RK_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguag
 
   const hasCalculatedOnce = useRef(false);
   const hasAutoTriggered = useRef(false);
+
+  // Réf vers la dernière version de handleSendData, pour la déclencher sans dépendre
+  // de son identité. handleSendData change à chaque fois que `onSendData` change
+  // (recréé quand `nodes` change dans Main_FLOW) ; dépendre de [handleSendData]
+  // provoquait une boucle onSendData → setNodes → recalcul qui bloquait l'onglet.
+  const handleSendDataRef = useRef(handleSendData);
+  handleSendDataRef.current = handleSendData;
+
   useEffect(() => {
     if (!autoTrigger || hasAutoTriggered.current) return;
     hasAutoTriggered.current = true;
-    handleSendData();
+    handleSendDataRef.current();
   }, [autoTrigger]);
 
+  // Recalcul automatique quand l'utilisateur change une entrée OU une option.
+  // Dépendances = valeurs (pas handleSendData) → une seule passe, pas de boucle.
   useEffect(() => {
     if (!hasCalculatedOnce.current) return;
-    handleSendData();
-  }, [handleSendData]);
+    handleSendDataRef.current();
+  }, [Tair_RK_C, Thermal_losses_MW, NCV_kcal_kg, Masse_dechet_kg_h, bilanType_NCV_Masse, bilanType_whb, diagramMode]);
+
+  // Copie d'affichage : renomme la clé top-level "NCV" → "NCV [kcal/kg]" pour le tableau
+  // Calculation Results, sans toucher au résultat stocké/envoyé (r.NCV reste utilisé ailleurs).
+  const displayResult = useMemo(() => {
+    if (!calculationResult_RK || typeof calculationResult_RK !== 'object') return calculationResult_RK;
+    return Object.entries(calculationResult_RK).reduce((acc, [k, v]) => {
+      acc[k === 'NCV' ? 'NCV [kcal/kg]' : k] = v;
+      return acc;
+    }, {});
+  }, [calculationResult_RK]);
 
   return (
     <div className="container-box">
       <CloseButton onClose={onClose} />
       <h3>{t.Parametres} {title}</h3>
 
-      {/* Indicateur automatique du mode WHB (détecté depuis le canvas) */}
-      <div className="toggle-container">
-        <div style={{ marginTop: '10px', display: 'flex', alignItems: 'center' }}>
-          <label style={{ marginRight: '10px' }}>{t.BilanTyp}:</label>
-          <span
-            data-testid="whb-toggle"
-            className={`toggle-button ${bilanType_whb === CALCULATION_MODES.WITH_WHB ? 'toggle-button--option1' : 'toggle-button--option2'}`}
-            style={{ opacity: 0.85, cursor: 'default' }}
-          >
-            {getDisplayValue(bilanType_whb, whbDisplayMapping)}
-          </span>
-        </div>
-      </div>
-      
+      {/* Mode WHB détecté automatiquement selon la présence d'un nœud WHB sur le canvas
+          (bouton indicateur masqué — voir useEffect de détection auto plus haut) */}
+
       <div className="inputs-container">
         {/* Champ température de l'air */}
         <InputField 
@@ -424,9 +428,9 @@ const RK_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguag
 
       {/* Affichage conditionnel des résultats */}
       {isSliderOpen && calculationResult_RK && (
-        <CalculationResults 
-          isOpen={isSliderOpen} 
-          results={calculationResult_RK}
+        <CalculationResults
+          isOpen={isSliderOpen}
+          results={displayResult}
           currentLanguage={currentLanguage}
         />
       )}

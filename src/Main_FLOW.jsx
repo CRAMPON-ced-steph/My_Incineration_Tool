@@ -371,13 +371,24 @@ function Flow({
     return order;
   }, []);
 
+  // Refs vers les dernières valeurs de nodes/edges, pour que onSendData reste STABLE
+  // (ne pas dépendre de `nodes`/`edges`). Sinon onSendData se recrée à chaque setNodes,
+  // ce qui recrée handleSendData dans les Parameter_Tab Retro et provoque une boucle de
+  // recalcul (l'utilisateur se retrouve « bloqué » après un calcul).
+  const nodesRef = useRef(nodes);
+  nodesRef.current = nodes;
+  const edgesRef = useRef(edges);
+  edgesRef.current = edges;
+
   const onSendData = useCallback(
     (data) => {
       if (selectedNode) {
-        const targetNode = nodes.find((node) =>
+        const currentNodes = nodesRef.current;
+        const currentEdges = edgesRef.current;
+        const targetNode = currentNodes.find((node) =>
           mode === 'Bilan'
-            ? edges.some((edge) => edge.source === selectedNode.id && edge.target === node.id)
-            : edges.some((edge) => edge.target === selectedNode.id && edge.source === node.id)
+            ? currentEdges.some((edge) => edge.source === selectedNode.id && edge.target === node.id)
+            : currentEdges.some((edge) => edge.target === selectedNode.id && edge.source === node.id)
         );
   
         // Mise à jour du nœud cible avec les résultats
@@ -422,7 +433,7 @@ function Flow({
         );
       }
     },
-    [selectedNode, nodes, edges, mode, setNodes]
+    [selectedNode, mode, setNodes]
   );
 
   // BFS helper: starting from a node that just produced a result, propagate that result
