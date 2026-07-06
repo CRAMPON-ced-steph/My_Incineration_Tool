@@ -12,16 +12,18 @@ export const performCalculation_WATER_INJECTION_option_Qeau = (nodeData, Qeau, T
   // LECTURE DU NOEUD PRÉCÉDENT
   const { T: Taval, P_mmCE: P_out_mmCE, Qm_CO2_kg_h, Qm_H2O_kg_h, Qm_O2_kg_h, Qm_N2_kg_h } = nodeData.result.dataFlow;
 
-  // CALCUL DE LA NOUVELLE COMPOSITION DES FUMÉES EN MASSE
-  const Qm_H2O_total_kg_h = Qm_H2O_kg_h + Qeau;
-  const Qm_tot_kg_h = Qm_CO2_kg_h + Qm_H2O_total_kg_h + Qm_O2_kg_h + Qm_N2_kg_h;
+  // CALCUL DE LA COMPOSITION AMONT (retro : l'eau injectée n'est pas encore présente
+  // en amont → on la RETIRE, comme dans option_T). Cohérent avec temp_bef_add_wat qui
+  // calcule la température amont avec (m_H2O - Qeau).
+  const Qm_H2O_amont_kg_h = Qm_H2O_kg_h - Qeau;
+  const Qm_tot_kg_h = Qm_CO2_kg_h + Qm_H2O_amont_kg_h + Qm_O2_kg_h + Qm_N2_kg_h;
 
-  // CALCUL DE LA TEMPÉRATURE APRÈS AJOUT D'EAU
+  // CALCUL DE LA TEMPÉRATURE AMONT (retro : température du gaz AVANT ajout de l'eau)
   const T = temp_bef_add_wat(Qeau, Teau, Taval, Qm_CO2_kg_h, Qm_H2O_kg_h, Qm_N2_kg_h, Qm_O2_kg_h);
 
   // CONVERSION DES MASSES EN VOLUME
   const Qv_CO2_Nm3_h = CO2_kg_m3(Qm_CO2_kg_h);
-  const Qv_H2O_Nm3_h = H2O_kg_m3(Qm_H2O_total_kg_h);
+  const Qv_H2O_Nm3_h = H2O_kg_m3(Qm_H2O_amont_kg_h);
   const Qv_O2_Nm3_h = O2_kg_m3(Qm_O2_kg_h);
   const Qv_N2_Nm3_h = N2_kg_m3(Qm_N2_kg_h);
   const Qv_sec_Nm3_h = Qv_CO2_Nm3_h + Qv_O2_Nm3_h + Qv_N2_Nm3_h;
@@ -37,7 +39,7 @@ export const performCalculation_WATER_INJECTION_option_Qeau = (nodeData, Qeau, T
 
   // CALCUL DES ENTHALPIES
   const H_CO2_kj = fh_CO2(T) * Qm_CO2_kg_h;
-  const H_H2O_kj = (fh_H2O(T) + Lv) * Qm_H2O_total_kg_h;
+  const H_H2O_kj = (fh_H2O(T) + Lv) * Qm_H2O_amont_kg_h;
   const H_O2_kj = fh_O2(T) * Qm_O2_kg_h;
   const H_N2_kj = fh_N2(T) * Qm_N2_kg_h;
   const H_tot_kj = H_CO2_kj + H_H2O_kj + H_O2_kj + H_N2_kj;
@@ -67,7 +69,7 @@ export const performCalculation_WATER_INJECTION_option_Qeau = (nodeData, Qeau, T
       Qv_N2_Nm3_h,
       Qv_sec_Nm3_h,
       Qm_CO2_kg_h,
-      Qm_H2O_total_kg_h,
+      Qm_H2O_kg_h: Qm_H2O_amont_kg_h,
       Qm_O2_kg_h,
       Qm_N2_kg_h,
       Qm_tot_kg_h,
