@@ -499,3 +499,22 @@ localStorage.getItem(`emissions_BHF_${nodeId}`)
 
 ### Clés intentionnellement partagées (PAS de nodeId)
 - `'pointE'` — écrit par FB, RK et GF Parameter_Tabs; lu par LinearGraph et GlobalRetroReport
+
+---
+
+## Convention `dataFlow.T` / `T_in` en mode Retro (2026-07-06)
+
+En mode **Retro**, le calcul remonte STACK → four. Chaque nœud lit la température de son voisin **aval** via `nodeData.result.dataFlow.T` et calcule son état **amont**.
+
+- **`dataFlow.T`** = température **amont** du nœud (côté four). **C'est la valeur propagée** : le nœud amont suivant la lit comme sa propre température aval. NE PAS la modifier/inverser sous peine de casser toute la chaîne.
+- **`dataFlow.T_in`** = température **aval** reçue (informative). Le nom « T_in » est trompeur : il contient la température de **sortie** (aval), pas l'entrée physique.
+- Dans les rapports Retro : `df.T` est étiqueté « entrée » (amont chaud), `df.T_in` « sortie » (aval froid) — physiquement correct pour un refroidisseur (QUENCH/WATER_INJECTION).
+
+### Renommage d'affichage QUENCH / WATER_INJECTION (T_in ↔ T)
+Sur demande utilisateur, le panneau « Calculation Results » de `QUENCH_Parameter_Tab` et `WATER_INJECTION_Parameter_Tab` affiche la valeur **amont** sous l'étiquette `T_in` et la valeur **aval** sous `T` (inverse de la convention interne). C'est fait via une **copie d'affichage** `displayResult` (useMemo) qui échange uniquement les étiquettes des clés `T`/`T_in` du `dataFlow` — **le `dataFlow` réellement propagé reste inchangé** (`dataFlow.T` = amont). Même pattern que la copie d'affichage NCV → « NCV [kcal/kg] » dans `RK_Parameter_Tab`.
+
+### QUENCH / WATER_INJECTION `option_Qeau` (retro, `*_calculations2.js`)
+Doit être l'**inverse cohérent** de `option_T` :
+- Composition amont : `Qm_H2O_kg_h - Qeau` (on RETIRE l'eau injectée, elle n'est pas encore présente en amont). Cohérent avec `temp_bef_add_wat` qui calcule l'amont avec `(m_H2O - Qeau)`.
+- Clé de sortie : `Qm_H2O_kg_h` (et non `Qm_H2O_total_kg_h`) — attendue par les nœuds/rapports en amont.
+- Un `Qeau` supérieur à la teneur en eau du gaz aval sature `temp_bef_add_wat` à sa borne (T ≈ 3000 °C) : ce n'est pas un bug, c'est un débit d'eau physiquement trop grand pour ce débit de gaz.

@@ -1,6 +1,6 @@
 import { T_ref } from "./constantes";
 
-export const coeff_Nm3_to_m3 = (P, T) => {return ((T + T_ref) / T_ref) * (1025 / (1025 + P));};
+export const coeff_Nm3_to_m3 = (P, T) => {return ((T + T_ref) / T_ref) * (10332 / (10332 + P));};
 export const CO2_m3_kg = (m3)=> {return m3 * 44 / 22.4;};
 export const  CO2_kg_m3 = (kg)=> {return kg * 22.4 / 44;}; 
 export const  H2O_m3_kg = (m3)=> {return m3 * 18 / 22.4;}; 

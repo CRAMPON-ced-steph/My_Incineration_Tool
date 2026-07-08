@@ -1,8 +1,8 @@
 import {fh_CO2,fh_H2O, fh_O2,fh_N2,} from '../../A_Transverse_fonction/enthalpy_gas';
-import {Qeau_remove_to_be_at_T,temp_bef_add_wat} from '../../A_Transverse_fonction/enthalpy_mix_gas';
-import {CO2_kg_m3, O2_kg_m3,N2_kg_m3, H2O_kg_m3, H2O_m3_kg} from '../../A_Transverse_fonction/conv_calculation';
+import {Qeau_remove_to_be_at_T} from '../../A_Transverse_fonction/enthalpy_mix_gas';
+import {H2O_m3_kg} from '../../A_Transverse_fonction/conv_calculation';
 import {coeff_Nm3_to_m3} from '../../A_Transverse_fonction/conv_calculation';
-import { hV_p, hL_T, h_pT, Tsat_p, psat_T } from '../../A_Transverse_fonction/steam_table3';
+import { psat_T } from '../../A_Transverse_fonction/steam_table3';
 import { Lv } from '../../A_Transverse_fonction/constantes';
 
 export const performCalculation_SCRUBBER_option_TinTsat = (nodeData, Teau,T_amont_SCRUBBER,PDC_aero) => {
@@ -34,17 +34,34 @@ let T = T_amont_SCRUBBER;
   const Qv_O2_Nm3_h = Qv_O2_out_Nm3_h ;
   const Qv_N2_Nm3_h = Qv_N2_out_Nm3_h ;
 
+let Qeau_saturation = 0;
+let H2O_pourcent ;
+let  Qv_eau_saturation_Nm3_h;
+
+
+ // if (T > 99.6) {
+ //   Qeau_saturation = Qeau_remove_to_be_at_T(T, Teau, 80, Qm_CO2_out_kg_h, Qm_H2O_out_kg_h, Qm_N2_out_kg_h, Qm_O2_out_kg_h);
+ // H2O_pourcent =  psat_T(80)*100;
+ // Qv_eau_saturation_Nm3_h = H2O_m3_kg(Qeau_saturation);
+ // } else
+ // {
+H2O_pourcent =  psat_T(T_amont_SCRUBBER)*100;
+
+  //}
+
+
+
+
 
     // ON CALCULE LA MASSE D'EAU QU'IL A FALLU AJOUTER POUR ARRIVER A LA TEMPERATURE FINALE
-    const H2O_pourcent =  psat_T(T_amont_SCRUBBER)*100;
+  //  const H2O_pourcent =  psat_T(T_amont_SCRUBBER)*100;
 
     const Qv_H2O_Nm3_h = ((Qv_N2_Nm3_h+Qv_O2_Nm3_h+Qv_CO2_Nm3_h)/(1-(H2O_pourcent/100)))*(H2O_pourcent/100);
-
     const Qm_H2O_kg_h = H2O_m3_kg(Qv_H2O_Nm3_h);
 
 
     const Qm_tot_kg_h = Qm_CO2_kg_h+Qm_H2O_kg_h+Qm_O2_kg_h+Qm_N2_kg_h;
-const Qeau = Qm_H2O_kg_h-Qm_H2O_out_kg_h;
+const Qeau = +Qm_H2O_kg_h-Qm_H2O_out_kg_h;
 
 
 //ON CONVERTIT LES MASSES EN VOLUME
@@ -84,7 +101,7 @@ const Qeau = Qm_H2O_kg_h-Qm_H2O_out_kg_h;
 const H2O_scrubber_kW = H2O_scrubber_kj / 3600;
 
 
-const dataSCRUBBER = {Qeau, H2O_scrubber_kj, H2O_scrubber_kW}
+const dataSCRUBBER = {Qeau_saturation, Qeau, H2O_scrubber_kj, H2O_scrubber_kW}
 
 const dataFlow = {
 

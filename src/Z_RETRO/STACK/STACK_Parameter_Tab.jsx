@@ -14,10 +14,20 @@ import STACK_Retro_Rapport from './STACK_Retro_Rapport';
 
 import '../../index.css';
 
+// Modes d'entrée du débit
+const INPUT_MODES = {
+  Qv_wet_Nm3_h: 'Qv_wet_Nm3_h',
+  Qv_dry_Nm3_h: 'Qv_dry_Nm3_h',
+  Qv_wet_m3_h: 'Qv_wet_m3_h',
+};
+
 // Fonctions pour localStorage keys dynamiques
 const getStorageKeys = (nodeId) => ({
   TSTACK: `Tstack_STACK_${nodeId}`,
   QV_WET: `Qv_wet_Nm3_h_STACK_${nodeId}`,
+  QV_DRY: `Qv_dry_Nm3_h_STACK_${nodeId}`,
+  QV_WET_M3: `Qv_wet_m3_h_STACK_${nodeId}`,
+  INPUT_MODE: `STACK_inputMode_${nodeId}`,
   O2_DRY: `O2_dry_pourcent_STACK_${nodeId}`,
   H2O: `H2O_pourcent_STACK_${nodeId}`,
   CO2_DRY: `CO2_dry_pourcent_STACK_${nodeId}`,
@@ -29,6 +39,9 @@ const getStorageKeys = (nodeId) => ({
 const DEFAULT_VALUES = {
   Tstack: '80',
   Qv_wet_Nm3_h: '50000',
+  Qv_dry_Nm3_h: '35000',
+  Qv_wet_m3_h: '64000',
+  inputMode: INPUT_MODES.Qv_wet_Nm3_h,
   O2_dry_pourcent: '10',
   H2O_pourcent: '30',
   CO2_dry_pourcent: '10',
@@ -49,9 +62,19 @@ const STACK_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLang
   const [Tstack, setTstack] = useState(() =>
     getStorageValue(STORAGE_KEYS.TSTACK, DEFAULT_VALUES.Tstack, nodeData)
   );
-  const [Qv_wet_Nm3_h, setQv_wet_Nm3_h] = useState(() => 
+  const [Qv_wet_Nm3_h, setQv_wet_Nm3_h] = useState(() =>
     getStorageValue(STORAGE_KEYS.QV_WET, DEFAULT_VALUES.Qv_wet_Nm3_h, nodeData)
   );
+  const [Qv_dry_Nm3_h, setQv_dry_Nm3_h] = useState(() =>
+    getStorageValue(STORAGE_KEYS.QV_DRY, DEFAULT_VALUES.Qv_dry_Nm3_h, nodeData)
+  );
+  const [Qv_wet_m3_h, setQv_wet_m3_h] = useState(() =>
+    getStorageValue(STORAGE_KEYS.QV_WET_M3, DEFAULT_VALUES.Qv_wet_m3_h, nodeData)
+  );
+  const [inputMode, setInputMode] = useState(() => {
+    const stored = localStorage.getItem(STORAGE_KEYS.INPUT_MODE);
+    return Object.values(INPUT_MODES).includes(stored) ? stored : DEFAULT_VALUES.inputMode;
+  });
   const [O2_dry_pourcent, setO2_dry_pourcent] = useState(() => 
     getStorageValue(STORAGE_KEYS.O2_DRY, DEFAULT_VALUES.O2_dry_pourcent, nodeData)
   );
@@ -93,6 +116,9 @@ const STACK_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLang
         const dataToSave = {
           [STORAGE_KEYS.TSTACK]: Tstack,
           [STORAGE_KEYS.QV_WET]: Qv_wet_Nm3_h,
+          [STORAGE_KEYS.QV_DRY]: Qv_dry_Nm3_h,
+          [STORAGE_KEYS.QV_WET_M3]: Qv_wet_m3_h,
+          [STORAGE_KEYS.INPUT_MODE]: inputMode,
           [STORAGE_KEYS.O2_DRY]: O2_dry_pourcent,
           [STORAGE_KEYS.H2O]: H2O_pourcent,
           [STORAGE_KEYS.CO2_DRY]: CO2_dry_pourcent,
@@ -108,7 +134,7 @@ const STACK_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLang
     };
 
     saveToLocalStorage();
-  }, [Tstack, Qv_wet_Nm3_h, O2_dry_pourcent, H2O_pourcent, CO2_dry_pourcent, P_out_mmCE]);
+  }, [Tstack, Qv_wet_Nm3_h, Qv_dry_Nm3_h, Qv_wet_m3_h, inputMode, O2_dry_pourcent, H2O_pourcent, CO2_dry_pourcent, P_out_mmCE]);
 
   // Sauvegarde des résultats de calcul
   useEffect(() => {
@@ -123,9 +149,16 @@ const STACK_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLang
 
   // Validation des entrées numériques
   const validateInputs = useCallback(() => {
+    // Sélection du débit actif selon le mode d'entrée
+    const rawFlow =
+      inputMode === INPUT_MODES.Qv_dry_Nm3_h ? Qv_dry_Nm3_h
+      : inputMode === INPUT_MODES.Qv_wet_m3_h ? Qv_wet_m3_h
+      : Qv_wet_Nm3_h;
+
     const inputs = {
       Tstack: parseFloat(Tstack),
-      Qv_wet_Nm3_h: parseFloat(Qv_wet_Nm3_h),
+      flowValue: parseFloat(rawFlow),
+      inputMode,
       O2_dry_pourcent: parseFloat(O2_dry_pourcent),
       H2O_pourcent: parseFloat(H2O_pourcent),
       CO2_dry_pourcent: parseFloat(CO2_dry_pourcent),
@@ -134,6 +167,7 @@ const STACK_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLang
 
     // Validation des valeurs numériques
     for (const [key, value] of Object.entries(inputs)) {
+      if (key === 'inputMode') continue;
       if (isNaN(value)) {
         throw new Error(`${t.InvalidInput}: ${key}`);
       }
@@ -143,7 +177,7 @@ const STACK_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLang
     if (inputs.Tstack < -T_ref) {
       throw new Error(`${t.InvalidInput}: Temperature cannot be below absolute zero`);
     }
-    if (inputs.Qv_wet_Nm3_h < 0) {
+    if (inputs.flowValue < 0) {
       throw new Error(`${t.InvalidInput}: Volume flow cannot be negative`);
     }
     if (inputs.O2_dry_pourcent < 0 || inputs.O2_dry_pourcent > 100) {
@@ -157,7 +191,7 @@ const STACK_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLang
     }
 
     return inputs;
-  }, [Tstack, Qv_wet_Nm3_h, O2_dry_pourcent, H2O_pourcent, CO2_dry_pourcent, P_out_mmCE, t]);
+  }, [Tstack, Qv_wet_Nm3_h, Qv_dry_Nm3_h, Qv_wet_m3_h, inputMode, O2_dry_pourcent, H2O_pourcent, CO2_dry_pourcent, P_out_mmCE, t]);
 
   // Gestion du calcul principal
   const handleSendData = useCallback(async () => {
@@ -168,11 +202,12 @@ const STACK_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLang
 
       const result = performCalculation_STACK(
         validatedInputs.Tstack,
-        validatedInputs.Qv_wet_Nm3_h,
+        validatedInputs.flowValue,
         validatedInputs.O2_dry_pourcent,
         validatedInputs.H2O_pourcent,
         validatedInputs.CO2_dry_pourcent,
-        validatedInputs.P_out_mmCE
+        validatedInputs.P_out_mmCE,
+        validatedInputs.inputMode
       );
 
       setCalculationResult(result);
@@ -209,6 +244,9 @@ const STACK_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLang
       // Réinitialisation aux valeurs par défaut
       setTstack(DEFAULT_VALUES.Tstack);
       setQv_wet_Nm3_h(DEFAULT_VALUES.Qv_wet_Nm3_h);
+      setQv_dry_Nm3_h(DEFAULT_VALUES.Qv_dry_Nm3_h);
+      setQv_wet_m3_h(DEFAULT_VALUES.Qv_wet_m3_h);
+      setInputMode(DEFAULT_VALUES.inputMode);
       setO2_dry_pourcent(DEFAULT_VALUES.O2_dry_pourcent);
       setH2O_pourcent(DEFAULT_VALUES.H2O_pourcent);
       setCO2_dry_pourcent(DEFAULT_VALUES.CO2_dry_pourcent);
@@ -226,10 +264,28 @@ const STACK_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLang
 
   const handleTstackChange = createInputHandler(setTstack, DEFAULT_VALUES.Tstack);
   const handleQvChange = createInputHandler(setQv_wet_Nm3_h, DEFAULT_VALUES.Qv_wet_Nm3_h);
+  const handleQvDryChange = createInputHandler(setQv_dry_Nm3_h, DEFAULT_VALUES.Qv_dry_Nm3_h);
+  const handleQvWetM3Change = createInputHandler(setQv_wet_m3_h, DEFAULT_VALUES.Qv_wet_m3_h);
   const handleO2Change = createInputHandler(setO2_dry_pourcent, DEFAULT_VALUES.O2_dry_pourcent);
   const handleH2OChange = createInputHandler(setH2O_pourcent, DEFAULT_VALUES.H2O_pourcent);
   const handleCO2Change = createInputHandler(setCO2_dry_pourcent, DEFAULT_VALUES.CO2_dry_pourcent);
   const handlePressureChange = createInputHandler(setP_out_mmCE, DEFAULT_VALUES.P_out_mmCE);
+
+  // Cycle du mode d'entrée du débit : Qv_wet_Nm3_h → Qv_dry_Nm3_h → Qv_wet_m3_h → Qv_wet_Nm3_h
+  const toggleInputMode = useCallback(() => {
+    setInputMode(prev => {
+      if (prev === INPUT_MODES.Qv_wet_Nm3_h) return INPUT_MODES.Qv_dry_Nm3_h;
+      if (prev === INPUT_MODES.Qv_dry_Nm3_h) return INPUT_MODES.Qv_wet_m3_h;
+      return INPUT_MODES.Qv_wet_Nm3_h;
+    });
+  }, []);
+
+  // Libellés affichés sur le bouton (techniques, non traduits)
+  const inputModeMapping = {
+    [INPUT_MODES.Qv_wet_Nm3_h]: 'Qv_wet_Nm3_h',
+    [INPUT_MODES.Qv_dry_Nm3_h]: 'Qv_dry_Nm3_h',
+    [INPUT_MODES.Qv_wet_m3_h]: 'Qv_wet_m3_h',
+  };
 
   const hasCalculatedOnce = useRef(false);
   const hasAutoTriggered = useRef(false);
@@ -259,17 +315,58 @@ const STACK_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLang
           aria-label={`${t.Tstack} en ${t.celsius}`}
         />
         
-        <InputField 
-          label={t.Qv_wet_fumees} 
-          unit={`[${t.Nm3_h}]`} 
-          value={Qv_wet_Nm3_h} 
-          onChange={handleQvChange}
-          disabled={isCalculating}
-          aria-label={`${t.Qv_wet_fumees} en ${t.Nm3_h}`}
-        />
-        
-        <InputField 
-          label={t.O2_dry} 
+        {/* Bouton de sélection du mode d'entrée du débit */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <label>{t.FlowInputMode || 'Type de débit'}:</label>
+          <button
+            onClick={toggleInputMode}
+            data-testid="stack-flow-mode-toggle"
+            className={`toggle-button ${inputMode === INPUT_MODES.Qv_wet_Nm3_h ? 'toggle-button--option1' : 'toggle-button--option2'}`}
+            disabled={isCalculating}
+            aria-label={`${t.FlowInputMode || 'Type de débit'}: ${inputModeMapping[inputMode]}`}
+          >
+            {inputModeMapping[inputMode]}
+          </button>
+        </div>
+
+        {/* Débit humide [Nm³/h] — mode Qv_wet_Nm3_h */}
+        {inputMode === INPUT_MODES.Qv_wet_Nm3_h && (
+          <InputField
+            label={t.Qv_wet_fumees}
+            unit={`[${t.Nm3_h}]`}
+            value={Qv_wet_Nm3_h}
+            onChange={handleQvChange}
+            disabled={isCalculating}
+            aria-label={`${t.Qv_wet_fumees} en ${t.Nm3_h}`}
+          />
+        )}
+
+        {/* Débit sec [Nm³/h] — mode Qv_dry_Nm3_h */}
+        {inputMode === INPUT_MODES.Qv_dry_Nm3_h && (
+          <InputField
+            label={t.Qv_dry_fumees}
+            unit={`[${t.Nm3_h}]`}
+            value={Qv_dry_Nm3_h}
+            onChange={handleQvDryChange}
+            disabled={isCalculating}
+            aria-label={`${t.Qv_dry_fumees} en ${t.Nm3_h}`}
+          />
+        )}
+
+        {/* Débit humide [m³/h] — mode Qv_wet_m3_h */}
+        {inputMode === INPUT_MODES.Qv_wet_m3_h && (
+          <InputField
+            label={t.Qv_wet_m3_fumees}
+            unit={`[${t.m3_h}]`}
+            value={Qv_wet_m3_h}
+            onChange={handleQvWetM3Change}
+            disabled={isCalculating}
+            aria-label={`${t.Qv_wet_m3_fumees} en ${t.m3_h}`}
+          />
+        )}
+
+        <InputField
+          label={t.O2_dry}
           unit={`[${t.percent}]`} 
           value={O2_dry_pourcent} 
           onChange={handleO2Change}
@@ -372,6 +469,9 @@ const STACK_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLang
           inputParams={{
             Tstack,
             Qv_wet_Nm3_h,
+            Qv_dry_Nm3_h,
+            Qv_wet_m3_h,
+            inputMode,
             O2_dry_pourcent,
             H2O_pourcent,
             CO2_dry_pourcent,

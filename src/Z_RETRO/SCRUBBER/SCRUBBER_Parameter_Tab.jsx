@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { T_ref } from '../../A_Transverse_fonction/constantes';
 import { performCalculation_SCRUBBER_option_TinTout } from './SCRUBBER_calculations';
 import { performCalculation_SCRUBBER_option_TinTsat } from './SCRUBBER_calculations2';
+import { performCalculation_SCRUBBER_option_TsupTsat } from './SCRUBBER_calculations3';
 
 import InputField from '../../C_Components/input_retro';
 import ClearButton from '../../C_Components/Clear_Button';
@@ -19,7 +20,8 @@ import { translations } from './SCRUBBER_traduction';
 // Constantes pour les modes de calcul
 const BALANCE_TYPES = {
   TIN_TOUT: 'TIN_TOUT',
-  TIN_TSAT: 'TIN_TSAT'
+  TIN_TSAT: 'TIN_TSAT',
+  T_SUP_TSAT: 'T_SUP_TSAT'
 };
 
 // Constantes pour localStorage (nodeId-aware)
@@ -84,7 +86,8 @@ const SCRUBBER_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentL
   // Mapping pour les traductions du toggle
   const balanceTypeMapping = useMemo(() => ({
     [BALANCE_TYPES.TIN_TOUT]: t.TinTout,
-    [BALANCE_TYPES.TIN_TSAT]: t.TinTsat
+    [BALANCE_TYPES.TIN_TSAT]: t.TinTsat,
+    [BALANCE_TYPES.T_SUP_TSAT]: t.TsupTsat || 'T > Tsat'
   }), [t]);
 
   // Sauvegarde centralisée dans localStorage
@@ -169,9 +172,16 @@ const SCRUBBER_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentL
         );
       } else if (bilanType === BALANCE_TYPES.TIN_TSAT) {
         result = performCalculation_SCRUBBER_option_TinTsat(
-          nodeData, 
-          validatedInputs.Teau, 
-          validatedInputs.T_amont_SCRUBBER, 
+          nodeData,
+          validatedInputs.Teau,
+          validatedInputs.T_amont_SCRUBBER,
+          validatedInputs.PDC_aero
+        );
+      } else if (bilanType === BALANCE_TYPES.T_SUP_TSAT) {
+        result = performCalculation_SCRUBBER_option_TsupTsat(
+          nodeData,
+          validatedInputs.Teau,
+          validatedInputs.T_amont_SCRUBBER,
           validatedInputs.PDC_aero
         );
       } else {
@@ -192,9 +202,12 @@ const SCRUBBER_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentL
 
   // Toggle du type de bilan
   const toggleBilanType = useCallback(() => {
-    setBilanType(prev => 
-      prev === BALANCE_TYPES.TIN_TOUT ? BALANCE_TYPES.TIN_TSAT : BALANCE_TYPES.TIN_TOUT
-    );
+    // Cycle à 3 états : Tin=Tout → Tin=Tsat → T > Tsat → Tin=Tout
+    setBilanType(prev => {
+      if (prev === BALANCE_TYPES.TIN_TOUT) return BALANCE_TYPES.TIN_TSAT;
+      if (prev === BALANCE_TYPES.TIN_TSAT) return BALANCE_TYPES.T_SUP_TSAT;
+      return BALANCE_TYPES.TIN_TOUT;
+    });
   }, []);
 
   // Toggle du slider des résultats
@@ -232,7 +245,7 @@ const SCRUBBER_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentL
     const v = e.target.value;
     if (v === '' || v === '-') { setT_amont_SCRUBBER(v); return; }
     const n = parseFloat(v);
-    setT_amont_SCRUBBER(isNaN(n) ? DEFAULT_VALUES.T_amont_SCRUBBER : String(Math.min(n, 99.6)));
+    setT_amont_SCRUBBER(isNaN(n) ? DEFAULT_VALUES.T_amont_SCRUBBER : String(n));
   };
   const handlePDCChange = createInputHandler(setPDC_aero, DEFAULT_VALUES.PDC_aero);
 
@@ -256,6 +269,43 @@ const SCRUBBER_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentL
       </div>
     );
   });
+
+  // Copie d'affichage pour le panneau "Calculation Results", sans toucher au résultat
+  // propagé/stocké :
+  //  - dataFlow : échange l'étiquette des clés T/T_in (amont affiché sous "T_in", aval sous "T")
+  //  - dataSCRUBBER : Qeau affiché "Q eau condensée [kg/h]"
+  const displayResult = useMemo(() => {
+    if (!calculationResult_SCRUBBER || typeof calculationResult_SCRUBBER !== 'object') return calculationResult_SCRUBBER;
+    const out = { ...calculationResult_SCRUBBER };
+
+    const df = calculationResult_SCRUBBER.dataFlow;
+    if (df && typeof df === 'object') {
+      out.dataFlow = Object.entries(df).reduce((acc, [k, v]) => {
+        if (k === 'T') acc['T_in'] = v;
+        else if (k === 'T_in') acc['T'] = v;
+        else acc[k] = v;
+        return acc;
+      }, {});
+    }
+
+    const ds = calculationResult_SCRUBBER.dataSCRUBBER;
+    if (ds && typeof ds === 'object') {
+      // Qeau_saturation n'est affiché que si T amont > 99 (trempe jusqu'à Tsat = 99°C active)
+      const showSat = (parseFloat(calculationResult_SCRUBBER?.dataFlow?.T) || 0) > 99;
+      out.dataSCRUBBER = Object.entries(ds).reduce((acc, [k, v]) => {
+        if (k === 'Qeau_saturation') {
+          if (showSat) acc['Qeau_saturation [kg/h]'] = v;
+        } else if (k === 'Qeau') {
+          acc['Q eau condensée [kg/h]'] = v;
+        } else {
+          acc[k] = v;
+        }
+        return acc;
+      }, {});
+    }
+
+    return out;
+  }, [calculationResult_SCRUBBER]);
 
   const hasCalculatedOnce = useRef(false);
   const hasAutoTriggered = useRef(false);
@@ -296,8 +346,8 @@ const SCRUBBER_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentL
           aria-label={`${t.T_eau_injectee} en ${t.celsius}`}
         />
 
-        {/* Champ conditionnel - température amont (uniquement en mode Tin=Tsat) */}
-        {bilanType === BALANCE_TYPES.TIN_TSAT && (
+        {/* Champ conditionnel - température amont (modes Tin=Tsat et T > Tsat) */}
+        {(bilanType === BALANCE_TYPES.TIN_TSAT || bilanType === BALANCE_TYPES.T_SUP_TSAT) && (
           <InputField 
             label={t.T_amont_SCRUBBER} 
             unit={`[${t.celsius}]`} 
@@ -345,9 +395,9 @@ const SCRUBBER_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentL
 
       {/* Affichage conditionnel des résultats */}
       {isSliderOpen && calculationResult_SCRUBBER && (
-        <CalculationResults 
-          isOpen={isSliderOpen} 
-          results={calculationResult_SCRUBBER}
+        <CalculationResults
+          isOpen={isSliderOpen}
+          results={displayResult}
           currentLanguage={currentLanguage}
         />
       )}

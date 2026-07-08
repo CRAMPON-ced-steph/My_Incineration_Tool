@@ -266,6 +266,23 @@ const WATER_INJECTION_Parameter_Tab = ({ nodeData, title, onSendData, onClose, c
     );
   });
 
+  // Copie d'affichage : échange l'étiquette des clés T/T_in du dataFlow pour le
+  // panneau "Calculation Results" (la valeur amont s'affiche sous "T_in", la valeur
+  // aval sous "T"), sans toucher au résultat propagé (dataFlow.T reste la valeur
+  // réellement transmise au nœud amont).
+  const displayResult = useMemo(() => {
+    if (!calculationResult_WATER_INJECTION || typeof calculationResult_WATER_INJECTION !== 'object') return calculationResult_WATER_INJECTION;
+    const df = calculationResult_WATER_INJECTION.dataFlow;
+    if (!df || typeof df !== 'object') return calculationResult_WATER_INJECTION;
+    const renamedDf = Object.entries(df).reduce((acc, [k, v]) => {
+      if (k === 'T') acc['T_in'] = v;
+      else if (k === 'T_in') acc['T'] = v;
+      else acc[k] = v;
+      return acc;
+    }, {});
+    return { ...calculationResult_WATER_INJECTION, dataFlow: renamedDf };
+  }, [calculationResult_WATER_INJECTION]);
+
   const hasCalculatedOnce = useRef(false);
   const hasAutoTriggered = useRef(false);
   useEffect(() => {
@@ -366,7 +383,7 @@ const WATER_INJECTION_Parameter_Tab = ({ nodeData, title, onSendData, onClose, c
       {isSliderOpen && calculationResult_WATER_INJECTION && (
         <CalculationResults
           isOpen={isSliderOpen}
-          results={calculationResult_WATER_INJECTION}
+          results={displayResult}
           currentLanguage={currentLanguage}
         />
       )}

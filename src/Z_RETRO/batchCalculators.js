@@ -14,6 +14,7 @@ import { performCalculation_CYCLONE } from './CYCLONE/CYCLONE_calculations';
 import { performCalculation_REACTOR } from './REACTOR/REACTOR_calculations';
 import { performCalculation_SCRUBBER_option_TinTout } from './SCRUBBER/SCRUBBER_calculations';
 import { performCalculation_SCRUBBER_option_TinTsat } from './SCRUBBER/SCRUBBER_calculations2';
+import { performCalculation_SCRUBBER_option_TsupTsat } from './SCRUBBER/SCRUBBER_calculations3';
 import { performCalculation_QUENCH_option_T } from './QUENCH/QUENCH_calculations';
 import { performCalculation_QUENCH_option_Qeau } from './QUENCH/QUENCH_calculations2';
 import { performCalculation_DENOX_option_Qeau } from './DENOX/DENOX_calculations';
@@ -39,13 +40,19 @@ const f  = (key, def) => parseFloat(ls(key, def));
 export const batchCalcMap = {
 
   'STACK': (_nodeData, nodeId) => {
+    const mode = ls(`STACK_inputMode_${nodeId}`, 'Qv_wet_Nm3_h');
+    const flow =
+      mode === 'Qv_dry_Nm3_h' ? f(`Qv_dry_Nm3_h_STACK_${nodeId}`, '35000')
+      : mode === 'Qv_wet_m3_h' ? f(`Qv_wet_m3_h_STACK_${nodeId}`, '64000')
+      : f(`Qv_wet_Nm3_h_STACK_${nodeId}`, '50000');
     return performCalculation_STACK(
       f(`Tstack_STACK_${nodeId}`, '80'),
-      f(`Qv_wet_Nm3_h_STACK_${nodeId}`, '50000'),
+      flow,
       f(`O2_dry_pourcent_STACK_${nodeId}`, '10'),
       f(`H2O_pourcent_STACK_${nodeId}`, '30'),
       f(`CO2_dry_pourcent_STACK_${nodeId}`, '10'),
-      f(`P_out_mmCE_STACK_${nodeId}`, '100')
+      f(`P_out_mmCE_STACK_${nodeId}`, '100'),
+      mode
     );
   },
 
@@ -114,12 +121,12 @@ export const batchCalcMap = {
     if (bilanType === 'TIN_TOUT') {
       return performCalculation_SCRUBBER_option_TinTout(nodeData, PDC);
     }
-    return performCalculation_SCRUBBER_option_TinTsat(
-      nodeData,
-      f(`Teau_SCRUBBER_${nodeId}`, '15'),
-      parseFloat(nodeData?.result?.dataFlow?.T ?? ls(`T_amont_SCRUBBER_${nodeId}`, '50')),
-      PDC
-    );
+    const Teau = f(`Teau_SCRUBBER_${nodeId}`, '15');
+    const Tamont = parseFloat(nodeData?.result?.dataFlow?.T ?? ls(`T_amont_SCRUBBER_${nodeId}`, '50'));
+    if (bilanType === 'T_SUP_TSAT') {
+      return performCalculation_SCRUBBER_option_TsupTsat(nodeData, Teau, Tamont, PDC);
+    }
+    return performCalculation_SCRUBBER_option_TinTsat(nodeData, Teau, Tamont, PDC);
   },
 
   'QUENCH': (nodeData, nodeId) => {

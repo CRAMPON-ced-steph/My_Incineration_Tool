@@ -266,6 +266,23 @@ const QUENCH_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLan
     );
   });
 
+  // Copie d'affichage : échange l'étiquette des clés T/T_in du dataFlow pour le
+  // panneau "Calculation Results" (la valeur amont s'affiche sous "T_in", la valeur
+  // aval sous "T"), sans toucher au résultat propagé (dataFlow.T reste la valeur
+  // réellement transmise au nœud amont).
+  const displayResult = useMemo(() => {
+    if (!calculationResult_QUENCH || typeof calculationResult_QUENCH !== 'object') return calculationResult_QUENCH;
+    const df = calculationResult_QUENCH.dataFlow;
+    if (!df || typeof df !== 'object') return calculationResult_QUENCH;
+    const renamedDf = Object.entries(df).reduce((acc, [k, v]) => {
+      if (k === 'T') acc['T_in'] = v;
+      else if (k === 'T_in') acc['T'] = v;
+      else acc[k] = v;
+      return acc;
+    }, {});
+    return { ...calculationResult_QUENCH, dataFlow: renamedDf };
+  }, [calculationResult_QUENCH]);
+
   const hasCalculatedOnce = useRef(false);
   const hasAutoTriggered = useRef(false);
   useEffect(() => {
@@ -364,9 +381,9 @@ const QUENCH_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLan
 
       {/* Affichage conditionnel des résultats */}
       {isSliderOpen && calculationResult_QUENCH && (
-        <CalculationResults 
-          isOpen={isSliderOpen} 
-          results={calculationResult_QUENCH}
+        <CalculationResults
+          isOpen={isSliderOpen}
+          results={displayResult}
           currentLanguage={currentLanguage}
         />
       )}

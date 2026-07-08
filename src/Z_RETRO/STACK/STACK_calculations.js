@@ -4,20 +4,36 @@ import {coeff_Nm3_to_m3} from '../../A_Transverse_fonction/conv_calculation';
 import { Lv } from '../../A_Transverse_fonction/constantes';
 
 
-export let performCalculation_STACK = (p1, p2, p3, p4, p5,p6) => {
+export let performCalculation_STACK = (p1, p2, p3, p4, p5,p6, p7) => {
     // Convert string inputs to numbers and set defaults
-    
-    
+
+
     let T = parseFloat(p1) || 0;
-    let Qv_wet_Nm3_h = parseFloat(p2) || 0;
+    let flowInput = parseFloat(p2) || 0;
     let O2_dry_pourcent = parseFloat(p3) || 0;
     let H2O_pourcent = parseFloat(p4) || 0;
     let CO2_dry_pourcent = parseFloat(p5) || 0;
     let P_out_mmCE = parseFloat(p6) || 0;
+    // Mode d'entrée du débit : 'Qv_wet_Nm3_h' (défaut), 'Qv_dry_Nm3_h' ou 'Qv_wet_m3_h'
+    let inputMode = p7 || 'Qv_wet_Nm3_h';
 
  ///
  let P_mmCE = P_out_mmCE;
- let Qv_wet_m3_h = coeff_Nm3_to_m3(P_mmCE, T)*Qv_wet_Nm3_h;
+
+ // Détermination du débit volumique humide normalisé (Nm³/h) selon le mode d'entrée
+ let Qv_wet_Nm3_h;
+ if (inputMode === 'Qv_dry_Nm3_h') {
+   // Débit sec [Nm³/h] fourni → débit humide [Nm³/h] via la teneur en eau
+   Qv_wet_Nm3_h = flowInput / (1 - H2O_pourcent / 100);
+ } else if (inputMode === 'Qv_wet_m3_h') {
+   // Débit humide [m³/h] fourni → débit humide [Nm³/h]
+   Qv_wet_Nm3_h = flowInput / coeff_Nm3_to_m3(P_mmCE, T);
+ } else {
+   // Mode par défaut : débit humide [Nm³/h] fourni directement
+   Qv_wet_Nm3_h = flowInput;
+ }
+
+ let Qv_wet_m3_h = Qv_wet_Nm3_h*coeff_Nm3_to_m3(P_mmCE, T);
    
  // Calculate O2 percentage in wet basis
     let O2_humide_pourcent = O2_dry_pourcent * (1 - H2O_pourcent / 100);
