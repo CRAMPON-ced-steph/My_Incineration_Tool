@@ -13,7 +13,7 @@ export const performCalculation_SCRUBBER_option_TsupTsat = (nodeData, Teau,T_amo
 // LECTURE DU NOEUD PRECEDENT
 
 let T = T_amont_SCRUBBER;
-let T_intermediaire = 80;
+let T_intermediaire = 99;
 
     const Qm_CO2_out_kg_h_intermediaire = nodeData.result.dataFlow.Qm_CO2_kg_h;
     const Qm_H2O_out_kg_h_intermediaire = nodeData.result.dataFlow.Qm_H2O_kg_h;

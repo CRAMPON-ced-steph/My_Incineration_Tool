@@ -14,7 +14,12 @@ const DisplayDesignComponent = ({
   onParameterChange,       // Fonction appelée lors du changement d'un paramètre
   isNegative = (val) => val < 0, // Fonction pour vérifier si une valeur est négative
   selectOptions = {},      // Options pour les menus déroulants
+  translations = {},       // Dictionnaire de traductions { langue: { clé: libellé } }
+  currentLanguage = 'fr',  // Code langue courant
 }) => {
+  // Libellé affiché pour une clé de paramètre : traduction de la langue courante si dispo,
+  // sinon repli sur le français, sinon la clé brute (évite d'afficher les clés en changeant de langue)
+  const getLabel = (key) => translations?.[currentLanguage]?.[key] || translations?.fr?.[key] || key;
   // Gestion du changement de paramètre numérique
   const handleParameterChange = (key, value) => {
     const newValue = Number(value);
@@ -93,7 +98,7 @@ const DisplayDesignComponent = ({
             {Object.entries(parametersObject).map(([key, value]) => (
               <div key={key} style={{ display: 'flex', alignItems: 'center', marginBottom: '0px' }}>
                 <label style={{ flex: 1, marginRight: '10px', textAlign: 'right', fontWeight: 'bold' }}>
-                  {key}:
+                  {getLabel(key)}:
                 </label>
                 
                 {isSelectParameter(key, value) ? (

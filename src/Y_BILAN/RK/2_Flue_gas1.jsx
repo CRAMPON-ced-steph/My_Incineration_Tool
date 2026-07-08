@@ -3,7 +3,6 @@ import MassCalculator from '../../C_Components/Tableau_fumee_inverse';
 import TableGeneric from '../../C_Components/Tableau_generique';
 import GasTable from '../../C_Components/Tableau_air';
 
-import PrintButton from '../../C_Components/Windows_print';
 import Input_bilan from '../../C_Components/MiseEnFormeInputParamBilan';
 
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
@@ -28,7 +27,7 @@ const FlueGasParameters = ({ innerData, currentLanguage = 'fr', nodeId }) => {
       wasteTemperature: 20,
       steamWaterTemperature: 20,
       estimatedThermalLosses: 8,
-      airPreheatingPart: 20,
+      airPreheatingPart: 0,
       airPreheatingTemperature: 20,
       airRelativeMoisture: 50,
       waterVaporizedFromExtractor: 500,
@@ -321,8 +320,6 @@ const FlueGasParameters = ({ innerData, currentLanguage = 'fr', nodeId }) => {
       
       <h4>{t('outputFlueGasWithWater')} ({T_out}°C)</h4>
       <MassCalculator masses={masses_FG_out_extractor_RK_kg_h} TemperatureImposee={T_out} />
-      
-      <PrintButton onClick={window.print} text={t('export')} />
     </div>
   );
 };

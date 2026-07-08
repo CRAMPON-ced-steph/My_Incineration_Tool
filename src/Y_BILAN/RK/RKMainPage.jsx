@@ -144,7 +144,7 @@ const RKMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
   };
 
   return (
-    <div className="cadre_pour_onglet_principal">
+    <div className="cadre_pour_onglet_principal" style={{ maxWidth: '98vw' }}>
       <div
         style={{
           display: 'flex',

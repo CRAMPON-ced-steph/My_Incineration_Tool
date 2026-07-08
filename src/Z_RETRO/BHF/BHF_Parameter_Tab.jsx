@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { performCalculation_BHF } from './BHF_calculations';
 
 import InputField from '../../C_Components/input_retro';
@@ -98,6 +98,21 @@ const BHF_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLangua
     localStorage.removeItem(`CalculationResult_BHF_${nodeId}`);
   };
 
+  // Copie d'affichage : échange les étiquettes T / T_in dans le panneau "Calculation
+  // Results" (valeur amont sous "T_in", aval sous "T"), sans toucher au résultat propagé.
+  const displayResult = useMemo(() => {
+    if (!CalculationResult_BHF || typeof CalculationResult_BHF !== 'object') return CalculationResult_BHF;
+    const df = CalculationResult_BHF.dataFlow;
+    if (!df || typeof df !== 'object') return CalculationResult_BHF;
+    const renamedDf = Object.entries(df).reduce((acc, [k, v]) => {
+      if (k === 'T') acc['T_in'] = v;
+      else if (k === 'T_in') acc['T'] = v;
+      else acc[k] = v;
+      return acc;
+    }, {});
+    return { ...CalculationResult_BHF, dataFlow: renamedDf };
+  }, [CalculationResult_BHF]);
+
   const hasCalculatedOnce = useRef(false);
   const hasAutoTriggered = useRef(false);
   useEffect(() => {
@@ -130,7 +145,7 @@ const BHF_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLangua
       </div>
 
       {isSliderOpen && CalculationResult_BHF && (
-      <CalculationResults isOpen={isSliderOpen} results={CalculationResult_BHF} />)}
+      <CalculationResults isOpen={isSliderOpen} results={displayResult} />)}
 
       <div style={{ marginTop: '12px' }}>
         <button

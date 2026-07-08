@@ -90,7 +90,7 @@ const RKdesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
   }
 
   const elements_PDC = [
-    { text: 'P_out_mmCE', value: P_out_mmCE },
+    { text: t('dr_pOutMmCE'), value: P_out_mmCE },
   ];
 
   // DIMENSIONNEMENT DU FOUR avec persistance
@@ -130,14 +130,14 @@ const RKdesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
 
   // Results for obstacle adjustment
   const elements_puissance = [
-    { text: 'Rapport L/D', value: fmt(L_D, 2) },
-    { text: 'Puissance du four [MW]', value: fmt(P, 2) },
-    { text: 'Vitesse des fumées [m/s]', value: fmt(vitesse_m_s, 2) },
-    { text: 'Pente [mm/m]', value: fmt(pente_mm_m, 2) },
-    { text: 'Rayon du four [m]', value: fmt(R_m, 2) },
-    { text: 'Temps de séjour (Sullivan) [min]', value: fmt(Temps_sejour_sullivan_min, 2) },
-    { text: 'Taux_remplissage du four [%]', value: fmt(Taux_remplissage_Freeman_pourcent, 2) },
-    { text: 'Consommation électrique estimée de mise en rotation [kW]', value: fmt(P_elec_mise_en_rotation_du_RK_kW, 2) },
+    { text: t('dr_ratioLD'), value: fmt(L_D, 2) },
+    { text: t('dr_puissanceFour'), value: fmt(P, 2) },
+    { text: t('dr_vitesseFumees'), value: fmt(vitesse_m_s, 2) },
+    { text: t('dr_penteMmM'), value: fmt(pente_mm_m, 2) },
+    { text: t('dr_rayonFour'), value: fmt(R_m, 2) },
+    { text: t('dr_tempsSejourSullivan'), value: fmt(Temps_sejour_sullivan_min, 2) },
+    { text: t('dr_tauxRemplissage'), value: fmt(Taux_remplissage_Freeman_pourcent, 2) },
+    { text: t('dr_consoElecRotation'), value: fmt(P_elec_mise_en_rotation_du_RK_kW, 2) },
   ];
 
   // CALCUL DU NOMBRE DE LANCES avec persistance
@@ -177,14 +177,14 @@ const RKdesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
   }
 
   const elements_bruleurs_lances = [
-    { text: 'Débit déchets liquides [kg/h]', value: fmt(Qm_dechet_kg_h, 0) },
-    { text: 'Puissance brûleur [MW]', value: fmt(puissanceBruleur, 2) },
-    { text: 'Flamme pilote [kW]', value: fmt(flammePilote, 2) },
-    { text: 'Nombre de lances', value: nbLances },
-    { text: 'Nombre de lances backup', value: nbLancesBackup },
-    { text: 'Volume d\'air [Nm³/h]', value: fmt(Qv_air_atomisation_Nm3_h, 2) },
-    { text: 'Volume de vapeur [t/h]', value: fmt(Qv_vapeur_atomisation_t_h, 2) },
-    { text: 'Conso élec pour air co [kW]', value: fmt(puissance_elec_Air_co_RK_kW, 2) },
+    { text: t('dr_debitDechetsLiquidesKgh'), value: fmt(Qm_dechet_kg_h, 0) },
+    { text: t('dr_puissanceBruleur'), value: fmt(puissanceBruleur, 2) },
+    { text: t('dr_flammePilote'), value: fmt(flammePilote, 2) },
+    { text: t('dr_nombreLances'), value: nbLances },
+    { text: t('dr_nombreLancesBackup'), value: nbLancesBackup },
+    { text: t('dr_volumeAir'), value: fmt(Qv_air_atomisation_Nm3_h, 2) },
+    { text: t('dr_volumeVapeur'), value: fmt(Qv_vapeur_atomisation_t_h, 2) },
+    { text: t('dr_consoElecAirCo'), value: fmt(puissance_elec_Air_co_RK_kW, 2) },
   ];
 
   // CALCULE REFROIDISSEMENT FACADE avec persistance
@@ -229,9 +229,9 @@ const RKdesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
   }
 
   const Refroidissement_elements = [
-    { text: 'Perte en eau [m3/h]', value: fmt(perteEau_m3_h, 2) },
-    { text: 'Enthalpie de refroidissement [MW]', value: fmt((enthalpie_kW / 1000), 2) },
-    { text: 'Puissance de la pompe de circulation eau refroidissement [kW]', value: fmt(puissance_Elec_Pompe_kW, 2) },
+    { text: t('dr_perteEau'), value: fmt(perteEau_m3_h, 2) },
+    { text: t('dr_enthalpieRefroidissement'), value: fmt((enthalpie_kW / 1000), 2) },
+    { text: t('dr_puissancePompe'), value: fmt(puissance_Elec_Pompe_kW, 2) },
   ];
 
   // CALCULE DES PERTES THERMIQUES DE LA PAROI avec persistance
@@ -251,11 +251,11 @@ const RKdesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
   const part_PertesThermiques = P !== 0 ? pertesTotales_MW / P * 100 : 0;
 
   const elements_Pertes_Radiatives = [
-    { text: 'Surface extérieure du four [m2]', value: fmt(surfaceParoi_m2, 2) },
-    { text: 'Pertes thermiques radiatives [MW]', value: fmt(pertesRad_MW, 2) },
-    { text: 'Pertes thermiques convectives [MW]', value: fmt(pertesConv_MW, 2) },
-    { text: 'Pertes thermiques totales [MW]', value: fmt(pertesTotales_MW, 2) },
-    { text: 'Part des Pertes thermiques [%]', value: fmt(part_PertesThermiques, 2) },
+    { text: t('dr_surfaceExtFour'), value: fmt(surfaceParoi_m2, 2) },
+    { text: t('dr_pertesRad'), value: fmt(pertesRad_MW, 2) },
+    { text: t('dr_pertesConv'), value: fmt(pertesConv_MW, 2) },
+    { text: t('dr_pertesTotales'), value: fmt(pertesTotales_MW, 2) },
+    { text: t('dr_partPertes'), value: fmt(part_PertesThermiques, 2) },
   ];
 
   // CALCULE DU REFROIDISSEMENT DE LA VIROLE avec persistance
@@ -271,11 +271,11 @@ const RKdesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
   const Nb_de_ventilateurs = Math.floor(Conso_elec_Refroidissement_virole_kW / 1.5);
 
   const elements_Refroidissement_virole = [
-    { text: 'Pertes_radiatives_virole [MW]', value: fmt(Pertes_radiatives_virole, 2) },
-    { text: 'Pertes_convectives_virole [MW]', value: fmt(Pertes_convectives_virole, 2) },
-    { text: 'Pertes_convectives_virole_totale [MW]', value: fmt(Pertes_convectives_virole_totale_MW, 2) },
-    { text: 'Consommation électrique pour refroidir la virole [kW]', value: fmt(Conso_elec_Refroidissement_virole_kW, 2) },
-    { text: 'Nombre de ventilateurs', value: fmt(Nb_de_ventilateurs, 0) },
+    { text: t('dr_pertesRadVirole'), value: fmt(Pertes_radiatives_virole, 2) },
+    { text: t('dr_pertesConvVirole'), value: fmt(Pertes_convectives_virole, 2) },
+    { text: t('dr_pertesConvViroleTot'), value: fmt(Pertes_convectives_virole_totale_MW, 2) },
+    { text: t('dr_consoElecVirole'), value: fmt(Conso_elec_Refroidissement_virole_kW, 2) },
+    { text: t('dr_nombreVentilateurs'), value: fmt(Nb_de_ventilateurs, 0) },
   ];
 
   //CALCULE DIMENSIONNEMENT SCC avec persistance
@@ -298,9 +298,9 @@ const RKdesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
   const Hauteur_SCC_m = Vitesse_fumees_SCC_m_s * Tps_sejour_SCC_s;
 
   const elements_Dimensionnement_SCC = [
-    { text: 'Débit des fumées [m3/h]', value: fmt(Qv_humide_m3_h, 2) },
-    { text: 'Vitesse des fumées [m/s]', value: fmt(Vitesse_fumees_SCC_m_s, 2) },
-    { text: 'Hauteur de la SCC [m]', value: fmt(Hauteur_SCC_m, 2) },
+    { text: t('dr_debitFumeesM3h'), value: fmt(Qv_humide_m3_h, 2) },
+    { text: t('dr_vitesseFumees'), value: fmt(Vitesse_fumees_SCC_m_s, 2) },
+    { text: t('dr_hauteurSCC'), value: fmt(Hauteur_SCC_m, 2) },
   ];
 
   // BRULEURS DE LA SCC avec persistance
@@ -348,13 +348,13 @@ const RKdesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
   }
 
   const elements_bruleurs_SCC = [
-    { text: 'Puissance du brûleur SCC [MW]', value: fmt(P_bruleur_SCC_MW, 2) },
-    { text: 'Puissance de la flamme pilote [kW]', value: fmt(P_flamme_pilote_scc_kW, 2) },
-    { text: 'Nombre de lances [Nb]', value: fmt(Nb_lances_SCC, 0) },
-    { text: 'Nombre de lances back-up [Nb]', value: fmt(Nb_lances_backup_SCC, 0) },
-    { text: 'Volume air atomisation [Nm3/h]', value: fmt(Qv_air_atomisation_SCC_Nm3_h, 2) },
-    { text: 'Volume vapeur atomisation [t/h]', value: fmt(Qv_vapeur_atomisation_SCC_t_h, 2) },
-    { text: 'Conso elec air co [kW]', value: fmt(puissance_elec_Air_co_SCC_kW, 2) },
+    { text: t('dr_puissanceBruleurSCC'), value: fmt(P_bruleur_SCC_MW, 2) },
+    { text: t('dr_puissanceFlammePilote'), value: fmt(P_flamme_pilote_scc_kW, 2) },
+    { text: t('dr_nombreLancesNb'), value: fmt(Nb_lances_SCC, 0) },
+    { text: t('dr_nombreLancesBackupNb'), value: fmt(Nb_lances_backup_SCC, 0) },
+    { text: t('dr_volumeAirAtomisation'), value: fmt(Qv_air_atomisation_SCC_Nm3_h, 2) },
+    { text: t('dr_volumeVapeurAtomisation'), value: fmt(Qv_vapeur_atomisation_SCC_t_h, 2) },
+    { text: t('dr_consoElecAirCo'), value: fmt(puissance_elec_Air_co_SCC_kW, 2) },
   ];
 
   // SCC : estimation des pertes thermiques
@@ -366,12 +366,12 @@ const RKdesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
   const Pth_totales_SCC_MW = Pth_radiatives_SCC_MW + Pth_Conv_SCC_MW;
 
   const elements_Pertes_thermiques_SCC = [
-    { text: 'Température paroi SCC [°C]', value: fmt(T_SCC_C, 2) },
-    { text: 'Hauteur de la SCC [m]', value: fmt(Hauteur_SCC_m, 2) },
-    { text: 'Surface SCC [m2]', value: fmt(Surface_SCC_m2, 2) },
-    { text: 'Pth_radiatives_SCC_MW', value: fmt(Pth_radiatives_SCC_MW, 2) },
-    { text: 'Pth_Conv_SCC_MW', value: fmt(Pth_Conv_SCC_MW, 2) },
-    { text: 'Pth_totales_SCC_MW', value: fmt(Pth_totales_SCC_MW, 2) },
+    { text: t('dr_tempParoiSCC'), value: fmt(T_SCC_C, 2) },
+    { text: t('dr_hauteurSCC'), value: fmt(Hauteur_SCC_m, 2) },
+    { text: t('dr_surfaceSCC'), value: fmt(Surface_SCC_m2, 2) },
+    { text: t('dr_pthRadSCC'), value: fmt(Pth_radiatives_SCC_MW, 2) },
+    { text: t('dr_pthConvSCC'), value: fmt(Pth_Conv_SCC_MW, 2) },
+    { text: t('dr_pthTotSCC'), value: fmt(Pth_totales_SCC_MW, 2) },
   ];
 
   // Estimation consommation extracteur avec persistance
@@ -417,12 +417,12 @@ const RKdesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
   const cout_transport_total = cout_transport_euro_km * distance_km;
 
   const elements_Conso_extracteur = [
-    { text: 'Consommation électrique extracteur [kW]', value: fmt(P_elec_extracteur_kW, 2) },
-    { text: 'Masse des imbrûlées [kg/h]', value: fmt(Masse_imbrûlees_kg_h, 2) },
-    { text: 'CO2 transport [kg/km]', value: fmt(CO2_transport_kg_km, 2) },
-    { text: 'Coût transport [€/km]', value: fmt(cout_transport_euro_km, 2) },
-    { text: 'CO2 transport total [kg]', value: fmt(CO2_transport_total, 2) },
-    { text: 'Coût transport total [€]', value: fmt(cout_transport_total, 2) },
+    { text: t('dr_consoElecExtracteur'), value: fmt(P_elec_extracteur_kW, 2) },
+    { text: t('dr_masseImbruleesKgh'), value: fmt(Masse_imbrûlees_kg_h, 2) },
+    { text: t('dr_co2Transport'), value: fmt(CO2_transport_kg_km, 2) },
+    { text: t('dr_coutTransport'), value: fmt(cout_transport_euro_km, 2) },
+    { text: t('dr_co2TransportTotal'), value: fmt(CO2_transport_total, 2) },
+    { text: t('dr_coutTransportTotal'), value: fmt(cout_transport_total, 2) },
   ];
 
   // ESTIMATION CONSOMMATEUR ELECTRIQUE VENTILATEUR AIR DE COMBUSTION avec persistance
@@ -436,7 +436,7 @@ const RKdesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
   const P_elec_ventilo_air_combustion_kW = Rdt_elec !== 0 ? (Math.abs(100) * Qv_air_comb_Nm3_h * 9.81) / (3600 * 1000 * Rdt_elec) : 0;
 
   const elements_Conso_ventilateur_air_combustion = [
-    { text: 'Consommation électrique ventilateur combustion [kW]', value: fmt(P_elec_ventilo_air_combustion_kW, 2) },
+    { text: t('dr_consoElecVentiloComb'), value: fmt(P_elec_ventilo_air_combustion_kW, 2) },
   ];
 
   //estimation de l'eau évaporée avec persistance
@@ -464,20 +464,20 @@ const RKdesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
   const _denom_eau_evap = (hV_T(Teau_extracteur) - hL_T(Teau_extracteur)) / 3600;
   const Eau_evap_extracteur_kg_h = _denom_eau_evap !== 0 ? FLux_radiatif_kW / _denom_eau_evap : 0;
   const Eau_evap_elements = [
-    { text: 'H20pourcent', value: fmt(H20pourcent, 2) },
-    { text: 'CO2pourcent', value: fmt(CO2pourcent, 2) },
-    { text: 'Tfum_provisoire', value: fmt(Tfum_provisoire, 2) },
-    { text: 'emissivitefume', value: fmt(emissivitefume, 2) },
-    { text: 'Teau_extracteur', value: fmt(Teau_extracteur, 2) },
-    { text: 'S_echange', value: fmt(S_echange, 2) },
-    { text: 'coeff_a', value: fmt(coeff_a, 2) },
-    { text: 'coeff_b', value: fmt(coeff_b, 2) },
-    { text: 'coeff_c', value: fmt(coeff_c, 2) },
-    { text: 'coeff_B', value: fmt(coeff_B, 2) },
-    { text: 'coeff_C', value: fmt(coeff_C, 2) },
-    { text: 'F', value: fmt(F, 2) },
-    { text: 'FLux_radiatif_kW', value: fmt(FLux_radiatif_kW, 2) },
-    { text: 'Eau_evap_extracteur_kg_h', value: fmt(Eau_evap_extracteur_kg_h, 2) },
+    { text: t('dr_h2oPourcent'), value: fmt(H20pourcent, 2) },
+    { text: t('dr_co2Pourcent'), value: fmt(CO2pourcent, 2) },
+    { text: t('dr_tfumProvisoire'), value: fmt(Tfum_provisoire, 2) },
+    { text: t('dr_emissiviteFume'), value: fmt(emissivitefume, 2) },
+    { text: t('dr_teauExtracteur'), value: fmt(Teau_extracteur, 2) },
+    { text: t('dr_sEchange'), value: fmt(S_echange, 2) },
+    { text: t('dr_coeffA'), value: fmt(coeff_a, 2) },
+    { text: t('dr_coeffB'), value: fmt(coeff_b, 2) },
+    { text: t('dr_coeffC'), value: fmt(coeff_c, 2) },
+    { text: t('dr_coeffBmaj'), value: fmt(coeff_B, 2) },
+    { text: t('dr_coeffCmaj'), value: fmt(coeff_C, 2) },
+    { text: t('dr_facteurF'), value: fmt(F, 2) },
+    { text: t('dr_fluxRadiatif'), value: fmt(FLux_radiatif_kW, 2) },
+    { text: t('dr_eauEvapExtracteur'), value: fmt(Eau_evap_extracteur_kg_h, 2) },
   ];
 
   // Update parameters handler

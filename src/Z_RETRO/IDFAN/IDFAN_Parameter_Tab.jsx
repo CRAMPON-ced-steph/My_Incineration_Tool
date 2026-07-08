@@ -251,6 +251,21 @@ const IDFAN_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLang
     handleSendData();
   }, [handleSendData]);
 
+  // Copie d'affichage : échange les étiquettes T / T_in dans le panneau "Calculation
+  // Results" (valeur amont sous "T_in", aval sous "T"), sans toucher au résultat propagé.
+  const displayResult = useMemo(() => {
+    if (!calculationResult_IDFAN || typeof calculationResult_IDFAN !== 'object') return calculationResult_IDFAN;
+    const df = calculationResult_IDFAN.dataFlow;
+    if (!df || typeof df !== 'object') return calculationResult_IDFAN;
+    const renamedDf = Object.entries(df).reduce((acc, [k, v]) => {
+      if (k === 'T') acc['T_in'] = v;
+      else if (k === 'T_in') acc['T'] = v;
+      else acc[k] = v;
+      return acc;
+    }, {});
+    return { ...calculationResult_IDFAN, dataFlow: renamedDf };
+  }, [calculationResult_IDFAN]);
+
   return (
     <div className="container-box">
       <CloseButton onClose={onClose} />
@@ -316,9 +331,9 @@ const IDFAN_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLang
 
       {/* Affichage conditionnel des résultats */}
       {isSliderOpen && calculationResult_IDFAN && (
-        <CalculationResults 
-          isOpen={isSliderOpen} 
-          results={calculationResult_IDFAN}
+        <CalculationResults
+          isOpen={isSliderOpen}
+          results={displayResult}
           currentLanguage={currentLanguage}
         />
       )}

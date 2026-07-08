@@ -3,7 +3,6 @@ import { cv_kj_kg, cv_waste } from '../../A_Transverse_fonction/bilan_fct_combus
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './RK_traduction';
 
-import { fmt } from '../../A_Transverse_fonction/formatNumber';
 import { cp_ref } from '../../A_Transverse_fonction/constantes';
 const CombustionParameters = ({ innerData, currentLanguage = 'fr', nodeId }) => {
   // Get translations
@@ -226,7 +225,10 @@ const CombustionParameters = ({ innerData, currentLanguage = 'fr', nodeId }) => 
       rowData['%Comb'],
       rowData['%Water']
     ).toFixed(1);
-    rowData['Waste CV [kcal/kg]'] = fmt((rowData['Waste CV [kJ/kg]'] / cp_ref), 1);
+    // NB : valeur affichée dans un <input type="number"> → chaîne numérique brute.
+    // fmt() ajouterait une fine espace de milliers (« 1 234.5 »), invalide pour l'input
+    // → la case restait vide dès que la valeur atteignait 1000.
+    rowData['Waste CV [kcal/kg]'] = (parseFloat(rowData['Waste CV [kJ/kg]']) / cp_ref).toFixed(1);
     return rowData;
   };
 
@@ -257,7 +259,16 @@ const CombustionParameters = ({ innerData, currentLanguage = 'fr', nodeId }) => 
     { name: 'H2Ostoechio', data: {} },
   ];
 
-  const [parameters2, setParameters2] = useState(rows2);
+  const [parameters2, setParameters2] = useState(() => {
+    try {
+      const saved = localStorage.getItem(`combustionParameters2_RK_${nodeId}`);
+      const parsed = saved ? JSON.parse(saved) : null;
+      // On n'accepte la valeur sauvegardée que si elle a bien les 6 lignes attendues
+      return Array.isArray(parsed) && parsed.length === rows2.length ? parsed : rows2;
+    } catch {
+      return rows2;
+    }
+  });
   const [totalMasse, setTotalMasse] = useState(rows2);
   const [C_moles, setCmoles] = useState(rows2);
   const [H_moles, setHmoles] = useState(rows2);
@@ -283,7 +294,17 @@ const CombustionParameters = ({ innerData, currentLanguage = 'fr', nodeId }) => 
     const updatedRows2 = [...parameters2];
     
     const totalMass = parameters.reduce((sum, row) => sum + (row.data['Masse [kg/h]'] || 0), 0);
-    setTotalMasse(totalMass)
+    setTotalMasse(totalMass);
+
+    // Pré-calcul des masses Comb/Water/Inert (row0) AVANT la boucle : la ligne Mix [%]
+    // (updatedRows2[2], ~ligne 299) divise par 'Comb  [kg/h]', qui n'était calculé que
+    // plus loin dans la même boucle → la division utilisait la valeur du passage précédent
+    // et les CV tot étaient en retard d'une saisie. On les fixe ici pour convergence immédiate.
+    ['Comb', 'Water', 'Inert'].forEach(element => {
+      updatedRows2[0].data[element + '  [kg/h]'] = parameters.reduce(
+        (sum, row) => sum + (row.data['Masse [kg/h]'] || 0) * (row.data['%' + element] || 0) / 100, 0
+      );
+    });
 
     columns2.forEach(col => {
       if (col === 'Masse totale [kg/h]') {
@@ -384,8 +405,15 @@ const CombustionParameters = ({ innerData, currentLanguage = 'fr', nodeId }) => 
     ) : 0;
     
     updatedRows2[2].data['Waste CV tot [kcal/kg]'] = updatedRows2[2].data['Waste CV tot [kJ/kg]'] / cp_ref;
-  
+
     setParameters2(updatedRows2);
+
+    // Persistance du second tableau (inclut Comb/Waste CV tot) pour le retrouver au rechargement
+    try {
+      localStorage.setItem(`combustionParameters2_RK_${nodeId}`, JSON.stringify(updatedRows2));
+    } catch (e) {
+      console.warn('Erreur sauvegarde parameters2:', e);
+    }
   };
 
   useEffect(() => {
