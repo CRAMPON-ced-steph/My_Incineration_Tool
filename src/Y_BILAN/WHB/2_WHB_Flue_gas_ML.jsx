@@ -7,7 +7,7 @@ import { translations } from './WHB_traduction';
 import { H2O_kg_m3, CO2_kg_m3, O2_kg_m3, N2_kg_m3, CO2_m3_kg, H2O_m3_kg, N2_m3_kg, O2_m3_kg } from '../../A_Transverse_fonction/conv_calculation';
 import { h_fumee } from '../../A_Transverse_fonction/enthalpy_mix_gas';
 
-const WHBFlueGasParameters = ({ innerData, currentLanguage = 'fr', nodeId }) => {
+const WHBFlueGasParameters = ({ innerData, upstreamFG_IN, currentLanguage = 'fr', nodeId }) => {
   const languageCode = getLanguageCode(currentLanguage);
   const t = (key) => translations[languageCode]?.[key] || translations['fr']?.[key] || key;
 
@@ -36,7 +36,9 @@ const WHBFlueGasParameters = ({ innerData, currentLanguage = 'fr', nodeId }) => 
   const T_without_air_ingrease_out = emissions_WHB['Flue gas temperature outlet [°C]'];
   const T_air = emissions_WHB['Ambiant air temperature [°C]'];
   const V_air_ingrease = emissions_WHB['Volume of air ingrease [Nm3/h]'];
-  const FG_IN = innerData?.FG_OUT_kg_h || { CO2: 1, H2O: 1, O2: 1, N2: 1 };
+  // Entrée = sortie du nœud amont (prop stable). Cet onglet écrit innerData.FG_OUT_kg_h (sortie),
+  // donc on ne relit pas cette clé comme entrée sous peine de la corrompre au re-montage.
+  const FG_IN = upstreamFG_IN || { CO2: 1, H2O: 1, O2: 1, N2: 1 };
 
   const FG_CO2_kg_h = FG_IN.CO2;
   const FG_H2O_kg_h = FG_IN.H2O;

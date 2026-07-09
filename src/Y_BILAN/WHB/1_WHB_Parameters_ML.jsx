@@ -6,7 +6,7 @@ import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './WHB_traduction';
 
 import { fmt } from '../../A_Transverse_fonction/formatNumber';
-const WHB_Parameters = ({ innerData, setInnerData, currentLanguage = 'fr', nodeId }) => {
+const WHB_Parameters = ({ innerData, setInnerData, upstreamT_IN, upstreamFG_IN, currentLanguage = 'fr', nodeId }) => {
   const languageCode = getLanguageCode(currentLanguage);
   const t = (key) => translations[languageCode]?.[key] || translations['fr']?.[key] || key;
 
@@ -47,8 +47,11 @@ const WHB_Parameters = ({ innerData, setInnerData, currentLanguage = 'fr', nodeI
     setWHBParameters(prev => ({ ...prev, [key]: value }));
   };
 
-  const FG_IN = innerData?.FG_OUT_kg_h || { CO2: 1, H2O: 1, O2: 1, N2: 1 };
-  const T_IN = innerData?.T_OUT || 900;
+  // Entrée chaudière = sortie du nœud amont, figée en useRef par le MainPage (props stables).
+  // On ne lit PAS innerData.T_OUT/FG_OUT_kg_h ici : l'onglet Flue gas y écrit la sortie chaudière,
+  // ce qui écraserait l'entrée au re-montage d'onglet.
+  const FG_IN = upstreamFG_IN || { CO2: 1, H2O: 1, O2: 1, N2: 1 };
+  const T_IN = upstreamT_IN ?? 900;
 
   const {
     'Boiler Outlet Temperature [°C]': boilerOutletTemp,

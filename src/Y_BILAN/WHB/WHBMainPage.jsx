@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import WHB_Parameters from './1_WHB_Parameters_ML';
 import WHBFlueGasParameters from './2_WHB_Flue_gas_ML';
 import WHBFlueGasPollutantEmission from './3_WHB_Pollutant_Emission_ML';
@@ -17,7 +17,13 @@ const WHBMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLa
   const t = (key) => translations[languageCode]?.[key] || translations['fr']?.[key] || key;
 
   const [innerData, setInnerData] = useState(nodeData.result);
-  
+
+  // Valeurs amont capturées une fois au montage — stables à travers les changements d'onglet.
+  // L'onglet Flue gas écrit innerData.T_OUT / FG_OUT_kg_h (sortie chaudière), ce qui écraserait
+  // l'entrée lue par l'onglet Parameters. On fige donc l'entrée ici (le MainPage ne se démonte pas).
+  const T_IN_upstream  = useRef(nodeData?.result?.T_OUT ?? 900).current;
+  const FG_IN_upstream = useRef(nodeData?.result?.FG_OUT_kg_h || { CO2: 1, H2O: 1, O2: 1, N2: 1 }).current;
+
   const tabs = [
     {
       name: 'steamParameters',
@@ -26,6 +32,8 @@ const WHBMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLa
         <WHB_Parameters
           innerData={innerData}
           setInnerData={setInnerData}
+          upstreamT_IN={T_IN_upstream}
+          upstreamFG_IN={FG_IN_upstream}
           currentLanguage={currentLanguage}
           nodeId={nodeId}
         />
@@ -38,6 +46,7 @@ const WHBMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLa
         <WHBFlueGasParameters
           innerData={innerData}
           setInnerData={setInnerData}
+          upstreamFG_IN={FG_IN_upstream}
           currentLanguage={currentLanguage}
           nodeId={nodeId}
         />
