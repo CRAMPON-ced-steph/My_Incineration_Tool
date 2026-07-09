@@ -14,7 +14,7 @@ import { h_fumee, Qeau_added_to_be_at_T } from '../../A_Transverse_fonction/enth
 import { fmt } from '../../A_Transverse_fonction/formatNumber';
 const SCRUBBERFlueGasParameters = ({ innerData, currentLanguage = 'fr', onDataUpdate, nodeId }) => {
   const initialEmissions_SCRUBBER = {
-    'Flue gas temperature outlet [°C]': innerData?.T_OUT - 150 || 1,
+    'Flue gas temperature outlet [°C]': innerData?.T_OUT || 1,
     'Ambient air temperature [°C]': 20,
     'Volume of air ingress [Nm3/h]': 0,
     'Thermal losses [%]': 2,

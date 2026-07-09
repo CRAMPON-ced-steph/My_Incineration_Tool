@@ -10,7 +10,7 @@ import { translations } from './BHF_traduction';
 
 const BHFFlueGasParameters = ({ innerData, currentLanguage = 'fr', nodeId }) => {
   const initialEmissions_BHF = {
-    'Flue gas temperature outlet [°C]': innerData?.T_OUT -10,
+    'Flue gas temperature outlet [°C]': innerData?.T_OUT || 200,
     'Ambient air temperature [°C]': 20,
     'Volume of air ingress [Nm3/h]': 0,
     'Thermal losses [%]': 2,

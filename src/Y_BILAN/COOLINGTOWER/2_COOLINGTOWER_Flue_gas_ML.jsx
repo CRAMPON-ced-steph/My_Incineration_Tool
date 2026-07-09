@@ -11,7 +11,7 @@ import { translations } from './COOLINGTOWER_traduction';
 import { fmt } from '../../A_Transverse_fonction/formatNumber';
 const COOLINGTOWERFlueGasParameters = ({ innerData, currentLanguage = 'fr', nodeId }) => {
   const initialEmissions_COOLINGTOWER = {
-    'Flue gas temperature outlet [°C]': innerData?.T_OUT - 150 || 1,
+    'Flue gas temperature outlet [°C]': innerData?.T_OUT || 1,
     'Ambient air temperature [°C]': 20,
     'Volume of air ingress [Nm3/h]': 0,
     'Thermal losses [%]': 2,
