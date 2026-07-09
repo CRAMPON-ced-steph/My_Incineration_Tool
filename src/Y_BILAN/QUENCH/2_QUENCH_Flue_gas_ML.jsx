@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import MassCalculator from '../../C_Components/Tableau_fumee_inverse';
 import TableGeneric from '../../C_Components/Tableau_generique';
-import { Tsat_p, hL_T, hL_p, hV_p, h_pT } from '../../A_Transverse_fonction/steam_table3';
-import { fh_CO2, fh_H2O, fh_O2, fh_N2 } from '../../A_Transverse_fonction/enthalpy_gas';
 import { H2O_kg_m3, CO2_kg_m3, O2_kg_m3, N2_kg_m3 } from '../../A_Transverse_fonction/conv_calculation';
 import { h_fumee, Qeau_added_to_be_at_T } from '../../A_Transverse_fonction/enthalpy_mix_gas';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';

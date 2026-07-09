@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import PollutantCalculator from '../../C_Components/Tableau_polluants';
-import FGT from '../../C_Components/Traitement_fumées';
 import { R_1, R_2, R_3 } from '../../A_Transverse_fonction/FGT_fct';
-import SCC_NOxAndMercuryCalculator from '../../C_Components/Traitement_fumées_SCC';
 import TableGeneric from '../../C_Components/Tableau_generique';
 import { getOpexData } from '../../A_Transverse_fonction/opexDataService';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
