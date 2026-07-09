@@ -1,5 +1,20 @@
 export const translations = {
   fr: {
+    // — Clés états dynamiques (copiées de QUENCH, 2026-07) —
+    "SOx reactif": "Réactif SOx",
+    "HCl reactif": "Réactif HCl",
+    "HF reactif": "Réactif HF",
+    "efficacite_SOx": "Efficacité SOx [%]",
+    "HCl efficacité": "Efficacité HCl [%]",
+    "HF efficacité": "Efficacité HF [%]",
+    "SOx stoechiométrie": "Stoechiométrie SOx",
+    "HCl stoechiométrie": "Stoechiométrie HCl",
+    "HF stoechiométrie": "Stoechiométrie HF",
+    "Flue gas temperature outlet [°C]": "Température de sortie des gaz [°C]",
+    "Ambient air temperature [°C]": "Température de l'air ambiant [°C]",
+    "Volume of air ingress [Nm3/h]": "Volume d'entrée d'air [Nm3/h]",
+    "Thermal losses [%]": "Pertes thermiques [%]",
+    "Cooling water temperature [°C]": "Température de l'eau de refroidissement [°C]",
     // — Ajouts audit i18n (2026-07) —
     "Temperature inlet REACTOR [°C]": "Température entrée REACTOR [°C]",
     "Delta enthalpies [kJ/kg]": "Delta enthalpies [kJ/kg]",
@@ -226,6 +241,21 @@ export const translations = {
   },
 
   en: {
+    // — Clés états dynamiques (copiées de QUENCH, 2026-07) —
+    "SOx reactif": "SOx reactif",
+    "HCl reactif": "HCl reactif",
+    "HF reactif": "HF reactif",
+    "efficacite_SOx": "SOx efficiency [%]",
+    "HCl efficacité": "HCl efficiency [%]",
+    "HF efficacité": "HF efficiency [%]",
+    "SOx stoechiométrie": "SOx stoichiometry",
+    "HCl stoechiométrie": "HCl stoichiometry",
+    "HF stoechiométrie": "HF stoichiometry",
+    "Flue gas temperature outlet [°C]": "Flue gas temperature outlet [°C]",
+    "Ambient air temperature [°C]": "Ambient air temperature [°C]",
+    "Volume of air ingress [Nm3/h]": "Volume of air ingress [Nm3/h]",
+    "Thermal losses [%]": "Thermal losses [%]",
+    "Cooling water temperature [°C]": "Cooling water temperature [°C]",
     // — Ajouts audit i18n (2026-07) —
     "rapport": "Report",
     "Temperature inlet REACTOR [°C]": "Temperature inlet REACTOR [°C]",
@@ -452,6 +482,21 @@ export const translations = {
   },
 
   de: {
+    // — Clés états dynamiques (copiées de QUENCH, 2026-07) —
+    "SOx reactif": "SOx-Reaktionsmittel",
+    "HCl reactif": "HCl-Reaktionsmittel",
+    "HF reactif": "HF-Reaktionsmittel",
+    "efficacite_SOx": "SOx-Effizienz [%]",
+    "HCl efficacité": "HCl-Effizienz [%]",
+    "HF efficacité": "HF-Effizienz [%]",
+    "SOx stoechiométrie": "SOx-Stöchiometrie",
+    "HCl stoechiométrie": "HCl-Stöchiometrie",
+    "HF stoechiométrie": "HF-Stöchiometrie",
+    "Flue gas temperature outlet [°C]": "Rauchgasaustrittstemperatur [°C]",
+    "Ambient air temperature [°C]": "Umgebungslufttemperatur [°C]",
+    "Volume of air ingress [Nm3/h]": "Lufteinlassvolumen [Nm³/h]",
+    "Thermal losses [%]": "Wärmeverluste [%]",
+    "Cooling water temperature [°C]": "Kühlwassertemperatur [°C]",
     // — Ajouts audit i18n (2026-07) —
     "rapport": "Bericht",
     "Temperature inlet REACTOR [°C]": "Eintrittstemperatur REACTOR [°C]",
@@ -678,6 +723,21 @@ export const translations = {
   },
 
   es: {
+    // — Clés états dynamiques (copiées de QUENCH, 2026-07) —
+    "SOx reactif": "Reactivo SOx",
+    "HCl reactif": "Reactivo HCl",
+    "HF reactif": "Reactivo HF",
+    "efficacite_SOx": "Eficiencia SOx [%]",
+    "HCl efficacité": "Eficiencia HCl [%]",
+    "HF efficacité": "Eficiencia HF [%]",
+    "SOx stoechiométrie": "Estequiometría SOx",
+    "HCl stoechiométrie": "Estequiometría HCl",
+    "HF stoechiométrie": "Estequiometría HF",
+    "Flue gas temperature outlet [°C]": "Temperatura de salida de gases [°C]",
+    "Ambient air temperature [°C]": "Temperatura del aire ambiente [°C]",
+    "Volume of air ingress [Nm3/h]": "Volumen de entrada de aire [Nm³/h]",
+    "Thermal losses [%]": "Pérdidas térmicas [%]",
+    "Cooling water temperature [°C]": "Temperatura del agua de enfriamiento [°C]",
     // — Ajouts audit i18n (2026-07) —
     "rapport": "Informe",
     "Temperature inlet REACTOR [°C]": "Temperatura de entrada REACTOR [°C]",
@@ -904,6 +964,21 @@ export const translations = {
   },
 
   it: {
+    // — Clés états dynamiques (copiées de QUENCH, 2026-07) —
+    "SOx reactif": "Reattivo SOx",
+    "HCl reactif": "Reattivo HCl",
+    "HF reactif": "Reattivo HF",
+    "efficacite_SOx": "Efficienza SOx [%]",
+    "HCl efficacité": "Efficienza HCl [%]",
+    "HF efficacité": "Efficienza HF [%]",
+    "SOx stoechiométrie": "Stechiometria SOx",
+    "HCl stoechiométrie": "Stechiometria HCl",
+    "HF stoechiométrie": "Stechiometria HF",
+    "Flue gas temperature outlet [°C]": "Temperatura uscita gas di combustione [°C]",
+    "Ambient air temperature [°C]": "Temperatura aria ambiente [°C]",
+    "Volume of air ingress [Nm3/h]": "Volume ingresso aria [Nm³/h]",
+    "Thermal losses [%]": "Perdite termiche [%]",
+    "Cooling water temperature [°C]": "Temperatura acqua di raffreddamento [°C]",
     // — Ajouts audit i18n (2026-07) —
     "rapport": "Rapporto",
     "Temperature inlet REACTOR [°C]": "Temperatura di ingresso REACTOR [°C]",
@@ -1130,6 +1205,21 @@ export const translations = {
   },
 
   pt: {
+    // — Clés états dynamiques (copiées de QUENCH, 2026-07) —
+    "SOx reactif": "Reagente SOx",
+    "HCl reactif": "Reagente HCl",
+    "HF reactif": "Reagente HF",
+    "efficacite_SOx": "Eficiência SOx [%]",
+    "HCl efficacité": "Eficiência HCl [%]",
+    "HF efficacité": "Eficiência HF [%]",
+    "SOx stoechiométrie": "Estequiometria SOx",
+    "HCl stoechiométrie": "Estequiometria HCl",
+    "HF stoechiométrie": "Estequiometria HF",
+    "Flue gas temperature outlet [°C]": "Temperatura de saída dos gases [°C]",
+    "Ambient air temperature [°C]": "Temperatura do ar ambiente [°C]",
+    "Volume of air ingress [Nm3/h]": "Volume de entrada de ar [Nm³/h]",
+    "Thermal losses [%]": "Perdas térmicas [%]",
+    "Cooling water temperature [°C]": "Temperatura da água de arrefecimento [°C]",
     // — Ajouts audit i18n (2026-07) —
     "rapport": "Relatório",
     "Temperature inlet REACTOR [°C]": "Temperatura de entrada REACTOR [°C]",
@@ -1356,6 +1446,21 @@ export const translations = {
   },
 
   ru: {
+    // — Clés états dynamiques (copiées de QUENCH, 2026-07) —
+    "SOx reactif": "Реагент SOx",
+    "HCl reactif": "Реагент HCl",
+    "HF reactif": "Реагент HF",
+    "efficacite_SOx": "Эффективность SOx [%]",
+    "HCl efficacité": "Эффективность HCl [%]",
+    "HF efficacité": "Эффективность HF [%]",
+    "SOx stoechiométrie": "Стехиометрия SOx",
+    "HCl stoechiométrie": "Стехиометрия HCl",
+    "HF stoechiométrie": "Стехиометрия HF",
+    "Flue gas temperature outlet [°C]": "Температура выхода газов [°C]",
+    "Ambient air temperature [°C]": "Температура окружающего воздуха [°C]",
+    "Volume of air ingress [Nm3/h]": "Объем поступления воздуха [Nm³/h]",
+    "Thermal losses [%]": "Тепловые потери [%]",
+    "Cooling water temperature [°C]": "Температура охлаждающей воды [°C]",
     // — Ajouts audit i18n (2026-07) —
     "rapport": "Отчёт",
     "Temperature inlet REACTOR [°C]": "Температура входа REACTOR [°C]",
@@ -1582,6 +1687,21 @@ export const translations = {
   },
 
   zh: {
+    // — Clés états dynamiques (copiées de QUENCH, 2026-07) —
+    "SOx reactif": "SOx反应剂",
+    "HCl reactif": "HCl反应剂",
+    "HF reactif": "HF反应剂",
+    "efficacite_SOx": "SOx效率 [%]",
+    "HCl efficacité": "HCl效率 [%]",
+    "HF efficacité": "HF效率 [%]",
+    "SOx stoechiométrie": "SOx化学计量",
+    "HCl stoechiométrie": "HCl化学计量",
+    "HF stoechiométrie": "HF化学计量",
+    "Flue gas temperature outlet [°C]": "烟气出口温度 [°C]",
+    "Ambient air temperature [°C]": "环境空气温度 [°C]",
+    "Volume of air ingress [Nm3/h]": "空气进入体积 [Nm³/h]",
+    "Thermal losses [%]": "热损失 [%]",
+    "Cooling water temperature [°C]": "冷却水温度 [°C]",
     // — Ajouts audit i18n (2026-07) —
     "rapport": "报告",
     "rpt_reactor_title": "干式反应器——综合报告",
@@ -1807,6 +1927,21 @@ export const translations = {
   },
 
   ja: {
+    // — Clés états dynamiques (copiées de QUENCH, 2026-07) —
+    "SOx reactif": "SOx反応剤",
+    "HCl reactif": "HCl反応剤",
+    "HF reactif": "HF反応剤",
+    "efficacite_SOx": "SOx効率 [%]",
+    "HCl efficacité": "HCl効率 [%]",
+    "HF efficacité": "HF効率 [%]",
+    "SOx stoechiométrie": "SOx化学量論",
+    "HCl stoechiométrie": "HCl化学量論",
+    "HF stoechiométrie": "HF化学量論",
+    "Flue gas temperature outlet [°C]": "ガス出口温度 [°C]",
+    "Ambient air temperature [°C]": "環境空気温度 [°C]",
+    "Volume of air ingress [Nm3/h]": "空気進入量 [Nm³/h]",
+    "Thermal losses [%]": "熱損失 [%]",
+    "Cooling water temperature [°C]": "冷却水温度 [°C]",
     // — Ajouts audit i18n (2026-07) —
     "rapport": "レポート",
     "rpt_reactor_title": "乾式リアクター——総合レポート",
@@ -2032,6 +2167,21 @@ export const translations = {
   },
 
   ar: {
+    // — Clés états dynamiques (copiées de QUENCH, 2026-07) —
+    "SOx reactif": "كاشف SOx",
+    "HCl reactif": "كاشف HCl",
+    "HF reactif": "كاشف HF",
+    "efficacite_SOx": "كفاءة SOx [%]",
+    "HCl efficacité": "كفاءة HCl [%]",
+    "HF efficacité": "كفاءة HF [%]",
+    "SOx stoechiométrie": "القياس المتكافئ SOx",
+    "HCl stoechiométrie": "القياس المتكافئ HCl",
+    "HF stoechiométrie": "القياس المتكافئ HF",
+    "Flue gas temperature outlet [°C]": "درجة حرارة مخرج الغازات [°C]",
+    "Ambient air temperature [°C]": "درجة حرارة الهواء المحيط [°C]",
+    "Volume of air ingress [Nm3/h]": "حجم دخول الهواء [Nm³/h]",
+    "Thermal losses [%]": "الخسائر الحرارية [%]",
+    "Cooling water temperature [°C]": "درجة حرارة ماء التبريد [°C]",
     // — Ajouts audit i18n (2026-07) —
     "rapport": "تقرير",
     "rpt_reactor_title": "المفاعل الجاف — تقرير تجميعي",

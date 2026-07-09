@@ -1,5 +1,15 @@
 export const translations = {
   fr: {
+    // — Clés états dynamiques (copiées de QUENCH, 2026-07) —
+    "SOx reactif": "Réactif SOx",
+    "HCl reactif": "Réactif HCl",
+    "HF reactif": "Réactif HF",
+    "efficacite_SOx": "Efficacité SOx [%]",
+    "HCl efficacité": "Efficacité HCl [%]",
+    "HF efficacité": "Efficacité HF [%]",
+    "SOx stoechiométrie": "Stoechiométrie SOx",
+    "HCl stoechiométrie": "Stoechiométrie HCl",
+    "HF stoechiométrie": "Stoechiométrie HF",
     // — Ajouts audit i18n (2026-07) —
     "Consommation vis de transport": "Consommation vis de transport",
 
@@ -150,6 +160,16 @@ export const translations = {
   },
 
   en: {
+    // — Clés états dynamiques (copiées de QUENCH, 2026-07) —
+    "SOx reactif": "SOx reactif",
+    "HCl reactif": "HCl reactif",
+    "HF reactif": "HF reactif",
+    "efficacite_SOx": "SOx efficiency [%]",
+    "HCl efficacité": "HCl efficiency [%]",
+    "HF efficacité": "HF efficiency [%]",
+    "SOx stoechiométrie": "SOx stoichiometry",
+    "HCl stoechiométrie": "HCl stoichiometry",
+    "HF stoechiométrie": "HF stoichiometry",
     // — Ajouts audit i18n (2026-07) —
     "Consommation vis de transport": "Screw conveyor consumption",
 
@@ -302,6 +322,16 @@ export const translations = {
   },
 
   de: {
+    // — Clés états dynamiques (copiées de QUENCH, 2026-07) —
+    "SOx reactif": "SOx-Reaktionsmittel",
+    "HCl reactif": "HCl-Reaktionsmittel",
+    "HF reactif": "HF-Reaktionsmittel",
+    "efficacite_SOx": "SOx-Effizienz [%]",
+    "HCl efficacité": "HCl-Effizienz [%]",
+    "HF efficacité": "HF-Effizienz [%]",
+    "SOx stoechiométrie": "SOx-Stöchiometrie",
+    "HCl stoechiométrie": "HCl-Stöchiometrie",
+    "HF stoechiométrie": "HF-Stöchiometrie",
     // — Ajouts audit i18n (2026-07) —
     "Consommation vis de transport": "Schneckenförderer-Verbrauch",
 
@@ -442,6 +472,16 @@ export const translations = {
   },
 
   es: {
+    // — Clés états dynamiques (copiées de QUENCH, 2026-07) —
+    "SOx reactif": "Reactivo SOx",
+    "HCl reactif": "Reactivo HCl",
+    "HF reactif": "Reactivo HF",
+    "efficacite_SOx": "Eficiencia SOx [%]",
+    "HCl efficacité": "Eficiencia HCl [%]",
+    "HF efficacité": "Eficiencia HF [%]",
+    "SOx stoechiométrie": "Estequiometría SOx",
+    "HCl stoechiométrie": "Estequiometría HCl",
+    "HF stoechiométrie": "Estequiometría HF",
     // — Ajouts audit i18n (2026-07) —
     "Consommation vis de transport": "Consumo del transportador de tornillo",
 
@@ -580,6 +620,16 @@ export const translations = {
   },
 
   it: {
+    // — Clés états dynamiques (copiées de QUENCH, 2026-07) —
+    "SOx reactif": "Reattivo SOx",
+    "HCl reactif": "Reattivo HCl",
+    "HF reactif": "Reattivo HF",
+    "efficacite_SOx": "Efficienza SOx [%]",
+    "HCl efficacité": "Efficienza HCl [%]",
+    "HF efficacité": "Efficienza HF [%]",
+    "SOx stoechiométrie": "Stechiometria SOx",
+    "HCl stoechiométrie": "Stechiometria HCl",
+    "HF stoechiométrie": "Stechiometria HF",
     // — Ajouts audit i18n (2026-07) —
     "Consommation vis de transport": "Consumo del trasportatore a coclea",
 
@@ -718,6 +768,16 @@ export const translations = {
   },
 
   pt: {
+    // — Clés états dynamiques (copiées de QUENCH, 2026-07) —
+    "SOx reactif": "Reagente SOx",
+    "HCl reactif": "Reagente HCl",
+    "HF reactif": "Reagente HF",
+    "efficacite_SOx": "Eficiência SOx [%]",
+    "HCl efficacité": "Eficiência HCl [%]",
+    "HF efficacité": "Eficiência HF [%]",
+    "SOx stoechiométrie": "Estequiometria SOx",
+    "HCl stoechiométrie": "Estequiometria HCl",
+    "HF stoechiométrie": "Estequiometria HF",
     // — Ajouts audit i18n (2026-07) —
     "Consommation vis de transport": "Consumo do transportador de rosca",
     'Flue gases': 'Gases de combustão',
@@ -853,6 +913,16 @@ export const translations = {
   },
 
   ru: {
+    // — Clés états dynamiques (copiées de QUENCH, 2026-07) —
+    "SOx reactif": "Реагент SOx",
+    "HCl reactif": "Реагент HCl",
+    "HF reactif": "Реагент HF",
+    "efficacite_SOx": "Эффективность SOx [%]",
+    "HCl efficacité": "Эффективность HCl [%]",
+    "HF efficacité": "Эффективность HF [%]",
+    "SOx stoechiométrie": "Стехиометрия SOx",
+    "HCl stoechiométrie": "Стехиометрия HCl",
+    "HF stoechiométrie": "Стехиометрия HF",
     // — Ajouts audit i18n (2026-07) —
     "Consommation vis de transport": "Потребление шнекового транспортёра",
 
@@ -991,6 +1061,16 @@ export const translations = {
   },
 
   zh: {
+    // — Clés états dynamiques (copiées de QUENCH, 2026-07) —
+    "SOx reactif": "SOx反应剂",
+    "HCl reactif": "HCl反应剂",
+    "HF reactif": "HF反应剂",
+    "efficacite_SOx": "SOx效率 [%]",
+    "HCl efficacité": "HCl效率 [%]",
+    "HF efficacité": "HF效率 [%]",
+    "SOx stoechiométrie": "SOx化学计量",
+    "HCl stoechiométrie": "HCl化学计量",
+    "HF stoechiométrie": "HF化学计量",
     // — Ajouts audit i18n (2026-07) —
     "Consommation vis de transport": "螺旋输送机消耗",
 
@@ -1130,6 +1210,16 @@ export const translations = {
   },
 
   ja: {
+    // — Clés états dynamiques (copiées de QUENCH, 2026-07) —
+    "SOx reactif": "SOx反応剤",
+    "HCl reactif": "HCl反応剤",
+    "HF reactif": "HF反応剤",
+    "efficacite_SOx": "SOx効率 [%]",
+    "HCl efficacité": "HCl効率 [%]",
+    "HF efficacité": "HF効率 [%]",
+    "SOx stoechiométrie": "SOx化学量論",
+    "HCl stoechiométrie": "HCl化学量論",
+    "HF stoechiométrie": "HF化学量論",
     // — Ajouts audit i18n (2026-07) —
     "Consommation vis de transport": "スクリューコンベア消費",
     'Flue gases': '排ガス',
@@ -1266,6 +1356,16 @@ export const translations = {
   },
 
   ar: {
+    // — Clés états dynamiques (copiées de QUENCH, 2026-07) —
+    "SOx reactif": "كاشف SOx",
+    "HCl reactif": "كاشف HCl",
+    "HF reactif": "كاشف HF",
+    "efficacite_SOx": "كفاءة SOx [%]",
+    "HCl efficacité": "كفاءة HCl [%]",
+    "HF efficacité": "كفاءة HF [%]",
+    "SOx stoechiométrie": "القياس المتكافئ SOx",
+    "HCl stoechiométrie": "القياس المتكافئ HCl",
+    "HF stoechiométrie": "القياس المتكافئ HF",
     // — Ajouts audit i18n (2026-07) —
     "Consommation vis de transport": "استهلاك الناقل اللولبي",
 
