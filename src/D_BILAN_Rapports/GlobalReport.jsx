@@ -290,7 +290,7 @@ const GlobalReport = ({ nodes, edges, onClose, currentLanguage }) => {
         });
         if (!canvas.width || !canvas.height) return;
 
-        const imgData = canvas.toDataURL('image/png');
+        const imgData = canvas.toDataURL('image/jpeg', 0.85);
         const blockH  = (canvas.height / canvas.width) * PW;
 
         // If block won't fit on current page (and page isn't empty), go to next page
@@ -299,7 +299,7 @@ const GlobalReport = ({ nodes, edges, onClose, currentLanguage }) => {
           pageY = 0;
         }
 
-        pdf.addImage(imgData, 'PNG', 0, pageY, PW, blockH);
+        pdf.addImage(imgData, 'JPEG', 0, pageY, PW, blockH);
 
         if (pageY + blockH > PH) {
           // Block overflows the page — sliding window for the rest
@@ -307,7 +307,7 @@ const GlobalReport = ({ nodes, edges, onClose, currentLanguage }) => {
           let pos        = pageY - PH;
           while (heightLeft > 0) {
             pdf.addPage();
-            pdf.addImage(imgData, 'PNG', 0, pos, PW, blockH);
+            pdf.addImage(imgData, 'JPEG', 0, pos, PW, blockH);
             pos       -= PH;
             heightLeft -= PH;
           }
@@ -339,7 +339,7 @@ const GlobalReport = ({ nodes, edges, onClose, currentLanguage }) => {
           });
           section.style.height = savedH;
 
-          pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, PW, PH);
+          pdf.addImage(canvas.toDataURL('image/jpeg', 0.85), 'JPEG', 0, 0, PW, PH);
           pageY = PH;
           continue;
         }
@@ -366,17 +366,17 @@ const GlobalReport = ({ nodes, edges, onClose, currentLanguage }) => {
           scale: 2, useCORS: true, logging: false,
           backgroundColor: '#ffffff',
         });
-        const imgData = canvas.toDataURL('image/png');
+        const imgData = canvas.toDataURL('image/jpeg', 0.85);
         const imgH    = (canvas.height / canvas.width) * PW;
 
-        pdf.addImage(imgData, 'PNG', 0, 0, PW, imgH);
+        pdf.addImage(imgData, 'JPEG', 0, 0, PW, imgH);
         pageY = imgH;
 
         let heightLeft = imgH - PH;
         let pos        = -PH;
         while (heightLeft > 0) {
           pdf.addPage();
-          pdf.addImage(imgData, 'PNG', 0, pos, PW, imgH);
+          pdf.addImage(imgData, 'JPEG', 0, pos, PW, imgH);
           pos       -= PH;
           heightLeft -= PH;
         }

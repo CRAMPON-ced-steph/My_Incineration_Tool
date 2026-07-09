@@ -1,5 +1,6 @@
 import React from 'react';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
+import { makeReportT } from '../../D_BILAN_Rapports/report_traduction';
 import { translations } from './IACT_traduction';
 import { getOpexData } from '../../A_Transverse_fonction/opexDataService';
 import { CO2_kg_m3, H2O_kg_m3, O2_kg_m3, N2_kg_m3 } from '../../A_Transverse_fonction/conv_calculation';
@@ -38,7 +39,7 @@ const GasTable = ({ title, data = {} }) => {
           <tr>
             <th style={styles.th}></th>
             {gases.map(g => <th key={g} style={styles.th}>{g}</th>)}
-            <th style={styles.th}>Total</th>
+            <th style={styles.th}>{tr("total")}</th>
           </tr>
         </thead>
         <tbody>
@@ -186,6 +187,7 @@ const OpexCostSection = ({ opex, t }) => {
 
 const IACT_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
   const languageCode = getLanguageCode(currentLanguage);
+  const tr = makeReportT(currentLanguage);
   const t = (key) => translations[languageCode]?.[key] || translations['fr']?.[key] || key;
   // Températures
   const T_IN        = innerData.T_OUT     || 0;    // température entrée (venant du nœud amont)

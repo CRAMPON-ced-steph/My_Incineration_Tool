@@ -2,6 +2,7 @@ import React from 'react';
 import { getOpexData } from '../../A_Transverse_fonction/opexDataService';
 import { CO2_kg_m3, H2O_kg_m3, O2_kg_m3, N2_kg_m3 } from '../../A_Transverse_fonction/conv_calculation';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
+import { makeReportT } from '../../D_BILAN_Rapports/report_traduction';
 import { translations } from './BHF_traduction';
 import { fmt } from '../../A_Transverse_fonction/formatNumber';
 
@@ -38,7 +39,7 @@ const GasTable = ({ title, data = {} }) => {
           <tr>
             <th style={styles.th}></th>
             {gases.map(g => <th key={g} style={styles.th}>{g}</th>)}
-            <th style={styles.th}>Total</th>
+            <th style={styles.th}>{tr("total")}</th>
           </tr>
         </thead>
         <tbody>
@@ -129,19 +130,19 @@ const computeOpexCosts = (innerData) => {
   const co2Air = (conso_air * powerRatio * ratioElec) / 1000;
 
   const eauRows = [
-    { label: 'Eau potable', m3h: d.Conso_EauPotable_m3 || 0, prix: waterPrices?.potable || 0 },
-    { label: 'Eau de refroidissement', m3h: d.Conso_EauRefroidissement_m3 || 0, prix: waterPrices?.cooling || 0 },
-    { label: 'Eau déminéralisée', m3h: d.Conso_EauDemin_m3 || 0, prix: waterPrices?.demineralized || 0 },
-    { label: 'Eau de rivière', m3h: d.Conso_EauRiviere_m3 || 0, prix: waterPrices?.river || 0 },
-    { label: 'Eau adoucie', m3h: d.Conso_EauAdoucie_m3 || 0, prix: waterPrices?.soft || 0 },
+    { label: tr("waterPotable"), m3h: d.Conso_EauPotable_m3 || 0, prix: waterPrices?.potable || 0 },
+    { label: tr("waterCooling"), m3h: d.Conso_EauRefroidissement_m3 || 0, prix: waterPrices?.cooling || 0 },
+    { label: tr("waterDemin"), m3h: d.Conso_EauDemin_m3 || 0, prix: waterPrices?.demineralized || 0 },
+    { label: tr("waterRiver"), m3h: d.Conso_EauRiviere_m3 || 0, prix: waterPrices?.river || 0 },
+    { label: tr("waterSoft"), m3h: d.Conso_EauAdoucie_m3 || 0, prix: waterPrices?.soft || 0 },
   ].filter(r => r.m3h > 0);
   const coutEau = eauRows.reduce((s, r) => s + r.m3h * r.prix, 0);
 
   const reactifRows = [
     { label: 'CaCO₃', kgh: d.Conso_CaCO3_kg || 0, prix: reagentsTypes?.CaCO3?.cost || 0, co2T: reagentsTypes?.CaCO3?.co2PerTrip || 0 },
     { label: 'CaO', kgh: d.Conso_CaO_kg || 0, prix: reagentsTypes?.CaO?.cost || 0, co2T: reagentsTypes?.CaO?.co2PerTrip || 0 },
-    { label: 'Ca(OH)₂ sec', kgh: d.Conso_CaOH2_dry_kg || 0, prix: reagentsTypes?.CaOH2?.cost || 0, co2T: reagentsTypes?.CaOH2?.co2PerTrip || 0 },
-    { label: 'Ca(OH)₂ humide', kgh: d.Conso_CaOH2_wet_kg || 0, prix: reagentsTypes?.CaOH2?.cost || 0, co2T: reagentsTypes?.CaOH2?.co2PerTrip || 0 },
+    { label: tr("caoh2Dry"), kgh: d.Conso_CaOH2_dry_kg || 0, prix: reagentsTypes?.CaOH2?.cost || 0, co2T: reagentsTypes?.CaOH2?.co2PerTrip || 0 },
+    { label: tr("caoh2Wet"), kgh: d.Conso_CaOH2_wet_kg || 0, prix: reagentsTypes?.CaOH2?.cost || 0, co2T: reagentsTypes?.CaOH2?.co2PerTrip || 0 },
     { label: 'NaOH', kgh: d.Conso_NaOH_kg || 0, prix: reagentsTypes?.NaOH?.cost || 0, co2T: reagentsTypes?.NaOH?.co2PerTrip || 0 },
     { label: 'NaHCO₃', kgh: d.Conso_NaOHCO3_kg || 0, prix: reagentsTypes?.NaOHCO3?.cost || 0, co2T: reagentsTypes?.NaOHCO3?.co2PerTrip || 0 },
     { label: 'NH₃', kgh: d.Conso_Ammonia_kg || 0, prix: reagentsTypes?.NH3?.cost || 0, co2T: reagentsTypes?.NH3?.co2PerTrip || 0 },
@@ -152,10 +153,10 @@ const computeOpexCosts = (innerData) => {
   const co2TransportReactifs = reactifRows.reduce((s, r) => s + (r.kgh / 1000) * r.co2T, 0);
 
   const energieRows = [
-    { label: 'Gaz haute valeur', MW: d.conso_gaz_H_MW || 0, prix: gasTypes?.naturalGasH?.molecule || 0, co2e: gasTypes?.naturalGasH?.co2Emission || 0 },
-    { label: 'Gaz basse valeur', MW: d.conso_gaz_L_MW || 0, prix: gasTypes?.naturalGasL?.molecule || 0, co2e: gasTypes?.naturalGasL?.co2Emission || 0 },
-    { label: 'Gaz process', MW: d.conso_gaz_Process_MW || 0, prix: gasTypes?.processGas?.molecule || 0, co2e: gasTypes?.processGas?.co2Emission || 0 },
-    { label: 'Fuel', MW: d.conso_fuel_MW || 0, prix: fuelTypes?.FOD?.liquid || 0, co2e: fuelTypes?.FOD?.co2Emission || 0 },
+    { label: tr("gasHighValue"), MW: d.conso_gaz_H_MW || 0, prix: gasTypes?.naturalGasH?.molecule || 0, co2e: gasTypes?.naturalGasH?.co2Emission || 0 },
+    { label: tr("gasLowValue"), MW: d.conso_gaz_L_MW || 0, prix: gasTypes?.naturalGasL?.molecule || 0, co2e: gasTypes?.naturalGasL?.co2Emission || 0 },
+    { label: tr("gasProcess"), MW: d.conso_gaz_Process_MW || 0, prix: gasTypes?.processGas?.molecule || 0, co2e: gasTypes?.processGas?.co2Emission || 0 },
+    { label: tr("fuel"), MW: d.conso_fuel_MW || 0, prix: fuelTypes?.FOD?.liquid || 0, co2e: fuelTypes?.FOD?.co2Emission || 0 },
   ].filter(r => r.MW > 0);
   const coutEnergie = energieRows.reduce((s, r) => s + r.MW * r.prix, 0);
   const co2Energie = energieRows.reduce((s, r) => s + r.MW * r.co2e, 0);
@@ -295,6 +296,7 @@ const OpexCostSection = ({ opex, t }) => {
 
 const BHF_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
   const languageCode = getLanguageCode(currentLanguage);
+  const tr = makeReportT(currentLanguage);
   const t = (key) => translations[languageCode]?.[key] || translations['fr']?.[key] || key;
 
   const T_OUT = innerData.T_OUT || 0;
@@ -332,8 +334,8 @@ const BHF_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
   const reactifConsumption = [
     { label: 'CaCO₃ [kg/h]', value: innerData.Conso_CaCO3_kg },
     { label: 'CaO [kg/h]', value: innerData.Conso_CaO_kg },
-    { label: 'Ca(OH)₂ sec [kg/h]', value: innerData.Conso_CaOH2_dry_kg },
-    { label: 'Ca(OH)₂ humide [kg/h]', value: innerData.Conso_CaOH2_wet_kg },
+    { label: tr("caoh2SecKgh"), value: innerData.Conso_CaOH2_dry_kg },
+    { label: tr("caoh2HumideKgh"), value: innerData.Conso_CaOH2_wet_kg },
     { label: 'NaOH [kg/h]', value: innerData.Conso_NaOH_kg },
     { label: 'NaHCO₃ [kg/h]', value: innerData.Conso_NaOHCO3_kg },
     { label: 'NH₃ [kg/h]', value: innerData.Conso_Ammonia_kg },

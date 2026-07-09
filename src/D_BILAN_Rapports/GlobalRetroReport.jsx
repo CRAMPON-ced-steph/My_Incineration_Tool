@@ -84,7 +84,7 @@ const loadPointsE = () => {
   return points;
 };
 
-const CombustionDiagramSection = () => {
+const CombustionDiagramSection = ({ tr }) => {
   const pA = loadPt('pointA', { x: 100, y: 2 });
   const pB = loadPt('pointB', { x: 150, y: 10 });
   const pC = loadPt('pointC', { x: 800, y: 10 });
@@ -97,7 +97,7 @@ const CombustionDiagramSection = () => {
     datasets: [
       {
         type: 'line',
-        label: 'Domaine opératoire',
+        label: tr("domaineOperatoire"),
         data: [pA, pB, pC, pD, pA],
         borderColor: 'rgb(75, 192, 192)',
         backgroundColor: 'rgba(75, 192, 192, 0.15)',
@@ -109,7 +109,7 @@ const CombustionDiagramSection = () => {
       },
       {
         type: 'scatter',
-        label: 'Point E — résultat rétro-calcul',
+        label: tr("pointERetro"),
         data: pointsE,
         backgroundColor: 'orange',
         pointRadius: 9,
@@ -126,7 +126,7 @@ const CombustionDiagramSection = () => {
       legend: { position: 'top' },
       title: {
         display: true,
-        text: 'Diagramme de combustion — Domaine opératoire',
+        text: tr("diagCombDomaine"),
         font: { size: 15 },
       },
       tooltip: {
@@ -149,7 +149,7 @@ const CombustionDiagramSection = () => {
         min: 0,
         title: {
           display: true,
-          text: 'Débit déchets [kg/h]',
+          text: tr("debitDechetsKgh"),
           font: { size: 13, weight: 'bold' },
         },
         grid: { color: 'rgba(0,0,0,0.07)' },
@@ -158,7 +158,7 @@ const CombustionDiagramSection = () => {
         min: 0,
         title: {
           display: true,
-          text: 'Puissance incinérateur [MW]',
+          text: tr("puissanceIncinerateurMW"),
           font: { size: 13, weight: 'bold' },
         },
         grid: { color: 'rgba(0,0,0,0.07)' },
@@ -183,7 +183,7 @@ const CombustionDiagramSection = () => {
     <div style={diagStyles.wrapper}>
       <div style={diagStyles.header}>
         <span style={diagStyles.headerIcon}>🔥</span>
-        <span style={diagStyles.headerTitle}>Diagramme de combustion — Positionnement du point de calcul</span>
+        <span style={diagStyles.headerTitle}>{tr("diagCombPosition")}</span>
       </div>
       <div style={diagStyles.body}>
         {isBelow && (
@@ -195,10 +195,10 @@ const CombustionDiagramSection = () => {
         <table style={diagStyles.table}>
           <thead>
             <tr>
-              <th style={{ ...diagStyles.th, width: 50 }}>Point</th>
-              <th style={{ ...diagStyles.th, textAlign: 'left' }}>Rôle</th>
-              <th style={diagStyles.th}>Débit [kg/h]</th>
-              <th style={diagStyles.th}>Puissance [MW]</th>
+              <th style={{ ...diagStyles.th, width: 50 }}>{tr("pointWord")}</th>
+              <th style={{ ...diagStyles.th, textAlign: 'left' }}>{tr("roleWord")}</th>
+              <th style={diagStyles.th}>{tr("debitKgh")}</th>
+              <th style={diagStyles.th}>{tr("puissanceMW")}</th>
             </tr>
           </thead>
           <tbody>
@@ -436,7 +436,7 @@ const GlobalRetroReport = ({ nodes, edges, onClose, currentLanguage }) => {
           });
           sections[0].style.height = savedH;
 
-          pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, PW, PH);
+          pdf.addImage(canvas.toDataURL('image/jpeg', 0.85), 'JPEG', 0, 0, PW, PH);
           continue;
         }
 
@@ -446,19 +446,19 @@ const GlobalRetroReport = ({ nodes, edges, onClose, currentLanguage }) => {
           backgroundColor: '#ffffff',
         });
 
-        const imgData   = canvas.toDataURL('image/png');
+        const imgData   = canvas.toDataURL('image/jpeg', 0.85);
         const imgHeight = (canvas.height * PW) / canvas.width;
 
         let position   = 0;
         let heightLeft = imgHeight;
 
-        pdf.addImage(imgData, 'PNG', 0, position, PW, imgHeight);
+        pdf.addImage(imgData, 'JPEG', 0, position, PW, imgHeight);
         heightLeft -= PH;
 
         while (heightLeft > 0) {
           position -= PH;
           pdf.addPage();
-          pdf.addImage(imgData, 'PNG', 0, position, PW, imgHeight);
+          pdf.addImage(imgData, 'JPEG', 0, position, PW, imgHeight);
           heightLeft -= PH;
         }
       }
@@ -597,7 +597,7 @@ const GlobalRetroReport = ({ nodes, edges, onClose, currentLanguage }) => {
 
               {/* Diagramme de combustion — toujours en dernier */}
               <div data-pdf-section style={styles.diagSection}>
-                <CombustionDiagramSection />
+                <CombustionDiagramSection tr={tr} />
               </div>
 
               {/* Bilan air parasite par ligne — après le diagramme de combustion */}
@@ -628,23 +628,23 @@ const ReportBody = ({ node, tr }) => {
       />
     );
   }
-  if (label === 'STACK')        return <STACKReportBody        calculationResult={result} inputParams={inputData} />;
-  if (label === 'BHF')          return <BHFReportBody          calculationResult={result} inputParams={inputData} />;
-  if (label === 'COOLINGTOWER') return <COOLINGTOWERReportBody calculationResult={result} inputParams={inputData} />;
-  if (label === 'CYCLONE')      return <CYCLONEReportBody      calculationResult={result} inputParams={inputData} />;
-  if (label === 'DENOX')        return <DENOXReportBody        calculationResult={result} inputParams={inputData} />;
-  if (label === 'ELECTROFILTER')return <ELECTROFILTERReportBody calculationResult={result} inputParams={inputData} />;
-  if (label === 'FB')           return <FBReportBody           calculationResult={result} inputParams={inputData} />;
-  if (label === 'GF')           return <GFReportBody           calculationResult={result} inputParams={inputData} />;
-  if (label === 'IDFAN')        return <IDFANReportBody        calculationResult={result} inputParams={inputData} />;
-  if (label === 'QUENCH')       return <QUENCHReportBody       calculationResult={result} inputParams={inputData} />;
-  if (label === 'SCRUBBER')     return <SCRUBBERReportBody     calculationResult={result} inputParams={inputData} />;
-  if (label === 'REACTOR')        return <REACTORReportBody        calculationResult={result} inputParams={inputData} />;
-  if (label === 'WHB')            return <WHBReportBody            calculationResult={result} inputParams={inputData} />;
-  if (label === 'AIRINJECTION')   return <AIRINJECTIONReportBody   calculationResult={result} inputParams={inputData} />;
-  if (label === 'IACT')           return <IACTReportBody           calculationResult={result} inputParams={inputData} />;
-  if (label === 'HX_TubeAndShell')return <TUBEANDSHELLReportBody  calculationResult={result} inputParams={inputData} />;
-  if (label === 'WATER_INJECTION')return <WATER_INJECTIONReportBody calculationResult={result} inputParams={inputData} />;
+  if (label === 'STACK')        return <STACKReportBody        calculationResult={result} inputParams={inputData} tr={tr} />;
+  if (label === 'BHF')          return <BHFReportBody          calculationResult={result} inputParams={inputData} tr={tr} />;
+  if (label === 'COOLINGTOWER') return <COOLINGTOWERReportBody calculationResult={result} inputParams={inputData} tr={tr} />;
+  if (label === 'CYCLONE')      return <CYCLONEReportBody      calculationResult={result} inputParams={inputData} tr={tr} />;
+  if (label === 'DENOX')        return <DENOXReportBody        calculationResult={result} inputParams={inputData} tr={tr} />;
+  if (label === 'ELECTROFILTER')return <ELECTROFILTERReportBody calculationResult={result} inputParams={inputData} tr={tr} />;
+  if (label === 'FB')           return <FBReportBody           calculationResult={result} inputParams={inputData} tr={tr} />;
+  if (label === 'GF')           return <GFReportBody           calculationResult={result} inputParams={inputData} tr={tr} />;
+  if (label === 'IDFAN')        return <IDFANReportBody        calculationResult={result} inputParams={inputData} tr={tr} />;
+  if (label === 'QUENCH')       return <QUENCHReportBody       calculationResult={result} inputParams={inputData} tr={tr} />;
+  if (label === 'SCRUBBER')     return <SCRUBBERReportBody     calculationResult={result} inputParams={inputData} tr={tr} />;
+  if (label === 'REACTOR')        return <REACTORReportBody        calculationResult={result} inputParams={inputData} tr={tr} />;
+  if (label === 'WHB')            return <WHBReportBody            calculationResult={result} inputParams={inputData} tr={tr} />;
+  if (label === 'AIRINJECTION')   return <AIRINJECTIONReportBody   calculationResult={result} inputParams={inputData} tr={tr} />;
+  if (label === 'IACT')           return <IACTReportBody           calculationResult={result} inputParams={inputData} tr={tr} />;
+  if (label === 'HX_TubeAndShell')return <TUBEANDSHELLReportBody  calculationResult={result} inputParams={inputData} tr={tr} />;
+  if (label === 'WATER_INJECTION')return <WATER_INJECTIONReportBody calculationResult={result} inputParams={inputData} tr={tr} />;
   return null;
 };
 
@@ -797,7 +797,7 @@ const GasTableSTACK = ({ df }) => {
           </tr>
         ))}
         <tr style={{ fontWeight:'bold', background:'#eaf0fb' }}>
-          <td style={bodyStyles.tdLabel}>Total</td>
+          <td style={bodyStyles.tdLabel}>{tr("total")}</td>
           <td style={bodyStyles.td}>{fmt(rows.reduce((s,r)=>s+(parseFloat(r.nm3h)||0),0),0)}</td>
           <td style={bodyStyles.td}>{fmt(rows.reduce((s,r)=>s+(parseFloat(r.kgh)||0),0),0)}</td>
           <td style={bodyStyles.td}>{fmt(rows.reduce((s,r)=>s+(parseFloat(r.hkj)||0),0),0)}</td>
@@ -808,13 +808,13 @@ const GasTableSTACK = ({ df }) => {
   );
 };
 
-const STACKReportBody = ({ calculationResult, inputParams }) => {
+const STACKReportBody = ({ calculationResult, inputParams, tr }) => {
   const df = calculationResult?.dataFlow || {};
   const p  = inputParams || {};
 
   return (
     <div style={bodyStyles.body}>
-      <h1 style={bodyStyles.mainTitle}>Cheminée (STACK) — Rétro-calcul</h1>
+      <h1 style={bodyStyles.mainTitle}>{tr("retroTitleSTACK")}</h1>
       <Section title="1. Paramètres d'entrée">
         <div style={bodyStyles.twoCol}>
           <Sub title="Conditions">
@@ -861,14 +861,14 @@ const STACKReportBody = ({ calculationResult, inputParams }) => {
 };
 
 // ── BHF ───────────────────────────────────────────────────────────────────────
-const BHFReportBody = ({ calculationResult, inputParams }) => {
+const BHFReportBody = ({ calculationResult, inputParams, tr }) => {
   const r  = calculationResult || {};
   const df = r.dataFlow || {};
   const d  = r.dataBHF || {};
   const p  = inputParams || {};
   return (
     <div style={bodyStyles.body}>
-      <h1 style={bodyStyles.mainTitle}>Filtre à manches (BHF) — Rétro-calcul</h1>
+      <h1 style={bodyStyles.mainTitle}>{tr("retroTitleBHF")}</h1>
       <Section title="1. Paramètres d'entrée">
         <div style={bodyStyles.twoCol}>
           <Sub title="Conditions amont">
@@ -914,10 +914,10 @@ const BHFReportBody = ({ calculationResult, inputParams }) => {
       <Section title="4. Synthèse">
         <div style={bodyStyles.tagRow}>
           {[
-            { label:'Q air décolmatage [Nm³/h]', val:fmt(d.Qv_air_entrant_Nm3_h,0), color:'#4a90e2' },
-            { label:'Q air parasite [Nm³/h]',    val:fmt(d.Qv_air_injecté_net_Nm3_h,0), color:'#e74c3c' },
-            { label:'PDC aéro [mmCE]',            val:fmt(d.PDC_aero,0),               color:'#2ecc71' },
-            { label:'T amont [°C]',               val:fmt(df.T,1),                     color:'#f39c12' },
+            { label: tr("qAirDecolmatageNm3"), val:fmt(d.Qv_air_entrant_Nm3_h,0), color:'#4a90e2' },
+            { label: tr("qAirParasiteNm3"),    val:fmt(d.Qv_air_injecté_net_Nm3_h,0), color:'#e74c3c' },
+            { label: tr("pdcAeroMmCE"),            val:fmt(d.PDC_aero,0),               color:'#2ecc71' },
+            { label: tr("tAmontC"),               val:fmt(df.T,1),                     color:'#f39c12' },
           ].map(({ label, val, color }) => (
             <div key={label} style={{ ...bodyStyles.tag, borderLeft:`4px solid ${color}` }}>
               <span style={bodyStyles.tagLabel}>{label}</span>
@@ -931,14 +931,14 @@ const BHFReportBody = ({ calculationResult, inputParams }) => {
 };
 
 // ── COOLINGTOWER ──────────────────────────────────────────────────────────────
-const COOLINGTOWERReportBody = ({ calculationResult, inputParams }) => {
+const COOLINGTOWERReportBody = ({ calculationResult, inputParams, tr }) => {
   const r  = calculationResult || {};
   const df = r.dataFlow || {};
   const d  = r.dataCOOLINGTOWER || {};
   const p  = inputParams || {};
   return (
     <div style={bodyStyles.body}>
-      <h1 style={bodyStyles.mainTitle}>Tour de refroidissement (COOLING TOWER) — Rétro-calcul</h1>
+      <h1 style={bodyStyles.mainTitle}>{tr("retroTitleCOOLINGTOWER")}</h1>
       <Section title="1. Paramètres d'entrée">
         <div style={bodyStyles.twoCol}>
           <Sub title="Températures">
@@ -982,10 +982,10 @@ const COOLINGTOWERReportBody = ({ calculationResult, inputParams }) => {
       <Section title="4. Synthèse">
         <div style={bodyStyles.tagRow}>
           {[
-            { label:'T finale [°C]',            val:fmt(d.T_final,1),                  color:'#e74c3c' },
-            { label:'H vapeur [kW]',            val:fmt(d.H_vapeur_kW,1),              color:'#4a90e2' },
-            { label:'H intermédiaire [kW]',     val:fmt(d.H_tot_intermediaire_kW,1),   color:'#2ecc71' },
-            { label:'T intermédiaire [°C]',     val:fmt(d.T_intermediaire,1),           color:'#f39c12' },
+            { label: tr("tFinaleC"),            val:fmt(d.T_final,1),                  color:'#e74c3c' },
+            { label: tr("hVapeurKW"),            val:fmt(d.H_vapeur_kW,1),              color:'#4a90e2' },
+            { label: tr("hIntermediaireKW"),     val:fmt(d.H_tot_intermediaire_kW,1),   color:'#2ecc71' },
+            { label: tr("tIntermediaireC"),     val:fmt(d.T_intermediaire,1),           color:'#f39c12' },
           ].map(({ label, val, color }) => (
             <div key={label} style={{ ...bodyStyles.tag, borderLeft:`4px solid ${color}` }}>
               <span style={bodyStyles.tagLabel}>{label}</span>
@@ -999,14 +999,14 @@ const COOLINGTOWERReportBody = ({ calculationResult, inputParams }) => {
 };
 
 // ── CYCLONE ───────────────────────────────────────────────────────────────────
-const CYCLONEReportBody = ({ calculationResult, inputParams }) => {
+const CYCLONEReportBody = ({ calculationResult, inputParams, tr }) => {
   const r  = calculationResult || {};
   const df = r.dataFlow || {};
   const d  = r.dataCYCLONE || {};
   const p  = inputParams || {};
   return (
     <div style={bodyStyles.body}>
-      <h1 style={bodyStyles.mainTitle}>Cyclone — Rétro-calcul</h1>
+      <h1 style={bodyStyles.mainTitle}>{tr("retroTitleCYCLONE")}</h1>
       <Section title="1. Paramètres d'entrée">
         <div style={bodyStyles.twoCol}>
           <Sub title="Conditions">
@@ -1052,10 +1052,10 @@ const CYCLONEReportBody = ({ calculationResult, inputParams }) => {
       <Section title="4. Synthèse">
         <div style={bodyStyles.tagRow}>
           {[
-            { label:'Q air entrant [Nm³/h]', val:fmt(d.Qv_air_entrant_Nm3_h,0), color:'#4a90e2' },
-            { label:'Q air parasite [Nm³/h]', val:fmt(d.Qv_air_injecté_net_Nm3_h,0), color:'#e74c3c' },
-            { label:'PDC aéro [mmCE]',         val:fmt(p.PDC_aero,0),            color:'#2ecc71' },
-            { label:'T amont [°C]',            val:fmt(df.T,1),                  color:'#f39c12' },
+            { label: tr("qAirEntrantNm3"), val:fmt(d.Qv_air_entrant_Nm3_h,0), color:'#4a90e2' },
+            { label: tr("qAirParasiteNm3"), val:fmt(d.Qv_air_injecté_net_Nm3_h,0), color:'#e74c3c' },
+            { label: tr("pdcAeroMmCE"),         val:fmt(p.PDC_aero,0),            color:'#2ecc71' },
+            { label: tr("tAmontC"),            val:fmt(df.T,1),                  color:'#f39c12' },
           ].map(({ label, val, color }) => (
             <div key={label} style={{ ...bodyStyles.tag, borderLeft:`4px solid ${color}` }}>
               <span style={bodyStyles.tagLabel}>{label}</span>
@@ -1069,14 +1069,14 @@ const CYCLONEReportBody = ({ calculationResult, inputParams }) => {
 };
 
 // ── DENOX ─────────────────────────────────────────────────────────────────────
-const DENOXReportBody = ({ calculationResult, inputParams }) => {
+const DENOXReportBody = ({ calculationResult, inputParams, tr }) => {
   const r  = calculationResult || {};
   const df = r.dataFlow || {};
   const d  = r.dataDENOX || {};
   const p  = inputParams || {};
   return (
     <div style={bodyStyles.body}>
-      <h1 style={bodyStyles.mainTitle}>DeNOx — Rétro-calcul</h1>
+      <h1 style={bodyStyles.mainTitle}>{tr("retroTitleDENOX")}</h1>
       <Section title="1. Paramètres d'entrée">
         <div style={bodyStyles.twoCol}>
           <Sub title="Objectif NOx">
@@ -1121,10 +1121,10 @@ const DENOXReportBody = ({ calculationResult, inputParams }) => {
       <Section title="4. Synthèse">
         <div style={bodyStyles.tagRow}>
           {[
-            { label:'NOx cible [mg/Nm³]',      val:fmt(p.targetNOx,0),                         color:'#e74c3c' },
-            { label:'NOx mesuré [mg/Nm³]',     val:fmt(d.NOx_concentration_mg_Nm3,0),           color:'#f39c12' },
-            { label:'NH₃ injecté [mol/h]',     val:fmt(d.Quantite_NH3_mol_h,0),                color:'#4a90e2' },
-            { label:'Conso réactif [kg/h]',    val:fmt(d.Conso_stoechio_reactif_kg_h,2),       color:'#2ecc71' },
+            { label: tr("noxCible"),      val:fmt(p.targetNOx,0),                         color:'#e74c3c' },
+            { label: tr("noxMesure"),     val:fmt(d.NOx_concentration_mg_Nm3,0),           color:'#f39c12' },
+            { label: tr("nh3Injecte"),     val:fmt(d.Quantite_NH3_mol_h,0),                color:'#4a90e2' },
+            { label: tr("consoReactifKgh"),    val:fmt(d.Conso_stoechio_reactif_kg_h,2),       color:'#2ecc71' },
           ].map(({ label, val, color }) => (
             <div key={label} style={{ ...bodyStyles.tag, borderLeft:`4px solid ${color}` }}>
               <span style={bodyStyles.tagLabel}>{label}</span>
@@ -1138,14 +1138,14 @@ const DENOXReportBody = ({ calculationResult, inputParams }) => {
 };
 
 // ── ELECTROFILTER ─────────────────────────────────────────────────────────────
-const ELECTROFILTERReportBody = ({ calculationResult, inputParams }) => {
+const ELECTROFILTERReportBody = ({ calculationResult, inputParams, tr }) => {
   const r  = calculationResult || {};
   const df = r.dataFlow || {};
   const d  = r.dataELECTROFILTER || {};
   const p  = inputParams || {};
   return (
     <div style={bodyStyles.body}>
-      <h1 style={bodyStyles.mainTitle}>Électrofiltre — Rétro-calcul</h1>
+      <h1 style={bodyStyles.mainTitle}>{tr("retroTitleELECTROFILTER")}</h1>
       <Section title="1. Paramètres d'entrée">
         <div style={bodyStyles.twoCol}>
           <Sub title="Conditions">
@@ -1191,10 +1191,10 @@ const ELECTROFILTERReportBody = ({ calculationResult, inputParams }) => {
       <Section title="4. Synthèse">
         <div style={bodyStyles.tagRow}>
           {[
-            { label:'Q air entrant [Nm³/h]',  val:fmt(d.Qv_air_entrant_Nm3_h,0), color:'#4a90e2' },
-            { label:'Q air parasite [Nm³/h]', val:fmt(d.Qv_air_injecté_net_Nm3_h,0), color:'#e74c3c' },
-            { label:'PDC aéro [mmCE]',         val:fmt(p.PDC_aero,0),              color:'#2ecc71' },
-            { label:'T amont [°C]',            val:fmt(df.T,1),                    color:'#f39c12' },
+            { label: tr("qAirEntrantNm3"),  val:fmt(d.Qv_air_entrant_Nm3_h,0), color:'#4a90e2' },
+            { label: tr("qAirParasiteNm3"), val:fmt(d.Qv_air_injecté_net_Nm3_h,0), color:'#e74c3c' },
+            { label: tr("pdcAeroMmCE"),         val:fmt(p.PDC_aero,0),              color:'#2ecc71' },
+            { label: tr("tAmontC"),            val:fmt(df.T,1),                    color:'#f39c12' },
           ].map(({ label, val, color }) => (
             <div key={label} style={{ ...bodyStyles.tag, borderLeft:`4px solid ${color}` }}>
               <span style={bodyStyles.tagLabel}>{label}</span>
@@ -1208,13 +1208,13 @@ const ELECTROFILTERReportBody = ({ calculationResult, inputParams }) => {
 };
 
 // ── FB ────────────────────────────────────────────────────────────────────────
-const FBReportBody = ({ calculationResult, inputParams }) => {
+const FBReportBody = ({ calculationResult, inputParams, tr }) => {
   const r = calculationResult || {};
   const p = inputParams || {};
   const NCV_kJ_kg = (parseFloat(r.calculatePCIkcalkg) || 0) * 4.1868;
   return (
     <div style={bodyStyles.body}>
-      <h1 style={bodyStyles.mainTitle}>Four à lit fluidisé (FB) — Rétro-calcul</h1>
+      <h1 style={bodyStyles.mainTitle}>{tr("retroTitleFB")}</h1>
       <Section title="1. Paramètres d'entrée">
         <div style={bodyStyles.twoCol}>
           <Sub title="Conditions de calcul">
@@ -1253,10 +1253,10 @@ const FBReportBody = ({ calculationResult, inputParams }) => {
       <Section title="4. Synthèse">
         <div style={bodyStyles.tagRow}>
           {[
-            { label:'Puissance [MW]',  val:fmt(r.P_incinerateur_MWH,3),   color:'#e74c3c' },
-            { label:'Q boue [kg/h]',   val:fmt(r.Qboue_kg_h,0),           color:'#2ecc71' },
-            { label:'PCI [kcal/kg]',   val:fmt(r.calculatePCIkcalkg,0),   color:'#f39c12' },
-            { label:'PCI [kJ/kg]',     val:fmt(NCV_kJ_kg,0),              color:'#f39c12' },
+            { label: tr("puissanceMW"),  val:fmt(r.P_incinerateur_MWH,3),   color:'#e74c3c' },
+            { label: tr("qBoueKgh"),   val:fmt(r.Qboue_kg_h,0),           color:'#2ecc71' },
+            { label: tr("pciKcalKg"),   val:fmt(r.calculatePCIkcalkg,0),   color:'#f39c12' },
+            { label: tr("pciKjKg"),     val:fmt(NCV_kJ_kg,0),              color:'#f39c12' },
             { label:'MS [%]',          val:fmt(r.MS,1),                   color:'#4a90e2' },
           ].map(({ label, val, color }) => (
             <div key={label} style={{ ...bodyStyles.tag, borderLeft:`4px solid ${color}` }}>
@@ -1271,7 +1271,7 @@ const FBReportBody = ({ calculationResult, inputParams }) => {
 };
 
 // ── GF ────────────────────────────────────────────────────────────────────────
-const GFReportBody = ({ calculationResult, inputParams }) => {
+const GFReportBody = ({ calculationResult, inputParams, tr }) => {
   const r       = calculationResult || {};
   const p       = inputParams || {};
   const INCI    = r.INCI || {};
@@ -1279,7 +1279,7 @@ const GFReportBody = ({ calculationResult, inputParams }) => {
   const PCI_kJ_kg = (parseFloat(r.PCI_kCal_kg) || 0) * 4.1868;
   return (
     <div style={bodyStyles.body}>
-      <h1 style={bodyStyles.mainTitle}>Four à grille (GF) — Rétro-calcul</h1>
+      <h1 style={bodyStyles.mainTitle}>{tr("retroTitleGF")}</h1>
       <Section title="1. Paramètres d'entrée">
         <div style={bodyStyles.twoCol}>
           <Sub title="Déchets et air">
@@ -1329,10 +1329,10 @@ const GFReportBody = ({ calculationResult, inputParams }) => {
       <Section title="5. Synthèse">
         <div style={bodyStyles.tagRow}>
           {[
-            { label:'Puissance [MW]',             val:fmt((parseFloat(r.P_incinerateur_kWH)||0)/1000,3), color:'#e74c3c' },
-            { label:'PCI [kcal/kg]',              val:fmt(r.PCI_kCal_kg,0),                             color:'#f39c12' },
-            { label:'Énergie récupérée [kW]',     val:fmt(INCI.Energie_recuperee_chaudiere_kW,0),       color:'#4a90e2' },
-            { label:'Rendement WHB [%]',          val:fmt(INCI.WHB_yield_pourcent,1),                   color:'#2ecc71' },
+            { label: tr("puissanceMW"),             val:fmt((parseFloat(r.P_incinerateur_kWH)||0)/1000,3), color:'#e74c3c' },
+            { label: tr("pciKcalKg"),              val:fmt(r.PCI_kCal_kg,0),                             color:'#f39c12' },
+            { label: tr("energieRecupereeKW"),     val:fmt(INCI.Energie_recuperee_chaudiere_kW,0),       color:'#4a90e2' },
+            { label: tr("rendementWHBPct"),          val:fmt(INCI.WHB_yield_pourcent,1),                   color:'#2ecc71' },
           ].map(({ label, val, color }) => (
             <div key={label} style={{ ...bodyStyles.tag, borderLeft:`4px solid ${color}` }}>
               <span style={bodyStyles.tagLabel}>{label}</span>
@@ -1346,14 +1346,14 @@ const GFReportBody = ({ calculationResult, inputParams }) => {
 };
 
 // ── IDFAN ─────────────────────────────────────────────────────────────────────
-const IDFANReportBody = ({ calculationResult, inputParams }) => {
+const IDFANReportBody = ({ calculationResult, inputParams, tr }) => {
   const r  = calculationResult || {};
   const df = r.dataFlow || {};
   const d  = r.Id_fan || {};
   const p  = inputParams || {};
   return (
     <div style={bodyStyles.body}>
-      <h1 style={bodyStyles.mainTitle}>Ventilateur tirage induit (ID FAN) — Rétro-calcul</h1>
+      <h1 style={bodyStyles.mainTitle}>{tr("retroTitleIDFAN")}</h1>
       <Section title="1. Paramètres d'entrée">
         <div style={bodyStyles.twoCol}>
           <Sub title="Conditions">
@@ -1395,10 +1395,10 @@ const IDFANReportBody = ({ calculationResult, inputParams }) => {
       <Section title="4. Synthèse">
         <div style={bodyStyles.tagRow}>
           {[
-            { label:'Puissance élec. [kW]',    val:fmt(d.P_elec,2),              color:'#e74c3c' },
-            { label:'Chaleur dissipée [kW]',   val:fmt(d.Pth_chaleur_dissipee,2), color:'#f39c12' },
-            { label:'P sortie [mmCE]',         val:fmt(d.P_out_mmCE,0),           color:'#4a90e2' },
-            { label:'Rdt élec. [%]',           val:fmt(p.Rdt_elec,1),             color:'#2ecc71' },
+            { label: tr("puissanceElecKW"),    val:fmt(d.P_elec,2),              color:'#e74c3c' },
+            { label: tr("chaleurDissipeeKW"),   val:fmt(d.Pth_chaleur_dissipee,2), color:'#f39c12' },
+            { label: tr("pSortieMmCE"),         val:fmt(d.P_out_mmCE,0),           color:'#4a90e2' },
+            { label: tr("rdtElecPct"),           val:fmt(p.Rdt_elec,1),             color:'#2ecc71' },
           ].map(({ label, val, color }) => (
             <div key={label} style={{ ...bodyStyles.tag, borderLeft:`4px solid ${color}` }}>
               <span style={bodyStyles.tagLabel}>{label}</span>
@@ -1412,14 +1412,14 @@ const IDFANReportBody = ({ calculationResult, inputParams }) => {
 };
 
 // ── QUENCH ────────────────────────────────────────────────────────────────────
-const QUENCHReportBody = ({ calculationResult, inputParams }) => {
+const QUENCHReportBody = ({ calculationResult, inputParams, tr }) => {
   const r  = calculationResult || {};
   const df = r.dataFlow || {};
   const d  = r.dataQUENCH || {};
   const p  = inputParams || {};
   return (
     <div style={bodyStyles.body}>
-      <h1 style={bodyStyles.mainTitle}>Quench — Rétro-calcul</h1>
+      <h1 style={bodyStyles.mainTitle}>{tr("retroTitleQUENCH")}</h1>
       <Section title="1. Paramètres d'entrée">
         <div style={bodyStyles.twoCol}>
           <Sub title="Conditions">
@@ -1462,10 +1462,10 @@ const QUENCHReportBody = ({ calculationResult, inputParams }) => {
       <Section title="4. Synthèse">
         <div style={bodyStyles.tagRow}>
           {[
-            { label:'Q eau [kg/h]',      val:fmt(d.Qeau,1),        color:'#4a90e2' },
-            { label:'T sortie [°C]',     val:fmt(df.T,1),           color:'#e74c3c' },
-            { label:'PDC aéro [mmCE]',   val:fmt(d.PDC_aero,0),    color:'#2ecc71' },
-            { label:'P sortie [mmCE]',   val:fmt(d.P_out_mmCE,0),  color:'#f39c12' },
+            { label: tr("qEauKgh"),      val:fmt(d.Qeau,1),        color:'#4a90e2' },
+            { label: tr("tSortieC"),     val:fmt(df.T,1),           color:'#e74c3c' },
+            { label: tr("pdcAeroMmCE"),   val:fmt(d.PDC_aero,0),    color:'#2ecc71' },
+            { label: tr("pSortieMmCE"),   val:fmt(d.P_out_mmCE,0),  color:'#f39c12' },
           ].map(({ label, val, color }) => (
             <div key={label} style={{ ...bodyStyles.tag, borderLeft:`4px solid ${color}` }}>
               <span style={bodyStyles.tagLabel}>{label}</span>
@@ -1479,13 +1479,13 @@ const QUENCHReportBody = ({ calculationResult, inputParams }) => {
 };
 
 // ── SCRUBBER ──────────────────────────────────────────────────────────────────
-const SCRUBBERReportBody = ({ calculationResult, inputParams }) => {
+const SCRUBBERReportBody = ({ calculationResult, inputParams, tr }) => {
   const r  = calculationResult || {};
   const df = r.dataFlow || {};
   const p  = inputParams || {};
   return (
     <div style={bodyStyles.body}>
-      <h1 style={bodyStyles.mainTitle}>Laveur de gaz (SCRUBBER) — Rétro-calcul</h1>
+      <h1 style={bodyStyles.mainTitle}>{tr("retroTitleSCRUBBER")}</h1>
       <Section title="1. Paramètres d'entrée">
         <div style={bodyStyles.twoCol}>
           <Sub title="Conditions">
@@ -1529,10 +1529,10 @@ const SCRUBBERReportBody = ({ calculationResult, inputParams }) => {
       <Section title="4. Synthèse">
         <div style={bodyStyles.tagRow}>
           {[
-            { label:'Débit humide [Nm³/h]', val:fmt(df.Qv_wet_Nm3_h,0), color:'#4a90e2' },
-            { label:'T sortie [°C]',        val:fmt(df.T,1),              color:'#e74c3c' },
-            { label:'Enthalpie [kW]',       val:fmt(df.H_tot_kW,0),      color:'#2ecc71' },
-            { label:'PDC [mmCE]',           val:fmt(p.PDC_aero,0),       color:'#f39c12' },
+            { label: tr("debitHumideNm3h"), val:fmt(df.Qv_wet_Nm3_h,0), color:'#4a90e2' },
+            { label: tr("tSortieC"),        val:fmt(df.T,1),              color:'#e74c3c' },
+            { label: tr("enthalpieKW"),       val:fmt(df.H_tot_kW,0),      color:'#2ecc71' },
+            { label: tr("pdcMmCEShort"),           val:fmt(p.PDC_aero,0),       color:'#f39c12' },
           ].map(({ label, val, color }) => (
             <div key={label} style={{ ...bodyStyles.tag, borderLeft:`4px solid ${color}` }}>
               <span style={bodyStyles.tagLabel}>{label}</span>
@@ -1546,7 +1546,7 @@ const SCRUBBERReportBody = ({ calculationResult, inputParams }) => {
 };
 
 // ── REACTOR ───────────────────────────────────────────────────────────────────
-const REACTORReportBody = ({ calculationResult, inputParams }) => {
+const REACTORReportBody = ({ calculationResult, inputParams, tr }) => {
   const r  = calculationResult || {};
   const df = r.dataFlow || {};
   const d  = r.dataREACTOR || {};
@@ -1554,7 +1554,7 @@ const REACTORReportBody = ({ calculationResult, inputParams }) => {
   const isCAP = (p.reagentType || 'CAP') === 'CAP';
   return (
     <div style={bodyStyles.body}>
-      <h1 style={bodyStyles.mainTitle}>Réacteur (REACTOR) — Rétro-calcul</h1>
+      <h1 style={bodyStyles.mainTitle}>{tr("retroTitleREACTOR")}</h1>
       <Section title="1. Paramètres d'entrée">
         <div style={bodyStyles.twoCol}>
           <Sub title="Conditions">
@@ -1611,10 +1611,10 @@ const REACTORReportBody = ({ calculationResult, inputParams }) => {
       <Section title="5. Synthèse">
         <div style={bodyStyles.tagRow}>
           {[
-            { label:'Q air entrant [Nm³/h]', val:fmt(d.Qv_air_entrant_tot_Nm3_h,0), color:'#4a90e2' },
-            { label:'Conso CAP [kg/h]',      val:fmt(d.conso_CAP_calcul_kg_h,2),     color:'#e74c3c' },
-            { label:'Conso chaux [kg/h]',    val:fmt(d.conso_LIME_calcul_kg_h,2),    color:'#f39c12' },
-            { label:'PDC [mmCE]',            val:fmt(p.PDC_aero,0),                  color:'#2ecc71' },
+            { label: tr("qAirEntrantNm3"), val:fmt(d.Qv_air_entrant_tot_Nm3_h,0), color:'#4a90e2' },
+            { label: tr("consoCAPKgh"),      val:fmt(d.conso_CAP_calcul_kg_h,2),     color:'#e74c3c' },
+            { label: tr("consoChauxKgh"),    val:fmt(d.conso_LIME_calcul_kg_h,2),    color:'#f39c12' },
+            { label: tr("pdcMmCEShort"),            val:fmt(p.PDC_aero,0),                  color:'#2ecc71' },
           ].map(({ label, val, color }) => (
             <div key={label} style={{ ...bodyStyles.tag, borderLeft:`4px solid ${color}` }}>
               <span style={bodyStyles.tagLabel}>{label}</span>
@@ -1628,7 +1628,7 @@ const REACTORReportBody = ({ calculationResult, inputParams }) => {
 };
 
 // ── WHB ───────────────────────────────────────────────────────────────────────
-const WHBReportBody = ({ calculationResult, inputParams }) => {
+const WHBReportBody = ({ calculationResult, inputParams, tr }) => {
   const r   = calculationResult || {};
   const df  = r.dataFlow || {};
   const air = r.data_Air_WHB || {};
@@ -1638,7 +1638,7 @@ const WHBReportBody = ({ calculationResult, inputParams }) => {
   const isSuperheated = (p.bilanTypeVapeur || air.bilanTypeVapeur) === 'SUPERHEATED_STEAM';
   return (
     <div style={bodyStyles.body}>
-      <h1 style={bodyStyles.mainTitle}>Chaudière de récupération (WHB) — Rétro-calcul</h1>
+      <h1 style={bodyStyles.mainTitle}>{tr("retroTitleWHB")}</h1>
       <Section title="1. Paramètres d'entrée">
         <div style={bodyStyles.twoCol}>
           <Sub title="Vapeur et eau">
@@ -1698,10 +1698,10 @@ const WHBReportBody = ({ calculationResult, inputParams }) => {
       <Section title="5. Synthèse">
         <div style={bodyStyles.tagRow}>
           {[
-            { label:'Énergie récupérée [kW]', val:fmt(air.Energie_recuperee_WHB_kW,0), color:'#e74c3c' },
-            { label:'Q vapeur [kg/h]',        val:fmt(vap.Q_vapeur_calculee_kg_h,0),   color:'#4a90e2' },
-            { label:'T aval [°C]',            val:fmt(air.Taval_WHB,1),                color:'#f39c12' },
-            { label:'P vapeur [bar]',         val:fmt(p.P_vapeur_bar,1),               color:'#2ecc71' },
+            { label: tr("energieRecupereeKW"), val:fmt(air.Energie_recuperee_WHB_kW,0), color:'#e74c3c' },
+            { label: tr("qVapeurKgh"),        val:fmt(vap.Q_vapeur_calculee_kg_h,0),   color:'#4a90e2' },
+            { label: tr("tAvalC"),            val:fmt(air.Taval_WHB,1),                color:'#f39c12' },
+            { label: tr("pVapeurBar"),         val:fmt(p.P_vapeur_bar,1),               color:'#2ecc71' },
           ].map(({ label, val, color }) => (
             <div key={label} style={{ ...bodyStyles.tag, borderLeft:`4px solid ${color}` }}>
               <span style={bodyStyles.tagLabel}>{label}</span>
@@ -1715,14 +1715,14 @@ const WHBReportBody = ({ calculationResult, inputParams }) => {
 };
 
 // ── AIRINJECTION ──────────────────────────────────────────────────────────────
-const AIRINJECTIONReportBody = ({ calculationResult, inputParams }) => {
+const AIRINJECTIONReportBody = ({ calculationResult, inputParams, tr }) => {
   const r  = calculationResult || {};
   const df = r.dataFlow || {};
   const d  = r.dataAIRINJECTION || {};
   const p  = inputParams || {};
   return (
     <div style={bodyStyles.body}>
-      <h1 style={bodyStyles.mainTitle}>Air injection — Rétro-calcul</h1>
+      <h1 style={bodyStyles.mainTitle}>{tr("retroTitleAIRINJECTION")}</h1>
       <Section title="1. Paramètres d'entrée">
         <div style={bodyStyles.twoCol}>
           <Sub title="Conditions">
@@ -1768,10 +1768,10 @@ const AIRINJECTIONReportBody = ({ calculationResult, inputParams }) => {
       <Section title="4. Synthèse">
         <div style={bodyStyles.tagRow}>
           {[
-            { label:'Q air entrant [Nm³/h]', val:fmt(d.Qv_air_entrant_Nm3_h,0), color:'#4a90e2' },
-            { label:'Q air parasite [Nm³/h]', val:fmt(d.Qv_air_injecté_net_Nm3_h,0), color:'#e74c3c' },
-            { label:'PDC aéro [mmCE]',         val:fmt(p.PDC_aero,0),            color:'#2ecc71' },
-            { label:'T amont [°C]',            val:fmt(df.T,1),                  color:'#f39c12' },
+            { label: tr("qAirEntrantNm3"), val:fmt(d.Qv_air_entrant_Nm3_h,0), color:'#4a90e2' },
+            { label: tr("qAirParasiteNm3"), val:fmt(d.Qv_air_injecté_net_Nm3_h,0), color:'#e74c3c' },
+            { label: tr("pdcAeroMmCE"),         val:fmt(p.PDC_aero,0),            color:'#2ecc71' },
+            { label: tr("tAmontC"),            val:fmt(df.T,1),                  color:'#f39c12' },
           ].map(({ label, val, color }) => (
             <div key={label} style={{ ...bodyStyles.tag, borderLeft:`4px solid ${color}` }}>
               <span style={bodyStyles.tagLabel}>{label}</span>
@@ -1785,14 +1785,14 @@ const AIRINJECTIONReportBody = ({ calculationResult, inputParams }) => {
 };
 
 // ── IACT ──────────────────────────────────────────────────────────────────────
-const IACTReportBody = ({ calculationResult, inputParams }) => {
+const IACTReportBody = ({ calculationResult, inputParams, tr }) => {
   const r  = calculationResult || {};
   const df = r.dataFlow || {};
   const d  = r.dataIACT || {};
   const p  = inputParams || {};
   return (
     <div style={bodyStyles.body}>
-      <h1 style={bodyStyles.mainTitle}>IACT — Rétro-calcul</h1>
+      <h1 style={bodyStyles.mainTitle}>{tr("retroTitleIACT")}</h1>
       <Section title="1. Paramètres d'entrée">
         <div style={bodyStyles.twoCol}>
           <Sub title="Conditions amont">
@@ -1838,10 +1838,10 @@ const IACTReportBody = ({ calculationResult, inputParams }) => {
       <Section title="4. Synthèse">
         <div style={bodyStyles.tagRow}>
           {[
-            { label:'Q air décolmatage [Nm³/h]', val:fmt(d.Qv_air_entrant_Nm3_h,0), color:'#4a90e2' },
-            { label:'Q air parasite [Nm³/h]',    val:fmt(d.Qair_parasite,0),          color:'#e74c3c' },
-            { label:'PDC aéro [mmCE]',            val:fmt(d.PDC_aero,0),               color:'#2ecc71' },
-            { label:'T amont [°C]',               val:fmt(df.T,1),                     color:'#f39c12' },
+            { label: tr("qAirDecolmatageNm3"), val:fmt(d.Qv_air_entrant_Nm3_h,0), color:'#4a90e2' },
+            { label: tr("qAirParasiteNm3"),    val:fmt(d.Qair_parasite,0),          color:'#e74c3c' },
+            { label: tr("pdcAeroMmCE"),            val:fmt(d.PDC_aero,0),               color:'#2ecc71' },
+            { label: tr("tAmontC"),               val:fmt(df.T,1),                     color:'#f39c12' },
           ].map(({ label, val, color }) => (
             <div key={label} style={{ ...bodyStyles.tag, borderLeft:`4px solid ${color}` }}>
               <span style={bodyStyles.tagLabel}>{label}</span>
@@ -1855,7 +1855,7 @@ const IACTReportBody = ({ calculationResult, inputParams }) => {
 };
 
 // ── TUBEANDSHELL ──────────────────────────────────────────────────────────────
-const TUBEANDSHELLReportBody = ({ calculationResult, inputParams }) => {
+const TUBEANDSHELLReportBody = ({ calculationResult, inputParams, tr }) => {
   const r  = calculationResult || {};
   const df = r.dataFlow || {};
   const d  = r.dataTUBEANDSHELL || {};
@@ -1864,7 +1864,7 @@ const TUBEANDSHELLReportBody = ({ calculationResult, inputParams }) => {
   const isEau  = fluide === 'eau';
   return (
     <div style={bodyStyles.body}>
-      <h1 style={bodyStyles.mainTitle}>Tube &amp; Shell — Rétro-calcul</h1>
+      <h1 style={bodyStyles.mainTitle}>{tr("retroTitleTUBEANDSHELL")}</h1>
       <Section title="1. Paramètres d'entrée">
         <div style={bodyStyles.twoCol}>
           <Sub title="Côté fumées">
@@ -1914,12 +1914,12 @@ const TUBEANDSHELLReportBody = ({ calculationResult, inputParams }) => {
       <Section title="4. Synthèse">
         <div style={bodyStyles.tagRow}>
           {[
-            { label:'Q cédé fumées [kWh]',                          val:fmt(d.Q_FG_kWh,1),        color:'#e74c3c' },
+            { label: tr("qCedeFumeesKWh"),                          val:fmt(d.Q_FG_kWh,1),        color:'#e74c3c' },
             { label:`Q utile ${fluide} [kWh]`,                      val:fmt(d.Q_utile_eau_kWh,1), color:'#2ecc71' },
             { label:`T sortie ${fluide} [°C]`,                      val:fmt(d.T_fluide_out,1),    color:'#4a90e2' },
             { label:isEau?'Débit eau [kg/h]':'Débit air [Nm³/h]',   val:fmt(d.m_eau_kg_h,0),      color:'#9b59b6' },
-            { label:'ΔT log. moyen [°C]',                           val:fmt(d.D_TLM,1),           color:'#f39c12' },
-            { label:'Surface échange [m²]',                         val:fmt(d.Surface_m2,2),      color:'#1abc9c' },
+            { label: tr("dtLogMoyenC"),                           val:fmt(d.D_TLM,1),           color:'#f39c12' },
+            { label: tr("surfaceEchangeM2"),                         val:fmt(d.Surface_m2,2),      color:'#1abc9c' },
           ].map(({ label, val, color }) => (
             <div key={label} style={{ ...bodyStyles.tag, borderLeft:`4px solid ${color}` }}>
               <span style={bodyStyles.tagLabel}>{label}</span>
@@ -1933,14 +1933,14 @@ const TUBEANDSHELLReportBody = ({ calculationResult, inputParams }) => {
 };
 
 // ── WATER_INJECTION ───────────────────────────────────────────────────────────
-const WATER_INJECTIONReportBody = ({ calculationResult, inputParams }) => {
+const WATER_INJECTIONReportBody = ({ calculationResult, inputParams, tr }) => {
   const r  = calculationResult || {};
   const df = r.dataFlow || {};
   const d  = r.dataWATER_INJECTION || {};
   const p  = inputParams || {};
   return (
     <div style={bodyStyles.body}>
-      <h1 style={bodyStyles.mainTitle}>Water injection — Rétro-calcul</h1>
+      <h1 style={bodyStyles.mainTitle}>{tr("retroTitleWATERINJECTION")}</h1>
       <Section title="1. Paramètres d'entrée">
         <div style={bodyStyles.twoCol}>
           <Sub title="Conditions">
@@ -1983,10 +1983,10 @@ const WATER_INJECTIONReportBody = ({ calculationResult, inputParams }) => {
       <Section title="4. Synthèse">
         <div style={bodyStyles.tagRow}>
           {[
-            { label:'Q eau [kg/h]',    val:fmt(d.Qeau,1),       color:'#4a90e2' },
-            { label:'T sortie [°C]',   val:fmt(df.T,1),          color:'#e74c3c' },
-            { label:'PDC aéro [mmCE]', val:fmt(d.PDC_aero,0),   color:'#2ecc71' },
-            { label:'P sortie [mmCE]', val:fmt(d.P_out_mmCE,0), color:'#f39c12' },
+            { label: tr("qEauKgh"),    val:fmt(d.Qeau,1),       color:'#4a90e2' },
+            { label: tr("tSortieC"),   val:fmt(df.T,1),          color:'#e74c3c' },
+            { label: tr("pdcAeroMmCE"), val:fmt(d.PDC_aero,0),   color:'#2ecc71' },
+            { label: tr("pSortieMmCE"), val:fmt(d.P_out_mmCE,0), color:'#f39c12' },
           ].map(({ label, val, color }) => (
             <div key={label} style={{ ...bodyStyles.tag, borderLeft:`4px solid ${color}` }}>
               <span style={bodyStyles.tagLabel}>{label}</span>

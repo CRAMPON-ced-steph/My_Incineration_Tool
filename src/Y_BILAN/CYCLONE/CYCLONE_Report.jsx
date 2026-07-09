@@ -2,6 +2,7 @@ import React from 'react';
 import { getOpexData } from '../../A_Transverse_fonction/opexDataService';
 import { CO2_kg_m3, H2O_kg_m3, O2_kg_m3, N2_kg_m3 } from '../../A_Transverse_fonction/conv_calculation';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
+import { makeReportT } from '../../D_BILAN_Rapports/report_traduction';
 import { translations } from './CYCLONE_traduction';
 import { fmt } from '../../A_Transverse_fonction/formatNumber';
 const Section = ({ title, children }) => <div style={styles.section}><h2 style={styles.sectionTitle}>{title}</h2>{children}</div>;
@@ -12,7 +13,7 @@ const GasTable = ({ data = {} }) => {
   const gases = ['CO2', 'H2O', 'O2', 'N2'];
   return (
     <table style={styles.table}>
-      <thead><tr><th style={styles.th}></th>{gases.map(g => <th key={g} style={styles.th}>{g}</th>)}<th style={styles.th}>Total</th></tr></thead>
+      <thead><tr><th style={styles.th}></th>{gases.map(g => <th key={g} style={styles.th}>{g}</th>)}<th style={styles.th}>{tr("total")}</th></tr></thead>
       <tbody>{Object.entries(data).map(([lbl, d]) => { const tot = gases.reduce((s, g) => s + (parseFloat(d[g]) || 0), 0); return <tr key={lbl}><td style={styles.tdLabel}>{lbl}</td>{gases.map(g => <td key={g} style={styles.td}>{fmt(d[g])}</td>)}<td style={{ ...styles.td, fontWeight: 'bold' }}>{fmt(tot)}</td></tr>; })}</tbody>
     </table>
   );
@@ -44,17 +45,17 @@ const computeOpexCosts = (innerData) => {
   const coutAir = (conso_air / 1000) * airConsumptionPrice;
   const co2Air = (conso_air * powerRatio * ratioElec) / 1000;
   const eauRows = [
-    { label: 'Eau potable', m3h: d.Conso_EauPotable_m3 || 0, prix: waterPrices?.potable || 0 },
-    { label: 'Eau de refroidissement', m3h: d.Conso_EauRefroidissement_m3 || 0, prix: waterPrices?.cooling || 0 },
-    { label: 'Eau déminéralisée', m3h: d.Conso_EauDemin_m3 || 0, prix: waterPrices?.demineralized || 0 },
-    { label: 'Eau de rivière', m3h: d.Conso_EauRiviere_m3 || 0, prix: waterPrices?.river || 0 },
-    { label: 'Eau adoucie', m3h: d.Conso_EauAdoucie_m3 || 0, prix: waterPrices?.soft || 0 },
+    { label: tr("waterPotable"), m3h: d.Conso_EauPotable_m3 || 0, prix: waterPrices?.potable || 0 },
+    { label: tr("waterCooling"), m3h: d.Conso_EauRefroidissement_m3 || 0, prix: waterPrices?.cooling || 0 },
+    { label: tr("waterDemin"), m3h: d.Conso_EauDemin_m3 || 0, prix: waterPrices?.demineralized || 0 },
+    { label: tr("waterRiver"), m3h: d.Conso_EauRiviere_m3 || 0, prix: waterPrices?.river || 0 },
+    { label: tr("waterSoft"), m3h: d.Conso_EauAdoucie_m3 || 0, prix: waterPrices?.soft || 0 },
   ].filter(r => r.m3h > 0);
   const coutEau = eauRows.reduce((s, r) => s + r.m3h * r.prix, 0);
   const reactifRows = [
     { label: 'CaCO₃', kgh: d.Conso_CaCO3_kg || 0, prix: reagentsTypes?.CaCO3?.cost || 0, co2T: reagentsTypes?.CaCO3?.co2PerTrip || 0 },
     { label: 'CaO', kgh: d.Conso_CaO_kg || 0, prix: reagentsTypes?.CaO?.cost || 0, co2T: reagentsTypes?.CaO?.co2PerTrip || 0 },
-    { label: 'Ca(OH)₂ sec', kgh: d.Conso_CaOH2_dry_kg || 0, prix: reagentsTypes?.CaOH2?.cost || 0, co2T: reagentsTypes?.CaOH2?.co2PerTrip || 0 },
+    { label: tr("caoh2Dry"), kgh: d.Conso_CaOH2_dry_kg || 0, prix: reagentsTypes?.CaOH2?.cost || 0, co2T: reagentsTypes?.CaOH2?.co2PerTrip || 0 },
     { label: 'NaOH', kgh: d.Conso_NaOH_kg || 0, prix: reagentsTypes?.NaOH?.cost || 0, co2T: reagentsTypes?.NaOH?.co2PerTrip || 0 },
     { label: 'NH₃', kgh: d.Conso_Ammonia_kg || 0, prix: reagentsTypes?.NH3?.cost || 0, co2T: reagentsTypes?.NH3?.co2PerTrip || 0 },
     { label: 'CAP', kgh: d.Conso_CAP_kg || 0, prix: reagentsTypes?.CAP?.cost || 0, co2T: reagentsTypes?.CAP?.co2PerTrip || 0 },
@@ -62,8 +63,8 @@ const computeOpexCosts = (innerData) => {
   const coutReactifs = reactifRows.reduce((s, r) => s + (r.kgh / 1000) * r.prix, 0);
   const co2TransportReactifs = reactifRows.reduce((s, r) => s + (r.kgh / 1000) * r.co2T, 0);
   const energieRows = [
-    { label: 'Gaz haute valeur', MW: d.conso_gaz_H_MW || 0, prix: gasTypes?.naturalGasH?.molecule || 0, co2e: gasTypes?.naturalGasH?.co2Emission || 0 },
-    { label: 'Fuel', MW: d.conso_fuel_MW || 0, prix: fuelTypes?.FOD?.liquid || 0, co2e: fuelTypes?.FOD?.co2Emission || 0 },
+    { label: tr("gasHighValue"), MW: d.conso_gaz_H_MW || 0, prix: gasTypes?.naturalGasH?.molecule || 0, co2e: gasTypes?.naturalGasH?.co2Emission || 0 },
+    { label: tr("fuel"), MW: d.conso_fuel_MW || 0, prix: fuelTypes?.FOD?.liquid || 0, co2e: fuelTypes?.FOD?.co2Emission || 0 },
   ].filter(r => r.MW > 0);
   const coutEnergie = energieRows.reduce((s, r) => s + r.MW * r.prix, 0);
   const co2Energie = energieRows.reduce((s, r) => s + r.MW * r.co2e, 0);
@@ -108,6 +109,7 @@ const OpexSummary = ({ opex, t = k => k }) => {
 
 const CYCLONE_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
   const languageCode = getLanguageCode(currentLanguage);
+  const tr = makeReportT(currentLanguage);
   const t = (key) => translations[languageCode]?.[key] || translations['fr']?.[key] || key;
   const T_OUT = innerData.T_OUT || 0;
   const O2_calcule = innerData.O2_calcule || 0;

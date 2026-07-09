@@ -1,6 +1,7 @@
 import React from 'react';
 import { getOpexData } from '../../A_Transverse_fonction/opexDataService';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
+import { makeReportT } from '../../D_BILAN_Rapports/report_traduction';
 import { translations } from './STACK_traduction';
 import { fmt } from '../../A_Transverse_fonction/formatNumber';
 const Section = ({ title, children }) => <div style={styles.section}><h2 style={styles.sectionTitle}>{title}</h2>{children}</div>;
@@ -11,7 +12,7 @@ const GasTable = ({ data = {} }) => {
   const gases = ['CO2', 'H2O', 'O2', 'N2'];
   return (
     <table style={styles.table}>
-      <thead><tr><th style={styles.th}></th>{gases.map(g => <th key={g} style={styles.th}>{g}</th>)}<th style={styles.th}>Total</th></tr></thead>
+      <thead><tr><th style={styles.th}></th>{gases.map(g => <th key={g} style={styles.th}>{g}</th>)}<th style={styles.th}>{tr("total")}</th></tr></thead>
       <tbody>{Object.entries(data).map(([lbl, d]) => {
         if (!d || typeof d !== 'object') return null;
         const tot = gases.reduce((s, g) => s + (parseFloat(d[g]) || 0), 0);
@@ -55,6 +56,7 @@ const computeOpexCosts = (innerData) => {
 
 const STACK_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
   const languageCode = getLanguageCode(currentLanguage);
+  const tr = makeReportT(currentLanguage);
   const t = (key) => translations[languageCode]?.[key] || translations['fr']?.[key] || key;
   // ── Gaz de combustion ──────────────────────────────────────────────────────
   const T_OUT    = innerData.T_OUT || 0;

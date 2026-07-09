@@ -177,30 +177,41 @@ function DropdownMenu({
       onClick: onToggleMode,
       backgroundColor: mode === 'Bilan' ? '#4CAF50' : '#2196F3',
     },
-    {
-      id: 'dataflow',
-      label: translate(showDataFlowDisplay ? 'Hide Combined Data' : 'Show Combined Data'),
-      onClick: onToggleDataFlow,
-      backgroundColor: COLORS.PURPLE,
-    },
+    // "Show Combined Data" et "Air parasite" : masqués en mode Bilan
+    ...(mode !== 'Bilan'
+      ? [{
+          id: 'dataflow',
+          label: translate(showDataFlowDisplay ? 'Hide Combined Data' : 'Show Combined Data'),
+          onClick: onToggleDataFlow,
+          backgroundColor: COLORS.PURPLE,
+        }]
+      : []
+    ),
     {
       id: 'graph',
       label: translate(showGraph ? 'Hide Graph' : 'Show Graph'),
       onClick: onToggleGraph,
       backgroundColor: COLORS.GREEN,
     },
-    {
-      id: 'airParasite',
-      label: translate('Air parasite'),
-      onClick: onShowAirParasite,
-      backgroundColor: COLORS.SLATEGRAY,
-    },
-    {
-      id: 'dashboard',
-      label: translate('Consommations'),
-      onClick: onShowDashboard,
-      backgroundColor: COLORS.BLUE,
-    },
+    ...(mode !== 'Bilan'
+      ? [{
+          id: 'airParasite',
+          label: translate('Air parasite'),
+          onClick: onShowAirParasite,
+          backgroundColor: COLORS.SLATEGRAY,
+        }]
+      : []
+    ),
+    // "Consommations" : masqué en mode Retro bilan
+    ...(mode === 'Bilan'
+      ? [{
+          id: 'dashboard',
+          label: translate('Consommations'),
+          onClick: onShowDashboard,
+          backgroundColor: COLORS.BLUE,
+        }]
+      : []
+    ),
     ...(currentUser === adminEmail
       ? [{
           id: 'email-management',
@@ -210,12 +221,16 @@ function DropdownMenu({
         }]
       : []
     ),
-    {
-      id: 'opex',
-      label: translate(showOPEX ? 'Fermer OPEX' : 'Ouvrir OPEX'),
-      onClick: onToggleOPEX,
-      backgroundColor: COLORS.BLUEVIOLET,
-    },
+    // "OPEX" : masqué en mode Retro bilan
+    ...(mode === 'Bilan'
+      ? [{
+          id: 'opex',
+          label: translate(showOPEX ? 'Fermer OPEX' : 'Ouvrir OPEX'),
+          onClick: onToggleOPEX,
+          backgroundColor: COLORS.BLUEVIOLET,
+        }]
+      : []
+    ),
     {
       id: 'screenshot',
       label: translate('Screenshot'),

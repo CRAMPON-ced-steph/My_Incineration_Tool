@@ -2,6 +2,7 @@ import React from 'react';
 import { getOpexData } from '../../A_Transverse_fonction/opexDataService';
 import { CO2_kg_m3, H2O_kg_m3, O2_kg_m3, N2_kg_m3 } from '../../A_Transverse_fonction/conv_calculation';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
+import { makeReportT } from '../../D_BILAN_Rapports/report_traduction';
 import { translations } from './SCRUBBER_traduction';
 import { fmt } from '../../A_Transverse_fonction/formatNumber';
 const Section = ({ title, children }) => <div style={styles.section}><h2 style={styles.sectionTitle}>{title}</h2>{children}</div>;
@@ -12,7 +13,7 @@ const GasTable = ({ data = {} }) => {
   const gases = ['CO2', 'H2O', 'O2', 'N2'];
   return (
     <table style={styles.table}>
-      <thead><tr><th style={styles.th}></th>{gases.map(g => <th key={g} style={styles.th}>{g}</th>)}<th style={styles.th}>Total</th></tr></thead>
+      <thead><tr><th style={styles.th}></th>{gases.map(g => <th key={g} style={styles.th}>{g}</th>)}<th style={styles.th}>{tr("total")}</th></tr></thead>
       <tbody>{Object.entries(data).map(([lbl, d]) => { const tot = gases.reduce((s, g) => s + (parseFloat(d[g]) || 0), 0); return <tr key={lbl}><td style={styles.tdLabel}>{lbl}</td>{gases.map(g => <td key={g} style={styles.td}>{fmt(d[g])}</td>)}<td style={{ ...styles.td, fontWeight: 'bold' }}>{fmt(tot)}</td></tr>; })}</tbody>
     </table>
   );
@@ -34,8 +35,8 @@ const computeOpexCosts = (innerData) => {
   const coutAir = (conso_air / 1000) * airConsumptionPrice;
   const co2Air = (conso_air * powerRatio * ratioElec) / 1000;
   const eauRows = [
-    { label: 'Eau potable', m3h: d.Conso_EauPotable_m3 || 0, prix: waterPrices?.potable || 0 },
-    { label: 'Eau déminéralisée', m3h: d.Conso_EauDemin_m3 || 0, prix: waterPrices?.demineralized || 0 },
+    { label: tr("waterPotable"), m3h: d.Conso_EauPotable_m3 || 0, prix: waterPrices?.potable || 0 },
+    { label: tr("waterDemin"), m3h: d.Conso_EauDemin_m3 || 0, prix: waterPrices?.demineralized || 0 },
   ].filter(r => r.m3h > 0);
   const coutEau = eauRows.reduce((s, r) => s + r.m3h * r.prix, 0);
   const reactifRows = [
@@ -84,6 +85,7 @@ const OpexSummary = ({ opex, t }) => {
 
 const SCRUBBER_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
   const languageCode = getLanguageCode(currentLanguage);
+  const tr = makeReportT(currentLanguage);
   const t = (key) => translations[languageCode]?.[key] || translations['fr']?.[key] || key;
   const T_OUT = innerData.T_OUT || 0;
   const O2_calcule = innerData.O2_calcule || 0;
