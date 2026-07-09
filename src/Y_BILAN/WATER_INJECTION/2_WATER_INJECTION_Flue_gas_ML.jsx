@@ -14,7 +14,7 @@ const WATER_INJECTIONFlueGasParameters = ({ innerData, currentLanguage = 'fr', n
 
 
   const initialEmissions_WATER_INJECTION = {
-    'Flue gas temperature outlet [°C]': innerData?.T_OUT - 150 || 200,
+    'Flue gas temperature outlet [°C]': innerData?.T_OUT || 200,
     'Ambient air temperature [°C]': 20,
     'Volume of air ingress [Nm3/h]': 0,
     'Thermal losses [%]': 2,
@@ -119,6 +119,9 @@ const WATER_INJECTIONFlueGasParameters = ({ innerData, currentLanguage = 'fr', n
     innerData.FG_humide_tot = FG_humide_tot_m3_h;
     innerData.FG_sec_tot = FG_sec_tot_m3_h;
     innerData.T_sortie = T_out;
+    // Propagation vers le nœud aval : température et composition de sortie refroidies
+    innerData.T_OUT = T_out;
+    innerData.FG_OUT_kg_h = masses_FG_out_WATER_INJECTION;
     innerData.FG_humide_EAU_tot = FG_humide_EAU_tot_m3_h;
     innerData.Q_eau_kg_h = Q_eau_kg_h;
   }
