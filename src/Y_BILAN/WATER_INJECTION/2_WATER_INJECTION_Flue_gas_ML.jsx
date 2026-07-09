@@ -36,7 +36,8 @@ const WATER_INJECTIONFlueGasParameters = ({ innerData, currentLanguage = 'fr', n
   }, [emissions_WATER_INJECTION]);
 
   // Input data with fallback values
-  const T_IN = innerData?.T_OUT - 150 || 200;
+  // T_IN = température de sortie du nœud précédent (= entrée de l'injection d'eau)
+  const T_IN = innerData?.T_OUT || 200;
   const FG_IN = innerData?.FG_OUT_kg_h || { CO2: 1, H2O: 1, O2: 1, N2: 1 };
 
   // Extract parameters from state
