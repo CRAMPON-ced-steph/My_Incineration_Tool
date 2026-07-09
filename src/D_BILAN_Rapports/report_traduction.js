@@ -135,6 +135,19 @@ export const reportTranslations = {
     gasLowValue: 'Gaz basse valeur',
     gasProcess: 'Gaz process',
     fuel: 'Fuel',
+
+    // ── Réactifs (formes sèche/humide) ─────────────────────────────────────
+    caoh2Dry: 'Ca(OH)₂ sec',
+    caoh2Wet: 'Ca(OH)₂ humide',
+
+    // ── Libellés par défaut des consommateurs électriques ─────────────────
+    elecRotationRK: 'Mise en rotation RK',
+    elecPompeLances: 'Pompe alimentation lances',
+    elecVentAirComb: 'Ventilateur air combustion',
+    elecVentVirole: 'Ventilateur refroidissement virole',
+    elecExtracteur: 'Extracteur',
+    elecPompeBoue: 'Pompe à boue',
+    elecTapis: 'Tapis',
   },
 
   en: {
@@ -268,6 +281,19 @@ export const reportTranslations = {
     gasLowValue: 'Low-value gas',
     gasProcess: 'Process gas',
     fuel: 'Fuel',
+
+    // ── Reagents (dry/wet forms) ───────────────────────────────────────────
+    caoh2Dry: 'Ca(OH)₂ dry',
+    caoh2Wet: 'Ca(OH)₂ wet',
+
+    // ── Default electrical consumer labels ─────────────────────────────────
+    elecRotationRK: 'RK rotation drive',
+    elecPompeLances: 'Lance feed pump',
+    elecVentAirComb: 'Combustion air fan',
+    elecVentVirole: 'Shell cooling fan',
+    elecExtracteur: 'Extractor',
+    elecPompeBoue: 'Sludge pump',
+    elecTapis: 'Conveyor belt',
   },
 };
 

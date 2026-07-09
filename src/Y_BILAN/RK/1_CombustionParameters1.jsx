@@ -510,7 +510,7 @@ const CombustionParameters = ({ innerData, currentLanguage = 'fr', nodeId }) => 
                 wordBreak: 'break-word',
               }}
             >
-              {col}
+              {t(col)}
             </div>
           ))}
         </div>
@@ -528,7 +528,7 @@ const CombustionParameters = ({ innerData, currentLanguage = 'fr', nodeId }) => 
               }}
             >
               <div style={{ width: '100px', flexShrink: 0, textAlign: 'left' }}>
-                <h3 style={{ margin: '0', fontSize: '14px' }}>{row.name}</h3>
+                <h3 style={{ margin: '0', fontSize: '14px' }}>{t(row.name)}</h3>
               </div>
               {columns.map((col, colIndex) => {
                 const isSum = col === 'SUM1' || col === 'SUM2';
@@ -595,7 +595,7 @@ const CombustionParameters = ({ innerData, currentLanguage = 'fr', nodeId }) => 
                 wordBreak: 'break-word',
               }}
             >
-              {col}
+              {t(col)}
             </div>
           ))}
         </div>
@@ -609,7 +609,7 @@ const CombustionParameters = ({ innerData, currentLanguage = 'fr', nodeId }) => 
             }}
           >
             <div style={{ width: '100px', flexShrink: 0, textAlign: 'left' }}>
-              <h3 style={{ margin: '0', fontSize: '14px' }}>{row.name}</h3>
+              <h3 style={{ margin: '0', fontSize: '14px' }}>{t(row.name)}</h3>
             </div>
             {columns2.map((col, colIndex) => (
               <div

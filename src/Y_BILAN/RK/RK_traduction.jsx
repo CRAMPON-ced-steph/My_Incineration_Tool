@@ -1,6 +1,23 @@
 // RK_traduction.js
 export const translations = {
   fr: {
+    // — Tableau de combustion (lignes/colonnes, audit i18n 2026-07) —
+    "Packed waste": "Déchets conditionnés",
+    "Direct lines": "Lignes directes",
+    "Solids": "Solides",
+    "Gas/Fuel": "Gaz/Fioul",
+    "Various": "Divers",
+    "Masse [kg/h]": "Masse [kg/h]",
+    "Masse [%]": "Masse [%]",
+    "Mix [%]": "Mix [%]",
+    "O2stoechio": "O₂ stœchio",
+    "H2Ostoechio": "H₂O stœchio",
+    "%Comb": "%Comb",
+    "%Water": "%Eau",
+    "%Inert": "%Inertes",
+    "Comb  [kg/h]": "Comb. [kg/h]",
+    "Water  [kg/h]": "Eau [kg/h]",
+    "Inert  [kg/h]": "Inertes [kg/h]",
     // Libellés des paramètres de l'onglet Design (Display_design)
     pressionAeraulique: 'Pression aéraulique',
     pdcMmCE: 'pdc mmCE',
@@ -221,6 +238,23 @@ export const translations = {
   },
   
   en: {
+    // — Tableau de combustion (lignes/colonnes, audit i18n 2026-07) —
+    "Packed waste": "Packed waste",
+    "Direct lines": "Direct lines",
+    "Solids": "Solids",
+    "Gas/Fuel": "Gas/Fuel",
+    "Various": "Various",
+    "Masse [kg/h]": "Mass [kg/h]",
+    "Masse [%]": "Mass [%]",
+    "Mix [%]": "Mix [%]",
+    "O2stoechio": "O₂ stoich",
+    "H2Ostoechio": "H₂O stoich",
+    "%Comb": "%Comb",
+    "%Water": "%Water",
+    "%Inert": "%Inert",
+    "Comb  [kg/h]": "Comb. [kg/h]",
+    "Water  [kg/h]": "Water [kg/h]",
+    "Inert  [kg/h]": "Inert [kg/h]",
     // Design parameters (RK) — Display_design labels
     pressionAeraulique: 'Aeraulic pressure',
     pdcMmCE: 'Pressure loss mmCE',
@@ -436,6 +470,23 @@ export const translations = {
   },
 
   es: {
+    // — Tableau de combustion (lignes/colonnes, audit i18n 2026-07) —
+    "Packed waste": "Residuos embalados",
+    "Direct lines": "Líneas directas",
+    "Solids": "Sólidos",
+    "Gas/Fuel": "Gas/Fuelóleo",
+    "Various": "Varios",
+    "Masse [kg/h]": "Masa [kg/h]",
+    "Masse [%]": "Masa [%]",
+    "Mix [%]": "Mezcla [%]",
+    "O2stoechio": "O₂ estequiom.",
+    "H2Ostoechio": "H₂O estequiom.",
+    "%Comb": "%Comb",
+    "%Water": "%Agua",
+    "%Inert": "%Inertes",
+    "Comb  [kg/h]": "Comb. [kg/h]",
+    "Water  [kg/h]": "Agua [kg/h]",
+    "Inert  [kg/h]": "Inertes [kg/h]",
     // Design parameters (RK) — Display_design labels
     pressionAeraulique: 'Presión aeráulica',
     pdcMmCE: 'Pérdida de carga mmCE',
@@ -645,6 +696,23 @@ export const translations = {
   },
 
   de: {
+    // — Tableau de combustion (lignes/colonnes, audit i18n 2026-07) —
+    "Packed waste": "Verpackte Abfälle",
+    "Direct lines": "Direktleitungen",
+    "Solids": "Feststoffe",
+    "Gas/Fuel": "Gas/Heizöl",
+    "Various": "Sonstiges",
+    "Masse [kg/h]": "Masse [kg/h]",
+    "Masse [%]": "Masse [%]",
+    "Mix [%]": "Mix [%]",
+    "O2stoechio": "O₂ stöchiom.",
+    "H2Ostoechio": "H₂O stöchiom.",
+    "%Comb": "%Brennb.",
+    "%Water": "%Wasser",
+    "%Inert": "%Inert",
+    "Comb  [kg/h]": "Brennb. [kg/h]",
+    "Water  [kg/h]": "Wasser [kg/h]",
+    "Inert  [kg/h]": "Inert [kg/h]",
     // Design parameters (RK) — Display_design labels
     pressionAeraulique: 'Aeraulischer Druck',
     pdcMmCE: 'Druckverlust mmCE',
@@ -854,6 +922,23 @@ export const translations = {
   },
 
   it: {
+    // — Tableau de combustion (lignes/colonnes, audit i18n 2026-07) —
+    "Packed waste": "Rifiuti confezionati",
+    "Direct lines": "Linee dirette",
+    "Solids": "Solidi",
+    "Gas/Fuel": "Gas/Olio comb.",
+    "Various": "Vari",
+    "Masse [kg/h]": "Massa [kg/h]",
+    "Masse [%]": "Massa [%]",
+    "Mix [%]": "Mix [%]",
+    "O2stoechio": "O₂ stechiom.",
+    "H2Ostoechio": "H₂O stechiom.",
+    "%Comb": "%Comb",
+    "%Water": "%Acqua",
+    "%Inert": "%Inerti",
+    "Comb  [kg/h]": "Comb. [kg/h]",
+    "Water  [kg/h]": "Acqua [kg/h]",
+    "Inert  [kg/h]": "Inerti [kg/h]",
     // Design parameters (RK) — Display_design labels
     pressionAeraulique: 'Pressione aeraulica',
     pdcMmCE: 'Perdita di carico mmCE',
@@ -1063,6 +1148,23 @@ export const translations = {
   },
 
   pt: {
+    // — Tableau de combustion (lignes/colonnes, audit i18n 2026-07) —
+    "Packed waste": "Resíduos embalados",
+    "Direct lines": "Linhas diretas",
+    "Solids": "Sólidos",
+    "Gas/Fuel": "Gás/Óleo",
+    "Various": "Diversos",
+    "Masse [kg/h]": "Massa [kg/h]",
+    "Masse [%]": "Massa [%]",
+    "Mix [%]": "Mistura [%]",
+    "O2stoechio": "O₂ estequiom.",
+    "H2Ostoechio": "H₂O estequiom.",
+    "%Comb": "%Comb",
+    "%Water": "%Água",
+    "%Inert": "%Inertes",
+    "Comb  [kg/h]": "Comb. [kg/h]",
+    "Water  [kg/h]": "Água [kg/h]",
+    "Inert  [kg/h]": "Inertes [kg/h]",
     // Design parameters (RK) — Display_design labels
     pressionAeraulique: 'Pressão aeráulica',
     pdcMmCE: 'Perda de carga mmCE',
@@ -1272,6 +1374,23 @@ export const translations = {
   },
 
   ru: {
+    // — Tableau de combustion (lignes/colonnes, audit i18n 2026-07) —
+    "Packed waste": "Упакованные отходы",
+    "Direct lines": "Прямые линии",
+    "Solids": "Твёрдые",
+    "Gas/Fuel": "Газ/Мазут",
+    "Various": "Прочее",
+    "Masse [kg/h]": "Масса [кг/ч]",
+    "Masse [%]": "Масса [%]",
+    "Mix [%]": "Смесь [%]",
+    "O2stoechio": "O₂ стехиом.",
+    "H2Ostoechio": "H₂O стехиом.",
+    "%Comb": "%Горюч.",
+    "%Water": "%Вода",
+    "%Inert": "%Инерт.",
+    "Comb  [kg/h]": "Горюч. [кг/ч]",
+    "Water  [kg/h]": "Вода [кг/ч]",
+    "Inert  [kg/h]": "Инерт. [кг/ч]",
     // Design parameters (RK) — Display_design labels
     pressionAeraulique: 'Аэравлическое давление',
     pdcMmCE: 'Потеря давления mmCE',
@@ -1481,6 +1600,23 @@ export const translations = {
   },
 
   ja: {
+    // — Tableau de combustion (lignes/colonnes, audit i18n 2026-07) —
+    "Packed waste": "梱包廃棄物",
+    "Direct lines": "直接ライン",
+    "Solids": "固形物",
+    "Gas/Fuel": "ガス/燃料油",
+    "Various": "その他",
+    "Masse [kg/h]": "質量 [kg/h]",
+    "Masse [%]": "質量 [%]",
+    "Mix [%]": "混合 [%]",
+    "O2stoechio": "化学量論 O₂",
+    "H2Ostoechio": "化学量論 H₂O",
+    "%Comb": "%可燃分",
+    "%Water": "%水分",
+    "%Inert": "%不活性分",
+    "Comb  [kg/h]": "可燃分 [kg/h]",
+    "Water  [kg/h]": "水 [kg/h]",
+    "Inert  [kg/h]": "不活性分 [kg/h]",
     // Design parameters (RK) — Display_design labels
     pressionAeraulique: '通風圧力',
     pdcMmCE: '圧力損失 mmCE',
@@ -1690,6 +1826,23 @@ export const translations = {
   },
 
   zh: {
+    // — Tableau de combustion (lignes/colonnes, audit i18n 2026-07) —
+    "Packed waste": "打包垃圾",
+    "Direct lines": "直接进料管线",
+    "Solids": "固体",
+    "Gas/Fuel": "气体/燃油",
+    "Various": "其他",
+    "Masse [kg/h]": "质量 [kg/h]",
+    "Masse [%]": "质量 [%]",
+    "Mix [%]": "混合 [%]",
+    "O2stoechio": "化学计量 O₂",
+    "H2Ostoechio": "化学计量 H₂O",
+    "%Comb": "%可燃物",
+    "%Water": "%水分",
+    "%Inert": "%惰性物",
+    "Comb  [kg/h]": "可燃物 [kg/h]",
+    "Water  [kg/h]": "水 [kg/h]",
+    "Inert  [kg/h]": "惰性物 [kg/h]",
     // Design parameters (RK) — Display_design labels
     pressionAeraulique: '风压',
     pdcMmCE: '压力损失 mmCE',
@@ -1899,6 +2052,23 @@ export const translations = {
   },
 
   ar: {
+    // — Tableau de combustion (lignes/colonnes, audit i18n 2026-07) —
+    "Packed waste": "نفايات معبأة",
+    "Direct lines": "خطوط مباشرة",
+    "Solids": "مواد صلبة",
+    "Gas/Fuel": "غاز/وقود",
+    "Various": "متنوعة",
+    "Masse [kg/h]": "الكتلة [كغ/س]",
+    "Masse [%]": "الكتلة [%]",
+    "Mix [%]": "مزيج [%]",
+    "O2stoechio": "O₂ ستوكيومتري",
+    "H2Ostoechio": "H₂O ستوكيومتري",
+    "%Comb": "%قابل للاحتراق",
+    "%Water": "%ماء",
+    "%Inert": "%خامل",
+    "Comb  [kg/h]": "قابل للاحتراق [كغ/س]",
+    "Water  [kg/h]": "ماء [كغ/س]",
+    "Inert  [kg/h]": "خامل [كغ/س]",
     // Design parameters (RK) — Display_design labels
     pressionAeraulique: 'الضغط الهوائي',
     pdcMmCE: 'فقد الضغط mmCE',

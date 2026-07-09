@@ -126,14 +126,14 @@ const computeOpexCosts = (innerData, tr) => {
 
   // ── Électricité ────────────────────────────────────────────────────────────
   const elecRows = [
-    { label: d.labelElec1 || 'Mise en rotation RK', kW: d.consoElec1 || 0 },
-    { label: d.labelElec2 || 'Pompe alimentation lances', kW: d.consoElec2 || 0 },
-    { label: d.labelElec3 || 'Air comprimé', kW: d.consoElec3 || 0 },
-    { label: d.labelElec4 || 'Ventilateur air combustion', kW: d.consoElec4 || 0 },
-    { label: d.labelElec5 || 'Ventilateur refroidissement virole', kW: d.consoElec5 || 0 },
-    { label: d.labelElec6 || 'Extracteur', kW: d.consoElec6 || 0 },
-    { label: d.labelElec7 || 'Pompe à boue', kW: d.consoElec7 || 0 },
-    { label: d.labelElec8 || 'Tapis', kW: d.consoElec8 || 0 },
+    { label: d.labelElec1 || tr('elecRotationRK'), kW: d.consoElec1 || 0 },
+    { label: d.labelElec2 || tr('elecPompeLances'), kW: d.consoElec2 || 0 },
+    { label: d.labelElec3 || tr('compressedAir'), kW: d.consoElec3 || 0 },
+    { label: d.labelElec4 || tr('elecVentAirComb'), kW: d.consoElec4 || 0 },
+    { label: d.labelElec5 || tr('elecVentVirole'), kW: d.consoElec5 || 0 },
+    { label: d.labelElec6 || tr('elecExtracteur'), kW: d.consoElec6 || 0 },
+    { label: d.labelElec7 || tr('elecPompeBoue'), kW: d.consoElec7 || 0 },
+    { label: d.labelElec8 || tr('elecTapis'), kW: d.consoElec8 || 0 },
   ].filter(r => r.kW > 0);
 
   const totalElec_kW = elecRows.reduce((s, r) => s + r.kW, 0);
@@ -159,8 +159,8 @@ const computeOpexCosts = (innerData, tr) => {
   const reactifRows = [
     { label: 'CaCO₃', kgh: d.Conso_CaCO3_kg || 0, prix: reagentsTypes?.CaCO3?.cost || 0, co2T: reagentsTypes?.CaCO3?.co2PerTrip || 0 },
     { label: 'CaO', kgh: d.Conso_CaO_kg || 0, prix: reagentsTypes?.CaO?.cost || 0, co2T: reagentsTypes?.CaO?.co2PerTrip || 0 },
-    { label: 'Ca(OH)₂ sec', kgh: d.Conso_CaOH2_dry_kg || 0, prix: reagentsTypes?.CaOH2?.cost || 0, co2T: reagentsTypes?.CaOH2?.co2PerTrip || 0 },
-    { label: 'Ca(OH)₂ humide', kgh: d.Conso_CaOH2_wet_kg || 0, prix: reagentsTypes?.CaOH2?.cost || 0, co2T: reagentsTypes?.CaOH2?.co2PerTrip || 0 },
+    { label: tr('caoh2Dry'), kgh: d.Conso_CaOH2_dry_kg || 0, prix: reagentsTypes?.CaOH2?.cost || 0, co2T: reagentsTypes?.CaOH2?.co2PerTrip || 0 },
+    { label: tr('caoh2Wet'), kgh: d.Conso_CaOH2_wet_kg || 0, prix: reagentsTypes?.CaOH2?.cost || 0, co2T: reagentsTypes?.CaOH2?.co2PerTrip || 0 },
     { label: 'NaOH', kgh: d.Conso_NaOH_kg || 0, prix: reagentsTypes?.NaOH?.cost || 0, co2T: reagentsTypes?.NaOH?.co2PerTrip || 0 },
     { label: 'NaHCO₃', kgh: d.Conso_NaOHCO3_kg || 0, prix: reagentsTypes?.NaOHCO3?.cost || 0, co2T: reagentsTypes?.NaOHCO3?.co2PerTrip || 0 },
     { label: 'NH₃', kgh: d.Conso_Ammonia_kg || 0, prix: reagentsTypes?.NH3?.cost || 0, co2T: reagentsTypes?.NH3?.co2PerTrip || 0 },
@@ -245,14 +245,14 @@ const RK_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
 
   // ── Tab 4 : Design ────────────────────────────────────────────────────────────
   const elecRows = [
-    { label: innerData.labelElec1 || 'Mise en rotation RK', value: innerData.consoElec1 },
-    { label: innerData.labelElec2 || 'Pompe alimentation lances', value: innerData.consoElec2 },
-    { label: innerData.labelElec3 || 'Air comprimé', value: innerData.consoElec3 },
-    { label: innerData.labelElec4 || 'Ventilateur air combustion', value: innerData.consoElec4 },
-    { label: innerData.labelElec5 || 'Ventilateur refroidissement virole', value: innerData.consoElec5 },
-    { label: innerData.labelElec6 || 'Extracteur', value: innerData.consoElec6 },
-    { label: innerData.labelElec7 || 'Pompe à boue', value: innerData.consoElec7 },
-    { label: innerData.labelElec8 || 'Tapis', value: innerData.consoElec8 },
+    { label: innerData.labelElec1 || tr('elecRotationRK'), value: innerData.consoElec1 },
+    { label: innerData.labelElec2 || tr('elecPompeLances'), value: innerData.consoElec2 },
+    { label: innerData.labelElec3 || tr('compressedAir'), value: innerData.consoElec3 },
+    { label: innerData.labelElec4 || tr('elecVentAirComb'), value: innerData.consoElec4 },
+    { label: innerData.labelElec5 || tr('elecVentVirole'), value: innerData.consoElec5 },
+    { label: innerData.labelElec6 || tr('elecExtracteur'), value: innerData.consoElec6 },
+    { label: innerData.labelElec7 || tr('elecPompeBoue'), value: innerData.consoElec7 },
+    { label: innerData.labelElec8 || tr('elecTapis'), value: innerData.consoElec8 },
   ].filter(r => r.value !== undefined && r.value !== null);
 
   const waterConsumption = [
@@ -266,8 +266,8 @@ const RK_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
   const reactifConsumption = [
     { label: 'CaCO₃ [kg/h]', value: innerData.Conso_CaCO3_kg },
     { label: 'CaO [kg/h]', value: innerData.Conso_CaO_kg },
-    { label: 'Ca(OH)₂ sec [kg/h]', value: innerData.Conso_CaOH2_dry_kg },
-    { label: 'Ca(OH)₂ humide [kg/h]', value: innerData.Conso_CaOH2_wet_kg },
+    { label: `${tr('caoh2Dry')} [kg/h]`, value: innerData.Conso_CaOH2_dry_kg },
+    { label: `${tr('caoh2Wet')} [kg/h]`, value: innerData.Conso_CaOH2_wet_kg },
     { label: 'NaOH [kg/h]', value: innerData.Conso_NaOH_kg },
     { label: 'NaHCO₃ [kg/h]', value: innerData.Conso_NaOHCO3_kg },
     { label: 'NH₃ [kg/h]', value: innerData.Conso_Ammonia_kg },
