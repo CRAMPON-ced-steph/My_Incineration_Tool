@@ -32,7 +32,8 @@ const STACKFlueGasPollutantEmission = ({ innerData, currentLanguage = 'fr', setI
   const O2ref = emissions2[t('O2RefPercent')] || 11;
   const Debit_fumees_humide_Nm3_h = innerData?.FG_humide_tot || 1;
   const Debit_fumees_sec_Nm3_h = innerData?.FG_sec_tot || 1;
-  const FG_O2_calcule = innerData?.O2calcul || 12;
+  const O2_amont = innerData?.O2_calcule; // % (RK/WHB/CO2) ou ratio 0-1 (FB/GF) -> normalisé en %
+  const FG_O2_calcule = O2_amont > 0 ? (O2_amont <= 0.21 ? O2_amont * 100 : O2_amont) : 12;
   const masses_pollutant_input = innerData?.PollutantOutput || {};
 
   // Handle input changes

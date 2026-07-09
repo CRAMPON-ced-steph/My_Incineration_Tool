@@ -64,12 +64,32 @@ const loadPt = (key, def) => {
   } catch { return def; }
 };
 
+// Collecte tous les points E écrits par les fours (clés pointE_<nodeId>, cf. FB/RK/GF_Parameter_Tab),
+// avec fallback sur l'ancienne clé unique 'pointE' (anciens projets). Même logique que LinearGraph.
+const loadPointsE = () => {
+  const points = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key && key.startsWith('pointE_')) {
+      try {
+        const pt = JSON.parse(localStorage.getItem(key));
+        if (pt && pt.x != null && pt.y != null) points.push(pt);
+      } catch { /* ignore */ }
+    }
+  }
+  if (points.length === 0) {
+    const legacy = loadPt('pointE', null);
+    if (legacy && legacy.x != null && legacy.y != null) points.push(legacy);
+  }
+  return points;
+};
+
 const CombustionDiagramSection = () => {
   const pA = loadPt('pointA', { x: 100, y: 2 });
   const pB = loadPt('pointB', { x: 150, y: 10 });
   const pC = loadPt('pointC', { x: 800, y: 10 });
   const pD = loadPt('pointD', { x: 300, y: 2 });
-  const pE = loadPt('pointE', { x: 500, y: 8 });
+  const pointsE = loadPointsE();
 
   const isBelow = pA.y < pB.y * 0.4 || pD.y < pC.y * 0.4;
 
@@ -90,7 +110,7 @@ const CombustionDiagramSection = () => {
       {
         type: 'scatter',
         label: 'Point E — résultat rétro-calcul',
-        data: [pE],
+        data: pointsE,
         backgroundColor: 'orange',
         pointRadius: 9,
         pointHoverRadius: 11,
@@ -151,7 +171,12 @@ const CombustionDiagramSection = () => {
     { pt: 'B', role: 'Débit min — Puissance max', color: 'blue',   d: pB },
     { pt: 'C', role: 'Débit max — Puissance max', color: 'green',  d: pC },
     { pt: 'D', role: 'Débit max — Puissance min', color: 'purple', d: pD },
-    { pt: 'E', role: 'Point de calcul rétro',     color: 'orange', d: pE },
+    ...pointsE.map((pt, i) => ({
+      pt: pointsE.length > 1 ? `E${i + 1}` : 'E',
+      role: `Point de calcul rétro${pt.label ? ` — ${pt.label}` : ''}${pt.nodeId ? ` (${pt.nodeId})` : ''}`,
+      color: 'orange',
+      d: pt,
+    })),
   ];
 
   return (
@@ -178,7 +203,7 @@ const CombustionDiagramSection = () => {
           </thead>
           <tbody>
             {pointRows.map(({ pt, role, color, d }) => (
-              <tr key={pt} style={{ background: pt === 'E' ? '#fff8e8' : '#fff' }}>
+              <tr key={pt} style={{ background: pt.startsWith('E') ? '#fff8e8' : '#fff' }}>
                 <td style={{ ...diagStyles.td, color, fontWeight: 'bold', textAlign: 'center' }}>{pt}</td>
                 <td style={{ ...diagStyles.td, textAlign: 'left' }}>{role}</td>
                 <td style={diagStyles.td}>{d.x}</td>

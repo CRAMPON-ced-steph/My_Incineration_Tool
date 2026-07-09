@@ -61,7 +61,8 @@ const FlueGasPollutantEmission = ({ innerData, nodeId, currentLanguage = 'fr' })
   // Données d'entrée
   const Debit_fumees_sec_Nm3_h = innerData?.FG_RK_OUT_Nm3_h?.dry || 10000;
   const Debit_fumees_humide_Nm3_h = innerData?.FG_RK_OUT_Nm3_h?.wet || 10000;
-  const FG_O2_calcule = innerData?.O2calcul || 12;
+  const O2_amont = innerData?.O2_calcule; // % (RK/WHB/CO2) ou ratio 0-1 (FB/GF) -> normalisé en %
+  const FG_O2_calcule = O2_amont > 0 ? (O2_amont <= 0.21 ? O2_amont * 100 : O2_amont) : 12;
   const masse_dechets = innerData?.masse || 10;
   const Inert_kg_h = innerData?.Inertmass || 1;
 

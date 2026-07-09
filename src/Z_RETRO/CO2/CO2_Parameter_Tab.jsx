@@ -3,7 +3,7 @@ import CalculateSendButton from '../../C_Components/CalculateSendButton';
 // CO2_calculations.js non implémenté — stub local
 const performCalculation_CO2 = () => null;
 
-const CO2_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage, autoTrigger = false }) => {
+const CO2_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage, nodeId, autoTrigger = false }) => {
     // Initialiser les états avec les données reçues ou des valeurs par défaut
     const [calculationResult_CO2, setCalculationResult] = useState(nodeData?.calculationResult || null);
     const [isSliderOpen, setIsSliderOpen] = useState(false);
