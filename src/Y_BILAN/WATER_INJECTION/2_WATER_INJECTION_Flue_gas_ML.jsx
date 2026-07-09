@@ -9,12 +9,12 @@ import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './WATER_INJECTION_traduction';
 
 import { fmt } from '../../A_Transverse_fonction/formatNumber';
-const WATER_INJECTIONFlueGasParameters = ({ innerData, currentLanguage = 'fr', nodeId }) => {
+const WATER_INJECTIONFlueGasParameters = ({ innerData, upstreamT_IN, upstreamFG_IN, currentLanguage = 'fr', nodeId }) => {
 
 
 
   const initialEmissions_WATER_INJECTION = {
-    'Flue gas temperature outlet [°C]': innerData?.T_OUT || 200,
+    'Flue gas temperature outlet [°C]': upstreamT_IN ?? 200,
     'Ambient air temperature [°C]': 20,
     'Volume of air ingress [Nm3/h]': 0,
     'Thermal losses [%]': 2,
@@ -36,9 +36,11 @@ const WATER_INJECTIONFlueGasParameters = ({ innerData, currentLanguage = 'fr', n
   }, [emissions_WATER_INJECTION]);
 
   // Input data with fallback values
-  // T_IN = température de sortie du nœud précédent (= entrée de l'injection d'eau)
-  const T_IN = innerData?.T_OUT || 200;
-  const FG_IN = innerData?.FG_OUT_kg_h || { CO2: 1, H2O: 1, O2: 1, N2: 1 };
+  // T_IN / FG_IN = sortie du nœud amont, capturées en useRef par le MainPage (props stables).
+  // On ne lit PAS innerData.T_OUT ici : l'onglet y écrit sa propre T de sortie (propagation aval),
+  // ce qui écraserait l'entrée à chaque re-montage d'onglet.
+  const T_IN = upstreamT_IN ?? 200;
+  const FG_IN = upstreamFG_IN || { CO2: 1, H2O: 1, O2: 1, N2: 1 };
 
   // Extract parameters from state
   const T_out = emissions_WATER_INJECTION['Flue gas temperature outlet [°C]'];

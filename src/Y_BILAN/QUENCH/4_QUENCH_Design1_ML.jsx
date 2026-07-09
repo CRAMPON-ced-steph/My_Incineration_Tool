@@ -8,7 +8,7 @@ import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './QUENCH_traduction';
 
 import { fmt } from '../../A_Transverse_fonction/formatNumber';
-const QUENCHDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
+const QUENCHDesign = ({ innerData, setInnerData, upstreamT_IN, currentLanguage = 'fr' }) => {
   const languageCode = getLanguageCode(currentLanguage);
   const t = (key) => {
     return translations[languageCode]?.[key] || translations['fr']?.[key] || key;
@@ -61,7 +61,7 @@ const QUENCHDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
   const PDC_mmCE = PDC_calcul['PDC [mmCE]'];
   const P_out_mmCE = P_in_mmCE - PDC_mmCE;
 
-  const T_IN = innerData?.T_OUT || 200;
+  const T_IN = upstreamT_IN ?? 200;
   const T_sortie = innerData?.T_sortie || 80;
   const Debit_fumees_humide_Nm3_h = innerData?.FG_humide_EAU_tot || 28000;
   const Eau_add = innerData?.Q_eau_kg_h || 5000;

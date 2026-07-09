@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import QUENCHFlueGasParameters from './2_QUENCH_Flue_gas_ML';
 import QUENCHFlueGasPollutantEmission from './3_QUENCH_Pollutant_Emission_ML';
 import QUENCHDesign from './4_QUENCH_Design1_ML';
@@ -41,10 +41,16 @@ const QUENCHMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, curren
 
   const [innerData, setInnerData] = useState(nodeData.result);
 
+  // Valeurs amont capturées une fois au montage — stables à travers les changements d'onglet.
+  // On NE lit PAS innerData.T_OUT dans les onglets car l'onglet Flue gases y écrit sa T de sortie
+  // (propagation aval), ce qui écraserait la T d'entrée à chaque re-montage d'onglet.
+  const T_IN_upstream  = useRef(nodeData?.result?.T_OUT ?? 200).current;
+  const FG_IN_upstream = useRef(nodeData?.result?.FG_OUT_kg_h || { CO2: 1, H2O: 1, O2: 1, N2: 1 }).current;
+
   const tabs = [
     {
       name: t('Flue gases'),
-      content: <QUENCHFlueGasParameters innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} nodeId={nodeId} />
+      content: <QUENCHFlueGasParameters innerData={innerData} setInnerData={setInnerData} upstreamT_IN={T_IN_upstream} upstreamFG_IN={FG_IN_upstream} currentLanguage={currentLanguage} nodeId={nodeId} />
     },
     {
       name: t('Pollutant Emissions'),
@@ -52,7 +58,7 @@ const QUENCHMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, curren
     },
     {
       name: t('Design'),
-      content: <QUENCHDesign innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} nodeId={nodeId} />
+      content: <QUENCHDesign innerData={innerData} setInnerData={setInnerData} upstreamT_IN={T_IN_upstream} currentLanguage={currentLanguage} nodeId={nodeId} />
     },
     {
       name: t('Opex'),
