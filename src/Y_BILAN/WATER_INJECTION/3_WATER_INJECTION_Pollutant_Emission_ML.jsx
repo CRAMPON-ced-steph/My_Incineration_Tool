@@ -286,7 +286,9 @@ const WATER_INJECTIONFlueGasPollutantEmission = ({ innerData, currentLanguage = 
 
         {/* Inline parameters form */}
         <div style={{ display: 'grid', gap: '12px' }}>
-          {Object.entries(emissions2_WATER_INJECTION).map(([key, value]) => (
+          {Object.entries(emissions2_WATER_INJECTION)
+            .filter(([key]) => ['Fly ashes content [g/Nm3]', 'siccity bottom ash [%]', 'O2 ref [%]'].includes(key))
+            .map(([key, value]) => (
             <div
               key={key}
               style={{

@@ -286,7 +286,9 @@ const QUENCHFlueGasPollutantEmission = ({ innerData, currentLanguage = 'fr', nod
 
         {/* Inline parameters form */}
         <div style={{ display: 'grid', gap: '12px' }}>
-          {Object.entries(emissionsQUENCH).map(([key, value]) => (
+          {Object.entries(emissionsQUENCH)
+            .filter(([key]) => ['Fly ashes content [g/Nm3]', 'siccity bottom ash [%]', 'O2 ref [%]'].includes(key))
+            .map(([key, value]) => (
             <div
               key={key}
               style={{
