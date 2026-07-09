@@ -1,6 +1,9 @@
 // WHB_traduction.js
 export const translations = {
   fr: {
+    // — Ajouts audit i18n (2026-07) —
+    "steamVaporPropertiesByPressure": "Propriétés de la vapeur par pression",
+    "opex": "Opex",
     // ===== COMMUNES =====
     calculationParameters: 'Paramètres de calcul',
     calculatedParameters: 'Paramètres calculés',
@@ -234,6 +237,10 @@ export const translations = {
   },
 
   en: {
+    // — Ajouts audit i18n (2026-07) —
+    "rapport": "Report",
+    "steamVaporPropertiesByPressure": "Steam properties by pressure",
+    "opex": "Opex",
     // ===== COMMONS =====
     calculationParameters: 'Calculation Parameters',
     calculatedParameters: 'Calculated Parameters',
@@ -468,6 +475,10 @@ export const translations = {
 
 
   de: {
+    // — Ajouts audit i18n (2026-07) —
+    "rapport": "Bericht",
+    "steamVaporPropertiesByPressure": "Dampfeigenschaften nach Druck",
+    "opex": "Opex",
     // ===== COMMUNES =====
     calculationParameters: 'Berechnungsparameter',
     calculatedParameters: 'Berechnete Parameter',
@@ -703,6 +714,10 @@ export const translations = {
 
 
   es: {
+    // — Ajouts audit i18n (2026-07) —
+    "rapport": "Informe",
+    "steamVaporPropertiesByPressure": "Propiedades del vapor por presión",
+    "opex": "Opex",
     // ===== COMMUNES =====
     calculationParameters: 'Parámetros de cálculo',
     calculatedParameters: 'Parámetros calculados',
@@ -935,6 +950,10 @@ export const translations = {
   },
 
   it: {
+    // — Ajouts audit i18n (2026-07) —
+    "rapport": "Rapporto",
+    "steamVaporPropertiesByPressure": "Proprietà del vapore per pressione",
+    "opex": "Opex",
     // ===== COMMUNES =====
     calculationParameters: 'Parametri di calcolo',
     calculatedParameters: 'Parametri calcolati',
@@ -1168,6 +1187,10 @@ export const translations = {
 
 
   pt: {
+    // — Ajouts audit i18n (2026-07) —
+    "rapport": "Relatório",
+    "steamVaporPropertiesByPressure": "Propriedades do vapor por pressão",
+    "opex": "Opex",
     // ===== COMMUNES =====
     calculationParameters: 'Parâmetros de cálculo',
     calculatedParameters: 'Parâmetros calculados',
@@ -1401,6 +1424,10 @@ export const translations = {
 
 
   ru: {
+    // — Ajouts audit i18n (2026-07) —
+    "rapport": "Отчёт",
+    "steamVaporPropertiesByPressure": "Свойства пара по давлению",
+    "opex": "Opex",
     // ===== COMMUNES =====
     calculationParameters: 'Параметры расчета',
     calculatedParameters: 'Вычисленные параметры',
@@ -1633,6 +1660,43 @@ export const translations = {
   },
 
   zh: {
+    // — Ajouts audit i18n (2026-07) —
+    "rapport": "报告",
+    "whbReportTitle": "余热锅炉（WHB）——综合报告",
+    "steamProduction": "蒸汽产量",
+    "steamPressure": "蒸汽压力 [bar]",
+    "steamTemperature": "蒸汽温度 [°C]",
+    "boilerBlowdown": "锅炉排污 [kg/h]",
+    "flashDrumSteam": "闪蒸罐蒸汽 [kg/h]",
+    "temperatures": "温度",
+    "flueGasInletTemp": "烟气入口温度 [°C]",
+    "flueGasOutletTemp": "烟气出口温度 [°C]",
+    "o2Measured": "测量 O₂（干基）",
+    "wetFlowTotal": "总湿流量 [kg/h]",
+    "dryFlow": "干流量 [Nm³/h]",
+    "wetFlow": "湿流量 [Nm³/h]",
+    "outletGasComposition": "出口气体成分",
+    "netProduction": "净产量",
+    "netSteamProduced": "净蒸汽产量 [kg/h]",
+    "recoveredPower": "回收功率 [kW]",
+    "turbineValorization": "汽轮机/利用",
+    "electricConsumptions": "电力消耗",
+    "dataNotAvailableDesign": "数据不可用（请打开设计选项卡）",
+    "hourlyCosts": "每小时成本",
+    "opexNotAvailable": "OPEX 成本不可用——请打开设计和 Opex 选项卡。",
+    "electricity": "电力",
+    "water": "水",
+    "totalCost": "总成本",
+    "hourlyCost": "每小时成本",
+    "annualCost": "年成本",
+    "totalCO2": "Total CO₂ [kg/h]",
+    "co2Electricity": "电力 CO₂",
+    "totalCO2kgh": "Total CO₂",
+    "reportGenerated": "自动生成的报告",
+    "consumer": "耗能设备",
+    "total": "总计",
+    "steamVaporPropertiesByPressure": "按压力的蒸汽性质",
+    "opex": "运营成本",
     // ===== COMMUNES =====
     calculationParameters: '计算参数',
     calculatedParameters: '计算后的参数',
@@ -1830,6 +1894,43 @@ export const translations = {
   },
 
   ja: {
+    // — Ajouts audit i18n (2026-07) —
+    "rapport": "レポート",
+    "whbReportTitle": "廃熱ボイラー（WHB）——総合レポート",
+    "steamProduction": "蒸気生産",
+    "steamPressure": "蒸気圧力 [bar]",
+    "steamTemperature": "蒸気温度 [°C]",
+    "boilerBlowdown": "ボイラーブロー [kg/h]",
+    "flashDrumSteam": "フラッシュドラム蒸気 [kg/h]",
+    "temperatures": "温度",
+    "flueGasInletTemp": "燃焼ガス入口温度 [°C]",
+    "flueGasOutletTemp": "燃焼ガス出口温度 [°C]",
+    "o2Measured": "測定 O₂（乾き）",
+    "wetFlowTotal": "総湿ガス流量 [kg/h]",
+    "dryFlow": "乾きガス流量 [Nm³/h]",
+    "wetFlow": "湿りガス流量 [Nm³/h]",
+    "outletGasComposition": "出口ガス組成",
+    "netProduction": "正味生産量",
+    "netSteamProduced": "正味蒸気生産量 [kg/h]",
+    "recoveredPower": "回収出力 [kW]",
+    "turbineValorization": "タービン/有効利用",
+    "electricConsumptions": "電力消費",
+    "dataNotAvailableDesign": "データがありません（設計タブを開いてください）",
+    "hourlyCosts": "時間当たりコスト",
+    "opexNotAvailable": "OPEXコストがありません——設計タブとOpexタブを開いてください。",
+    "electricity": "電力",
+    "water": "水",
+    "totalCost": "総コスト",
+    "hourlyCost": "時間コスト",
+    "annualCost": "年間コスト",
+    "totalCO2": "Total CO₂ [kg/h]",
+    "co2Electricity": "電力 CO₂",
+    "totalCO2kgh": "Total CO₂",
+    "reportGenerated": "自動生成レポート",
+    "consumer": "消費機器",
+    "total": "合計",
+    "steamVaporPropertiesByPressure": "圧力別蒸気性質",
+    "opex": "Opex",
     // ===== COMMUNES =====
     calculationParameters: '計算パラメータ',
     calculatedParameters: '計算されたパラメータ',
@@ -2027,6 +2128,43 @@ export const translations = {
   },
 
   ar: {
+    // — Ajouts audit i18n (2026-07) —
+    "rapport": "تقرير",
+    "whbReportTitle": "غلاية استرجاع الحرارة (WHB) — تقرير تجميعي",
+    "steamProduction": "إنتاج البخار",
+    "steamPressure": "ضغط البخار [بار]",
+    "steamTemperature": "درجة حرارة البخار [°م]",
+    "boilerBlowdown": "تصريف الغلاية [كغ/س]",
+    "flashDrumSteam": "بخار وعاء الوميض [كغ/س]",
+    "temperatures": "درجات الحرارة",
+    "flueGasInletTemp": "درجة حرارة دخول الغازات [°م]",
+    "flueGasOutletTemp": "درجة حرارة خروج الغازات [°م]",
+    "o2Measured": "O₂ المُقاس (جاف)",
+    "wetFlowTotal": "التدفق الرطب الكلي [كغ/س]",
+    "dryFlow": "التدفق الجاف [نم³/س]",
+    "wetFlow": "التدفق الرطب [نم³/س]",
+    "outletGasComposition": "تركيب غاز الخروج",
+    "netProduction": "الإنتاج الصافي",
+    "netSteamProduced": "البخار الصافي المنتج [كغ/س]",
+    "recoveredPower": "الطاقة المستردة [كيلوواط]",
+    "turbineValorization": "التوربين / الاستثمار",
+    "electricConsumptions": "الاستهلاكات الكهربائية",
+    "dataNotAvailableDesign": "البيانات غير متاحة (افتح تبويب التصميم)",
+    "hourlyCosts": "التكاليف بالساعة",
+    "opexNotAvailable": "تكاليف OPEX غير متاحة — افتح تبويبي التصميم وOpex.",
+    "electricity": "الكهرباء",
+    "water": "الماء",
+    "totalCost": "إجمالي التكلفة",
+    "hourlyCost": "التكلفة بالساعة",
+    "annualCost": "التكلفة السنوية",
+    "totalCO2": "Total CO₂ [kg/h]",
+    "co2Electricity": "CO₂ كهرباء",
+    "totalCO2kgh": "Total CO₂",
+    "reportGenerated": "تقرير تم إنشاؤه تلقائيًا",
+    "consumer": "المستهلك",
+    "total": "الإجمالي",
+    "steamVaporPropertiesByPressure": "خصائص البخار حسب الضغط",
+    "opex": "Opex",
     // ===== COMMUNES =====
     calculationParameters: 'معاملات الحساب',
     calculatedParameters: 'المعاملات المحسوبة',

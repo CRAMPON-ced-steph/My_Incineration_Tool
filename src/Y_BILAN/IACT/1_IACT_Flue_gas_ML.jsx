@@ -15,7 +15,7 @@ const N2_mass_frac = 0.767;
 
 const IACTFlueGasParameters = ({ innerData, upstreamT_IN, upstreamFG_IN, upstreamP_IN, currentLanguage = 'fr', nodeId }) => {
   const initialEmissions_IACT = {
-    'Flue gas temperature outlet [°C]': innerData?.T_OUT - 10,
+    'Flue gas temperature outlet [°C]': innerData?.T_OUT,
     'Ambient air temperature [°C]': 20,
     'Temperature de l\'air réchauffé [°C]': 150,
     'Rendement d\'échange [%]': 98,

@@ -1,6 +1,8 @@
 export const translations = {
   // ========== FRENCH TRANSLATIONS ==========
   fr: {
+    // — Ajouts audit i18n (2026-07) —
+    "Fly ash content [g/Nm3]": "Teneur en cendres volantes [g/Nm³]",
     'Calculation parameters': 'Paramètres de calcul',
     'Calculated parameters': 'Paramètres calculés',
     'Flue gas composition': 'Composition des gaz de combustion',
@@ -152,6 +154,8 @@ export const translations = {
 
   // ========== ENGLISH TRANSLATIONS ==========
   en: {
+    // — Ajouts audit i18n (2026-07) —
+    "Fly ash content [g/Nm3]": "Fly ash content [g/Nm³]",
     'Calculation parameters': 'Calculation parameters',
     'Calculated parameters': 'Calculated parameters',
     'Flue gas composition': 'Flue gas composition',
@@ -303,6 +307,8 @@ export const translations = {
 
   // ========== GERMAN TRANSLATIONS ==========
   de: {
+    // — Ajouts audit i18n (2026-07) —
+    "Fly ash content [g/Nm3]": "Flugaschegehalt [g/Nm³]",
     'Calculation parameters': 'Berechnungsparameter',
     'Calculated parameters': 'Berechnete Parameter',
     'Flue gas composition': 'Rauchgaszusammensetzung',
@@ -454,6 +460,8 @@ export const translations = {
 
   // ========== SPANISH TRANSLATIONS ==========
   es: {
+    // — Ajouts audit i18n (2026-07) —
+    "Fly ash content [g/Nm3]": "Contenido de cenizas volantes [g/Nm³]",
     'Calculation parameters': 'Parámetros de cálculo',
     'Calculated parameters': 'Parámetros calculados',
     'Flue gas composition': 'Composición del gas de escape',
@@ -605,6 +613,8 @@ export const translations = {
 
   // ========== ITALIAN TRANSLATIONS ==========
   it: {
+    // — Ajouts audit i18n (2026-07) —
+    "Fly ash content [g/Nm3]": "Contenuto di ceneri volanti [g/Nm³]",
     'Calculation parameters': 'Parametri di calcolo',
     'Calculated parameters': 'Parametri calcolati',
     'Flue gas composition': 'Composizione del gas di scarico',
@@ -756,6 +766,8 @@ export const translations = {
 
   // ========== PORTUGUESE TRANSLATIONS ==========
   pt: {
+    // — Ajouts audit i18n (2026-07) —
+    "Fly ash content [g/Nm3]": "Teor de cinzas volantes [g/Nm³]",
     'Calculation parameters': 'Parâmetros de cálculo',
     'Calculated parameters': 'Parâmetros calculados',
     'Flue gas composition': 'Composição do gás de escape',
@@ -907,6 +919,8 @@ export const translations = {
 
   // ========== CHINESE (Simplified) TRANSLATIONS ==========
   zh: {
+    // — Ajouts audit i18n (2026-07) —
+    "Fly ash content [g/Nm3]": "飞灰含量 [g/Nm³]",
     'Calculation parameters': '计算参数',
     'Calculated parameters': '计算的参数',
     'Flue gas composition': '烟气成分',
@@ -1058,6 +1072,8 @@ export const translations = {
 
   // ========== JAPANESE TRANSLATIONS ==========
   ja: {
+    // — Ajouts audit i18n (2026-07) —
+    "Fly ash content [g/Nm3]": "飛灰含有量 [g/Nm³]",
     'Calculation parameters': '計算パラメータ',
     'Calculated parameters': '計算されたパラメータ',
     'Flue gas composition': '排ガス組成',
@@ -1209,6 +1225,8 @@ export const translations = {
 
   // ========== RUSSIAN TRANSLATIONS ==========
   ru: {
+    // — Ajouts audit i18n (2026-07) —
+    "Fly ash content [g/Nm3]": "Содержание летучей золы [г/Нм³]",
     'Calculation parameters': 'Параметры расчета',
     'Calculated parameters': 'Расчетные параметры',
     'Flue gas composition': 'Состав дымовых газов',
@@ -1360,6 +1378,8 @@ export const translations = {
 
   // ========== ARABIC TRANSLATIONS ==========
   ar: {
+    // — Ajouts audit i18n (2026-07) —
+    "Fly ash content [g/Nm3]": "محتوى الرماد المتطاير [غ/نم³]",
     'Calculation parameters': 'معاملات الحساب',
     'Calculated parameters': 'المعاملات المحسوبة',
     'Flue gas composition': 'تكوين غاز المداخن',

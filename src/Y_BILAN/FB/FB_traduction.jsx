@@ -11,6 +11,12 @@ export const translations = {
   // FRANÇAIS
   // ============================================================
   fr: {
+    // — Ajouts audit i18n (2026-07) —
+    "Excès d'air Lit Fluidisé": "Excès d'air Lit Fluidisé",
+    "Excès d'air Combustible d'appoint": "Excès d'air Combustible d'appoint",
+    "Type eau additionnelle": "Type eau additionnelle",
+    "Débit d'air à pulser [Nm3/h]": "Débit d'air à pulser [Nm³/h]",
+    "Débit MS": "Débit MS",
     // ────────────────────────────────────────────────────────
     // HEADER & TITLE
     // ────────────────────────────────────────────────────────
@@ -455,6 +461,12 @@ export const translations = {
   // ENGLISH
   // ============================================================
   en: {
+    // — Ajouts audit i18n (2026-07) —
+    "Excès d'air Lit Fluidisé": "Fluidized bed excess air",
+    "Excès d'air Combustible d'appoint": "Auxiliary fuel excess air",
+    "Type eau additionnelle": "Additional water type",
+    "Débit d'air à pulser [Nm3/h]": "Blown air flow [Nm³/h]",
+    "Débit MS": "Dry solids flow",
     // ────────────────────────────────────────────────────────
     // HEADER & TITLE
     // ────────────────────────────────────────────────────────
@@ -899,6 +911,12 @@ export const translations = {
   // ESPAÑOL
   // ============================================================
   es: {
+    // — Ajouts audit i18n (2026-07) —
+    "Excès d'air Lit Fluidisé": "Exceso de aire del lecho fluidizado",
+    "Excès d'air Combustible d'appoint": "Exceso de aire del combustible auxiliar",
+    "Type eau additionnelle": "Tipo de agua adicional",
+    "Débit d'air à pulser [Nm3/h]": "Caudal de aire soplado [Nm³/h]",
+    "Débit MS": "Caudal de MS",
     'Caractéristiques de Fonctionnement': 'Características de Funcionamiento',
     'Caractéristiques des Boues': 'Características de los Lodos',
     'Combustion': 'Combustión',
@@ -1224,6 +1242,12 @@ export const translations = {
   // DEUTSCH
   // ============================================================
   de: {
+    // — Ajouts audit i18n (2026-07) —
+    "Excès d'air Lit Fluidisé": "Luftüberschuss Wirbelschicht",
+    "Excès d'air Combustible d'appoint": "Luftüberschuss Zusatzbrennstoff",
+    "Type eau additionnelle": "Typ Zusatzwasser",
+    "Débit d'air à pulser [Nm3/h]": "Blasluftdurchsatz [Nm³/h]",
+    "Débit MS": "TS-Durchsatz",
     'Caractéristiques de Fonctionnement': 'Betriebseigenschaften',
     'Caractéristiques des Boues': 'Schlammeigenschaften',
     'Combustion': 'Verbrennung',
@@ -1549,6 +1573,12 @@ export const translations = {
   // ITALIANO
   // ============================================================
   it: {
+    // — Ajouts audit i18n (2026-07) —
+    "Excès d'air Lit Fluidisé": "Eccesso d'aria letto fluido",
+    "Excès d'air Combustible d'appoint": "Eccesso d'aria combustibile ausiliario",
+    "Type eau additionnelle": "Tipo di acqua aggiuntiva",
+    "Débit d'air à pulser [Nm3/h]": "Portata aria soffiata [Nm³/h]",
+    "Débit MS": "Portata SS",
     'Caractéristiques de Fonctionnement': 'Caratteristiche di Funzionamento',
     'Caractéristiques des Boues': 'Caratteristiche dei Fanghi',
     'Combustion': 'Combustione',
@@ -1874,6 +1904,12 @@ export const translations = {
   // PORTUGUÊS
   // ============================================================
   pt: {
+    // — Ajouts audit i18n (2026-07) —
+    "Excès d'air Lit Fluidisé": "Excesso de ar do leito fluidizado",
+    "Excès d'air Combustible d'appoint": "Excesso de ar do combustível auxiliar",
+    "Type eau additionnelle": "Tipo de água adicional",
+    "Débit d'air à pulser [Nm3/h]": "Vazão de ar soprado [Nm³/h]",
+    "Débit MS": "Vazão de MS",
     'Caractéristiques de Fonctionnement': 'Características de Funcionamento',
     'Caractéristiques des Boues': 'Características das Lamas',
     'Combustion': 'Combustão',
@@ -2199,6 +2235,12 @@ export const translations = {
   // 中文 (CHINESE SIMPLIFIED)
   // ============================================================
   zh: {
+    // — Ajouts audit i18n (2026-07) —
+    "Excès d'air Lit Fluidisé": "流化床过量空气",
+    "Excès d'air Combustible d'appoint": "辅助燃料过量空气",
+    "Type eau additionnelle": "补充水类型",
+    "Débit d'air à pulser [Nm3/h]": "鼓风量 [Nm³/h]",
+    "Débit MS": "干物质流量",
     'Caractéristiques de Fonctionnement': '运行特性',
     'Caractéristiques des Boues': '污泥特性',
     'Combustion': '燃烧',
@@ -2524,6 +2566,12 @@ export const translations = {
   // 日本語 (JAPANESE)
   // ============================================================
   ja: {
+    // — Ajouts audit i18n (2026-07) —
+    "Excès d'air Lit Fluidisé": "流動床過剰空気",
+    "Excès d'air Combustible d'appoint": "補助燃料過剰空気",
+    "Type eau additionnelle": "追加水の種類",
+    "Débit d'air à pulser [Nm3/h]": "送風量 [Nm³/h]",
+    "Débit MS": "乾物流量",
     'Caractéristiques de Fonctionnement': '運転特性',
     'Caractéristiques des Boues': '汚泥特性',
     'Combustion': '燃焼',
@@ -2849,6 +2897,12 @@ export const translations = {
   // РУССКИЙ (RUSSIAN)
   // ============================================================
   ru: {
+    // — Ajouts audit i18n (2026-07) —
+    "Excès d'air Lit Fluidisé": "Избыток воздуха кипящего слоя",
+    "Excès d'air Combustible d'appoint": "Избыток воздуха вспомогательного топлива",
+    "Type eau additionnelle": "Тип дополнительной воды",
+    "Débit d'air à pulser [Nm3/h]": "Расход вдуваемого воздуха [Нм³/ч]",
+    "Débit MS": "Расход сухого вещества",
     'Caractéristiques de Fonctionnement': 'Рабочие характеристики',
     'Caractéristiques des Boues': 'Характеристики осадка',
     'Combustion': 'Сжигание',
@@ -3174,6 +3228,12 @@ export const translations = {
   // العربية (ARABIC)
   // ============================================================
   ar: {
+    // — Ajouts audit i18n (2026-07) —
+    "Excès d'air Lit Fluidisé": "فائض هواء الطبقة المميعة",
+    "Excès d'air Combustible d'appoint": "فائض هواء الوقود المساعد",
+    "Type eau additionnelle": "نوع الماء الإضافي",
+    "Débit d'air à pulser [Nm3/h]": "تدفق الهواء المنفوخ [نم³/س]",
+    "Débit MS": "تدفق المادة الجافة",
     'Caractéristiques de Fonctionnement': 'خصائص التشغيل',
     'Caractéristiques des Boues': 'خصائص الحمأة',
     'Combustion': 'الاحتراق',

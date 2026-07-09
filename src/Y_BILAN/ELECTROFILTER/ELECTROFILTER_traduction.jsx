@@ -1,5 +1,7 @@
 export const translations = {
   fr: {
+    // — Ajouts audit i18n (2026-07) —
+    "Consommation vis de transport": "Consommation vis de transport",
 
     'Flue gases': 'Gaz de combustion',
     'Pollutant Emissions': 'Émissions polluantes',
@@ -148,6 +150,8 @@ export const translations = {
   },
 
   en: {
+    // — Ajouts audit i18n (2026-07) —
+    "Consommation vis de transport": "Screw conveyor consumption",
 
     'Flue gases': 'Flue gases',
     'Pollutant Emissions': 'Pollutant Emissions',
@@ -298,6 +302,8 @@ export const translations = {
   },
 
   de: {
+    // — Ajouts audit i18n (2026-07) —
+    "Consommation vis de transport": "Schneckenförderer-Verbrauch",
 
     'Flue gases': 'Abgase',
     'Pollutant Emissions': 'Schadstoffemissionen',
@@ -436,6 +442,8 @@ export const translations = {
   },
 
   es: {
+    // — Ajouts audit i18n (2026-07) —
+    "Consommation vis de transport": "Consumo del transportador de tornillo",
 
     'Flue gases': 'Gases de escape',
     'Pollutant Emissions': 'Emisiones de contaminantes',
@@ -572,6 +580,8 @@ export const translations = {
   },
 
   it: {
+    // — Ajouts audit i18n (2026-07) —
+    "Consommation vis de transport": "Consumo del trasportatore a coclea",
 
     'Flue gases': 'Gas di scarico',
     'Pollutant Emissions': 'Emissioni inquinanti',
@@ -708,6 +718,8 @@ export const translations = {
   },
 
   pt: {
+    // — Ajouts audit i18n (2026-07) —
+    "Consommation vis de transport": "Consumo do transportador de rosca",
     'Flue gases': 'Gases de combustão',
     'Pollutant Emissions': 'Emissões de poluentes',
     'Design': 'Design',
@@ -841,6 +853,8 @@ export const translations = {
   },
 
   ru: {
+    // — Ajouts audit i18n (2026-07) —
+    "Consommation vis de transport": "Потребление шнекового транспортёра",
 
     'Flue gases': 'Дымовые газы',
     'Pollutant Emissions': 'Выбросы загрязняющих веществ',
@@ -977,6 +991,8 @@ export const translations = {
   },
 
   zh: {
+    // — Ajouts audit i18n (2026-07) —
+    "Consommation vis de transport": "螺旋输送机消耗",
 
 
     'Flue gases': '烟气',
@@ -1114,6 +1130,8 @@ export const translations = {
   },
 
   ja: {
+    // — Ajouts audit i18n (2026-07) —
+    "Consommation vis de transport": "スクリューコンベア消費",
     'Flue gases': '排ガス',
     'Pollutant Emissions': '汚染物質排出',
     'Design': 'デザイン',
@@ -1248,6 +1266,8 @@ export const translations = {
   },
 
   ar: {
+    // — Ajouts audit i18n (2026-07) —
+    "Consommation vis de transport": "استهلاك الناقل اللولبي",
 
     'Flue gases': 'غازات العادم',
     'Pollutant Emissions': 'انبعاثات الملوثات',

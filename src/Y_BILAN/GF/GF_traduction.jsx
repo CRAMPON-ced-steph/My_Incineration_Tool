@@ -11,6 +11,18 @@ export const translations = {
   // FRANÇAIS
   // ============================================================
   fr: {
+    // — Ajouts audit i18n (2026-07) —
+    "Quantité d'ordures ménagères sèches": "Quantité d'ordures ménagères sèches",
+    "Quantité d'ordures ménagères humides": "Quantité d'ordures ménagères humides",
+    "Paramètres des Ordures Ménagères": "Paramètres des Ordures Ménagères",
+    "Excès d'air primaire Grille": "Excès d'air primaire Grille",
+    "Excès d'air Combustible d'appoint": "Excès d'air Combustible d'appoint",
+    "Type eau additionnelle": "Type eau additionnelle",
+    "Résultats Combustion": "Résultats Combustion",
+    "Paramètres grille": "Paramètres grille",
+    "Débit air combustion total [kg/h]": "Débit air combustion total [kg/h]",
+    "Combustion air repartition": "Répartition air de combustion",
+    "Débit MS": "Débit MS",
     // ────────────────────────────────────────────────────────
     // HEADER & TITLE
     // ────────────────────────────────────────────────────────
@@ -455,6 +467,18 @@ export const translations = {
   // ENGLISH
   // ============================================================
   en: {
+    // — Ajouts audit i18n (2026-07) —
+    "Quantité d'ordures ménagères sèches": "Dry household waste quantity",
+    "Quantité d'ordures ménagères humides": "Wet household waste quantity",
+    "Paramètres des Ordures Ménagères": "Household waste parameters",
+    "Excès d'air primaire Grille": "Grate primary excess air",
+    "Excès d'air Combustible d'appoint": "Auxiliary fuel excess air",
+    "Type eau additionnelle": "Additional water type",
+    "Résultats Combustion": "Combustion results",
+    "Paramètres grille": "Grate parameters",
+    "Débit air combustion total [kg/h]": "Total combustion air flow [kg/h]",
+    "Combustion air repartition": "Combustion air distribution",
+    "Débit MS": "Dry solids flow",
     // ────────────────────────────────────────────────────────
     // HEADER & TITLE
     // ────────────────────────────────────────────────────────
@@ -899,6 +923,18 @@ export const translations = {
   // ESPAÑOL
   // ============================================================
   es: {
+    // — Ajouts audit i18n (2026-07) —
+    "Quantité d'ordures ménagères sèches": "Cantidad de residuos domésticos secos",
+    "Quantité d'ordures ménagères humides": "Cantidad de residuos domésticos húmedos",
+    "Paramètres des Ordures Ménagères": "Parámetros de los residuos domésticos",
+    "Excès d'air primaire Grille": "Exceso de aire primario de la parrilla",
+    "Excès d'air Combustible d'appoint": "Exceso de aire del combustible auxiliar",
+    "Type eau additionnelle": "Tipo de agua adicional",
+    "Résultats Combustion": "Resultados de combustión",
+    "Paramètres grille": "Parámetros de la parrilla",
+    "Débit air combustion total [kg/h]": "Caudal total de aire de combustión [kg/h]",
+    "Combustion air repartition": "Distribución del aire de combustión",
+    "Débit MS": "Caudal de MS",
     'Caractéristiques de Fonctionnement': 'Características de Funcionamiento',
     'Caractéristiques des OM': 'Características de los RSU',
     'Combustion': 'Combustión',
@@ -1224,6 +1260,18 @@ export const translations = {
   // DEUTSCH
   // ============================================================
   de: {
+    // — Ajouts audit i18n (2026-07) —
+    "Quantité d'ordures ménagères sèches": "Menge trockener Hausmüll",
+    "Quantité d'ordures ménagères humides": "Menge nasser Hausmüll",
+    "Paramètres des Ordures Ménagères": "Hausmüll-Parameter",
+    "Excès d'air primaire Grille": "Primärluftüberschuss Rost",
+    "Excès d'air Combustible d'appoint": "Luftüberschuss Zusatzbrennstoff",
+    "Type eau additionnelle": "Typ Zusatzwasser",
+    "Résultats Combustion": "Verbrennungsergebnisse",
+    "Paramètres grille": "Rostparameter",
+    "Débit air combustion total [kg/h]": "Gesamter Verbrennungsluftdurchsatz [kg/h]",
+    "Combustion air repartition": "Verbrennungsluftverteilung",
+    "Débit MS": "TS-Durchsatz",
     'Caractéristiques de Fonctionnement': 'Betriebseigenschaften',
     'Caractéristiques des OM': 'Hausmüll-Eigenschaften',
     'Combustion': 'Verbrennung',
@@ -1549,6 +1597,18 @@ export const translations = {
   // ITALIANO
   // ============================================================
   it: {
+    // — Ajouts audit i18n (2026-07) —
+    "Quantité d'ordures ménagères sèches": "Quantità di rifiuti domestici secchi",
+    "Quantité d'ordures ménagères humides": "Quantità di rifiuti domestici umidi",
+    "Paramètres des Ordures Ménagères": "Parametri dei rifiuti domestici",
+    "Excès d'air primaire Grille": "Eccesso d'aria primaria griglia",
+    "Excès d'air Combustible d'appoint": "Eccesso d'aria combustibile ausiliario",
+    "Type eau additionnelle": "Tipo di acqua aggiuntiva",
+    "Résultats Combustion": "Risultati combustione",
+    "Paramètres grille": "Parametri griglia",
+    "Débit air combustion total [kg/h]": "Portata totale aria di combustione [kg/h]",
+    "Combustion air repartition": "Ripartizione aria di combustione",
+    "Débit MS": "Portata SS",
     'Caractéristiques de Fonctionnement': 'Caratteristiche di Funzionamento',
     'Caractéristiques des OM': 'Caratteristiche dei RSU',
     'Combustion': 'Combustione',
@@ -1874,6 +1934,18 @@ export const translations = {
   // PORTUGUÊS
   // ============================================================
   pt: {
+    // — Ajouts audit i18n (2026-07) —
+    "Quantité d'ordures ménagères sèches": "Quantidade de resíduos domésticos secos",
+    "Quantité d'ordures ménagères humides": "Quantidade de resíduos domésticos úmidos",
+    "Paramètres des Ordures Ménagères": "Parâmetros dos resíduos domésticos",
+    "Excès d'air primaire Grille": "Excesso de ar primário da grelha",
+    "Excès d'air Combustible d'appoint": "Excesso de ar do combustível auxiliar",
+    "Type eau additionnelle": "Tipo de água adicional",
+    "Résultats Combustion": "Resultados de combustão",
+    "Paramètres grille": "Parâmetros da grelha",
+    "Débit air combustion total [kg/h]": "Vazão total de ar de combustão [kg/h]",
+    "Combustion air repartition": "Repartição do ar de combustão",
+    "Débit MS": "Vazão de MS",
     'Caractéristiques de Fonctionnement': 'Características de Funcionamento',
     'Caractéristiques des OM': 'Características dos RSU',
     'Combustion': 'Combustão',
@@ -2199,6 +2271,18 @@ export const translations = {
   // 中文 (CHINESE SIMPLIFIED)
   // ============================================================
   zh: {
+    // — Ajouts audit i18n (2026-07) —
+    "Quantité d'ordures ménagères sèches": "干生活垃圾量",
+    "Quantité d'ordures ménagères humides": "湿生活垃圾量",
+    "Paramètres des Ordures Ménagères": "生活垃圾参数",
+    "Excès d'air primaire Grille": "炉排一次过量空气",
+    "Excès d'air Combustible d'appoint": "辅助燃料过量空气",
+    "Type eau additionnelle": "补充水类型",
+    "Résultats Combustion": "燃烧结果",
+    "Paramètres grille": "炉排参数",
+    "Débit air combustion total [kg/h]": "总燃烧空气流量 [kg/h]",
+    "Combustion air repartition": "燃烧空气分配",
+    "Débit MS": "干物质流量",
     'Caractéristiques de Fonctionnement': '运行特性',
     'Caractéristiques des OM': '污泥特性',
     'Combustion': '燃烧',
@@ -2524,6 +2608,18 @@ export const translations = {
   // 日本語 (JAPANESE)
   // ============================================================
   ja: {
+    // — Ajouts audit i18n (2026-07) —
+    "Quantité d'ordures ménagères sèches": "乾燥生活ごみ量",
+    "Quantité d'ordures ménagères humides": "湿潤生活ごみ量",
+    "Paramètres des Ordures Ménagères": "生活ごみパラメータ",
+    "Excès d'air primaire Grille": "火格子一次過剰空気",
+    "Excès d'air Combustible d'appoint": "補助燃料過剰空気",
+    "Type eau additionnelle": "追加水の種類",
+    "Résultats Combustion": "燃焼結果",
+    "Paramètres grille": "火格子パラメータ",
+    "Débit air combustion total [kg/h]": "総燃焼空気流量 [kg/h]",
+    "Combustion air repartition": "燃焼空気配分",
+    "Débit MS": "乾物流量",
     'Caractéristiques de Fonctionnement': '運転特性',
     'Caractéristiques des OM': '汚泥特性',
     'Combustion': '燃焼',
@@ -2849,6 +2945,18 @@ export const translations = {
   // РУССКИЙ (RUSSIAN)
   // ============================================================
   ru: {
+    // — Ajouts audit i18n (2026-07) —
+    "Quantité d'ordures ménagères sèches": "Количество сухих бытовых отходов",
+    "Quantité d'ordures ménagères humides": "Количество влажных бытовых отходов",
+    "Paramètres des Ordures Ménagères": "Параметры бытовых отходов",
+    "Excès d'air primaire Grille": "Избыток первичного воздуха колосника",
+    "Excès d'air Combustible d'appoint": "Избыток воздуха вспомогательного топлива",
+    "Type eau additionnelle": "Тип дополнительной воды",
+    "Résultats Combustion": "Результаты горения",
+    "Paramètres grille": "Параметры колосника",
+    "Débit air combustion total [kg/h]": "Общий расход воздуха горения [кг/ч]",
+    "Combustion air repartition": "Распределение воздуха горения",
+    "Débit MS": "Расход сухого вещества",
     'Caractéristiques de Fonctionnement': 'Рабочие характеристики',
     'Caractéristiques des OM': 'Характеристики осадка',
     'Combustion': 'Сжигание',
@@ -3174,6 +3282,18 @@ export const translations = {
   // العربية (ARABIC)
   // ============================================================
   ar: {
+    // — Ajouts audit i18n (2026-07) —
+    "Quantité d'ordures ménagères sèches": "كمية النفايات المنزلية الجافة",
+    "Quantité d'ordures ménagères humides": "كمية النفايات المنزلية الرطبة",
+    "Paramètres des Ordures Ménagères": "معايير النفايات المنزلية",
+    "Excès d'air primaire Grille": "فائض الهواء الأولي للشبكة",
+    "Excès d'air Combustible d'appoint": "فائض هواء الوقود المساعد",
+    "Type eau additionnelle": "نوع الماء الإضافي",
+    "Résultats Combustion": "نتائج الاحتراق",
+    "Paramètres grille": "معايير الشبكة",
+    "Débit air combustion total [kg/h]": "إجمالي تدفق هواء الاحتراق [كغ/س]",
+    "Combustion air repartition": "توزيع هواء الاحتراق",
+    "Débit MS": "تدفق المادة الجافة",
     'Caractéristiques de Fonctionnement': 'خصائص التشغيل',
     'Caractéristiques des OM': 'خصائص الحمأة',
     'Combustion': 'الاحتراق',
