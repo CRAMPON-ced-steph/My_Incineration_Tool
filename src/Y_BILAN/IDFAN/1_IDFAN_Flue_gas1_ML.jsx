@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback } from 'react';
 import MassCalculator from '../../C_Components/Tableau_fumee_inverse';
 import TableGeneric from '../../C_Components/Tableau_generique';
 import { H2O_kg_m3, CO2_kg_m3, O2_kg_m3, N2_kg_m3, coeff_Nm3_to_m3 } from '../../A_Transverse_fonction/conv_calculation';
-import { h_fumee } from '../../A_Transverse_fonction/enthalpy_mix_gas';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './IDFAN_traduction';
 
@@ -114,31 +113,22 @@ const IDFANFlueGasParameters = ({ innerData, upstreamT_IN, upstreamFG_IN, upstre
 
   const Cp_melange = x_CO2 * Cp_CO2 + x_H2O * Cp_H2O + x_O2 * Cp_O2 + x_N2 * Cp_N2;
 
-  // Pertes transmises aux fumées (pertes internes du ventilateur)
-  const P_vers_fumees = P_mecanique_kW * (1 - eta_ventilateur);
-  
-  // Pertes vers l'ambiance (moteur + transmission)
+  // Puissance transmise aux fumées = TOUTE la puissance mécanique à l'arbre.
+  // L'énergie de pression (ΔP·Qv) ajoutée au gaz se dissipe elle-même en chaleur
+  // par frottement (dans le ventilateur puis les pertes de charge aval) ; comme le
+  // modèle de nœuds ne suit pas la pression comme énergie séparée, tout le travail
+  // d'arbre finit en enthalpie gaz : ΔT = P_méca/(ṁ·Cp) ≈ ΔP/(ρ·Cp·η_fan).
+  const P_vers_fumees = P_mecanique_kW;
+
+  // Pertes vers l'ambiance (moteur + transmission hors veine gaz)
   const P_vers_ambiance = P_elec_brute_kW * (1 - eta_moteur * eta_transmission);
 
-  // Élévation de température
-  const delta_T_fumees = debit_massique_kg_s > 0 && Cp_melange > 0 ? 
+  // Élévation de température des fumées [°C] — P [kW] / (ṁ [kg/s] · Cp [kJ/kg·K])
+  const delta_T_fumees = debit_massique_kg_s > 0 && Cp_melange > 0 ?
     P_vers_fumees / (debit_massique_kg_s * Cp_melange) : 0;
 
-  // Calcul de la température de sortie
-  const H_in_IDFAN = h_fumee(T_in, FG_IN.CO2, FG_IN.H2O, FG_IN.N2, FG_IN.O2);
-  let H_out_IDFAN = H_in_IDFAN;
-  let T_out = T_in;
-
-  const H_target = H_in_IDFAN + P_vers_fumees;
-
-  while (H_out_IDFAN < H_target) {
-    H_out_IDFAN = h_fumee(T_out, FG_IN.CO2, FG_IN.H2O, FG_IN.N2, FG_IN.O2);
-    T_out += 0.01;
-    
-    if (T_out > 500) {
-      break;
-    }
-  }
+  // Température de sortie : T_in + échauffement ventilateur
+  const T_out = T_in + delta_T_fumees;
 
   // Update innerData with calculated values
   if (innerData) {
