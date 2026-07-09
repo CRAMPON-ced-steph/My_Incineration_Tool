@@ -8,4 +8,11 @@ export default defineConfig([
   { files: ["**/*.{js,mjs,cjs,jsx}"], plugins: { js }, extends: ["js/recommended"] },
   { files: ["**/*.{js,mjs,cjs,jsx}"], languageOptions: { globals: globals.browser } },
   pluginReact.configs.flat.recommended,
+  {
+    settings: { react: { version: "detect" } },
+    rules: {
+      // Le projet n'utilise pas PropTypes : cette règle générait ~3800 faux positifs.
+      "react/prop-types": "off",
+    },
+  },
 ]);
