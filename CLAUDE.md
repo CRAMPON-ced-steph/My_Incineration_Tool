@@ -190,6 +190,14 @@ ReactFlow's default is `0 0 0 0.5px`. Adjust the third value (`1.5px`) to change
 - **`niveaux[0/1/2]` in `Y_BILAN/WHB/6_WHB_ValoVapeur3_ML.jsx`** — Array is always constructed with exactly 3 hardcoded elements; fixed-index access is safe.
 - **`key={selectedNode.id}` on `<Component>` in `Main_FLOW.jsx`** — `renderParameterTab()` passes `key={selectedNode.id}` to force a full unmount/remount whenever the selected node changes. Without this, React reuses the same mounted component instance when two nodes share the same component type (e.g., two BHF nodes), causing `useState(nodeData?.result)` to retain the previous node's computed values instead of reinitialising from the new node's data. Do NOT remove this key.
 
+### ESLint — état connu (2026-07-09, à régler éventuellement plus tard)
+
+La règle `react/prop-types` est désactivée dans `eslint.config.js` (le projet n'utilise pas PropTypes ; elle générait ~3800 faux positifs). Après ce nettoyage il reste ~1000 signalements **connus et acceptés** :
+
+- **`no-unused-vars` (~800)** — en grande partie **intentionnel** : des grandeurs intermédiaires sont calculées comme valeurs de référence ou pour un affichage futur sans servir au calcul aval (ex. `PCI_kJ_kgMV`, `PCS_kcal_kg`, `Rho_combustible` dans `A_Transverse_fonction`). Ne pas supprimer en masse sans vérifier au cas par cas. Convention possible plus tard : préfixe `_` + `varsIgnorePattern: '^_'`.
+- **`no-case-declarations` (41)** — quasi toutes dans `steam_table3.js` : `const` déclarés dans des `case:` sans accolades. Sans danger (chaque `case` fait `return` immédiatement) et le fichier IAPWS-IF97 ne doit pas être modifié (cf. décision d'audit 2026-06-17). Correction éventuelle : entourer chaque `case` d'accolades `{ }`.
+- **`react/no-unescaped-entities` (~21)** — apostrophes/guillemets bruts dans du texte JSX (ex. `l'application` dans `AccessRequestModal.jsx`, `"text"` dans `Tableau_generique.jsx`). React les affiche correctement ; zèle typographique (`&apos;`/`&quot;`). Cosmétique.
+
 ---
 
 ## Corrections History (audit sessions — 2026-05-18)
