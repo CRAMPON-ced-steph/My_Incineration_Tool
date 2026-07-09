@@ -121,7 +121,7 @@ export const translations = {
     'Consommation d\'air comprimé': 'Consommation d\'air comprimé',
     'Nombre de cycles [Nb]': 'Nombre de cycles [Nb]',
     'Air comprime par cycle [Nm3/cycle]': 'Air comprimé par cycle [Nm3/cycle]',
-    'Évacuation des residus AIRINJECTION': 'Évacuation des résidus CYCLONE',
+    'Évacuation des residus AIRINJECTION': 'Évacuation des résidus AIR INJECTION',
 
     // Résumé
     'Résultats': 'Résultats',
@@ -309,7 +309,7 @@ export const translations = {
     'Consommation d\'air comprimé': 'Compressed air consumption',
     'Nombre de cycles [Nb]': 'Number of cycles [Nb]',
     'Air comprime par cycle [Nm3/cycle]': 'Compressed air per cycle [Nm3/cycle]',
-    'Évacuation des residus AIRINJECTION': 'CYCLONE residues evacuation',
+    'Évacuation des residus AIRINJECTION': 'AIR INJECTION residues evacuation',
 
     // Résumé
     'Résultats': 'Results',
@@ -334,7 +334,7 @@ export const translations = {
     'Conveyor': 'Conveyor',
 
     // === Report ===
-    'AIR INJECTION — Rapport de synthèse': 'Cyclone — Synthesis Report',
+    'AIR INJECTION — Rapport de synthèse': 'Air Injection — Synthesis Report',
     '1. Gaz de combustion': '1. Flue gas',
     'Température de sortie': 'Outlet temperature',
     'O₂ mesuré (sec)': 'Measured O₂ (dry)',
@@ -498,7 +498,7 @@ export const translations = {
     'Consommation d\'air comprimé': 'Drucklufverbrauch',
     'Nombre de cycles [Nb]': 'Anzahl der Zyklen [Anz.]',
     'Air comprime par cycle [Nm3/cycle]': 'Druckluft pro Zyklus [Nm3/Zyklus]',
-    'Évacuation des residus AIRINJECTION': 'Entsorgung von CYCLONE-Rückständen',
+    'Évacuation des residus AIRINJECTION': 'Entsorgung von AIR INJECTION-Rückständen',
   
     // Zusammenfassung
     'Résultats': 'Ergebnisse',
@@ -523,7 +523,7 @@ export const translations = {
     'Conveyor': 'Förderanlage',
 
     // === Bericht ===
-    'AIR INJECTION — Rapport de synthèse': 'Zyklon — Synthesebericht',
+    'AIR INJECTION — Rapport de synthèse': 'Lufteinblasung — Synthesebericht',
     '1. Gaz de combustion': '1. Rauchgas',
     'Température de sortie': 'Austrittstemperatur',
     'O₂ mesuré (sec)': 'Gemessenes O₂ (trocken)',
@@ -687,7 +687,7 @@ export const translations = {
     'Consommation d\'air comprimé': 'Consumo de aire comprimido',
     'Nombre de cycles [Nb]': 'Número de ciclos [Nº]',
     'Air comprime par cycle [Nm3/cycle]': 'Aire comprimido por ciclo [Nm3/ciclo]',
-    'Évacuation des residus AIRINJECTION': 'Evacuación de residuos CYCLONE',
+    'Évacuation des residus AIRINJECTION': 'Evacuación de residuos AIR INJECTION',
   
     // Resumen
     'Résultats': 'Resultados',
@@ -833,7 +833,7 @@ export const translations = {
     'Consommation d\'air comprimé': 'Consumo di aria compressa',
     'Nombre de cycles [Nb]': 'Numero di cicli [N.]',
     'Air comprime par cycle [Nm3/cycle]': 'Aria compressa per ciclo [Nm3/ciclo]',
-    'Évacuation des residus AIRINJECTION': 'Smaltimento dei residui CYCLONE',
+    'Évacuation des residus AIRINJECTION': 'Smaltimento dei residui AIR INJECTION',
   
     // Riepilogo
     'Résultats': 'Risultati',
@@ -979,7 +979,7 @@ export const translations = {
     'Consommation d\'air comprimé': 'Consumo de ar comprimido',
     'Nombre de cycles [Nb]': 'Número de ciclos [N.]',
     'Air comprime par cycle [Nm3/cycle]': 'Ar comprimido por ciclo [Nm3/ciclo]',
-    'Évacuation des residus AIRINJECTION': 'Disposição de resíduos CYCLONE',
+    'Évacuation des residus AIRINJECTION': 'Disposição de resíduos AIR INJECTION',
   
     // Resumo
     'Résultats': 'Resultados',
@@ -1125,7 +1125,7 @@ export const translations = {
     'Consommation d\'air comprimé': '压缩空气消耗',
     'Nombre de cycles [Nb]': '循环数 [N.]',
     'Air comprime par cycle [Nm3/cycle]': '每个循环压缩空气 [Nm3/循环]',
-    'Évacuation des residus AIRINJECTION': 'CYCLONE 残留物处置',
+    'Évacuation des residus AIRINJECTION': 'AIR INJECTION 残留物处置',
   
     // 汇总
     'Résultats': '结果',
@@ -1271,7 +1271,7 @@ export const translations = {
     'Consommation d\'air comprimé': '圧縮空気消費量',
     'Nombre de cycles [Nb]': 'サイクル数 [N.]',
     'Air comprime par cycle [Nm3/cycle]': 'サイクル当たり圧縮空気 [Nm3/サイクル]',
-    'Évacuation des residus AIRINJECTION': 'CYCLONE残留物の処分',
+    'Évacuation des residus AIRINJECTION': 'AIR INJECTION残留物の処分',
   
     // 概要
     'Résultats': '結果',
@@ -1417,7 +1417,7 @@ export const translations = {
     'Consommation d\'air comprimé': 'Расход сжатого воздуха',
     'Nombre de cycles [Nb]': 'Количество циклов [N.]',
     'Air comprime par cycle [Nm3/cycle]': 'Сжатый воздух за цикл [Nm3/цикл]',
-    'Évacuation des residus AIRINJECTION': 'Утилизация остатков CYCLONE',
+    'Évacuation des residus AIRINJECTION': 'Утилизация остатков AIR INJECTION',
   
     // Резюме
     'Résultats': 'Результаты',
@@ -1563,7 +1563,7 @@ export const translations = {
     'Consommation d\'air comprimé': 'استهلاك الهواء المضغوط',
     'Nombre de cycles [Nb]': 'عدد الدورات [N.]',
     'Air comprime par cycle [Nm3/cycle]': 'الهواء المضغوط لكل دورة [Nm3/دورة]',
-    'Évacuation des residus AIRINJECTION': 'التخلص من بقايا CYCLONE',
+    'Évacuation des residus AIRINJECTION': 'التخلص من بقايا AIR INJECTION',
   
     // الملخص
     'Résultats': 'النتائج',

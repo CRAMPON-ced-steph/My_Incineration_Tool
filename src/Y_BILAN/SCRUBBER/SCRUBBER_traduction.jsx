@@ -91,6 +91,7 @@ export const translations = {
     // ===== FICHIER 2 : Scrubber SO2 =====
     // Section headers
     'Données des Fumées': 'Données des Fumées',
+    'Paramètres de Conception': 'Paramètres de Conception',
     'Solution de Lavage': 'Solution de Lavage',
     'Résultats des Calculs': 'Résultats des Calculs',
     'Bilans Matière': 'Bilans Matière',
@@ -1010,7 +1011,7 @@ export const translations = {
     seconds: 's',
 
     // ===== FICHIER 2 : Scrubber SO2 =====
-    'Dados des Fumées': 'Dados dos Fumos',
+    'Données des Fumées': 'Dados dos Fumos',
     'Solution de Lavage': 'Solução de Lavagem',
     'Paramètres de Conception': 'Parâmetros de Design',
     'Résultats des Calculs': 'Resultados de Cálculos',

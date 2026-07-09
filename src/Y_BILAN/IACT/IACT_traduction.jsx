@@ -723,7 +723,7 @@ export const translations = {
     
     // Electrical consumption
     'conso elec vis de transport [kW]': 'Consumo elec trasportatore a vite [kW]',
-    'Consommazione vis transport [kW]': 'Consumo trasportatore a vite [kW]',
+    'Consommation vis transport [kW]': 'Consumo trasportatore a vite [kW]',
     
     // Compressed air
     'Nombre de cycles [Nb]': 'Numero di cicli [Nb]',

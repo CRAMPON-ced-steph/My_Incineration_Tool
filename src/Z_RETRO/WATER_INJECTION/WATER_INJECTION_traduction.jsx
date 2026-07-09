@@ -51,7 +51,7 @@ export const translations = {
     PDC_aero: "Aerodynamic Pressure Drop",
     
     // Types de bilan
-    BilanType: "Quench Balance Type",
+    BilanType: "Water Injection Balance Type",
     
     // Options de bilan
     BilanParT: "Temperature Balance",

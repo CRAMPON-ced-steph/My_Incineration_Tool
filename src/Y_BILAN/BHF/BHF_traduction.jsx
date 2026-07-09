@@ -1,5 +1,12 @@
 export const translations = {
   fr: {
+    // MainPage (titre + onglets)
+    'BHF Configuration': 'Configuration BHF',
+    'Back to Flow': 'Retour au flux',
+    'Flue gases': 'Fumées',
+    'Pollutant Emissions': 'Émissions de polluants',
+    'Design': 'Design',
+    'Opex': 'Opex',
     // Section titles
     'Calculation parameters': 'Paramètres de calcul',
     'Calculated parameters': 'Paramètres calculés',
@@ -207,6 +214,13 @@ export const translations = {
   },
 
   en: {
+    // MainPage (titre + onglets)
+    'BHF Configuration': 'BHF Configuration',
+    'Back to Flow': 'Back to Flow',
+    'Flue gases': 'Flue gases',
+    'Pollutant Emissions': 'Pollutant Emissions',
+    'Design': 'Design',
+    'Opex': 'Opex',
     // Section titles
     'Calculation parameters': 'Calculation parameters',
     'Calculated parameters': 'Calculated parameters',
@@ -414,6 +428,13 @@ export const translations = {
   },
 
   de: {
+    // MainPage (titre + onglets)
+    'BHF Configuration': 'BHF-Konfiguration',
+    'Back to Flow': 'Zurück zum Fluss',
+    'Flue gases': 'Rauchgase',
+    'Pollutant Emissions': 'Schadstoffemissionen',
+    'Design': 'Design',
+    'Opex': 'Opex',
     // Section titles
     'Calculation parameters': 'Berechnungsparameter',
     'Calculated parameters': 'Berechnete Parameter',
@@ -621,6 +642,13 @@ export const translations = {
   },
 
   it: {
+    // MainPage (titre + onglets)
+    'BHF Configuration': 'Configurazione BHF',
+    'Back to Flow': 'Torna al flusso',
+    'Flue gases': 'Gas di combustione',
+    'Pollutant Emissions': 'Emissioni di inquinanti',
+    'Design': 'Design',
+    'Opex': 'Opex',
     // Section titles
     'Calculation parameters': 'Parametri di calcolo',
     'Calculated parameters': 'Parametri calcolati',
@@ -734,7 +762,7 @@ export const translations = {
     
     // Electrical consumption
     'conso elec vis de transport [kW]': 'Consumo elec trasportatore a vite [kW]',
-    'Consommazione vis transport [kW]': 'Consumo trasportatore a vite [kW]',
+    'Consommation vis transport [kW]': 'Consumo trasportatore a vite [kW]',
     
     // Compressed air
     'Nombre de cycles [Nb]': 'Numero di cicli [Nb]',
@@ -828,6 +856,13 @@ export const translations = {
   },
 
   es: {
+    // MainPage (titre + onglets)
+    'BHF Configuration': 'Configuración BHF',
+    'Back to Flow': 'Volver al flujo',
+    'Flue gases': 'Gases de combustión',
+    'Pollutant Emissions': 'Emisiones de contaminantes',
+    'Design': 'Diseño',
+    'Opex': 'Opex',
     // Section titles
     'Calculation parameters': 'Parámetros de cálculo',
     'Calculated parameters': 'Parámetros calculados',
@@ -1035,6 +1070,13 @@ export const translations = {
   },
 
   pt: {
+    // MainPage (titre + onglets)
+    'BHF Configuration': 'Configuração BHF',
+    'Back to Flow': 'Voltar ao fluxo',
+    'Flue gases': 'Gases de combustão',
+    'Pollutant Emissions': 'Emissões de poluentes',
+    'Design': 'Design',
+    'Opex': 'Opex',
     // Section titles
     'Calculation parameters': 'Parâmetros de cálculo',
     'Calculated parameters': 'Parâmetros calculados',
@@ -1242,6 +1284,13 @@ export const translations = {
   },
 
   ru: {
+    // MainPage (titre + onglets)
+    'BHF Configuration': 'Конфигурация BHF',
+    'Back to Flow': 'Вернуться к потоку',
+    'Flue gases': 'Дымовые газы',
+    'Pollutant Emissions': 'Выбросы загрязняющих веществ',
+    'Design': 'Конструкция',
+    'Opex': 'Opex',
     // Section titles
     'Calculation parameters': 'Параметры расчета',
     'Calculated parameters': 'Расчетные параметры',
@@ -1390,6 +1439,13 @@ export const translations = {
   },
 
   zh: {
+    // MainPage (titre + onglets)
+    'BHF Configuration': 'BHF 配置',
+    'Back to Flow': '返回流程',
+    'Flue gases': '烟气',
+    'Pollutant Emissions': '污染物排放',
+    'Design': '设计',
+    'Opex': '运营成本',
     // Section titles
     'Calculation parameters': '计算参数',
     'Calculated parameters': '计算参数',
@@ -1538,6 +1594,13 @@ export const translations = {
   },
 
   ja: {
+    // MainPage (titre + onglets)
+    'BHF Configuration': 'BHF構成',
+    'Back to Flow': 'フローに戻る',
+    'Flue gases': '燃焼ガス',
+    'Pollutant Emissions': '汚染物質排出',
+    'Design': '設計',
+    'Opex': 'Opex',
     // Section titles
     'Calculation parameters': '計算パラメータ',
     'Calculated parameters': '計算されたパラメータ',
@@ -1686,6 +1749,13 @@ export const translations = {
   },
 
   ar: {
+    // MainPage (titre + onglets)
+    'BHF Configuration': 'تكوين BHF',
+    'Back to Flow': 'العودة إلى التدفق',
+    'Flue gases': 'غازات العادم',
+    'Pollutant Emissions': 'انبعاثات الملوثات',
+    'Design': 'التصميم',
+    'Opex': 'Opex',
     // Section titles
     'Calculation parameters': 'معاملات الحساب',
     'Calculated parameters': 'المعاملات المحسوبة',

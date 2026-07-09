@@ -550,7 +550,7 @@ export const translations = {
     'Annuler': 'Cancelar',
     'Oui': 'Sí',
     'Non': 'No',
-    'Confirmar': 'Confirmar',
+    'Confirmer': 'Confirmar',
     'Supprime': 'Eliminar',
 
     // === COOLINGTOWER_Report keys ===
@@ -852,7 +852,7 @@ export const translations = {
     'Annuler': 'Cancelar',
     'Oui': 'Sim',
     'Non': 'Não',
-    'Confirmar': 'Confirmar',
+    'Confirmer': 'Confirmar',
     'Supprime': 'Excluir',
 
     // === COOLINGTOWER_Report keys ===
