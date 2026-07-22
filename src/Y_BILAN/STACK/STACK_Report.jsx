@@ -8,11 +8,11 @@ const Section = ({ title, children }) => <div style={styles.section}><h2 style={
 const SubSection = ({ title, children }) => <div style={styles.subSection}>{title && <h3 style={styles.subTitle}>{title}</h3>}{children}</div>;
 const KV = ({ label, value, unit = '' }) => <div style={styles.kvRow}><span style={styles.kvLabel}>{label}</span><span style={styles.kvValue}>{value}{unit ? <span style={styles.kvUnit}> {unit}</span> : null}</span></div>;
 
-const GasTable = ({ data = {} }) => {
+const GasTable = ({ data = {}, t = (k) => k }) => {
   const gases = ['CO2', 'H2O', 'O2', 'N2'];
   return (
     <table style={styles.table}>
-      <thead><tr><th style={styles.th}></th>{gases.map(g => <th key={g} style={styles.th}>{g}</th>)}<th style={styles.th}>{tr("total")}</th></tr></thead>
+      <thead><tr><th style={styles.th}></th>{gases.map(g => <th key={g} style={styles.th}>{g}</th>)}<th style={styles.th}>{t("total")}</th></tr></thead>
       <tbody>{Object.entries(data).map(([lbl, d]) => {
         if (!d || typeof d !== 'object') return null;
         const tot = gases.reduce((s, g) => s + (parseFloat(d[g]) || 0), 0);
@@ -112,7 +112,7 @@ const STACK_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
             <GasTable data={{
               'kg/h':   FG_OUT_kg_h,
               'Nm³/h':  { CO2: FG_OUT_Nm3_h.CO2, H2O: FG_OUT_Nm3_h.H2O, O2: FG_OUT_Nm3_h.O2, N2: FG_OUT_Nm3_h.N2 },
-            }} />
+            }} t={tr} />
           </SubSection>
         </div>
       </Section>

@@ -82,13 +82,13 @@ const QUENCHFlueGasParameters = ({ innerData, upstreamT_IN, upstreamFG_IN, curre
     H_in_quench = h_fumee(T_IN, FG_IN.CO2, FG_IN.H2O, FG_IN.N2, FG_IN.O2);
     H_out_quench = h_fumee(T_out + (T_out - T_with_air_ingress_out), FG_IN.CO2, FG_IN.H2O, FG_IN.N2, FG_IN.O2);
     Delta_H = H_in_quench * (1 - Pth / 100) - H_out_quench;
-    Q_eau_kg_h = Qeau_added_to_be_at_T(T_IN, T_eau, T_out + (T_out - T_with_air_ingress_out), Pth, FG_IN.CO2, FG_IN.H2O, FG_IN.N2, FG_IN.O2);
+    Q_eau_kg_h = Math.max(0, Qeau_added_to_be_at_T(T_IN, T_eau, T_out + (T_out - T_with_air_ingress_out), Pth, FG_IN.CO2, FG_IN.H2O, FG_IN.N2, FG_IN.O2));
   } else {
     T_with_air_ingress_out = T_out;
     H_in_quench = h_fumee(T_IN, FG_IN.CO2, FG_IN.H2O, FG_IN.N2, FG_IN.O2);
     H_out_quench = h_fumee(T_out, FG_IN.CO2, FG_IN.H2O, FG_IN.N2, FG_IN.O2);
     Delta_H = H_in_quench * (1 - Pth / 100) - H_out_quench;
-    Q_eau_kg_h = Qeau_added_to_be_at_T(T_IN, T_eau, T_out, Pth, FG_IN.CO2, FG_IN.H2O, FG_IN.N2, FG_IN.O2);
+    Q_eau_kg_h = Math.max(0, Qeau_added_to_be_at_T(T_IN, T_eau, T_out, Pth, FG_IN.CO2, FG_IN.H2O, FG_IN.N2, FG_IN.O2));
   }
 
   // Output composition

@@ -458,6 +458,9 @@ const CombustionParameters = ({ innerData, currentLanguage = 'fr', nodeId }) => 
     innerData['Combmass'] = Comb_kg_h ;
     innerData['Watermass'] = Water_kg_h ;
     innerData['Inertmass'] = Inert_kg_h ;
+
+    innerData['masse_solides']      = parameters[5]?.data['Masse [kg/h]'] || 0;
+    innerData['masse_conditionnee'] = parameters[3]?.data['Masse [kg/h]'] || 0;
   };
   
   const updateCell = (rowIndex, column, value) => {

@@ -284,6 +284,7 @@ const FlueGasParameters = ({ innerData, currentLanguage = 'fr', nodeId }) => {
   innerData['FG_RK_OUT_Nm3_h'] = volume_FG_out_extractor_RK_Nm3_h;
   innerData['O2_calcule'] = O2_sec_pourcent;
   innerData['T_OUT'] = T_out;
+  innerData['Water_vaporized_extractor'] = Water_vaporized_extractor;
 
   return (
     <div className="cadre_pour_onglet">

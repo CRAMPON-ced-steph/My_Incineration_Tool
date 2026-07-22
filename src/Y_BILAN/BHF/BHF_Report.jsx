@@ -29,7 +29,7 @@ const KV = ({ label, value, unit = '' }) => (
   </div>
 );
 
-const GasTable = ({ title, data = {} }) => {
+const GasTable = ({ title, data = {}, t = (k) => k }) => {
   const gases = ['CO2', 'H2O', 'O2', 'N2'];
   return (
     <div style={{ marginBottom: 8 }}>
@@ -39,7 +39,7 @@ const GasTable = ({ title, data = {} }) => {
           <tr>
             <th style={styles.th}></th>
             {gases.map(g => <th key={g} style={styles.th}>{g}</th>)}
-            <th style={styles.th}>{tr("total")}</th>
+            <th style={styles.th}>{t("total")}</th>
           </tr>
         </thead>
         <tbody>
@@ -103,7 +103,7 @@ const ElecTable = ({ rows, t }) => (
 
 // ─── OPEX cost calculation ────────────────────────────────────────────────────
 
-const computeOpexCosts = (innerData) => {
+const computeOpexCosts = (innerData, tr = (k) => k) => {
   const {
     purchaseElectricityPrice = 0, ratioElec = 0, availability = 8000,
     currency = '€', airConsumptionPrice = 0, powerRatio = 0,
@@ -343,7 +343,7 @@ const BHF_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
     { label: 'CAP [kg/h]', value: innerData.Conso_CAP_kg },
   ].filter(r => parseFloat(r.value) > 0);
 
-  const opex = computeOpexCosts(innerData);
+  const opex = computeOpexCosts(innerData, tr);
 
   return (
     <div style={styles.container}>
@@ -362,7 +362,7 @@ const BHF_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
             <GasTable data={{
               'kg/h': FG_OUT_kg_h,
               'Nm³/h': { CO2: FG_BHF_OUT_Nm3_h.CO2, H2O: FG_BHF_OUT_Nm3_h.H2O, O2: FG_BHF_OUT_Nm3_h.O2, N2: FG_BHF_OUT_Nm3_h.N2 },
-            }} />
+            }} t={tr} />
           </SubSection>
         </div>
       </Section>

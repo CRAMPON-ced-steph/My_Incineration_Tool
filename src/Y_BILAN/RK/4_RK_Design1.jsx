@@ -30,7 +30,7 @@ import { dataArray_CO2 } from '../../D_Data_base/dataCO2';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './RK_traduction';
 
-const RKdesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
+const RKdesign = ({ innerData, setInnerData, currentLanguage = 'fr', nodeId }) => {
 
   // Fonction de traduction
   const languageCode = getLanguageCode(currentLanguage);
@@ -139,6 +139,23 @@ const RKdesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
     { text: t('dr_tauxRemplissage'), value: fmt(Taux_remplissage_Freeman_pourcent, 2) },
     { text: t('dr_consoElecRotation'), value: fmt(P_elec_mise_en_rotation_du_RK_kW, 2) },
   ];
+
+  // Cases à cocher pour auto-remplir le débit des déchets solides
+  const [checkSolides, setCheckSolides] = useState(
+    () => JSON.parse(localStorage.getItem(`RK_checkSolides_${nodeId}`) || 'false')
+  );
+  const [checkConditionnee, setCheckConditionnee] = useState(
+    () => JSON.parse(localStorage.getItem(`RK_checkConditionnee_${nodeId}`) || 'false')
+  );
+
+  const masse_solides      = innerData?.masse_solides      || 0;
+  const masse_conditionnee = innerData?.masse_conditionnee || 0;
+
+  useEffect(() => {
+    if (!checkSolides && !checkConditionnee) return;
+    const val = (checkSolides ? masse_solides : 0) + (checkConditionnee ? masse_conditionnee : 0);
+    setParametres_dimensionnement(prev => ({ ...prev, debitDechetsSolides: val }));
+  }, [checkSolides, checkConditionnee, masse_solides, masse_conditionnee]);
 
   // CALCUL DU NOMBRE DE LANCES avec persistance
   const [Parametres_EstimationBruleurLances, setParametres_EstimationBruleurLances] = useState({
@@ -280,8 +297,8 @@ const RKdesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
 
   //CALCULE DIMENSIONNEMENT SCC avec persistance
   const [Parametres_dimensionnement_SCC, setParametres_dimensionnement_SCC] = useState({
-    debitHumideFumees: getInitialValue('SCC_debit_fumees', 40722),
-    temperatureSCC: getInitialValue('SCC_temperature', 1200),
+    debitHumideFumees: getInitialValue('SCC_debit_fumees', innerData?.FG_RK_OUT_Nm3_h?.wet || 40722),
+    temperatureSCC: getInitialValue('SCC_temperature', innerData?.T_OUT || 1200),
     diametreSCC: getInitialValue('SCC_diametre', 6),
     tempsSejourDesire: getInitialValue('SCC_temps_sejour', 4)
   });
@@ -358,15 +375,19 @@ const RKdesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
   ];
 
   // SCC : estimation des pertes thermiques
-  const [Estimation_pertes_thermiques_SCC, setEstimation_pertes_thermiques_SCC] = useState({});
+  const [Estimation_pertes_thermiques_SCC, setEstimation_pertes_thermiques_SCC] = useState({
+    temperatureParoiSCC: getInitialValue('SCC_temp_paroi', 50),
+  });
+
+  const T_paroi_SCC_C = Estimation_pertes_thermiques_SCC.temperatureParoiSCC;
 
   const Surface_SCC_m2 = 2 * Math.PI * Diametre_SCC_m / 2 * Hauteur_SCC_m;
-  const Pth_radiatives_SCC_MW = (0.9 * 5.67e-8 * ((T_SCC_C + T_ref) ** 4 - (10 + T_ref) ** 4) * Surface_SCC_m2) / 1e6;
-  const Pth_Conv_SCC_MW = (9 * Surface_SCC_m2 * (T_SCC_C - 10)) / 1e6;
+  const Pth_radiatives_SCC_MW = (0.9 * 5.67e-8 * ((T_paroi_SCC_C + T_ref) ** 4 - (10 + T_ref) ** 4) * Surface_SCC_m2) / 1e6;
+  const Pth_Conv_SCC_MW = (9 * Surface_SCC_m2 * (T_paroi_SCC_C - 10)) / 1e6;
   const Pth_totales_SCC_MW = Pth_radiatives_SCC_MW + Pth_Conv_SCC_MW;
 
   const elements_Pertes_thermiques_SCC = [
-    { text: t('dr_tempParoiSCC'), value: fmt(T_SCC_C, 2) },
+    { text: t('dr_tempParoiSCC'), value: fmt(T_paroi_SCC_C, 2) },
     { text: t('dr_hauteurSCC'), value: fmt(Hauteur_SCC_m, 2) },
     { text: t('dr_surfaceSCC'), value: fmt(Surface_SCC_m2, 2) },
     { text: t('dr_pthRadSCC'), value: fmt(Pth_radiatives_SCC_MW, 2) },
@@ -443,7 +464,7 @@ const RKdesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
   const [Estimation_eau_evap, setEstimation_eau_evap] = useState({
     h2oPourcent: getInitialValue('EAU_H2O_pourcent', 30.5),
     co2Pourcent: getInitialValue('EAU_CO2_pourcent', 8.28),
-    tfumProvisoire: getInitialValue('EAU_Tfum', 1200),
+    tfumProvisoire: getInitialValue('EAU_Tfum', innerData?.T_OUT || 1200),
     emissiviteFume: getInitialValue('EAU_emissivite', 0.1),
     teauExtracteur: getInitialValue('EAU_T_extracteur', 100),
   });
@@ -664,10 +685,11 @@ const RKdesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
         RK_DT_virole: Parametres_refroidissement_virole.dtRefroidissement,
 
         // SCC
-        SCC_debit_fumees: Parametres_dimensionnement_SCC.debitHumideFumees,
-        SCC_temperature: Parametres_dimensionnement_SCC.temperatureSCC,
+        // SCC_debit_fumees intentionnellement absent : initialisé depuis FG_RK_OUT_Nm3_h.wet à chaque montage
+        // SCC_temperature intentionnellement absent : initialisé depuis T_OUT à chaque montage
         SCC_diametre: Parametres_dimensionnement_SCC.diametreSCC,
         SCC_temps_sejour: Parametres_dimensionnement_SCC.tempsSejourDesire,
+        SCC_temp_paroi: Estimation_pertes_thermiques_SCC.temperatureParoiSCC,
 
         // Brûleurs SCC
         SCC_debit_dechets: Parametres_bruleurs_SCC.debitDechetsLiquides,
@@ -685,10 +707,9 @@ const RKdesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
         VENT_debit: Estimation_conso_ventilateur_air_combustion.debitVentilateur,
         VENT_rendement: Estimation_conso_ventilateur_air_combustion.rendementVentilateur,
 
-        // Eau évaporée
+        // Eau évaporée (EAU_Tfum intentionnellement absent : initialisé depuis T_OUT à chaque montage)
         EAU_H2O_pourcent: Estimation_eau_evap.h2oPourcent,
         EAU_CO2_pourcent: Estimation_eau_evap.co2Pourcent,
-        EAU_Tfum: Estimation_eau_evap.tfumProvisoire,
         EAU_emissivite: Estimation_eau_evap.emissiviteFume,
         EAU_T_extracteur: Estimation_eau_evap.teauExtracteur,
       };
@@ -827,6 +848,28 @@ const RKdesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
         onParameterChange={handleParametresChange}
         currentLanguage={languageCode}
         translations={translations}
+        extraContent={{
+          debitDechetsSolides: (
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '16px', marginBottom: '4px', fontSize: '11px', color: '#555' }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer' }}>
+                <input
+                  type="checkbox"
+                  checked={checkSolides}
+                  onChange={e => { const v = e.target.checked; localStorage.setItem(`RK_checkSolides_${nodeId}`, v); setCheckSolides(v); }}
+                />
+                Solides ({masse_solides.toFixed(0)} kg/h)
+              </label>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer' }}>
+                <input
+                  type="checkbox"
+                  checked={checkConditionnee}
+                  onChange={e => { const v = e.target.checked; localStorage.setItem(`RK_checkConditionnee_${nodeId}`, v); setCheckConditionnee(v); }}
+                />
+                Conditionnée ({masse_conditionnee.toFixed(0)} kg/h)
+              </label>
+            </div>
+          )
+        }}
       />
 
       {pente > 5 && (
@@ -1021,6 +1064,20 @@ const RKdesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
         currentLanguage={languageCode}
         translations={translations}
       />
+
+      {Math.abs(Eau_evap_extracteur_kg_h - (innerData?.Water_vaporized_extractor ?? Eau_evap_extracteur_kg_h)) > 1 && (
+        <div style={{
+          backgroundColor: '#fff3e0',
+          color: '#e65100',
+          border: '1px solid #ffb74d',
+          borderRadius: '4px',
+          padding: '10px 14px',
+          marginTop: '8px',
+          fontSize: '12px',
+        }}>
+          ⚠ L&apos;eau vaporisée choisie pour le calcul ({fmt(innerData.Water_vaporized_extractor, 0)} kg/h) est différente de celle estimée par calcul ({fmt(Eau_evap_extracteur_kg_h, 0)} kg/h)
+        </div>
+      )}
 
     </div>
 

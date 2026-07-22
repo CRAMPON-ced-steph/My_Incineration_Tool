@@ -66,7 +66,7 @@ const WATER_INJECTIONMainPage = ({ nodeData, title, onSendData, onClose, onGoBac
     },
     {
       name: 'Rapport',
-      content: <WATER_INJECTION_Report innerData={innerData} nodeId={nodeId} />
+      content: <WATER_INJECTION_Report innerData={innerData} nodeId={nodeId} currentLanguage={currentLanguage} />
     },
   ];
 

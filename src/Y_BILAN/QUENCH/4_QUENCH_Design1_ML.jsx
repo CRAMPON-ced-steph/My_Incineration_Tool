@@ -142,9 +142,20 @@ const QUENCHDesign = ({ innerData, setInnerData, upstreamT_IN, currentLanguage =
     };
   };
 
-  const calculateQuenchHeight = (vGas, dMean, n, tGasIn, tLiquid) => {
-    const height = 1.2 * Math.abs(vGas - (-2.0)) * (tGasIn - tLiquid) / 100;
-    return height;
+  // Loi D² : temps d'évaporation d'une gouttelette dans un gaz chaud
+  // K_evap = 8 × λ(T_moy) × (T_moy − T_ébullition) / (ρ_eau × L_vap)
+  // t_evap = SMD² / K_evap
+  // H_min  = V_gaz × t_evap × facteur_sécurité
+  const calculateQuenchHeight = (vGas, dSMD, T_in_C, T_out_C) => {
+    const T_mean   = (T_in_C + T_out_C) / 2;
+    const lambda   = 0.024 + 7e-5 * T_mean;  // W/m·K, conductivité fumées (linéaire en T)
+    const rho_eau  = 960;                      // kg/m³ eau ~80°C
+    const L_vap    = 2257e3;                   // J/kg chaleur latente vaporisation
+    const T_boil   = 100;                      // °C point d'ébullition
+    const delta_T  = Math.max(1, T_mean - T_boil);
+    const K_evap   = (8 * lambda * delta_T) / (rho_eau * L_vap);
+    const t_evap   = (dSMD * dSMD) / K_evap;
+    return vGas * t_evap * 1.5;
   };
 
   // Quench calculations
@@ -153,7 +164,13 @@ const QUENCHDesign = ({ innerData, setInnerData, upstreamT_IN, currentLanguage =
   const n = currentNozzle.defaultN;
   const sprayQuality = getSprayQuality(dMean, n);
   const sprayCharacteristics = calculateSprayCharacteristics(dMean, n, P_pulverisation, Q_eau_add_l_min);
-  const quenchHeight = calculateQuenchHeight(V_FG_m_s, dMean, n, T_IN, 293);
+  const quenchHeight = calculateQuenchHeight(V_FG_m_s, sprayCharacteristics.smd, T_IN, T_sortie);
+
+  // Intermédiaires pour affichage
+  const T_mean_quench  = (T_IN + T_sortie) / 2;
+  const lambda_quench  = 0.024 + 7e-5 * T_mean_quench;
+  const K_evap_quench  = (8 * lambda_quench * Math.max(1, T_mean_quench - 100)) / (960 * 2257e3);
+  const t_evap_quench  = (sprayCharacteristics.smd * sprayCharacteristics.smd) / K_evap_quench;
 
   // Event handlers
   const handleParametresChange = (name, value) => {
@@ -329,6 +346,10 @@ const QUENCHDesign = ({ innerData, setInnerData, upstreamT_IN, currentLanguage =
 
   const quenchResultsElements = [
     { text: t('Hauteur minimale du quench [m]'), value: fmt(quenchHeight, 2) },
+    { text: t('Température moyenne gaz [°C]'), value: fmt(T_mean_quench, 0) },
+    { text: t('λ fumées [W/m·K]'), value: fmt(lambda_quench, 4) },
+    { text: t('K évaporation [m²/s]'), value: (K_evap_quench).toExponential(2) },
+    { text: t('Temps évaporation goutte [s]'), value: fmt(t_evap_quench, 3) },
     { text: t('SMD (Sauter Mean Diameter) [µm]'), value: fmt((sprayCharacteristics.smd * 1e6), 2) },
     { text: t('Vitesse des gouttes [m/s]'), value: fmt(sprayCharacteristics.dropletVelocity, 2) },
     { text: t('Angle du spray [°]'), value: fmt(sprayCharacteristics.sprayAngle, 2) },
@@ -413,37 +434,6 @@ const QUENCHDesign = ({ innerData, setInnerData, upstreamT_IN, currentLanguage =
         <TableGeneric elements={elementsGenericSummary} />
       </div>
 
-      {/* Boutons d'action */}
-      <div style={{ textAlign: 'center', gap: '10px', marginTop: '20px', display: 'flex', justifyContent: 'center' }}>
-        <button 
-          onClick={() => window.print()}
-          style={{
-            padding: '12px 24px',
-            backgroundColor: '#48bb78',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer',
-            fontWeight: 'bold',
-          }}
-        >
-          {t('Export')} QUENCHDesign
-        </button>
-        <button 
-          onClick={clearMemory}
-          style={{
-            padding: '12px 24px',
-            backgroundColor: '#ff6b6b',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer',
-            fontWeight: 'bold',
-          }}
-        >
-          {t('Clear memory')}
-        </button>
-      </div>
     </div>
   );
 };

@@ -9,11 +9,11 @@ const Section = ({ title, children }) => <div style={styles.section}><h2 style={
 const SubSection = ({ title, children }) => <div style={styles.subSection}>{title && <h3 style={styles.subTitle}>{title}</h3>}{children}</div>;
 const KV = ({ label, value, unit = '' }) => <div style={styles.kvRow}><span style={styles.kvLabel}>{label}</span><span style={styles.kvValue}>{value}{unit ? <span style={styles.kvUnit}> {unit}</span> : null}</span></div>;
 
-const GasTable = ({ data = {} }) => {
+const GasTable = ({ data = {}, t = (k) => k }) => {
   const gases = ['CO2', 'H2O', 'O2', 'N2'];
   return (
     <table style={styles.table}>
-      <thead><tr><th style={styles.th}></th>{gases.map(g => <th key={g} style={styles.th}>{g}</th>)}<th style={styles.th}>{tr("total")}</th></tr></thead>
+      <thead><tr><th style={styles.th}></th>{gases.map(g => <th key={g} style={styles.th}>{g}</th>)}<th style={styles.th}>{t("total")}</th></tr></thead>
       <tbody>{Object.entries(data).map(([lbl, d]) => { const tot = gases.reduce((s, g) => s + (parseFloat(d[g]) || 0), 0); return <tr key={lbl}><td style={styles.tdLabel}>{lbl}</td>{gases.map(g => <td key={g} style={styles.td}>{fmt(d[g])}</td>)}<td style={{ ...styles.td, fontWeight: 'bold' }}>{fmt(tot)}</td></tr>; })}</tbody>
     </table>
   );
@@ -34,7 +34,7 @@ const ElecTable = ({ rows, tFn }) => (
   </table>
 );
 
-const computeOpexCosts = (innerData) => {
+const computeOpexCosts = (innerData, tr = (k) => k) => {
   const { purchaseElectricityPrice = 0, ratioElec = 0, availability = 8000, currency = '€', airConsumptionPrice = 0, powerRatio = 0, waterPrices = {} } = getOpexData();
   const d = innerData || {};
   const elecRows = [1,2,3,4,5,6,7,8].map(i => ({ label: d[`labelElec${i}`] || `Poste ${i}`, kW: d[`consoElec${i}`] || 0 })).filter(r => r.kW > 0);
@@ -72,7 +72,7 @@ const WHB_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
   const PInput = innerData.PInput || {};
   const Poutput = innerData.Poutput || {};
   const elecRows = [1,2,3,4,5,6,7,8].map(i => ({ label: innerData[`labelElec${i}`] || `Poste ${i}`, value: innerData[`consoElec${i}`] })).filter(r => parseFloat(r.value) > 0);
-  const opex = computeOpexCosts(innerData);
+  const opex = computeOpexCosts(innerData, tr);
 
   return (
     <div style={styles.container}>
@@ -104,7 +104,7 @@ const WHB_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
             <KV label={t('wetFlow')} value={fmt(FG_OUT_Nm3_h.wet, 0)} />
           </SubSection>
           <SubSection title={t('outletGasComposition')}>
-            <GasTable data={{ 'kg/h': FG_OUT_kg_h, 'Nm³/h': { CO2: FG_OUT_Nm3_h.CO2, H2O: FG_OUT_Nm3_h.H2O, O2: FG_OUT_Nm3_h.O2, N2: FG_OUT_Nm3_h.N2 } }} />
+            <GasTable data={{ 'kg/h': FG_OUT_kg_h, 'Nm³/h': { CO2: FG_OUT_Nm3_h.CO2, H2O: FG_OUT_Nm3_h.H2O, O2: FG_OUT_Nm3_h.O2, N2: FG_OUT_Nm3_h.N2 } }} t={tr} />
           </SubSection>
         </div>
       </Section>

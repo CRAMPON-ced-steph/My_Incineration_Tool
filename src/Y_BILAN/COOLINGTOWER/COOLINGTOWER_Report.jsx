@@ -10,11 +10,11 @@ const Section = ({ title, children }) => <div style={styles.section}><h2 style={
 const SubSection = ({ title, children }) => <div style={styles.subSection}>{title && <h3 style={styles.subTitle}>{title}</h3>}{children}</div>;
 const KV = ({ label, value, unit = '' }) => <div style={styles.kvRow}><span style={styles.kvLabel}>{label}</span><span style={styles.kvValue}>{value}{unit ? <span style={styles.kvUnit}> {unit}</span> : null}</span></div>;
 
-const GasTable = ({ data = {} }) => {
+const GasTable = ({ data = {}, t = (k) => k }) => {
   const gases = ['CO2', 'H2O', 'O2', 'N2'];
   return (
     <table style={styles.table}>
-      <thead><tr><th style={styles.th}></th>{gases.map(g => <th key={g} style={styles.th}>{g}</th>)}<th style={styles.th}>{tr("total")}</th></tr></thead>
+      <thead><tr><th style={styles.th}></th>{gases.map(g => <th key={g} style={styles.th}>{g}</th>)}<th style={styles.th}>{t("total")}</th></tr></thead>
       <tbody>
         {Object.entries(data).map(([lbl, d]) => {
           const tot = gases.reduce((s, g) => s + (parseFloat(d[g]) || 0), 0);
@@ -30,7 +30,7 @@ const PollutantTable = ({ masses = {} }) => {
   return <table style={styles.table}><thead><tr>{keys.map(k => <th key={k} style={styles.th}>{k}</th>)}</tr></thead><tbody><tr>{keys.map(k => <td key={k} style={styles.td}>{fmt(masses[k], 4)}</td>)}</tr></tbody></table>;
 };
 
-const ElecTable = ({ rows, t }) => (
+const ElecTable = ({ rows, t, tr = (k) => k }) => (
   <table style={styles.table}>
     <thead><tr><th style={styles.th}>{t('Consommateur')}</th><th style={styles.th}>kW</th></tr></thead>
     <tbody>
@@ -40,7 +40,7 @@ const ElecTable = ({ rows, t }) => (
   </table>
 );
 
-const computeOpexCosts = (innerData) => {
+const computeOpexCosts = (innerData, tr = (k) => k) => {
   const { purchaseElectricityPrice = 0, ratioElec = 0, availability = 8000, currency = '€', airConsumptionPrice = 0, powerRatio = 0, waterPrices = {}, reagentsTypes = {}, gasTypes = {}, fuelTypes = {} } = getOpexData();
   const d = innerData || {};
   const elecRows = [1,2,3,4,5,6,7,8].map(i => ({ label: d[`labelElec${i}`] || `Poste ${i}`, kW: d[`consoElec${i}`] || 0 })).filter(r => r.kW > 0);
@@ -149,7 +149,7 @@ const COOLINGTOWER_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
     { label: t('Eau de rivière [m³/h]'), value: innerData.Conso_EauRiviere_m3 },
     { label: t('Eau adoucie [m³/h]'), value: innerData.Conso_EauAdoucie_m3 },
   ].filter(r => parseFloat(r.value) > 0);
-  const opex = computeOpexCosts(innerData);
+  const opex = computeOpexCosts(innerData, tr);
 
   return (
     <div style={styles.container}>
@@ -165,7 +165,7 @@ const COOLINGTOWER_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
             <KV label={t('Débit humide [Nm³/h]')} value={fmt(FG_OUT_Nm3_h.wet, 0)} />
           </SubSection>
           <SubSection title={t('Composition gaz de sortie')}>
-            <GasTable data={{ 'kg/h': FG_OUT_kg_h, 'Nm³/h': { CO2: FG_OUT_Nm3_h.CO2, H2O: FG_OUT_Nm3_h.H2O, O2: FG_OUT_Nm3_h.O2, N2: FG_OUT_Nm3_h.N2 } }} />
+            <GasTable data={{ 'kg/h': FG_OUT_kg_h, 'Nm³/h': { CO2: FG_OUT_Nm3_h.CO2, H2O: FG_OUT_Nm3_h.H2O, O2: FG_OUT_Nm3_h.O2, N2: FG_OUT_Nm3_h.N2 } }} t={tr} />
           </SubSection>
         </div>
       </Section>
@@ -183,7 +183,7 @@ const COOLINGTOWER_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
       <Section title={t('3. Design')}>
         <div style={styles.twoCol}>
           <SubSection title={t('Consommations électriques')}>
-            {elecRows.length > 0 ? <ElecTable rows={elecRows} t={t} /> : <span style={{ color: '#999', fontSize: 12 }}>{t('Données non disponibles (ouvrir l\'onglet Design)')}</span>}
+            {elecRows.length > 0 ? <ElecTable rows={elecRows} t={t} tr={tr} /> : <span style={{ color: '#999', fontSize: 12 }}>{t('Données non disponibles (ouvrir l\'onglet Design)')}</span>}
           </SubSection>
           <div>
             {waterConsumption.length > 0 && <SubSection title={t('Consommation d\'eau')}>{waterConsumption.map(({ label, value }) => <KV key={label} label={label} value={fmt(value, 3)} />)}</SubSection>}

@@ -28,7 +28,7 @@ const KV = ({ label, value, unit = '' }) => (
   </div>
 );
 
-const GasTable = ({ title, data = {} }) => {
+const GasTable = ({ title, data = {}, t = (k) => k }) => {
   const gases = ['CO2', 'H2O', 'O2', 'N2'];
   return (
     <div style={{ marginBottom: 8 }}>
@@ -38,7 +38,7 @@ const GasTable = ({ title, data = {} }) => {
           <tr>
             <th style={styles.th}></th>
             {gases.map(g => <th key={g} style={styles.th}>{g}</th>)}
-            <th style={styles.th}>{tr("total")}</th>
+            <th style={styles.th}>{t("total")}</th>
           </tr>
         </thead>
         <tbody>
@@ -153,7 +153,7 @@ const TUBEANDSHELL_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
             <GasTable data={{
               'kg/h':   FG_OUT_kg_h,
               'Nm³/h':  FG_out_Nm3,
-            }} />
+            }} t={tr} />
           </SubSection>
         </div>
       </Section>

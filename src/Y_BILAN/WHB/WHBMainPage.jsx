@@ -100,7 +100,7 @@ const WHBMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLa
     {
       name: 'rapport',
       label: 'Rapport',
-      content: <WHB_Report innerData={innerData} currentLanguage={currentLanguage} />,
+      content: <WHB_Report innerData={innerData} currentLanguage={currentLanguage} nodeId={nodeId} />,
     },
   ];
 

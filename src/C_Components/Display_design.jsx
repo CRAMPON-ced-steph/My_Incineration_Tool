@@ -16,6 +16,7 @@ const DisplayDesignComponent = ({
   selectOptions = {},      // Options pour les menus déroulants
   translations = {},       // Dictionnaire de traductions { langue: { clé: libellé } }
   currentLanguage = 'fr',  // Code langue courant
+  extraContent = {},       // { fieldKey: JSX } — contenu injecté sous le champ correspondant
 }) => {
   // Libellé affiché pour une clé de paramètre : traduction de la langue courante si dispo,
   // sinon repli sur le français, sinon la clé brute (évite d'afficher les clés en changeant de langue)
@@ -96,35 +97,38 @@ const DisplayDesignComponent = ({
 
             {/* Inputs (numerical or select) */}
             {Object.entries(parametersObject).map(([key, value]) => (
-              <div key={key} style={{ display: 'flex', alignItems: 'center', marginBottom: '0px' }}>
-                <label style={{ flex: 1, marginRight: '10px', textAlign: 'right', fontWeight: 'bold' }}>
-                  {getLabel(key)}:
-                </label>
-                
-                {isSelectParameter(key, value) ? (
-                  // Menu déroulant
-                  <select
-                    name={key}
-                    value={getParameterValue(key, value)}
-                    onChange={(e) => handleSelectChange(key, e.target.value)}
-                    style={{ flex: '0 0 100px', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
-                  >
-                    {getSelectOptions(key, value).map(option => (
-                      <option key={option} value={option}>{option}</option>
-                    ))}
-                  </select>
-                ) : (
-                  // Input numérique
-                  <input
-                    type="number"
-                    name={key}
-                    value={getParameterValue(key, value)}
-                    step="any"
-                    onChange={(e) => handleParameterChange(key, e.target.value)}
-                    style={{ flex: '0 0 100px', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
-                  />
-                )}
-              </div>
+              <React.Fragment key={key}>
+                <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0px' }}>
+                  <label style={{ flex: 1, marginRight: '10px', textAlign: 'right', fontWeight: 'bold' }}>
+                    {getLabel(key)}:
+                  </label>
+
+                  {isSelectParameter(key, value) ? (
+                    // Menu déroulant
+                    <select
+                      name={key}
+                      value={getParameterValue(key, value)}
+                      onChange={(e) => handleSelectChange(key, e.target.value)}
+                      style={{ flex: '0 0 100px', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
+                    >
+                      {getSelectOptions(key, value).map(option => (
+                        <option key={option} value={option}>{option}</option>
+                      ))}
+                    </select>
+                  ) : (
+                    // Input numérique
+                    <input
+                      type="number"
+                      name={key}
+                      value={getParameterValue(key, value)}
+                      step="any"
+                      onChange={(e) => handleParameterChange(key, e.target.value)}
+                      style={{ flex: '0 0 100px', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
+                    />
+                  )}
+                </div>
+                {extraContent[key] || null}
+              </React.Fragment>
             ))}
 
             {/* Results section */}

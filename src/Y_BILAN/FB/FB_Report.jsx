@@ -33,7 +33,7 @@ const KV = ({ label, value, unit = '' }) => (
   </div>
 );
 
-const GasTable = ({ data = {} }) => {
+const GasTable = ({ data = {}, t = (k) => k }) => {
   const gases = ['CO2', 'H2O', 'O2', 'N2'];
   return (
     <table style={styles.table}>
@@ -41,7 +41,7 @@ const GasTable = ({ data = {} }) => {
         <tr>
           <th style={styles.th}></th>
           {gases.map(g => <th key={g} style={styles.th}>{g}</th>)}
-          <th style={styles.th}>{tr("total")}</th>
+          <th style={styles.th}>{t("total")}</th>
         </tr>
       </thead>
       <tbody>
@@ -79,7 +79,7 @@ const PollutantTable = ({ masses = {} }) => {
 
 // ─── OPEX cost calculation (mirrors OpexDashboard logic) ──────────────────────
 
-const computeOpexCosts = (innerData) => {
+const computeOpexCosts = (innerData, tr = (k) => k) => {
   const {
     purchaseElectricityPrice = 0,
     ratioElec = 0,
@@ -176,7 +176,7 @@ const computeOpexCosts = (innerData) => {
 
 // ─── OPEX section ─────────────────────────────────────────────────────────────
 
-const OpexCostSection = ({ opex }) => {
+const OpexCostSection = ({ opex, tr = (k) => k }) => {
   const {
     elecRows, totalElec_kW, coutElec, co2Elec,
     coutAir, co2Air,
@@ -596,7 +596,7 @@ const FB_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
   const Rendement_ventilateur_HX    = innerData.Rendement_ventilateur_HX     ?? 0;
 
   // ── Section 5 : OPEX ─────────────────────────────────────────────────────────
-  const opex = computeOpexCosts(innerData);
+  const opex = computeOpexCosts(innerData, tr);
 
   return (
     <div style={styles.container}>
@@ -763,6 +763,7 @@ const FB_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
                   N2:  FG_OUT_Nm3_h.N2,
                 },
               }}
+              t={tr}
             />
           </SubSection>
         </div>
@@ -960,7 +961,7 @@ const FB_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
 
       {/* ── SECTION 5 : OPEX ───────────────────────────────────────────────── */}
       <Section title={`5. ${t('OPEX')} — Coûts horaires`}>
-        <OpexCostSection opex={opex} />
+        <OpexCostSection opex={opex} tr={tr} />
       </Section>
 
       <div style={styles.footer}>

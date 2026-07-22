@@ -66,7 +66,7 @@ const QUENCHMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, curren
     },
     {
       name: 'Rapport',
-      content: <QUENCH_Report innerData={innerData} nodeId={nodeId} />
+      content: <QUENCH_Report innerData={innerData} nodeId={nodeId} currentLanguage={currentLanguage} />
     },
   ];
 
