@@ -918,9 +918,12 @@ const CombustionTab = ({ innerData = {}, onInnerDataChange, onResultsChange, cur
           <ToggleSwitch label={t('Gaz appoint (itératif)')} checked={useGazAppoint} onChange={setUseGazAppoint} />
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '15px' }}>
-          {[{ label: 'Q_gaz (kg/h)', val: results.Q_gaz_kg_h }, { label: 'Q_gaz (Nm³/h)', val: results.Q_gaz_Nm3_h },
-            { label: 'H_in (kW)', val: results.H_in }, { label: 'H_out (kW)', val: results.H_out },
-          ].map(({ label, val }) => (
+          {(emissions.type_energy === 'FIOUL'
+            ? [{ label: 'Q_fioul (L/h)', val: (results.Q_gaz_Nm3_h || 0) * 1000 },
+               { label: 'H_in (kW)', val: results.H_in }, { label: 'H_out (kW)', val: results.H_out }]
+            : [{ label: 'Q_gaz (kg/h)', val: results.Q_gaz_kg_h }, { label: 'Q_gaz (Nm³/h)', val: results.Q_gaz_Nm3_h },
+               { label: 'H_in (kW)', val: results.H_in }, { label: 'H_out (kW)', val: results.H_out }]
+          ).map(({ label, val }) => (
             <div key={label}><label style={labelStyle}>{label}</label><div style={resultBox}>{f(val)}</div></div>
           ))}
         </div>
@@ -1782,7 +1785,9 @@ const CombustionTab = ({ innerData = {}, onInnerDataChange, onResultsChange, cur
             { label: 'Hf fumées voûte', val: results.Hf_voute_kW },
             { label: 'Hf fumées après HX', val: results.Hf_voute_ap_HX_kW },
             { label: 'Temp. air soufflante', val: results.Temp_air_soufflante_C },
-            { label: 'Q_gaz', val: results.Q_gaz_kg_h },
+            emissions.type_energy === 'FIOUL'
+              ? { label: 'Q_fioul (L/h)', val: (results.Q_gaz_Nm3_h || 0) * 1000 }
+              : { label: 'Q_gaz (kg/h)', val: results.Q_gaz_kg_h },
           ].map(({ label, val }) => (
             <div key={label}><label style={labelStyle}>{t(label)}</label><div style={resultBox}>{f(val)}</div></div>
           ))}
