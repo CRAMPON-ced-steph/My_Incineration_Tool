@@ -718,7 +718,8 @@ const FB_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
             <KV label={tr("fuelExcessAirPct")}       value={fmt(Exces_air_combustible, 1)}        />
             <KV label={tr("o2CalcDryPct")}           value={fmt((O2_calcule || 0) * 100, 2)}      />
             {isFioul
-              ? <KV label="Q_fioul (L/h)" value={fmt(Q_fioul_L_h, 2)} />
+              ? <><KV label="Q_fioul (L/h)" value={fmt(Q_fioul_L_h, 2)} />
+                  <KV label="Q_fioul (kg/h)" value={fmt(Q_gaz_kg_h, 2)} /></>
               : <><KV label={tr("natGasFlowKgh")} value={fmt(Q_gaz_kg_h, 2)} />
                   <KV label={tr("natGasFlowNm3h")} value={fmt(Q_gaz_Nm3_h, 2)} /></>
             }
@@ -747,7 +748,8 @@ const FB_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
         <div style={styles.twoCol}>
           <SubSection title={tr("subConvergence")}>
             {isFioul
-              ? <KV label="Q_fioul (L/h)" value={fmt(Q_fioul_L_h, 3)} />
+              ? <><KV label="Q_fioul (L/h)" value={fmt(Q_fioul_L_h, 3)} />
+                  <KV label="Q_fioul (kg/h)" value={fmt(Q_gaz_kg_h, 3)} /></>
               : <><KV label={tr("convergedNatGasKgh")} value={fmt(Q_gaz_kg_h, 3)} />
                   <KV label={tr("convergedNatGasNm3h")} value={fmt(Q_gaz_Nm3_h, 3)} /></>
             }

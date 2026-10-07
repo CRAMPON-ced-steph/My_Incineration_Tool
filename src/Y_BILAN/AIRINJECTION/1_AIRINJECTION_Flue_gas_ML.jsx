@@ -115,9 +115,12 @@ const AIRINJECTIONFlueGasParameters = ({ innerData, nodeId, currentLanguage = 'f
     innerData.FG_humide_tot = FG_humide_tot_m3_h;
     innerData.FG_sec_tot = FG_sec_tot_m3_h;
     innerData.T_sortie = T_out;
+    innerData.T_OUT = T_out;
     innerData.Pin_mmCE = P_in;
     innerData.FG_humide_EAU_tot = FG_humide_EAU_tot_m3_h;
     innerData.Q_eau_kg_h = Q_eau_kg_h;
+    innerData.FG_OUT_kg_h = masses_FG_out_AIRINJECTION;
+    innerData.V_air_dilution_Nm3_h = V_air_ingress;
   }
 
   // Air ingress composition
