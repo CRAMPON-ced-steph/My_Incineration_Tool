@@ -40,7 +40,7 @@ const FUEL_PROPERTIES = {
  
    GAZ: { density: 0.75, pci: 7300, C_percent: 88.7, H_percent: 7.4, O_percent: 0.6, N_percent: 0.9, S_percent: 1.2, Cl_percent: 0 },
   BIOGAZ: { density: 1.15, pci: 5000, C_percent: 75, H_percent: 25, O_percent: 0, N_percent: 0, S_percent: 0, Cl_percent: 0 },
-  FIOUL: { density: 850, pci: 10223, C_percent: 75, H_percent: 25, O_percent: 0, N_percent: 0, S_percent: 0, Cl_percent: 0 },
+  FIOUL: { density: 850, pci: 10223, C_percent: 86.0, H_percent: 13.6, O_percent: 0.1, N_percent: 0.1, S_percent: 0.2, Cl_percent: 0 },
 };
 
 const DEFAULT_AIR_COMP_ROW = { CO2_pct: 0, H2O_pct: 0, O2_pct: 23.14, N2_pct: 76.86, SO2_pct: 0, Cl_pct: 0 };
@@ -1069,9 +1069,9 @@ const CombustionTab = ({ innerData = {}, onInnerDataChange, onResultsChange, cur
                   <td style={TD}>{f(emissions.Masse_eau_kg_h + (results.Meau_air_comburant || 0))}</td>
                   <td style={TD}></td><td style={TD}></td>
                 </tr>
-                {/* --- Gaz naturel --- */}
+                {/* --- Gaz naturel / Fioul --- */}
                 <tr style={{ backgroundColor: '#FFFFF0' }}>
-                  <td style={{ ...TDR, color: '#dc2626' }}>Gaz naturel</td>
+                  <td style={{ ...TDR, color: '#dc2626' }}>{emissions.type_energy === 'FIOUL' ? 'Fioul' : 'Gaz naturel'}</td>
                   <td style={{ ...TD, color: '#0ea5e9' }}>{f(composition.C_percent, 2)}</td>
                   <td style={{ ...TD, color: '#0ea5e9' }}>{f(composition.H_percent, 2)}</td>
                   <td style={{ ...TD, color: '#0ea5e9' }}>{f(composition.O_percent, 2)}</td>
@@ -1155,9 +1155,9 @@ const CombustionTab = ({ innerData = {}, onInnerDataChange, onResultsChange, cur
                   <td style={TD}>{f(airMolesCalc.air_combustion_boue?.Cl, 3)}</td>
                   <td style={TD}></td><td style={TD}></td><td style={TD}></td><td style={TD}></td><td style={TD}></td><td style={TD}></td>
                 </tr>
-                {/* --- Moles air combustion gaz --- */}
+                {/* --- Moles air combustion gaz / fioul --- */}
                 <tr style={{ backgroundColor: '#E6F3FF' }}>
-                  <td style={{ ...TDL, color: '#dc2626' }}>Moles air combustion gaz</td>
+                  <td style={{ ...TDL, color: '#dc2626' }}>{emissions.type_energy === 'FIOUL' ? 'Moles air combustion fioul' : 'Moles air combustion gaz'}</td>
                   <td style={TD}>{f(airMolesCalc.air_combustion_gaz?.C, 3)}</td>
                   <td style={TD}>{f(airMolesCalc.air_combustion_gaz?.H, 1)}</td>
                   <td style={TD}>{f(airMolesCalc.air_combustion_gaz?.O, 1)}</td>
@@ -1219,9 +1219,9 @@ const CombustionTab = ({ innerData = {}, onInnerDataChange, onResultsChange, cur
                   <td style={TD}>{f(results.VolumeVapeurEauAirCombustionBoue_Nm3_h)}</td>
                   <td style={TD}>{f(results.VolumeAirCombustionBoue_total_Nm3_h)}</td>
                 </tr>
-                {/* --- Masse composant gaz --- */}
+                {/* --- Masse composant gaz / fioul --- */}
                 <tr>
-                  <td style={{ ...TDR, color: '#dc2626' }}>Masse composant gaz</td>
+                  <td style={{ ...TDR, color: '#dc2626' }}>{emissions.type_energy === 'FIOUL' ? 'Masse composant fioul' : 'Masse composant gaz'}</td>
                   <td style={{ ...TD, color: '#dc2626' }}>{f(results.Masses_gaz_composition_kg_h?.C, 1)}</td>
                   <td style={{ ...TD, color: '#dc2626' }}>{f(results.Masses_gaz_composition_kg_h?.H, 1)}</td>
                   <td style={{ ...TD, color: '#dc2626' }}>{f(results.Masses_gaz_composition_kg_h?.O, 1)}</td>
