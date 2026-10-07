@@ -121,8 +121,8 @@ function runIterativeCalc({
   forceGazZero = false,
   O2_pct_vol = 21,
 }) {
-  const MAX_ITER = forceGazZero ? 1 : 20;
-  const TOLERANCE = 0.1;
+  const MAX_ITER = forceGazZero ? 1 : 50;
+  const TOLERANCE = 0.01;
   let Masse_gaz_kg_h = 0;
   let r = {};
 
@@ -921,6 +921,7 @@ const CombustionTab = ({ innerData = {}, onInnerDataChange, onResultsChange, cur
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '15px' }}>
           {(emissions.type_energy === 'FIOUL'
             ? [{ label: 'Q_fioul (L/h)', val: (results.Q_gaz_Nm3_h || 0) * 1000 },
+               { label: 'Q_fioul (kg/h)', val: results.Q_gaz_kg_h },
                { label: 'H_in (kW)', val: results.H_in }, { label: 'H_out (kW)', val: results.H_out }]
             : [{ label: 'Q_gaz (kg/h)', val: results.Q_gaz_kg_h }, { label: 'Q_gaz (Nm³/h)', val: results.Q_gaz_Nm3_h },
                { label: 'H_in (kW)', val: results.H_in }, { label: 'H_out (kW)', val: results.H_out }]
