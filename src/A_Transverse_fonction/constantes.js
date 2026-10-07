@@ -13,7 +13,7 @@ export const P_ref = 101325; // Pression de référence en Pascals
 
 export const cp_ref = 4.1868;
 
-export const Lv = 590 *cp_ref;
+export const Lv = 540 *cp_ref;
 
 
 export const molarMasses = {
