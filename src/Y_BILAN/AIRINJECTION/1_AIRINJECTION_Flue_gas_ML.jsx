@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import MassCalculator from '../../C_Components/Tableau_fumee_inverse';
 import TableGeneric from '../../C_Components/Tableau_generique';
-import { H2O_kg_m3, CO2_kg_m3, O2_kg_m3, N2_kg_m3 } from '../../A_Transverse_fonction/conv_calculation';
+import { H2O_kg_m3, CO2_kg_m3, O2_kg_m3, N2_kg_m3, O2_m3_kg, N2_m3_kg } from '../../A_Transverse_fonction/conv_calculation';
 import { h_fumee, Qeau_added_to_be_at_T } from '../../A_Transverse_fonction/enthalpy_mix_gas';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './AIRINJECTION_traduction';
@@ -71,8 +71,8 @@ const AIRINJECTIONFlueGasParameters = ({ innerData, nodeId, currentLanguage = 'f
 
   // Calculate with or without air ingress
   if (V_air_ingress !== 0) {
-    FG_air_O2_kg_h = 0.21 * V_air_ingress;
-    FG_air_N2_kg_h = 0.79 * V_air_ingress;
+    FG_air_O2_kg_h = O2_m3_kg(0.21 * V_air_ingress);
+    FG_air_N2_kg_h = N2_m3_kg(0.79 * V_air_ingress);
 
     T_with_air_ingress_out = (T_out * FG_humide_tot_m3_h + V_air_ingress * T_air) / (FG_humide_tot_m3_h + V_air_ingress);
     H_in_AIRINJECTION = h_fumee(T_in, FG_IN.CO2, FG_IN.H2O, FG_IN.N2, FG_IN.O2);

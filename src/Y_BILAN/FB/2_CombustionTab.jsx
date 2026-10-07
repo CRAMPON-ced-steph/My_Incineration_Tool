@@ -315,7 +315,12 @@ function runIterativeCalc({
     const Hf_voute_HX = Hfvoute_kW(Tf_voute_ap_HX_C, FG_HCl, FG_CO2, FG_CO, FG_H2O, FG_H2, FG_O2exc, FG_N2, FG_SO2reel) || 0;
 
     const PCI_gaz_kWh_Nm3 = (PCI_combustible_kcal_kg * cp_ref) / 3600;
-    const H_gaz_inter = (Masse_gaz_kg_h / densite_combustible) * PCI_gaz_kWh_Nm3;
+    // Liquid fuels (FIOUL) have density in kg/m³ (>100), not kg/Nm³ like gases.
+    // For liquid fuels, energy = mass × PCI_kWh/kg directly; no volume conversion needed.
+    const isLiquidFuel = densite_combustible > 100;
+    const H_gaz_inter = isLiquidFuel
+      ? Masse_gaz_kg_h * PCI_gaz_kWh_Nm3
+      : (Masse_gaz_kg_h / densite_combustible) * PCI_gaz_kWh_Nm3;
 
     const H_in = H_NET_BOUE + H_Evap_add + H_air_prech + H_balayage + H_gaz_inter;
     const H_imbrule_kW = (2415 * FG_CO + FG_H2 * 28240) / 860;
@@ -323,7 +328,7 @@ function runIterativeCalc({
     const H_gaz = H_out - H_in;
 
     const Q_gaz_Nm3 = PCI_gaz_kWh_Nm3 > 0 ? H_gaz / PCI_gaz_kWh_Nm3 : 0;
-    const Q_gaz_kg = Q_gaz_Nm3 * densite_combustible;
+    const Q_gaz_kg = isLiquidFuel ? Q_gaz_Nm3 : Q_gaz_Nm3 * densite_combustible;
 
     const Rho_FG_kg_Nm3 = Vvap_boue > 0 ? FG_wet_kg / FG_wet_Nm3 : 0;
 
