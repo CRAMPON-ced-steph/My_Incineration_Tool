@@ -606,7 +606,7 @@ const EnergyBalanceSection = ({
             { label: 'H_NETTE_BOUE', in: results.H_NETTE_BOUE_kW, out: null },
             { label: 'Hair_ap_préchauffage', in: results.Hair_ap_prechauffage_kW, out: null },
             { label: 'H_air_balayage', in: results.H_air_balayage_instrumentation_kW, out: null },
-            { label: 'H_gaz appoint', in: results.H_gaz_inter ?? null, out: null },
+            { label: emissions?.type_energy === 'FIOUL' ? 'H_fioul_appoint' : 'H_gaz appoint', in: results.H_gaz_inter ?? null, out: null },
             { label: 'H_matière_minérale', in: null, out: results.H_matiere_minerale_kW },
             { label: 'Hf_voûte', in: null, out: results.Hf_voute_kW },
             { label: 'Pertes thermiques', in: null, out: results.Pertes_thermiques_kW },
