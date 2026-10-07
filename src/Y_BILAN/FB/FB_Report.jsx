@@ -475,6 +475,9 @@ const FB_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
   const Exces_air_combustible           = innerData.Exces_air_combustible            ?? 0;
   const Q_gaz_kg_h                      = innerData.Q_gaz_kg_h                      ?? 0;
   const Q_gaz_Nm3_h                     = innerData.Q_gaz_Nm3_h                     ?? 0;
+  const type_energy                     = innerData.type_energy                     ?? 'GAZ';
+  const isFioul                         = type_energy === 'FIOUL';
+  const Q_fioul_L_h                     = Q_gaz_Nm3_h * 1000;
 
   // Fumées voûte
   const FG_wet_Nm3_h                    = innerData.FG_wet_Nm3_h                    ?? 0;
@@ -714,8 +717,11 @@ const FB_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
             <KV label={tr("bedExcessAirPct")}        value={fmt(Exces_air_lit, 1)}                />
             <KV label={tr("fuelExcessAirPct")}       value={fmt(Exces_air_combustible, 1)}        />
             <KV label={tr("o2CalcDryPct")}           value={fmt((O2_calcule || 0) * 100, 2)}      />
-            <KV label={tr("natGasFlowKgh")}          value={fmt(Q_gaz_kg_h, 2)}                  />
-            <KV label={tr("natGasFlowNm3h")}         value={fmt(Q_gaz_Nm3_h, 2)}                 />
+            {isFioul
+              ? <KV label="Q_fioul (L/h)" value={fmt(Q_fioul_L_h, 2)} />
+              : <><KV label={tr("natGasFlowKgh")} value={fmt(Q_gaz_kg_h, 2)} />
+                  <KV label={tr("natGasFlowNm3h")} value={fmt(Q_gaz_Nm3_h, 2)} /></>
+            }
           </SubSection>
         </div>
 
@@ -740,8 +746,11 @@ const FB_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
         {/* Résultat de convergence + Gaz sortie four */}
         <div style={styles.twoCol}>
           <SubSection title={tr("subConvergence")}>
-            <KV label={tr("convergedNatGasKgh")}     value={fmt(Q_gaz_kg_h, 3)}            />
-            <KV label={tr("convergedNatGasNm3h")}    value={fmt(Q_gaz_Nm3_h, 3)}           />
+            {isFioul
+              ? <KV label="Q_fioul (L/h)" value={fmt(Q_fioul_L_h, 3)} />
+              : <><KV label={tr("convergedNatGasKgh")} value={fmt(Q_gaz_kg_h, 3)} />
+                  <KV label={tr("convergedNatGasNm3h")} value={fmt(Q_gaz_Nm3_h, 3)} /></>
+            }
             <KV label={tr("o2CalcDryPct")}           value={fmt((O2_calcule || 0) * 100, 2)} />
             <KV label={tr("hxOutTempC")}             value={fmt(T_OUT, 0)}                  />
             <KV label={tr("hxOutPressMmCE")}         value={fmt(P_out_mmCE)}                />

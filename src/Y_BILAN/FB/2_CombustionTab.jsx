@@ -623,6 +623,7 @@ const CombustionTab = ({ innerData = {}, onInnerDataChange, onResultsChange, cur
     innerData.Hf_voute_kW = results.Hf_voute_kW || 0;
     innerData.Q_gaz_kg_h = results.Q_gaz_kg_h || 0;
     innerData.Q_gaz_Nm3_h = results.Q_gaz_Nm3_h || 0;
+    innerData.type_energy = emissions.type_energy;
     innerData.Tair_ap_prechauffe_C = results.Tair_ap_prechauffe_C || 0;
     innerData.Temp_air_fluidisation_av_prechauffe_C = thermalParams.Temp_air_fluidisation_av_prechauffe_C || 0;
     innerData.Exces_air = emissions.Exces_air_lit || 0;
