@@ -81,9 +81,9 @@ const WATER_INJECTIONMainPage = ({ nodeData, title, onSendData, onClose, onGoBac
     onSendData({
       result: {
         ...innerData,
-        PollutantInput: innerData['PInput'] || {},
-        PollutantOutput: innerData['Poutput'] || {},
-        ResidusOutput: innerData['Residus'] || {},
+        PollutantInput: innerData['PInput'] || innerData['PollutantInput'] || {},
+        PollutantOutput: innerData['Poutput'] || innerData['PollutantOutput'] || {},
+        ResidusOutput: innerData['Residus'] || innerData['ResidusOutput'] || {},
         MasseDechet: innerData['masse'] || 0,
         P_OUT: innerData['P_out_mmCE'] || 0,
         activeNodes_Elec: innerData['activeNodes_Elec'] || [],

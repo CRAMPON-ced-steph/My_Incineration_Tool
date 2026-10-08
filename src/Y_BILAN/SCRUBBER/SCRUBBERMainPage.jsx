@@ -57,10 +57,10 @@ const SCRUBBERMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, curr
       result: {
         ...innerData,
         FG_OUT_kg_h: innerData['FG_OUT_kg_h'],
-        PollutantInput: innerData['PInput'],
+        PollutantInput: innerData['PInput'] || innerData['PollutantInput'] || {},
         T_OUT: innerData['T_OUT'],
-        PollutantOutput: innerData['Poutput'],
-        ResidusOutput: innerData['Residus'],
+        PollutantOutput: innerData['Poutput'] || innerData['PollutantOutput'] || {},
+        ResidusOutput: innerData['Residus'] || innerData['ResidusOutput'] || {},
         MasseDechet: innerData['masse'],
         // Fumées épurées par la tour de lavage (vers le node aval)
         FG_scrubber_out_kg_h: innerData['FG_scrubber_out_kg_h'],

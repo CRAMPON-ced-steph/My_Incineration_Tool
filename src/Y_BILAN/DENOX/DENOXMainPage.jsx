@@ -54,10 +54,10 @@ const DENOXMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, current
       result: {
         ...innerData,
         FG_OUT_kg_h: innerData['FG_DENOX_out_reheating_kg_h'],
-        PollutantInput: innerData['PInput'],
+        PollutantInput: innerData['PInput'] || innerData['PollutantInput'] || {},
         T_OUT: innerData['T_melange_calcule'],
-        PollutantOutput: innerData['Poutput'],
-        ResidusOutput: innerData['Residus'],
+        PollutantOutput: innerData['Poutput'] || innerData['PollutantOutput'] || {},
+        ResidusOutput: innerData['Residus'] || innerData['ResidusOutput'] || {},
         MasseDechet: innerData['masse'],
         P_OUT: innerData['P_out_mmCE'],
         activeNodes_Elec: innerData['activeNodes_Elec'],

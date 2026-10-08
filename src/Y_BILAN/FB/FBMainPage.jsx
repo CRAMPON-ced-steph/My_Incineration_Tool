@@ -44,6 +44,10 @@ const FBMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
       ...(r.Conso_reactifs        ? { Conso_reactifs: r.Conso_reactifs }                     : {}),
       ...(r.MasseBoueBrute != null ? { MasseBoueBrute: r.MasseBoueBrute,
                                        BoueBrute_kg_h: r.MasseBoueBrute }                   : {}),
+      // Restore pollutant/residue data so sendAllData can re-save them without visiting the tab
+      ...(r.PollutantOutput       ? { Poutput: r.PollutantOutput }                          : {}),
+      ...(r.PollutantInput        ? { PInput: r.PollutantInput }                            : {}),
+      ...(r.Residus               ? { Residus: r.Residus }                                  : {}),
     };
   }
 
