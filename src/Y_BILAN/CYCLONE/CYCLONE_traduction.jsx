@@ -63,6 +63,7 @@ export const translations = {
     // Dimensionnement et calculs
     'Surface des manches [m²]': 'Surface des manches [m²]',
     'Rendement de capture [%]': 'Rendement de capture [%]',
+    'Taux de capture [%]': 'Taux de capture [%]',
     'Vitesse de filtration [m/h]': 'Vitesse de filtration [m/h]',
     'Pression air comprimé [Bar]': 'Pression air comprimé [Bar]',
     'Consommation air comprimé [Nm3/h]': 'Consommation air comprimé [Nm3/h]',
@@ -258,6 +259,7 @@ export const translations = {
     // Dimensionnement et calculs
     'Surface des manches [m²]': 'Bag surface [m²]',
     'Rendement de capture [%]': 'Collection efficiency [%]',
+    'Taux de capture [%]': 'Capture rate [%]',
     'Vitesse de filtration [m/h]': 'Filtration velocity [m/h]',
     'Pression air comprimé [Bar]': 'Compressed air pressure [Bar]',
     'Consommation air comprimé [Nm3/h]': 'Compressed air consumption [Nm3/h]',
@@ -454,6 +456,7 @@ export const translations = {
     // Dimensionierung und Berechnungen
     'Surface des manches [m²]': 'Schlauchoberfläche [m²]',
     'Rendement de capture [%]': 'Erfassungswirkungsgrad [%]',
+    'Taux de capture [%]': 'Abscheiderate [%]',
     'Vitesse de filtration [m/h]': 'Filtergeschwindigkeit [m/h]',
     'Pression air comprimé [Bar]': 'Drucklufrdruck [bar]',
     'Consommation air comprimé [Nm3/h]': 'Drucklufverbrauch [Nm3/h]',
@@ -691,6 +694,7 @@ export const translations = {
     // Dimensionamiento y cálculos
     'Surface des manches [m²]': 'Superficie de mangas [m²]',
     'Rendement de capture [%]': 'Eficiencia de captura [%]',
+    'Taux de capture [%]': 'Tasa de captura [%]',
     'Vitesse de filtration [m/h]': 'Velocidad de filtración [m/h]',
     'Pression air comprimé [Bar]': 'Presión aire comprimido [bar]',
     'Consommation air comprimé [Nm3/h]': 'Consumo aire comprimido [Nm3/h]',
@@ -885,6 +889,7 @@ export const translations = {
     // Dimensionamento e calcoli
     'Surface des manches [m²]': 'Superficie delle maniche [m²]',
     'Rendement de capture [%]': 'Efficienza di cattura [%]',
+    'Taux de capture [%]': 'Tasso di cattura [%]',
     'Vitesse de filtration [m/h]': 'Velocità di filtrazione [m/h]',
     'Pression air comprimé [Bar]': 'Pressione aria compressa [bar]',
     'Consommation air comprimé [Nm3/h]': 'Consumo aria compressa [Nm3/h]',
@@ -1079,6 +1084,7 @@ export const translations = {
     // Dimensionamento e cálculos
     'Surface des manches [m²]': 'Superfície das mangas [m²]',
     'Rendement de capture [%]': 'Eficiência de captura [%]',
+    'Taux de capture [%]': 'Taxa de captura [%]',
     'Vitesse de filtration [m/h]': 'Velocidade de filtração [m/h]',
     'Pression air comprimé [Bar]': 'Pressão ar comprimido [bar]',
     'Consommation air comprimé [Nm3/h]': 'Consumo ar comprimido [Nm3/h]',
@@ -1272,7 +1278,8 @@ export const translations = {
   
     // 尺寸和计算
     'Surface des manches [m²]': '滤袋表面 [m²]',
-    'Rendement de capture [%]': '捕集效率 [%]',
+    'Rendement de capture [%]': '捕集効率 [%]',
+    'Taux de capture [%]': '捕集率 [%]',
     'Vitesse de filtration [m/h]': '过滤速度 [m/h]',
     'Pression air comprimé [Bar]': '压缩空气压力 [bar]',
     'Consommation air comprimé [Nm3/h]': '压缩空气消耗 [Nm3/h]',
@@ -1467,6 +1474,7 @@ export const translations = {
     // 寸法と計算
     'Surface des manches [m²]': 'フィルタバッグ表面 [m²]',
     'Rendement de capture [%]': '捕集効率 [%]',
+    'Taux de capture [%]': '捕集率 [%]',
     'Vitesse de filtration [m/h]': 'ろ過速度 [m/h]',
     'Pression air comprimé [Bar]': '圧縮空気圧力 [bar]',
     'Consommation air comprimé [Nm3/h]': '圧縮空気消費量 [Nm3/h]',
@@ -1661,6 +1669,7 @@ export const translations = {
     // Размеры и расчеты
     'Surface des manches [m²]': 'Поверхность фильтровальных рукавов [m²]',
     'Rendement de capture [%]': 'Эффективность захвата [%]',
+    'Taux de capture [%]': 'Степень улавливания [%]',
     'Vitesse de filtration [m/h]': 'Скорость фильтрации [m/h]',
     'Pression air comprimé [Bar]': 'Давление сжатого воздуха [bar]',
     'Consommation air comprimé [Nm3/h]': 'Расход сжатого воздуха [Nm3/h]',
@@ -1855,6 +1864,7 @@ export const translations = {
     // الأبعاد والحسابات
     'Surface des manches [m²]': 'سطح أكياس الترشيح [m²]',
     'Rendement de capture [%]': 'كفاءة الالتقاط [%]',
+    'Taux de capture [%]': 'معدل الالتقاط [%]',
     'Vitesse de filtration [m/h]': 'سرعة الترشيح [m/h]',
     'Pression air comprimé [Bar]': 'ضغط الهواء المضغوط [bar]',
     'Consommation air comprimé [Nm3/h]': 'استهلاك الهواء المضغوط [Nm3/h]',

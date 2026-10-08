@@ -8,8 +8,7 @@ import '../../index.css';
 import { fmt } from '../../A_Transverse_fonction/formatNumber';
 const CYCLONEFlueGasPollutantEmission = ({ innerData, nodeId, currentLanguage = 'fr' }) => {
   const initialEmission_pollutant_cyclone = {
-    'Fly residus content outlet [g/Nm3]': 1,
-    'siccity bottom ash [%]': 66,
+    'Taux de capture [%]': 70,
     'O2 ref [%]': 11,
   };
 
@@ -20,7 +19,13 @@ const CYCLONEFlueGasPollutantEmission = ({ innerData, nodeId, currentLanguage = 
 
   const [emission_pollutant_cyclone, setEmission_pollutant_cyclone] = useState(() => {
     const savedEmissions = localStorage.getItem(`emission_pollutant_cyclone_CYCLONE_${nodeId}`);
-    return savedEmissions ? JSON.parse(savedEmissions) : initialEmission_pollutant_cyclone;
+    if (savedEmissions) {
+      const parsed = JSON.parse(savedEmissions);
+      delete parsed['Fly residus content outlet [g/Nm3]'];
+      delete parsed['siccity bottom ash [%]'];
+      return { ...initialEmission_pollutant_cyclone, ...parsed };
+    }
+    return initialEmission_pollutant_cyclone;
   });
 
   useEffect(() => {
@@ -28,8 +33,7 @@ const CYCLONEFlueGasPollutantEmission = ({ innerData, nodeId, currentLanguage = 
   }, [emission_pollutant_cyclone]);
 
   // Extract parameters from state
-  const FlyAsh_g_Nm3 = emission_pollutant_cyclone['Fly residus content outlet [g/Nm3]'] || 0;
-  const Bottom_Ash_Siccity = emission_pollutant_cyclone['siccity bottom ash [%]'] || 66;
+  const capture_rate = emission_pollutant_cyclone['Taux de capture [%]'] ?? 70;
   const O2ref = emission_pollutant_cyclone['O2 ref [%]'] || 11;
 
   // Input data from innerData
@@ -38,7 +42,6 @@ const CYCLONEFlueGasPollutantEmission = ({ innerData, nodeId, currentLanguage = 
   const O2_amont = innerData?.O2_calcule; // % (RK/WHB/CO2) ou ratio 0-1 (FB/GF) -> normalisé en %
   const FG_O2_calcule = O2_amont > 0 ? (O2_amont <= 0.21 ? O2_amont * 100 : O2_amont) : 1;
   const masse_dechets = innerData?.MasseDechet || 1;
-  const Inert_kg_h = innerData?.Inertmass || 0;
 
   const masses_pollutant_input = innerData?.PollutantOutput || {};
 
@@ -48,10 +51,10 @@ const CYCLONEFlueGasPollutantEmission = ({ innerData, nodeId, currentLanguage = 
     WetBottomAsh_kg_h: 0,
   };
 
-  // Calculate ash flows
+  // Calculate ash flows using capture rate
   const Fly_ash_in_kg_h = Residus_IN?.FlyAsh_kg_h || 0;
-  const Fly_ash_out_kg_h = Debit_fumees_sec_Nm3_h * FlyAsh_g_Nm3 / 1000;
-  const CYCLONE_Ash_kg_h = Fly_ash_in_kg_h - Fly_ash_out_kg_h;
+  const CYCLONE_Ash_kg_h = Fly_ash_in_kg_h * capture_rate / 100;
+  const Fly_ash_out_kg_h = Fly_ash_in_kg_h - CYCLONE_Ash_kg_h;
 
   // Output pollutant masses
   const masses_pollutant_output = {
@@ -87,14 +90,13 @@ const CYCLONEFlueGasPollutantEmission = ({ innerData, nodeId, currentLanguage = 
 
   const residusCalculations = [
     { text: t('Cyclone residus [kg/h]'), value: fmt(CYCLONE_Ash_kg_h, 2) },
+    { text: t('Fly ash outlet [kg/h]'), value: fmt(Fly_ash_out_kg_h, 2) },
   ];
 
   const handleChange = (name, value) => {
     let newValue = parseFloat(value) || 0;
 
-    if (name === 'Fly residus content outlet [g/Nm3]') {
-      newValue = Math.max(0, Math.min(40, newValue));
-    } else if (name === 'siccity bottom ash [%]') {
+    if (name === 'Taux de capture [%]') {
       newValue = Math.max(0, Math.min(100, newValue));
     } else if (name === 'O2 ref [%]') {
       newValue = Math.max(0, Math.min(21, newValue));
@@ -106,15 +108,10 @@ const CYCLONEFlueGasPollutantEmission = ({ innerData, nodeId, currentLanguage = 
     }));
   };
 
-  const clearMemory = useCallback(() => {
-    localStorage.removeItem(`emission_pollutant_cyclone_CYCLONE_${nodeId}`);
+  const handleReset = useCallback(() => {
     setEmission_pollutant_cyclone(initialEmission_pollutant_cyclone);
+    localStorage.removeItem(`emission_pollutant_cyclone_CYCLONE_${nodeId}`);
   }, []);
-
-  const handleReset = () => {
-    setEmission_pollutant_cyclone(initialEmission_pollutant_cyclone);
-    localStorage.removeItem(`emission_pollutant_cyclone_CYCLONE_${nodeId}`);
-  };
 
   return (
     <div className="cadre_pour_onglet">
@@ -136,7 +133,6 @@ const CYCLONEFlueGasPollutantEmission = ({ innerData, nodeId, currentLanguage = 
           {t('Reset to Default Values')}
         </button>
 
-        {/* Inline parameters form */}
         <div style={{ display: 'grid', gap: '12px' }}>
           {Object.entries(emission_pollutant_cyclone).map(([key, value]) => (
             <div
