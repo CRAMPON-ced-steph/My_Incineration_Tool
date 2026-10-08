@@ -110,7 +110,11 @@ const AIRINJECTIONFlueGasParameters = ({ innerData, nodeId, currentLanguage = 'f
   const FG_O2_EAU_m3_h  = O2_kg_m3(masses_FG_out_AIRINJECTION.O2);
   const FG_N2_EAU_m3_h  = N2_kg_m3(masses_FG_out_AIRINJECTION.N2);
 
-  const FG_humide_EAU_tot_m3_h = FG_CO2_EAU_m3_h + FG_O2_EAU_m3_h + FG_N2_EAU_m3_h + FG_H2O_EAU_m3_h;
+  const FG_sec_EAU_tot_m3_h    = FG_CO2_EAU_m3_h + FG_O2_EAU_m3_h + FG_N2_EAU_m3_h;
+  const FG_humide_EAU_tot_m3_h = FG_sec_EAU_tot_m3_h + FG_H2O_EAU_m3_h;
+  const O2_calcule_out = FG_sec_EAU_tot_m3_h > 0
+    ? (FG_O2_EAU_m3_h / FG_sec_EAU_tot_m3_h) * 100
+    : 0;
 
   // Update innerData with calculated values
   if (innerData) {
@@ -125,6 +129,15 @@ const AIRINJECTIONFlueGasParameters = ({ innerData, nodeId, currentLanguage = 'f
     innerData.Q_eau_kg_h          = 0;
     innerData.FG_IN               = FG_IN;
     innerData.FG_OUT_kg_h         = masses_FG_out_AIRINJECTION;
+    innerData.FG_OUT_Nm3_h        = {
+      CO2: FG_CO2_EAU_m3_h,
+      H2O: FG_H2O_EAU_m3_h,
+      O2:  FG_O2_EAU_m3_h,
+      N2:  FG_N2_EAU_m3_h,
+      dry: FG_sec_EAU_tot_m3_h,
+      wet: FG_humide_EAU_tot_m3_h,
+    };
+    innerData.O2_calcule          = O2_calcule_out;
     innerData.V_air_dilution_Nm3_h = V_air_cooling;
   }
 

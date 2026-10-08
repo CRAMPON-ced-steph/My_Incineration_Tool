@@ -144,7 +144,7 @@ const AIRINJECTION_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
             <KV label={t('Temperature inlet AIRINJECTION [°C]')} value={fmt(T_IN, 0)} unit="°C" />
             <KV label={t('Volume of air ingress [Nm3/h]')} value={fmt(V_air_cooling, 0)} unit="Nm³/h" />
             <KV label={t('Température de sortie')} value={fmt(T_OUT, 0)} unit="°C" />
-            <KV label={t('O₂ mesuré (sec)')} value={fmt(O2_calcule)} unit="%" />
+            <KV label={t('O2 calculated [%]')} value={fmt(O2_calcule)} unit="%" />
             <KV label={t('Débit humide total [kg/h]')} value={fmt(FG_wet_total)} />
             <KV label={t('Débit sec [Nm³/h]')} value={fmt(FG_OUT_Nm3_h.dry, 0)} />
             <KV label={t('Débit humide [Nm³/h]')} value={fmt(FG_OUT_Nm3_h.wet, 0)} />
