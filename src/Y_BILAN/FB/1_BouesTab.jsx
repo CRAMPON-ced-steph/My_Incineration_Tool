@@ -876,7 +876,7 @@ const BouesTab = ({ innerData, currentLanguage, nodeId }) => {
             {/* Résultats de partage */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '24px' }}>
               {[
-                { label: 'Fraction fines → cyclones',  pct: F_dcut * 100, mass: MM_cyclones, color: '#f97316' },
+                { label: 'Fraction fines → Traitement des fumées',  pct: F_dcut * 100, mass: MM_cyclones, color: '#f97316' },
                 { label: 'Fraction grossière → lit',   pct: R_dcut * 100, mass: MM_lit,      color: '#10b981' },
               ].map(({ label, pct, mass, color }) => (
                 <div key={label} style={{ padding: '16px', background: '#f9fafb', border: `2px solid ${color}`, borderRadius: '8px' }}>
@@ -962,7 +962,7 @@ const BouesTab = ({ innerData, currentLanguage, nodeId }) => {
                 </tbody>
               </table>
               <p style={{ fontSize: '11px', color: '#9ca3af', marginTop: '8px' }}>
-                Fond vert = particules &gt; d_cut (restent dans le lit) · Fond orange = particules &lt; d_cut (partent vers les cyclones)
+                Fond vert = particules &gt; d_cut (restent dans le lit) · Fond orange = particules &lt; d_cut (partent vers le Traitement des fumées)
               </p>
             </div>
           </div>
