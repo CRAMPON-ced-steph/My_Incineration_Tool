@@ -395,11 +395,23 @@ function Flow({
         // Mise à jour du nœud cible avec les résultats
         if (targetNode) {
           setNodes((prevNodes) =>
-            prevNodes.map((node) =>
-              node.id === targetNode.id
-                ? { ...node, data: { ...node.data, result: { ...data.result } } }
-                : node
-            )
+            prevNodes.map((node) => {
+              if (node.id !== targetNode.id) return node;
+              // If upstream provides empty PollutantOutput but downstream already has valid data,
+              // keep downstream's value to prevent navigating through an uncalculated node
+              // from wiping the pollutant chain.
+              const hasPO = (obj) => obj && typeof obj === 'object' && Object.keys(obj).length > 0;
+              const upstreamPO = data.result?.PollutantOutput;
+              const downstreamPO = node.data.result?.PollutantOutput;
+              const mergedPO = hasPO(upstreamPO) ? upstreamPO : (hasPO(downstreamPO) ? downstreamPO : {});
+              return {
+                ...node,
+                data: {
+                  ...node.data,
+                  result: { ...data.result, PollutantOutput: mergedPO },
+                },
+              };
+            })
           );
         }
 
