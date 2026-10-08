@@ -63,10 +63,10 @@ const IDFANMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, current
       result: {
         ...innerData,
         FG_OUT_kg_h : innerData['FG_OUT_kg_h'],
-        PollutantInput : innerData['PInput'],
+        PollutantInput : innerData['PInput'] || innerData['PollutantInput'] || {},
         T_OUT : innerData['T_OUT'],
-        PollutantOutput :   innerData['Poutput'],
-        ResidusOutput : innerData['Residus'],
+        PollutantOutput : innerData['PollutantOutput'] || innerData['Poutput'] || {},
+        ResidusOutput : innerData['Residus'] || innerData['ResidusOutput'] || {},
         MasseDechet : innerData['masse'],
         P_OUT: innerData['P_out_mmCE'],
 

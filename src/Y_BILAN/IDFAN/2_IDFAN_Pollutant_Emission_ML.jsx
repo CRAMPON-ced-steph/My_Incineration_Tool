@@ -73,7 +73,7 @@ const IDFANFlueGasPollutantEmission = ({ innerData, currentLanguage = 'fr', node
   if (innerData) {
     innerData.IDFAN_Ash_kg_h = IDFAN_Ash_kg_h;
     innerData.Fly_ash_out_kg_h = Fly_ash_out_kg_h;
-    innerData.PollutantOutput_IDFAN = masses_pollutant_output;
+    innerData.PollutantOutput = masses_pollutant_output;
   }
 
   const elementsGeneric = [

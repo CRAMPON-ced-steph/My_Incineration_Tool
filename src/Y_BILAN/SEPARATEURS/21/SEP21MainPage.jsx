@@ -76,9 +76,9 @@ const SEP21MainPage = ({ nodeData, title, onSendData, onClose, onGoBack, current
           FG_sec_tot: innerData['FG_sec_tot'] || 0,
 
           // Polluants (si applicables)
-          PollutantInput: innerData['PInput'] || {},
-          PollutantOutput: innerData['Poutput'] || {},
-          ResidusOutput: innerData['Residus'] || {},
+          PollutantInput: innerData['PInput'] || innerData['PollutantInput'] || {},
+          PollutantOutput: innerData['PollutantOutput'] || innerData['Poutput'] || {},
+          ResidusOutput: innerData['Residus'] || innerData['ResidusOutput'] || {},
           MasseDechet: innerData['masse'] || 0,
           P_OUT: innerData['P_out_mmCE'] || 0,
 

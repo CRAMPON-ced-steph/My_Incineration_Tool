@@ -54,9 +54,9 @@ const CYCLONEMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, curre
     onSendData({
       result: {
         ...innerData,
-        PollutantInput: innerData['PInput'] || {},
-        PollutantOutput: innerData['Poutput'] || {},
-        ResidusOutput: innerData['Residus'] || {},
+        PollutantInput: innerData['PInput'] || innerData['PollutantInput'] || {},
+        PollutantOutput: innerData['PollutantOutput'] || innerData['Poutput'] || {},
+        ResidusOutput: innerData['Residus'] || innerData['ResidusOutput'] || {},
         MasseDechet: innerData['masse'] || 0,
         P_OUT: innerData['P_out_mmCE'] || 0,
         activeNodes_Elec: innerData['activeNodes_Elec'] || [],

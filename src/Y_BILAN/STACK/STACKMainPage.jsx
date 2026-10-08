@@ -93,10 +93,10 @@ const STACKMainPage = ({
       result: {
         ...innerData,
         FG_OUT_kg_h: innerData['FG_OUT_kg_h'],
-        PollutantInput: innerData['PInput'],
+        PollutantInput: innerData['PInput'] || innerData['PollutantInput'] || {},
         T_OUT: innerData['T_OUT'],
-        PollutantOutput: innerData['Poutput'],
-        ResidusOutput: innerData['Residus'],
+        PollutantOutput: innerData['PollutantOutput'] || innerData['Poutput'] || {},
+        ResidusOutput: innerData['Residus'] || innerData['ResidusOutput'] || {},
         MasseDechet: innerData['masse'],
         activeNodes_Elec: innerData['activeNodes_Elec'],
         activeNodes_Eau: innerData['activeNodes_Eau'],
