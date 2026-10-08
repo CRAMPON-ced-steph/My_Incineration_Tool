@@ -111,9 +111,13 @@ const AIRINJECTION_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
   const languageCode = getLanguageCode(currentLanguage);
   const tr = makeReportT(currentLanguage);
   const t = (key) => translations[languageCode]?.[key] || translations['fr']?.[key] || key;
+  const T_IN  = innerData.T_IN  || 0;
   const T_OUT = innerData.T_OUT || 0;
+  const V_air_cooling = innerData.V_air_dilution_Nm3_h || 0;
   const O2_calcule = innerData.O2_calcule || 0;
+  const FG_IN_kg_h  = innerData.FG_IN  || {};
   const FG_OUT_kg_h = innerData.FG_OUT_kg_h || {};
+  const _nm3IN       = { CO2: CO2_kg_m3(FG_IN_kg_h.CO2||0),  H2O: H2O_kg_m3(FG_IN_kg_h.H2O||0),  O2: O2_kg_m3(FG_IN_kg_h.O2||0),  N2: N2_kg_m3(FG_IN_kg_h.N2||0)  };
   const _nm3Computed = { CO2: CO2_kg_m3(FG_OUT_kg_h.CO2||0), H2O: H2O_kg_m3(FG_OUT_kg_h.H2O||0), O2: O2_kg_m3(FG_OUT_kg_h.O2||0), N2: N2_kg_m3(FG_OUT_kg_h.N2||0) };
   _nm3Computed.dry = _nm3Computed.CO2 + _nm3Computed.O2 + _nm3Computed.N2;
   _nm3Computed.wet = _nm3Computed.dry + _nm3Computed.H2O;
@@ -137,15 +141,22 @@ const AIRINJECTION_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
       <Section title={t('1. Gaz de combustion')}>
         <div style={styles.twoCol}>
           <SubSection>
+            <KV label={t('Temperature inlet AIRINJECTION [°C]')} value={fmt(T_IN, 0)} unit="°C" />
+            <KV label={t('Volume of air ingress [Nm3/h]')} value={fmt(V_air_cooling, 0)} unit="Nm³/h" />
             <KV label={t('Température de sortie')} value={fmt(T_OUT, 0)} unit="°C" />
             <KV label={t('O₂ mesuré (sec)')} value={fmt(O2_calcule)} unit="%" />
             <KV label={t('Débit humide total [kg/h]')} value={fmt(FG_wet_total)} />
             <KV label={t('Débit sec [Nm³/h]')} value={fmt(FG_OUT_Nm3_h.dry, 0)} />
             <KV label={t('Débit humide [Nm³/h]')} value={fmt(FG_OUT_Nm3_h.wet, 0)} />
           </SubSection>
-          <SubSection title={t('Composition gaz de sortie')}>
-            <GasTable data={{ 'kg/h': FG_OUT_kg_h, 'Nm³/h': { CO2: FG_OUT_Nm3_h.CO2, H2O: FG_OUT_Nm3_h.H2O, O2: FG_OUT_Nm3_h.O2, N2: FG_OUT_Nm3_h.N2 } }} t={tr} />
-          </SubSection>
+          <div>
+            <SubSection title={t('Composition gaz d\'entrée')}>
+              <GasTable data={{ 'kg/h': FG_IN_kg_h, 'Nm³/h': { CO2: _nm3IN.CO2, H2O: _nm3IN.H2O, O2: _nm3IN.O2, N2: _nm3IN.N2 } }} t={tr} />
+            </SubSection>
+            <SubSection title={t('Composition gaz de sortie')}>
+              <GasTable data={{ 'kg/h': FG_OUT_kg_h, 'Nm³/h': { CO2: FG_OUT_Nm3_h.CO2, H2O: FG_OUT_Nm3_h.H2O, O2: FG_OUT_Nm3_h.O2, N2: FG_OUT_Nm3_h.N2 } }} t={tr} />
+            </SubSection>
+          </div>
         </div>
       </Section>
 

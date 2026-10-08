@@ -47,13 +47,15 @@ const AIRINJECTIONFlueGasParameters = ({ innerData, nodeId, currentLanguage = 'f
   const T_air = emissions_AIRINJECTION['Ambient air temperature [°C]'];
   const Pth   = emissions_AIRINJECTION['Thermal losses [%]'];
 
-  // T_in: upstream T_OUT on first mount; preserved via innerData.T_IN across tab remounts
-  // (innerData.T_OUT is overwritten with T_out below, so can't be re-read on remount)
+  // T_in: upstream T_OUT on first mount; preserved via innerData.T_IN across renders.
+  // innerData.T_OUT_written tracks the value WE last wrote to T_OUT so we can distinguish
+  // our own writes from a new upstream value. Without this, changing T_out (state) would
+  // make T_OUT_val !== T_out, falsely triggering a fresh-upstream-value read.
   const T_in = (() => {
     if (!innerData) return 200;
     const T_OUT_val = innerData.T_OUT ?? 200;
-    if (innerData.T_IN === undefined) return T_OUT_val;
-    if (T_OUT_val !== T_out) return T_OUT_val;
+    if (innerData.T_IN === undefined) return T_OUT_val;                          // first mount
+    if (T_OUT_val !== (innerData.T_OUT_written ?? T_out)) return T_OUT_val;      // upstream changed
     return innerData.T_IN;
   })();
 
@@ -117,6 +119,7 @@ const AIRINJECTIONFlueGasParameters = ({ innerData, nodeId, currentLanguage = 'f
     innerData.T_sortie            = T_out;
     innerData.T_IN                = T_in;
     innerData.T_OUT               = T_out;
+    innerData.T_OUT_written       = T_out;
     innerData.Pin_mmCE            = P_in;
     innerData.FG_humide_EAU_tot   = FG_humide_EAU_tot_m3_h;
     innerData.Q_eau_kg_h          = 0;
