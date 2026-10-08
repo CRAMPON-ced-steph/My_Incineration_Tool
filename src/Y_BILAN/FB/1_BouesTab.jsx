@@ -145,7 +145,7 @@ const defaultChons = () => ({
 // COMPOSANT
 // ============================================================
 
-const BouesTab = ({ innerData, currentLanguage, nodeId }) => {
+const BouesTab = ({ innerData, onInnerDataChange, currentLanguage, nodeId }) => {
   // ✅ Utiliser le hook pour traductions dynamiques
   const t = useTranslation(currentLanguage);
 
@@ -377,7 +377,8 @@ const BouesTab = ({ innerData, currentLanguage, nodeId }) => {
     innerData.RR_fracGrosses     = rr_R_dcut;
     innerData.MM_cyclones_kg_h   = rr_F_dcut * MM_total;
     innerData.MM_lit_kg_h        = rr_R_dcut * MM_total;
-  }, [fonctionnement, boue, chons, heavyMetals, rosinRammler, innerData]);
+    onInnerDataChange?.();
+  }, [fonctionnement, boue, chons, heavyMetals, rosinRammler, innerData, onInnerDataChange]);
 
   // ============================================================
   // HANDLERS

@@ -360,6 +360,7 @@ const FBMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
         return (
           <BouesTab
             innerData={innerDataRef.current}
+            onInnerDataChange={notifyInnerDataChanged}
             currentLanguage={currentLanguage}
             nodeId={nodeId}
           />

@@ -32,7 +32,9 @@ const FBPollutantEmission = ({ innerData, setInnerData, currentLanguage = 'fr', 
     const savedEmissions = localStorage.getItem(`emissions2_FB_${nodeId}`);
     if (savedEmissions) {
       try {
-        return JSON.parse(savedEmissions);
+        const parsed = JSON.parse(savedEmissions);
+        parsed.flyAshesContent = null; // toujours recalculé depuis Rosin-Rammler
+        return parsed;
       } catch (e) {
         console.warn('Erreur parsing emissions2:', e);
       }
