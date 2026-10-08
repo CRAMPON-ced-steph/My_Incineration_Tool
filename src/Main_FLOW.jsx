@@ -397,19 +397,25 @@ function Flow({
           setNodes((prevNodes) =>
             prevNodes.map((node) => {
               if (node.id !== targetNode.id) return node;
-              // If upstream provides empty PollutantOutput but downstream already has valid data,
-              // keep downstream's value to prevent navigating through an uncalculated node
-              // from wiping the pollutant chain.
-              const hasPO = (obj) => obj && typeof obj === 'object' && Object.keys(obj).length > 0;
-              const upstreamPO = data.result?.PollutantOutput;
-              const downstreamPO = node.data.result?.PollutantOutput;
-              const mergedPO = hasPO(upstreamPO) ? upstreamPO : (hasPO(downstreamPO) ? downstreamPO : {});
+              // Merge strategy: upstream wins for non-empty values; downstream keeps its
+              // own valid data when upstream provides empty ({}, [], null, undefined).
+              // This prevents navigating through an uncalculated node from wiping
+              // previously computed results anywhere in the chain.
+              const isEmpty = (v) =>
+                v === null || v === undefined ||
+                (typeof v === 'object' && !Array.isArray(v) && Object.keys(v).length === 0) ||
+                (Array.isArray(v) && v.length === 0);
+              const upstream = data.result || {};
+              const downstream = node.data.result || {};
+              const merged = { ...downstream, ...upstream };
+              for (const key of Object.keys(upstream)) {
+                if (isEmpty(upstream[key]) && !isEmpty(downstream[key])) {
+                  merged[key] = downstream[key];
+                }
+              }
               return {
                 ...node,
-                data: {
-                  ...node.data,
-                  result: { ...data.result, PollutantOutput: mergedPO },
-                },
+                data: { ...node.data, result: merged },
               };
             })
           );
