@@ -32,7 +32,6 @@ const AIRINJECTIONFlueGasParameters = ({ innerData, nodeId, currentLanguage = 'f
   }, [emissions_AIRINJECTION]);
 
   // Input data with fallback values
-  const T_in = innerData?.T_OUT || 200;
   const P_in = innerData?.P_OUT || 0;
   const FG_IN = innerData?.FG_OUT_kg_h || { CO2: 1, H2O: 1, O2: 1, N2: 1 };
 
@@ -42,6 +41,16 @@ const AIRINJECTIONFlueGasParameters = ({ innerData, nodeId, currentLanguage = 'f
   const V_air_ingress = emissions_AIRINJECTION['Volume of air ingress [Nm3/h]'];
   const Pth = emissions_AIRINJECTION['Thermal losses [%]'];
   const T_eau = emissions_AIRINJECTION['Cooling water temperature [°C]'];
+
+  // T_in: upstream T_OUT on first mount; preserved via innerData.T_IN across tab remounts
+  // (innerData.T_OUT is overwritten with T_out below, so can't be re-read on remount)
+  const T_in = (() => {
+    if (!innerData) return 200;
+    const T_OUT_val = innerData.T_OUT ?? 200;
+    if (innerData.T_IN === undefined) return T_OUT_val;
+    if (T_OUT_val !== T_out) return T_OUT_val;
+    return innerData.T_IN;
+  })();
 
   // Calculate mass flows
   const FG_CO2_kg_h = FG_IN.CO2;
@@ -115,6 +124,7 @@ const AIRINJECTIONFlueGasParameters = ({ innerData, nodeId, currentLanguage = 'f
     innerData.FG_humide_tot = FG_humide_tot_m3_h;
     innerData.FG_sec_tot = FG_sec_tot_m3_h;
     innerData.T_sortie = T_out;
+    innerData.T_IN = T_in;
     innerData.T_OUT = T_out;
     innerData.Pin_mmCE = P_in;
     innerData.FG_humide_EAU_tot = FG_humide_EAU_tot_m3_h;
@@ -175,40 +185,45 @@ const AIRINJECTIONFlueGasParameters = ({ innerData, nodeId, currentLanguage = 'f
 
         {/* Inline parameters form */}
         <div style={{ display: 'grid', gap: '12px' }}>
-          {Object.entries(emissions_AIRINJECTION).map(([key, value]) => (
-            <div
-              key={key}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '10px',
-              }}
-            >
-              <label
+          {Object.entries(emissions_AIRINJECTION).map(([key, value]) => {
+            const isAirVolume = key === 'Volume of air ingress [Nm3/h]';
+            const isZeroAir = isAirVolume && value === 0;
+            return (
+              <div
+                key={key}
                 style={{
-                  flex: '1',
-                  minWidth: '250px',
-                  textAlign: 'right',
-                  fontWeight: '500',
-                  color: '#333',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '10px',
                 }}
               >
-                {t(key)}:
-              </label>
-              <input
-                type="number"
-                value={value}
-                onChange={(e) => handleChange(key, parseFloat(e.target.value) || 0)}
-                style={{
-                  flex: '0 0 150px',
-                  padding: '8px',
-                  border: '1px solid #ddd',
-                  borderRadius: '4px',
-                  fontSize: '14px',
-                }}
-              />
-            </div>
-          ))}
+                <label
+                  style={{
+                    flex: '1',
+                    minWidth: '250px',
+                    textAlign: 'right',
+                    fontWeight: isAirVolume ? '700' : '500',
+                    color: isZeroAir ? '#e65100' : '#333',
+                  }}
+                >
+                  {t(key)}:
+                </label>
+                <input
+                  type="number"
+                  value={value}
+                  onChange={(e) => handleChange(key, parseFloat(e.target.value) || 0)}
+                  style={{
+                    flex: '0 0 150px',
+                    padding: '8px',
+                    border: isZeroAir ? '2px solid #e65100' : '1px solid #ddd',
+                    borderRadius: '4px',
+                    fontSize: '14px',
+                    backgroundColor: isZeroAir ? '#fff3e0' : 'white',
+                  }}
+                />
+              </div>
+            );
+          })}
         </div>
       </div>
 
@@ -220,6 +235,11 @@ const AIRINJECTIONFlueGasParameters = ({ innerData, nodeId, currentLanguage = 'f
       <MassCalculator masses={masses_FG_in_AIRINJECTION} TemperatureImposee={T_in} />
 
       <h4>{t('Air ingress at ambient temperature')} ({T_air}°C)</h4>
+      {V_air_ingress === 0 && (
+        <p style={{ color: '#e65100', fontStyle: 'italic', margin: '4px 0 8px 0', fontSize: '13px' }}>
+          ⚠ Entrez un volume d&apos;air de dilution &gt; 0 dans les paramètres pour calculer la composition de l&apos;air injecté.
+        </p>
+      )}
       <MassCalculator masses={masses_Air_ingress} TemperatureImposee={T_air} />
 
       <h4>{t('Flue gas outlet at outlet temperature')} ({T_out}°C)</h4>
