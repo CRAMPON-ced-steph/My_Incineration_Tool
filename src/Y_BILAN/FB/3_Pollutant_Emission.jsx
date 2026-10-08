@@ -45,7 +45,7 @@ const FBPollutantEmission = ({ innerData, setInnerData, currentLanguage = 'fr', 
       hfPercent: 1,
       cdTi: 0.05,
       heavyMetals: 0.5,
-      flyAshesContent: 2.3,
+      flyAshesContent: null,
       siccityBottomAsh: 66,
       o2Ref: 11,
       sncrtEnabled: false,
@@ -99,7 +99,6 @@ const FBPollutantEmission = ({ innerData, setInnerData, currentLanguage = 'fr', 
   const PCDDF_microg_Nm3 = emissions2.pcddf ?? 500;
   const CdTi_g_Nm3 = emissions2.cdTi ?? 0.05;
   const SdAsPbCrCoCuMnNi_mg_Nm3 = emissions2.heavyMetals ?? 0.5;
-  const FlyAsh_g_Nm3 = emissions2.flyAshesContent ?? 2.3;
   const Bottom_Ash_Siccity = emissions2.siccityBottomAsh ?? 66;
   const O2ref = emissions2.o2Ref ?? 11;
 
@@ -129,6 +128,24 @@ const FBPollutantEmission = ({ innerData, setInnerData, currentLanguage = 'fr', 
   const masse_dechets = innerData?.MasseBoueBrute ?? 0;
   const Inert_kg_h = innerData?.Inert_kg_h ?? 0;
 
+  // Concentration cendres volantes : auto-calculée depuis Rosin-Rammler (BouesTab) si non saisie
+  const MM_cyclones_kg_h = innerData?.MM_cyclones_kg_h ?? 0;
+  const flyAshesContent_auto = (MM_cyclones_kg_h > 0 && Debit_fumees_sec_Nm3_h > 0)
+    ? (MM_cyclones_kg_h / Debit_fumees_sec_Nm3_h) * 1000
+    : 2.3;
+  const FlyAsh_g_Nm3 = emissions2.flyAshesContent ?? flyAshesContent_auto;
+
+  // Masses métaux lourds depuis BouesTab (mg/kg MS → kg/h)
+  const metals_kg_h = innerData?.masse_pollutant_metallique_kg_h ?? {};
+  const heavyMetals_total_kg_h =
+    (metals_kg_h.Al_kg_h    || 0) + (metals_kg_h.As_kg_h   || 0) +
+    (metals_kg_h.Cd_kg_h    || 0) + (metals_kg_h.Cr_kg_h   || 0) +
+    (metals_kg_h.Cu_kg_h    || 0) + (metals_kg_h.Fe_kg_h   || 0) +
+    (metals_kg_h.Hg_kg_h    || 0) + (metals_kg_h.Ni_kg_h   || 0) +
+    (metals_kg_h.Pb_kg_h    || 0) + (metals_kg_h.Zn_kg_h   || 0) +
+    (metals_kg_h.PCDDF_kg_h || 0) + (metals_kg_h.Ti_kg_h   || 0) +
+    (metals_kg_h.HF_kg_h    || 0);
+
   // Calculs des masses de polluants d'entrée
   const Masse_polluant_HCl_kg_h = innerData?.FG_pollutant_OUT_kg_h?.HCl ?? 0;
   const Masse_polluant_Cl_kg_h = (Masse_polluant_HCl_kg_h * 35.45) / 36.46;
@@ -139,7 +156,7 @@ const FBPollutantEmission = ({ innerData, setInnerData, currentLanguage = 'fr', 
   const Masse_polluant_HF_kg_h = innerData?.masse_pollutant_metallique_kg_h?.HF_kg_h ?? 0;
 
   const Masse_polluant_NOx_kg_h = innerData?.FG_pollutant_OUT_kg_h?.NOx ?? 0;
-  const Masse_polluant_Dust_FlyAshes_kg_h = (FlyAsh_g_Nm3 * Debit_fumees_sec_Nm3_h) / 1000;
+  const Masse_polluant_Dust_FlyAshes_kg_h = Math.max(0, MM_cyclones_kg_h - heavyMetals_total_kg_h);
 
   const Masse_polluant_Hg_kg_h = innerData?.masse_pollutant_metallique_kg_h?.Hg_kg_h ?? 0;
 
@@ -400,7 +417,7 @@ const FBPollutantEmission = ({ innerData, setInnerData, currentLanguage = 'fr', 
   };
 
   const calculationParameters = {
-    flyAshesContent: emissions2.flyAshesContent,
+    flyAshesContent: emissions2.flyAshesContent ?? flyAshesContent_auto,
     o2Ref: emissions2.o2Ref,
     noxLimit: emissions2.noxLimit,
     brHgRatio: emissions2.brHgRatio,
@@ -425,7 +442,7 @@ const FBPollutantEmission = ({ innerData, setInnerData, currentLanguage = 'fr', 
       hfPercent: 1,
       cdTi: 0.05,
       heavyMetals: 0.5,
-      flyAshesContent: 2.3,
+      flyAshesContent: null,
       siccityBottomAsh: 66,
       o2Ref: 11,
       sncrtEnabled: false,
