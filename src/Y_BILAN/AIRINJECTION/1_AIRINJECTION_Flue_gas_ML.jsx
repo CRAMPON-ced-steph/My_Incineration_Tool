@@ -3,6 +3,7 @@ import MassCalculator from '../../C_Components/Tableau_fumee_inverse';
 import TableGeneric from '../../C_Components/Tableau_generique';
 import { H2O_kg_m3, CO2_kg_m3, O2_kg_m3, N2_kg_m3, O2_m3_kg, N2_m3_kg, H2O_m3_kg } from '../../A_Transverse_fonction/conv_calculation';
 import { h_fumee } from '../../A_Transverse_fonction/enthalpy_mix_gas';
+import { fh_AIR } from '../../A_Transverse_fonction/enthalpy_gas';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './AIRINJECTION_traduction';
 import '../../index.css';
@@ -74,23 +75,27 @@ const AIRINJECTIONFlueGasParameters = ({ innerData, nodeId, currentLanguage = 'f
   const FG_humide_tot_m3_h = FG_CO2_m3_h + FG_H2O_m3_h + FG_O2_m3_h + FG_N2_m3_h;
   const FG_sec_tot_m3_h    = FG_CO2_m3_h + FG_O2_m3_h  + FG_N2_m3_h;
 
-  // Volume d'air de refroidissement calculé par bilan de mélange (même formule que BHF)
-  // T_out = (T_in * FG_tot + V_air * T_air) / (FG_tot + V_air)
-  // => V_air = FG_tot * (T_in - T_out) / (T_out - T_air)
-  const V_air_cooling = (T_in > T_out && T_out > T_air)
-    ? FG_humide_tot_m3_h * (T_in - T_out) / (T_out - T_air)
+  // Air de refroidissement — bilan enthalpique (même méthode que Q_AIR_DILUTION)
+  // Q_air_sec [kg/h] = [H_fg(T_in)·(1−Pth/100) − H_fg(T_out)] / [fh_AIR(T_out) − fh_AIR(T_air)]
+  const H_fg_in  = h_fumee(T_in,  FG_CO2_kg_h, FG_H2O_kg_h, FG_N2_kg_h, FG_O2_kg_h);
+  const H_fg_out = h_fumee(T_out, FG_CO2_kg_h, FG_H2O_kg_h, FG_N2_kg_h, FG_O2_kg_h);
+  const denom_air = fh_AIR(T_out) - fh_AIR(T_air);
+  const Q_air_sec_kg_h = (denom_air > 0 && T_in > T_out && T_out > T_air)
+    ? (H_fg_in * (1 - Pth / 100) - H_fg_out) / denom_air
     : 0;
+  const Delta_H = H_fg_in * (1 - Pth / 100) - H_fg_out;
 
   // Air humide : ω = 0.008 kg H₂O / kg air sec
   // Fraction molaire H₂O dans l'air humide : r = (ω·M_air/M_H2O) / (1 + ω·M_air/M_H2O)
-  const omega_air   = 0.008;
-  const r_H2O_air   = (omega_air * 29 / 18) / (1 + omega_air * 29 / 18); // ≈ 0.01273
-  const V_air_dry_Nm3_h  = V_air_cooling * (1 - r_H2O_air);
-  const V_air_H2O_Nm3_h  = V_air_cooling * r_H2O_air;
+  const omega_air      = 0.008;
+  const r_H2O_air      = (omega_air * 29 / 18) / (1 + omega_air * 29 / 18);
+  const V_air_dry_Nm3_h = Q_air_sec_kg_h > 0 ? Q_air_sec_kg_h / 1.293 : 0;
+  const V_air_H2O_Nm3_h = V_air_dry_Nm3_h * r_H2O_air / (1 - r_H2O_air);
+  const V_air_cooling   = V_air_dry_Nm3_h + V_air_H2O_Nm3_h;
 
-  const FG_air_O2_kg_h  = V_air_cooling > 0 ? O2_m3_kg(0.21 * V_air_dry_Nm3_h) : 0;
-  const FG_air_N2_kg_h  = V_air_cooling > 0 ? N2_m3_kg(0.79 * V_air_dry_Nm3_h) : 0;
-  const FG_air_H2O_kg_h = V_air_cooling > 0 ? H2O_m3_kg(V_air_H2O_Nm3_h)       : 0;
+  const FG_air_O2_kg_h  = V_air_dry_Nm3_h > 0 ? O2_m3_kg(0.21 * V_air_dry_Nm3_h) : 0;
+  const FG_air_N2_kg_h  = V_air_dry_Nm3_h > 0 ? N2_m3_kg(0.79 * V_air_dry_Nm3_h) : 0;
+  const FG_air_H2O_kg_h = V_air_H2O_Nm3_h > 0 ? H2O_m3_kg(V_air_H2O_Nm3_h)       : 0;
 
   // Output composition (H₂O sortie inclut l'humidité de l'air)
   const masses_FG_in_AIRINJECTION = {
@@ -106,11 +111,6 @@ const AIRINJECTIONFlueGasParameters = ({ innerData, nodeId, currentLanguage = 'f
     H2O: FG_H2O_kg_h + FG_air_H2O_kg_h,
     N2:  FG_N2_kg_h  + FG_air_N2_kg_h,
   };
-
-  // Enthalpies — H_out utilise la composition sortie pour tenir compte de l'humidité de l'air
-  const H_in_AIRINJECTION  = h_fumee(T_in,  FG_IN.CO2, FG_IN.H2O, FG_IN.N2, FG_IN.O2);
-  const H_out_AIRINJECTION = h_fumee(T_out, masses_FG_out_AIRINJECTION.CO2, masses_FG_out_AIRINJECTION.H2O, masses_FG_out_AIRINJECTION.N2, masses_FG_out_AIRINJECTION.O2);
-  const Delta_H = H_in_AIRINJECTION * (1 - Pth / 100) - H_out_AIRINJECTION;
 
   // Output volumetric flows
   const FG_CO2_EAU_m3_h = CO2_kg_m3(masses_FG_out_AIRINJECTION.CO2);
