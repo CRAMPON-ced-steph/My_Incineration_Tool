@@ -33,7 +33,8 @@ const AIRINJECTIONFlueGasParameters = ({ innerData, nodeId, currentLanguage = 'f
 
   // Input data with fallback values
   const P_in = innerData?.P_OUT || 0;
-  const FG_IN = innerData?.FG_OUT_kg_h || { CO2: 1, H2O: 1, O2: 1, N2: 1 };
+  // FG_OUT_kg_h is overwritten with outlet composition below; preserve inlet via FG_IN
+  const FG_IN = innerData?.FG_IN ?? innerData?.FG_OUT_kg_h ?? { CO2: 1, H2O: 1, O2: 1, N2: 1 };
 
   // Extract parameters from state
   const T_out = emissions_AIRINJECTION['Flue gas temperature outlet [°C]'];
@@ -129,6 +130,7 @@ const AIRINJECTIONFlueGasParameters = ({ innerData, nodeId, currentLanguage = 'f
     innerData.Pin_mmCE = P_in;
     innerData.FG_humide_EAU_tot = FG_humide_EAU_tot_m3_h;
     innerData.Q_eau_kg_h = Q_eau_kg_h;
+    innerData.FG_IN = FG_IN;
     innerData.FG_OUT_kg_h = masses_FG_out_AIRINJECTION;
     innerData.V_air_dilution_Nm3_h = V_air_ingress;
   }
