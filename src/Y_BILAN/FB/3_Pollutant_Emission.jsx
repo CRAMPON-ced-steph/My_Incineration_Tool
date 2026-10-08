@@ -419,7 +419,6 @@ const FBPollutantEmission = ({ innerData, setInnerData, currentLanguage = 'fr', 
   };
 
   const calculationParameters = {
-    flyAshesContent: emissions2.flyAshesContent ?? flyAshesContent_auto,
     o2Ref: emissions2.o2Ref,
     noxLimit: emissions2.noxLimit,
     brHgRatio: emissions2.brHgRatio,
