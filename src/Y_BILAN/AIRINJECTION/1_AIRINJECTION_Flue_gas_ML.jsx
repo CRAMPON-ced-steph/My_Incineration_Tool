@@ -2,19 +2,18 @@ import React, { useState, useEffect, useCallback } from 'react';
 import MassCalculator from '../../C_Components/Tableau_fumee_inverse';
 import TableGeneric from '../../C_Components/Tableau_generique';
 import { H2O_kg_m3, CO2_kg_m3, O2_kg_m3, N2_kg_m3, O2_m3_kg, N2_m3_kg } from '../../A_Transverse_fonction/conv_calculation';
-import { h_fumee, Qeau_added_to_be_at_T } from '../../A_Transverse_fonction/enthalpy_mix_gas';
+import { h_fumee } from '../../A_Transverse_fonction/enthalpy_mix_gas';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './AIRINJECTION_traduction';
 import '../../index.css';
 
 import { fmt } from '../../A_Transverse_fonction/formatNumber';
+
 const AIRINJECTIONFlueGasParameters = ({ innerData, nodeId, currentLanguage = 'fr' }) => {
   const initialEmissions_AIRINJECTION = {
     'Flue gas temperature outlet [°C]': 400,
     'Ambient air temperature [°C]': 20,
-    'Volume of air ingress [Nm3/h]': 0,
     'Thermal losses [%]': 2,
-    'Cooling water temperature [°C]': 20,
   };
 
   const languageCode = getLanguageCode(currentLanguage);
@@ -24,7 +23,14 @@ const AIRINJECTIONFlueGasParameters = ({ innerData, nodeId, currentLanguage = 'f
 
   const [emissions_AIRINJECTION, setEmissions_AIRINJECTION] = useState(() => {
     const savedEmissions = localStorage.getItem(`emissions_AIRINJECTION_${nodeId}`);
-    return savedEmissions ? JSON.parse(savedEmissions) : initialEmissions_AIRINJECTION;
+    if (savedEmissions) {
+      const parsed = JSON.parse(savedEmissions);
+      // Migrate: drop legacy keys no longer in state
+      delete parsed['Volume of air ingress [Nm3/h]'];
+      delete parsed['Cooling water temperature [°C]'];
+      return { ...initialEmissions_AIRINJECTION, ...parsed };
+    }
+    return initialEmissions_AIRINJECTION;
   });
 
   useEffect(() => {
@@ -39,9 +45,7 @@ const AIRINJECTIONFlueGasParameters = ({ innerData, nodeId, currentLanguage = 'f
   // Extract parameters from state
   const T_out = emissions_AIRINJECTION['Flue gas temperature outlet [°C]'];
   const T_air = emissions_AIRINJECTION['Ambient air temperature [°C]'];
-  const V_air_ingress = emissions_AIRINJECTION['Volume of air ingress [Nm3/h]'];
-  const Pth = emissions_AIRINJECTION['Thermal losses [%]'];
-  const T_eau = emissions_AIRINJECTION['Cooling water temperature [°C]'];
+  const Pth   = emissions_AIRINJECTION['Thermal losses [%]'];
 
   // T_in: upstream T_OUT on first mount; preserved via innerData.T_IN across tab remounts
   // (innerData.T_OUT is overwritten with T_out below, so can't be re-read on remount)
@@ -56,108 +60,87 @@ const AIRINJECTIONFlueGasParameters = ({ innerData, nodeId, currentLanguage = 'f
   // Calculate mass flows
   const FG_CO2_kg_h = FG_IN.CO2;
   const FG_H2O_kg_h = FG_IN.H2O;
-  const FG_O2_kg_h = FG_IN.O2;
-  const FG_N2_kg_h = FG_IN.N2;
+  const FG_O2_kg_h  = FG_IN.O2;
+  const FG_N2_kg_h  = FG_IN.N2;
 
-  // Convert to volumetric flows
+  // Convert to volumetric flows (Nm3/h)
   const FG_CO2_m3_h = CO2_kg_m3(FG_CO2_kg_h);
   const FG_H2O_m3_h = H2O_kg_m3(FG_H2O_kg_h);
-  const FG_O2_m3_h = O2_kg_m3(FG_O2_kg_h);
-  const FG_N2_m3_h = N2_kg_m3(FG_N2_kg_h);
+  const FG_O2_m3_h  = O2_kg_m3(FG_O2_kg_h);
+  const FG_N2_m3_h  = N2_kg_m3(FG_N2_kg_h);
 
   const FG_humide_tot_m3_h = FG_CO2_m3_h + FG_H2O_m3_h + FG_O2_m3_h + FG_N2_m3_h;
-  const FG_sec_tot_m3_h = FG_CO2_m3_h + FG_O2_m3_h + FG_N2_m3_h;
+  const FG_sec_tot_m3_h    = FG_CO2_m3_h + FG_O2_m3_h  + FG_N2_m3_h;
 
-  // Air ingress composition
-  let FG_air_O2_kg_h = 0;
-  let FG_air_N2_kg_h = 0;
-  let FG_air_CO2_kg_h = 0;
-  let FG_air_H2O_kg_h = 0;
-  let Q_eau_kg_h = 0;
-  let Delta_H = 0;
-  let H_in_AIRINJECTION = 0;
-  let H_out_AIRINJECTION = 0;
-  let T_with_air_ingress_out = T_out;
+  // Volume d'air de refroidissement calculé par bilan de mélange (même formule que BHF)
+  // T_out = (T_in * FG_tot + V_air * T_air) / (FG_tot + V_air)
+  // => V_air = FG_tot * (T_in - T_out) / (T_out - T_air)
+  const V_air_cooling = (T_in > T_out && T_out > T_air)
+    ? FG_humide_tot_m3_h * (T_in - T_out) / (T_out - T_air)
+    : 0;
 
-  // Calculate with or without air ingress
-  if (V_air_ingress !== 0) {
-    FG_air_O2_kg_h = O2_m3_kg(0.21 * V_air_ingress);
-    FG_air_N2_kg_h = N2_m3_kg(0.79 * V_air_ingress);
+  const FG_air_O2_kg_h = V_air_cooling > 0 ? O2_m3_kg(0.21 * V_air_cooling) : 0;
+  const FG_air_N2_kg_h = V_air_cooling > 0 ? N2_m3_kg(0.79 * V_air_cooling) : 0;
 
-    T_with_air_ingress_out = (T_out * FG_humide_tot_m3_h + V_air_ingress * T_air) / (FG_humide_tot_m3_h + V_air_ingress);
-    H_in_AIRINJECTION = h_fumee(T_in, FG_IN.CO2, FG_IN.H2O, FG_IN.N2, FG_IN.O2);
-    H_out_AIRINJECTION = h_fumee(T_out + (T_out - T_with_air_ingress_out), FG_IN.CO2, FG_IN.H2O, FG_IN.N2, FG_IN.O2);
-    Delta_H = H_in_AIRINJECTION * (1 - Pth / 100) - H_out_AIRINJECTION;
-    Q_eau_kg_h = Qeau_added_to_be_at_T(T_in, T_eau, T_out + (T_out - T_with_air_ingress_out), Pth, FG_IN.CO2, FG_IN.H2O, FG_IN.N2, FG_IN.O2);
-  } else {
-    T_with_air_ingress_out = T_out;
-    H_in_AIRINJECTION = h_fumee(T_in, FG_IN.CO2, FG_IN.H2O, FG_IN.N2, FG_IN.O2);
-    H_out_AIRINJECTION = h_fumee(T_out, FG_IN.CO2, FG_IN.H2O, FG_IN.N2, FG_IN.O2);
-    Delta_H = H_in_AIRINJECTION * (1 - Pth / 100) - H_out_AIRINJECTION;
-    Q_eau_kg_h = Qeau_added_to_be_at_T(T_in, T_eau, T_out, Pth, FG_IN.CO2, FG_IN.H2O, FG_IN.N2, FG_IN.O2);
-  }
+  // Enthalpies (V_air calculé pour atteindre T_out par mélange → pas d'eau pulvérisée)
+  const H_in_AIRINJECTION  = h_fumee(T_in,  FG_IN.CO2, FG_IN.H2O, FG_IN.N2, FG_IN.O2);
+  const H_out_AIRINJECTION = h_fumee(T_out, FG_IN.CO2, FG_IN.H2O, FG_IN.N2, FG_IN.O2);
+  const Delta_H = H_in_AIRINJECTION * (1 - Pth / 100) - H_out_AIRINJECTION;
 
   // Output composition
   const masses_FG_in_AIRINJECTION = {
     CO2: FG_CO2_kg_h,
-    O2: FG_O2_kg_h,
+    O2:  FG_O2_kg_h,
     H2O: FG_H2O_kg_h,
-    N2: FG_N2_kg_h
+    N2:  FG_N2_kg_h,
   };
 
   const masses_FG_out_AIRINJECTION = {
-    CO2: FG_CO2_kg_h + FG_air_CO2_kg_h,
-    O2: FG_O2_kg_h + FG_air_O2_kg_h,
-    H2O: FG_H2O_kg_h + Q_eau_kg_h + FG_air_H2O_kg_h,
-    N2: FG_N2_kg_h + FG_air_N2_kg_h
+    CO2: FG_CO2_kg_h,
+    O2:  FG_O2_kg_h  + FG_air_O2_kg_h,
+    H2O: FG_H2O_kg_h,
+    N2:  FG_N2_kg_h  + FG_air_N2_kg_h,
   };
 
   // Output volumetric flows
   const FG_CO2_EAU_m3_h = CO2_kg_m3(masses_FG_out_AIRINJECTION.CO2);
   const FG_H2O_EAU_m3_h = H2O_kg_m3(masses_FG_out_AIRINJECTION.H2O);
-  const FG_O2_EAU_m3_h = O2_kg_m3(masses_FG_out_AIRINJECTION.O2);
-  const FG_N2_EAU_m3_h = N2_kg_m3(masses_FG_out_AIRINJECTION.N2);
+  const FG_O2_EAU_m3_h  = O2_kg_m3(masses_FG_out_AIRINJECTION.O2);
+  const FG_N2_EAU_m3_h  = N2_kg_m3(masses_FG_out_AIRINJECTION.N2);
 
   const FG_humide_EAU_tot_m3_h = FG_CO2_EAU_m3_h + FG_O2_EAU_m3_h + FG_N2_EAU_m3_h + FG_H2O_EAU_m3_h;
 
   // Update innerData with calculated values
   if (innerData) {
-    innerData.FG_humide_tot = FG_humide_tot_m3_h;
-    innerData.FG_sec_tot = FG_sec_tot_m3_h;
-    innerData.T_sortie = T_out;
-    innerData.T_IN = T_in;
-    innerData.T_OUT = T_out;
-    innerData.Pin_mmCE = P_in;
-    innerData.FG_humide_EAU_tot = FG_humide_EAU_tot_m3_h;
-    innerData.Q_eau_kg_h = Q_eau_kg_h;
-    innerData.FG_IN = FG_IN;
-    innerData.FG_OUT_kg_h = masses_FG_out_AIRINJECTION;
-    innerData.V_air_dilution_Nm3_h = V_air_ingress;
+    innerData.FG_humide_tot       = FG_humide_tot_m3_h;
+    innerData.FG_sec_tot          = FG_sec_tot_m3_h;
+    innerData.T_sortie            = T_out;
+    innerData.T_IN                = T_in;
+    innerData.T_OUT               = T_out;
+    innerData.Pin_mmCE            = P_in;
+    innerData.FG_humide_EAU_tot   = FG_humide_EAU_tot_m3_h;
+    innerData.Q_eau_kg_h          = 0;
+    innerData.FG_IN               = FG_IN;
+    innerData.FG_OUT_kg_h         = masses_FG_out_AIRINJECTION;
+    innerData.V_air_dilution_Nm3_h = V_air_cooling;
   }
 
-  // Air ingress composition
-  const masses_Air_ingress = {
-    CO2: FG_air_CO2_kg_h,
-    O2: FG_air_O2_kg_h,
-    H2O: FG_air_H2O_kg_h,
-    N2: FG_air_N2_kg_h,
+  const masses_Air_cooling = {
+    CO2: 0,
+    O2:  FG_air_O2_kg_h,
+    H2O: 0,
+    N2:  FG_air_N2_kg_h,
   };
 
   const elementsGeneric = [
-    { text: t('Temperature inlet AIRINJECTION [°C]'), value: fmt(T_in, 1) },
-    { text: t('Delta enthalpies [kJ/kg]'), value: fmt(Delta_H, 0) },
-    { text: t('Sprayed/cooling water [kg/h]'), value: fmt(Q_eau_kg_h, 0) },
-    { text: t('Outlet flue gas volume [Nm3/h]'), value: fmt(FG_humide_EAU_tot_m3_h, 2) },
+    { text: t('Temperature inlet AIRINJECTION [°C]'),  value: fmt(T_in, 1) },
+    { text: t('Volume of air ingress [Nm3/h]'),        value: fmt(V_air_cooling, 0) },
+    { text: t('Delta enthalpies [kJ/kg]'),             value: fmt(Delta_H, 0) },
+    { text: t('Outlet flue gas volume [Nm3/h]'),       value: fmt(FG_humide_EAU_tot_m3_h, 2) },
   ];
 
   const handleChange = (name, value) => {
-    if (name === 'Volume of air ingress [Nm3/h]') {
-      value = Math.max(0, Math.min(10000, value));
-    }
-    setEmissions_AIRINJECTION((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setEmissions_AIRINJECTION((prev) => ({ ...prev, [name]: value }));
   };
 
   const clearMemory = useCallback(() => {
@@ -179,53 +162,26 @@ const AIRINJECTIONFlueGasParameters = ({ innerData, nodeId, currentLanguage = 'f
             borderRadius: '4px',
             cursor: 'pointer',
             fontWeight: 'bold',
-            marginBottom: '15px'
+            marginBottom: '15px',
           }}
         >
           {t('Clear memory')}
         </button>
 
-        {/* Inline parameters form */}
         <div style={{ display: 'grid', gap: '12px' }}>
-          {Object.entries(emissions_AIRINJECTION).map(([key, value]) => {
-            const isAirVolume = key === 'Volume of air ingress [Nm3/h]';
-            const isZeroAir = isAirVolume && value === 0;
-            return (
-              <div
-                key={key}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '10px',
-                }}
-              >
-                <label
-                  style={{
-                    flex: '1',
-                    minWidth: '250px',
-                    textAlign: 'right',
-                    fontWeight: isAirVolume ? '700' : '500',
-                    color: isZeroAir ? '#e65100' : '#333',
-                  }}
-                >
-                  {t(key)}:
-                </label>
-                <input
-                  type="number"
-                  value={value}
-                  onChange={(e) => handleChange(key, parseFloat(e.target.value) || 0)}
-                  style={{
-                    flex: '0 0 150px',
-                    padding: '8px',
-                    border: isZeroAir ? '2px solid #e65100' : '1px solid #ddd',
-                    borderRadius: '4px',
-                    fontSize: '14px',
-                    backgroundColor: isZeroAir ? '#fff3e0' : 'white',
-                  }}
-                />
-              </div>
-            );
-          })}
+          {Object.entries(emissions_AIRINJECTION).map(([key, value]) => (
+            <div key={key} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <label style={{ flex: '1', minWidth: '250px', textAlign: 'right', fontWeight: '500', color: '#333' }}>
+                {t(key)}:
+              </label>
+              <input
+                type="number"
+                value={value}
+                onChange={(e) => handleChange(key, parseFloat(e.target.value) || 0)}
+                style={{ flex: '0 0 150px', padding: '8px', border: '1px solid #ddd', borderRadius: '4px', fontSize: '14px' }}
+              />
+            </div>
+          ))}
         </div>
       </div>
 
@@ -237,12 +193,7 @@ const AIRINJECTIONFlueGasParameters = ({ innerData, nodeId, currentLanguage = 'f
       <MassCalculator masses={masses_FG_in_AIRINJECTION} TemperatureImposee={T_in} />
 
       <h4>{t('Air ingress at ambient temperature')} ({T_air}°C)</h4>
-      {V_air_ingress === 0 && (
-        <p style={{ color: '#e65100', fontStyle: 'italic', margin: '4px 0 8px 0', fontSize: '13px' }}>
-          ⚠ Entrez un volume d&apos;air de dilution &gt; 0 dans les paramètres pour calculer la composition de l&apos;air injecté.
-        </p>
-      )}
-      <MassCalculator masses={masses_Air_ingress} TemperatureImposee={T_air} />
+      <MassCalculator masses={masses_Air_cooling} TemperatureImposee={T_air} />
 
       <h4>{t('Flue gas outlet at outlet temperature')} ({T_out}°C)</h4>
       <MassCalculator masses={masses_FG_out_AIRINJECTION} TemperatureImposee={T_out} />
