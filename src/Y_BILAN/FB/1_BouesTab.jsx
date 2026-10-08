@@ -46,6 +46,14 @@ const PRECISION_CHONS_VALUES = {
   REFUS_DEGRILLAGE: { C: 0, H: 0, O: 0, N: 0, S: 0, Cl: 0 },
 };
 
+const DEFAULT_ROSIN_RAMMLER = {
+  dprime: 300,  // µm — diamètre caractéristique (63.2 % de fines)
+  n:      1.5,  // coefficient d'uniformité
+  dcut:   100,  // µm — diamètre de coupure (séparation lit / cyclones)
+};
+
+const RR_SIZES = [10, 25, 50, 100, 200, 300, 500, 1000, 2000]; // µm
+
 const DEFAULT_HEAVY_METALS = {
   al: 6000,
   as: 20,
@@ -154,6 +162,9 @@ const BouesTab = ({ innerData, currentLanguage, nodeId }) => {
     const stored = lsGet(`bouesTab_heavyMetals_FB_${nodeId}`, {});
     return { ...DEFAULT_HEAVY_METALS, ...stored };
   });
+  const [rosinRammler, setRosinRammler] = useState(() =>
+    lsGet(`bouesTab_rosinRammler_FB_${nodeId}`, DEFAULT_ROSIN_RAMMLER)
+  );
 
   // ============================================================
   // PERSISTANCE - LOCALSTORAGE
@@ -174,6 +185,10 @@ const BouesTab = ({ innerData, currentLanguage, nodeId }) => {
   useEffect(() => {
     lsSet(`bouesTab_heavyMetals_FB_${nodeId}`, heavyMetals);
   }, [heavyMetals]);
+
+  useEffect(() => {
+    lsSet(`bouesTab_rosinRammler_FB_${nodeId}`, rosinRammler);
+  }, [rosinRammler]);
 
   // ============================================================
   // CALCUL RÉSUMÉ FONCTIONNEMENT
@@ -347,7 +362,22 @@ const BouesTab = ({ innerData, currentLanguage, nodeId }) => {
     innerData.PCDDF_kg_h = PCDDF_kg_h;
     innerData.Ti_kg_h = Ti_kg_h;
     innerData.HF_kg_h = HF_kg_h;
-  }, [fonctionnement, boue, chons, heavyMetals, innerData]);
+
+    // Rosin-Rammler — répartition matières minérales
+    const rr_dprime = Number(rosinRammler.dprime) || 1;
+    const rr_n      = Number(rosinRammler.n)      || 1;
+    const rr_dcut   = Number(rosinRammler.dcut)   || 0;
+    const rr_R_dcut = Math.exp(-Math.pow(rr_dcut / rr_dprime, rr_n));
+    const rr_F_dcut = 1 - rr_R_dcut;
+    const MM_total  = Number(boue.MM_kg_h) || 0;
+    innerData.RR_dprime          = rr_dprime;
+    innerData.RR_n               = rr_n;
+    innerData.RR_dcut            = rr_dcut;
+    innerData.RR_fracFines       = rr_F_dcut;
+    innerData.RR_fracGrosses     = rr_R_dcut;
+    innerData.MM_cyclones_kg_h   = rr_F_dcut * MM_total;
+    innerData.MM_lit_kg_h        = rr_R_dcut * MM_total;
+  }, [fonctionnement, boue, chons, heavyMetals, rosinRammler, innerData]);
 
   // ============================================================
   // HANDLERS
@@ -377,7 +407,13 @@ const BouesTab = ({ innerData, currentLanguage, nodeId }) => {
   }, []);
 
   const resetToDefault = useCallback(() => {
-    const keys = [`bouesTab_fonctionnement_FB_${nodeId}`, `bouesTab_boue_FB_${nodeId}`, `bouesTab_chons_FB_${nodeId}`, `bouesTab_heavyMetals_FB_${nodeId}`];
+    const keys = [
+      `bouesTab_fonctionnement_FB_${nodeId}`,
+      `bouesTab_boue_FB_${nodeId}`,
+      `bouesTab_chons_FB_${nodeId}`,
+      `bouesTab_heavyMetals_FB_${nodeId}`,
+      `bouesTab_rosinRammler_FB_${nodeId}`,
+    ];
     keys.forEach((k) => {
       try {
         localStorage.removeItem(k);
@@ -389,6 +425,7 @@ const BouesTab = ({ innerData, currentLanguage, nodeId }) => {
     setBoue(defaultBoue());
     setChons(defaultChons());
     setHeavyMetals(DEFAULT_HEAVY_METALS);
+    setRosinRammler(DEFAULT_ROSIN_RAMMLER);
   }, []);
 
   // ============================================================
@@ -787,6 +824,150 @@ const BouesTab = ({ innerData, currentLanguage, nodeId }) => {
           </div>
         </div>
       </div>
+
+      {/* RÉPARTITION ROSIN-RAMMLER */}
+      {(() => {
+        const dprime  = Number(rosinRammler.dprime) || 1;
+        const n_rr    = Number(rosinRammler.n)      || 1;
+        const dcut    = Number(rosinRammler.dcut)   || 0;
+        const R_dcut  = Math.exp(-Math.pow(dcut / dprime, n_rr));
+        const F_dcut  = 1 - R_dcut;
+        const MM_total = Number(boue.MM_kg_h) || 0;
+        const MM_cyclones = F_dcut * MM_total;
+        const MM_lit      = R_dcut * MM_total;
+
+        const rrTable = RR_SIZES.map((x) => {
+          const R = Math.exp(-Math.pow(x / dprime, n_rr)) * 100;
+          const F = 100 - R;
+          return { x, R, F };
+        });
+
+        return (
+          <div style={cardStyle}>
+            <h2 style={{ color: '#1a202c', fontSize: '20px', marginBottom: '8px' }}>
+              Répartition des matières minérales
+            </h2>
+            <p style={{ color: '#6b7280', fontSize: '13px', marginBottom: '20px' }}>
+              Modèle de Rosin-Rammler — R(x) = exp[−(x/d′)ⁿ]
+            </p>
+
+            {/* Paramètres */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '15px', marginBottom: '24px' }}>
+              {[
+                { label: "d′ — diamètre caractéristique [µm]", key: 'dprime', step: '10', note: "63,2 % de fines passent ce seuil" },
+                { label: "n — coefficient d'uniformité [-]",   key: 'n',      step: '0.1', note: "n > 2 : monodisperse | n ≈ 1 : polydisperse" },
+                { label: "d_cut — diamètre de coupure [µm]",   key: 'dcut',   step: '10', note: "Séparation lit fluidisé / cyclones" },
+              ].map(({ label, key, step, note }) => (
+                <div key={key}>
+                  <label style={labelStyle}>{label}</label>
+                  <input
+                    type="number"
+                    min="0"
+                    step={step}
+                    value={rosinRammler[key]}
+                    onChange={(e) => setRosinRammler((p) => ({ ...p, [key]: Number(e.target.value) || 0 }))}
+                    style={inputStyle}
+                  />
+                  <div style={{ fontSize: '11px', color: '#6b7280', marginTop: '4px' }}>{note}</div>
+                </div>
+              ))}
+            </div>
+
+            {/* Résultats de partage */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '24px' }}>
+              {[
+                { label: 'Fraction fines → cyclones',  pct: F_dcut * 100, mass: MM_cyclones, color: '#f97316' },
+                { label: 'Fraction grossière → lit',   pct: R_dcut * 100, mass: MM_lit,      color: '#10b981' },
+              ].map(({ label, pct, mass, color }) => (
+                <div key={label} style={{ padding: '16px', background: '#f9fafb', border: `2px solid ${color}`, borderRadius: '8px' }}>
+                  <div style={{ fontSize: '13px', fontWeight: '700', color, marginBottom: '8px' }}>{label}</div>
+                  <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#1a202c' }}>{fmt(pct, 1)} %</div>
+                  <div style={{ fontSize: '15px', fontWeight: '600', color: '#374151', marginTop: '4px' }}>
+                    {fmt(mass, 1)} kg/h
+                  </div>
+                  <div style={{ fontSize: '11px', color: '#6b7280', marginTop: '4px' }}>
+                    sur {fmt(MM_total, 1)} kg/h MM total
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Tableau de distribution */}
+            <div>
+              <h3 style={{ fontSize: '15px', color: '#374151', marginBottom: '12px' }}>
+                Courbe granulométrique — R(x) et F(x)
+              </h3>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
+                <thead>
+                  <tr style={{ background: '#f3f4f6' }}>
+                    <th style={{ padding: '8px 12px', border: '1px solid #e5e7eb', textAlign: 'center', color: '#374151' }}>
+                      x [µm]
+                    </th>
+                    <th style={{ padding: '8px 12px', border: '1px solid #e5e7eb', textAlign: 'center', color: '#374151' }}>
+                      R(x) — refus cumulatif [%]
+                    </th>
+                    <th style={{ padding: '8px 12px', border: '1px solid #e5e7eb', textAlign: 'center', color: '#374151' }}>
+                      F(x) — tamisat cumulatif [%]
+                    </th>
+                    <th style={{ padding: '8px 12px', border: '1px solid #e5e7eb', textAlign: 'center', color: '#374151' }}>
+                      Masse &gt; x [kg/h]
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {rrTable.map(({ x, R, F }) => {
+                    const isAboveCut = x > dcut;
+                    return (
+                      <tr
+                        key={x}
+                        style={{
+                          background: Math.abs(x - dcut) < 1 ? '#fef3c7' : isAboveCut ? '#f0fdf4' : '#fff7ed',
+                        }}
+                      >
+                        <td style={{ padding: '6px 12px', border: '1px solid #e5e7eb', textAlign: 'center', fontWeight: '600' }}>
+                          {x}
+                        </td>
+                        <td style={{ padding: '6px 12px', border: '1px solid #e5e7eb', textAlign: 'center', color: '#10b981' }}>
+                          {fmt(R, 1)}
+                        </td>
+                        <td style={{ padding: '6px 12px', border: '1px solid #e5e7eb', textAlign: 'center', color: '#f97316' }}>
+                          {fmt(F, 1)}
+                        </td>
+                        <td style={{ padding: '6px 12px', border: '1px solid #e5e7eb', textAlign: 'center' }}>
+                          {fmt((R / 100) * MM_total, 2)}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                  {/* Ligne d_cut interpolée */}
+                  {dcut > 0 && !RR_SIZES.includes(dcut) && (() => {
+                    const R_interp = Math.exp(-Math.pow(dcut / dprime, n_rr)) * 100;
+                    return (
+                      <tr style={{ background: '#fef9c3', fontWeight: '700' }}>
+                        <td style={{ padding: '6px 12px', border: '1px solid #e5e7eb', textAlign: 'center' }}>
+                          {dcut} ← d_cut
+                        </td>
+                        <td style={{ padding: '6px 12px', border: '1px solid #e5e7eb', textAlign: 'center', color: '#10b981' }}>
+                          {fmt(R_interp, 1)}
+                        </td>
+                        <td style={{ padding: '6px 12px', border: '1px solid #e5e7eb', textAlign: 'center', color: '#f97316' }}>
+                          {fmt(100 - R_interp, 1)}
+                        </td>
+                        <td style={{ padding: '6px 12px', border: '1px solid #e5e7eb', textAlign: 'center' }}>
+                          {fmt((R_interp / 100) * MM_total, 2)}
+                        </td>
+                      </tr>
+                    );
+                  })()}
+                </tbody>
+              </table>
+              <p style={{ fontSize: '11px', color: '#9ca3af', marginTop: '8px' }}>
+                Fond vert = particules &gt; d_cut (restent dans le lit) · Fond orange = particules &lt; d_cut (partent vers les cyclones)
+              </p>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 };
