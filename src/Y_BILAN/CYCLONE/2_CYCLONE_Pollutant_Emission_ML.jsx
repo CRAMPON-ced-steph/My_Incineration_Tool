@@ -9,6 +9,9 @@ import { fmt } from '../../A_Transverse_fonction/formatNumber';
 const CYCLONEFlueGasPollutantEmission = ({ innerData, nodeId, currentLanguage = 'fr' }) => {
   const initialEmission_pollutant_cyclone = {
     'Taux de capture [%]': 70,
+    'Fraction part. PCDD/F [%]': 30,
+    'Fraction part. Cd+Ti [%]': 50,
+    'Fraction part. Sb..V [%]': 80,
     'O2 ref [%]': 11,
   };
 
@@ -34,6 +37,9 @@ const CYCLONEFlueGasPollutantEmission = ({ innerData, nodeId, currentLanguage = 
 
   // Extract parameters from state
   const capture_rate = emission_pollutant_cyclone['Taux de capture [%]'] ?? 70;
+  const frac_PCDDF   = (emission_pollutant_cyclone['Fraction part. PCDD/F [%]'] ?? 30) / 100;
+  const frac_CdTi    = (emission_pollutant_cyclone['Fraction part. Cd+Ti [%]'] ?? 50) / 100;
+  const frac_metals  = (emission_pollutant_cyclone['Fraction part. Sb..V [%]'] ?? 80) / 100;
   const O2ref = emission_pollutant_cyclone['O2 ref [%]'] || 11;
 
   // Input data from innerData
@@ -52,32 +58,48 @@ const CYCLONEFlueGasPollutantEmission = ({ innerData, nodeId, currentLanguage = 
   };
 
   // Calculate ash flows using capture rate
-  const Fly_ash_in_kg_h = Residus_IN?.FlyAsh_kg_h || 0;
+  // DustFlyAsh from PollutantOutput is always propagated; ResidusOutput.FlyAsh_kg_h may be missing
+  // when intermediate nodes haven't been saved yet — use PollutantOutput.DustFlyAsh as primary source.
+  const Fly_ash_in_kg_h = masses_pollutant_input.DustFlyAsh || Residus_IN?.FlyAsh_kg_h || 0;
   const CYCLONE_Ash_kg_h = Fly_ash_in_kg_h * capture_rate / 100;
   const Fly_ash_out_kg_h = Fly_ash_in_kg_h - CYCLONE_Ash_kg_h;
 
-  // Output pollutant masses
+  const capture = capture_rate / 100;
+
+  // Output pollutant masses — physics-based cyclone capture model (inertial separation only):
+  //   Gases (HCl, HF, Cl₂, SO₂, NOx, NH₃, Hg): 0 % — not captured, pass through
+  //   DustFlyAsh: capture_rate % (particles)
+  //   Non-volatile metals (Cr, Cu, Ni, Mn, Co, V…): ≈ capture_rate % (stay with particles)
+  //   Volatile metals (Pb, Cd, Zn, As, Sb, Tl) + PCDD/F: fraction_on_particles × capture_rate %
+  // Note: Cl = Cl₂/HCl-derived (gaseous), S = SO₂-derived (gaseous) → both 0 %
   const masses_pollutant_output = {
-    HCl: masses_pollutant_input.HCL,
-    HF: masses_pollutant_input.HF,
-    Cl: masses_pollutant_input.Cl,
-    S: masses_pollutant_input.S,
-    SO2: masses_pollutant_input.SO2,
-    N2: masses_pollutant_input.N2,
-    NOx: masses_pollutant_input.NOx,
-    CO2: innerData?.FG_OUT_kg_h?.CO2 || 1,
-    NH3: 0,
-    DustFlyAsh: Fly_ash_out_kg_h,
-    Mercury: masses_pollutant_input.Mercury,
-    PCDDF: masses_pollutant_input.PCDDF,
-    Cd_Ti: masses_pollutant_input.CdTi,
-    Sb_As_Pb_Cr_Co_Cu_Mn_Ni_V: masses_pollutant_input.SdAsPbCrCoCuMnNi,
+    HCl:    masses_pollutant_input.HCl,                                                               // gas → 0%
+    HF:     masses_pollutant_input.HF,                                                                // gas → 0%
+    Cl:     masses_pollutant_input.Cl,                                                                // Cl₂/HCl-derived, gaseous → 0%
+    S:      masses_pollutant_input.S,                                                                 // SO₂-derived, gaseous → 0%
+    SO2:    masses_pollutant_input.SO2,                                                               // gas → 0%
+    N2:     masses_pollutant_input.N2,                                                                // gas → 0%
+    NOx:    masses_pollutant_input.NOx,                                                               // gas → 0%
+    CO2:    innerData?.FG_OUT_kg_h?.CO2 || 1,                                                        // gas → 0%
+    NH3:    masses_pollutant_input.NH3  || 0,                                                         // gas → 0%
+    DustFlyAsh: Fly_ash_out_kg_h,                                                                     // particles → capture_rate applied
+    Mercury: masses_pollutant_input.Mercury,                                                          // vapor at 400°C → 0%
+    PCDDF:  (masses_pollutant_input.PCDDF  || 0) * (1 - frac_PCDDF * capture),                      // mostly gas phase, fraction on particles captured
+    Cd_Ti:  (masses_pollutant_input.Cd_Ti  || 0) * (1 - frac_CdTi  * capture),                      // Cd volatile, Ti follows ash
+    Sb_As_Pb_Cr_Co_Cu_Mn_Ni_V: (masses_pollutant_input.Sb_As_Pb_Cr_Co_Cu_Mn_Ni_V || 0) * (1 - frac_metals * capture),
   };
 
-  // Update innerData
+  // Total residue captured in the cyclone = DustFlyAsh + fraction of metals and PCDD/F on particles
+  const PCDDF_captured   = (masses_pollutant_input.PCDDF                   || 0) * frac_PCDDF  * capture;
+  const CdTi_captured    = (masses_pollutant_input.Cd_Ti                   || 0) * frac_CdTi   * capture;
+  const metals_captured  = (masses_pollutant_input.Sb_As_Pb_Cr_Co_Cu_Mn_Ni_V || 0) * frac_metals * capture;
+  const CYCLONE_Residus_kg_h = CYCLONE_Ash_kg_h + PCDDF_captured + CdTi_captured + metals_captured;
+
+  // Update innerData — write to Poutput (not PollutantOutput) to avoid overwriting the upstream
+  // data that this tab reads as input. MainPage.sendAllData reads Poutput first.
   if (innerData) {
-    innerData.PollutantOutput = masses_pollutant_output;
-    innerData.CYCLONE_Ash_kg_h = CYCLONE_Ash_kg_h;
+    innerData.Poutput = masses_pollutant_output;
+    innerData.CYCLONE_Ash_kg_h = CYCLONE_Residus_kg_h;
   }
 
   const elementsGeneric = [
@@ -89,17 +111,16 @@ const CYCLONEFlueGasPollutantEmission = ({ innerData, nodeId, currentLanguage = 
   ];
 
   const residusCalculations = [
-    { text: t('Cyclone residus [kg/h]'), value: fmt(CYCLONE_Ash_kg_h, 2) },
-    { text: t('Fly ash outlet [kg/h]'), value: fmt(Fly_ash_out_kg_h, 2) },
+    { text: t('Cyclone residus [kg/h]'), value: fmt(CYCLONE_Residus_kg_h, 2) },
   ];
 
   const handleChange = (name, value) => {
     let newValue = parseFloat(value) || 0;
 
-    if (name === 'Taux de capture [%]') {
-      newValue = Math.max(0, Math.min(100, newValue));
-    } else if (name === 'O2 ref [%]') {
+    if (name === 'O2 ref [%]') {
       newValue = Math.max(0, Math.min(21, newValue));
+    } else {
+      newValue = Math.max(0, Math.min(100, newValue));
     }
 
     setEmission_pollutant_cyclone((prev) => ({
