@@ -28,7 +28,8 @@ const DimensionnementTab = ({ innerData = {}, innerDataTick, onDataChange, curre
     R50: { DiametreFreeboard: 5.0 },
     R43: { DiametreFreeboard: 4.3 },
     R36: { DiametreFreeboard: 3.6 },
-    R28: { DiametreFreeboard: 2.85 },
+    R28:   { DiametreFreeboard: 2.85 },
+    Pilot: { DiametreFreeboard: 0.2116 },
   };
 
   const VOUTES = {
@@ -39,7 +40,8 @@ const DimensionnementTab = ({ innerData = {}, innerDataTick, onDataChange, curre
     '3.15':  { DiametreVoute: 3.15,  NrTuyere: 171 },
     '2.714': { DiametreVoute: 2.714, NrTuyere: 126 },
     '2.258': { DiametreVoute: 2.258, NrTuyere: 91  },
-    '1.802': { DiametreVoute: 1.802, NrTuyere: 59  },
+    '1.802':   { DiametreVoute: 1.802,   NrTuyere: 59 },
+    '0.16147': { DiametreVoute: 0.16147, NrTuyere: 1  },
   };
 
   const [parametres, setParametres] = useState({
