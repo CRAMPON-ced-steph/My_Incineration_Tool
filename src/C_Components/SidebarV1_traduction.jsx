@@ -1,4 +1,4 @@
-// Sidebarv1_traduction.js
+﻿// Sidebarv1_traduction.js
 export const sidebarTranslations = {
   fr: {
     furnace: 'Four',
@@ -16,6 +16,8 @@ export const sidebarTranslations = {
     addAIRINJECTION: 'Ajouter injection d\'air',
     wetTreatment: 'Traitement humide',
     addQuench: 'Ajouter un Quench',
+    addSaturateur: 'Ajouter un Saturateur',
+    addQUENCHsimple: 'Ajouter un QUENCH simple',
     addWATER_INJECTION: 'Ajouter injection d\'eau',
     addCoolingTower: 'Ajouter une tour de refroidissement vapeur',
     addDenoxCatalyst: 'Ajouter un catalyseur Denox',
@@ -53,6 +55,8 @@ export const sidebarTranslations = {
     addAIRINJECTION: 'Add Air Injection',
     wetTreatment: 'Wet Treatment',
     addQuench: 'Add Quench',
+    addSaturateur: 'Add Saturator',
+    addQUENCHsimple: 'Add simple QUENCH',
     addWATER_INJECTION: 'Add Water Injection',
     addCoolingTower: 'Add Steam Cooling Tower',
     addDenoxCatalyst: 'Add Denox Catalyst',
@@ -90,6 +94,8 @@ export const sidebarTranslations = {
     addAIRINJECTION: 'Añadir inyección de aire',
     wetTreatment: 'Tratamiento húmedo',
     addQuench: 'Añadir temple',
+    addSaturateur: 'Añadir saturador',
+    addQUENCHsimple: 'Añadir QUENCH simple',
     addWATER_INJECTION: 'Añadir inyección de agua',
     addCoolingTower: 'Añadir torre de refrigeración de vapor',
     addDenoxCatalyst: 'Añadir catalizador Denox',
@@ -127,6 +133,8 @@ export const sidebarTranslations = {
     addAIRINJECTION: 'Lufteinblasung hinzufügen',
     wetTreatment: 'Nassbehandlung',
     addQuench: 'Abschreckung hinzufügen',
+    addSaturateur: 'Sättiger hinzufügen',
+    addQUENCHsimple: 'Einfaches QUENCH hinzufügen',
     addWATER_INJECTION: 'Wassereinspritzung hinzufügen',
     addCoolingTower: 'Dampfkühlturm hinzufügen',
     addDenoxCatalyst: 'Denox-Katalysator hinzufügen',
@@ -164,6 +172,8 @@ export const sidebarTranslations = {
     addAIRINJECTION: 'Aggiungi iniezione aria',
     wetTreatment: 'Trattamento umido',
     addQuench: 'Aggiungi tempra',
+    addSaturateur: 'Aggiungi saturatore',
+    addQUENCHsimple: 'Aggiungi QUENCH semplice',
     addWATER_INJECTION: 'Aggiungi iniezione acqua',
     addCoolingTower: 'Aggiungi torre di raffreddamento vapore',
     addDenoxCatalyst: 'Aggiungi catalizzatore Denox',
@@ -201,6 +211,8 @@ export const sidebarTranslations = {
     addAIRINJECTION: 'Adicionar injeção de ar',
     wetTreatment: 'Tratamento úmido',
     addQuench: 'Adicionar têmpera',
+    addSaturateur: 'Adicionar saturador',
+    addQUENCHsimple: 'Adicionar QUENCH simples',
     addWATER_INJECTION: 'Adicionar injeção de água',
     addCoolingTower: 'Adicionar torre de resfriamento de vapor',
     addDenoxCatalyst: 'Adicionar catalisador Denox',
@@ -238,6 +250,8 @@ export const sidebarTranslations = {
     addAIRINJECTION: 'إضافة حقن الهواء',
     wetTreatment: 'المعالجة الرطبة',
     addQuench: 'إضافة تبريد سريع',
+    addSaturateur: 'إضافة مشبع',
+    addQUENCHsimple: 'إضافة QUENCH بسيط',
     addWATER_INJECTION: 'إضافة حقن الماء',
     addCoolingTower: 'إضافة برج تبريد بخاري',
     addDenoxCatalyst: 'إضافة محفز إزالة النيتروجين',
@@ -275,6 +289,8 @@ export const sidebarTranslations = {
     addAIRINJECTION: 'Добавить впрыск воздуха',
     wetTreatment: 'Мокрая обработка',
     addQuench: 'Добавить закалку',
+    addSaturateur: 'Добавить сатуратор',
+    addQUENCHsimple: 'Добавить простой QUENCH',
     addWATER_INJECTION: 'Добавить впрыск воды',
     addCoolingTower: 'Добавить паровую градирню',
     addDenoxCatalyst: 'Добавить катализатор Denox',
@@ -312,6 +328,8 @@ export const sidebarTranslations = {
     addAIRINJECTION: '空気噴射を追加',
     wetTreatment: '湿式処理',
     addQuench: 'クエンチを追加',
+    addSaturateur: '飽和器を追加',
+    addQUENCHsimple: '簡易クエンチを追加',
     addWATER_INJECTION: '水噴射を追加',
     addCoolingTower: '蒸気冷却塔を追加',
     addDenoxCatalyst: 'Denox触媒を追加',
@@ -349,6 +367,8 @@ export const sidebarTranslations = {
     addAIRINJECTION: '添加空气喷射',
     wetTreatment: '湿式处理',
     addQuench: '添加淬火',
+    addSaturateur: '添加饱和器',
+    addQUENCHsimple: '添加简易急冷器',
     addWATER_INJECTION: '添加水喷射',
     addCoolingTower: '添加蒸汽冷却塔',
     addDenoxCatalyst: '添加脱硝催化剂',
@@ -376,3 +396,4 @@ export const sidebarTranslations = {
 export const getSidebarTranslations = (language = 'fr') => {
   return sidebarTranslations[language] || sidebarTranslations.fr;
 };
+

@@ -126,6 +126,8 @@ const Sidebar = ({ onAddNode, currentLanguage = 'fr' }) => {
       nodeTextColor: '#fff',
       items: [
         { id: 'QUENCH', label: t.addQuench },
+        { id: 'SATURATOR', label: t.addSaturateur },
+        { id: 'QUENCHsimple', label: t.addQUENCHsimple },
         { id: 'WATER_INJECTION', label: t.addWATER_INJECTION },
         { id: 'COOLINGTOWER', label: t.addCoolingTower },
         { id: 'DENOX', label: t.addDenoxCatalyst },

@@ -30,6 +30,8 @@ import GFMainPage from '../Y_BILAN/GF/GFMainPage';
 import WHBMainPage from '../Y_BILAN/WHB/WHBMainPage';
 import CO2MainPage from '../Y_BILAN/CO2/CO2MainPage';
 import QUENCHMainPage from '../Y_BILAN/QUENCH/QUENCHMainPage';
+import SATURATORMainPage from '../Y_BILAN/SATURATOR/SATURATORMainPage';
+import QUENCHsimpleMainPage from '../Y_BILAN/QUENCHsimple/QUENCHsimpleMainPage';
 import WATER_INJECTIONMainPage from '../Y_BILAN/WATER_INJECTION/WATER_INJECTIONMainPage';
 import CYCLONEMainPage from '../Y_BILAN/CYCLONE/CYCLONEMainPage';
 import AIRINJECTIONMainPage from '../Y_BILAN/AIRINJECTION/AIRINJECTIONMainPage';
@@ -80,6 +82,8 @@ export {
   WHBMainPage,
   CO2MainPage,
   QUENCHMainPage,
+  SATURATORMainPage,
+  QUENCHsimpleMainPage,
   WATER_INJECTIONMainPage,
   CYCLONEMainPage,
   AIRINJECTIONMainPage,

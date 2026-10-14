@@ -13,7 +13,7 @@ import {
   CYCLONE_Parameter_Tab, AIRINJECTION_Parameter_Tab, REACTOR_Parameter_Tab, RK_Parameter_Tab, SCRUBBER_Parameter_Tab,
   CO2_Parameter_Tab, GF_Parameter_Tab, FB_Parameter_Tab, WATER_INJECTION_Parameter_Tab,
   RKMainPage, FBMainPage, GFMainPage, WHBMainPage,
-  CO2MainPage, QUENCHMainPage, CYCLONEMainPage, AIRINJECTIONMainPage, BHFMainPage, IACTMainPage, ELECTROFILTERMainPage,
+  CO2MainPage, QUENCHMainPage, SATURATORMainPage, QUENCHsimpleMainPage, CYCLONEMainPage, AIRINJECTIONMainPage, BHFMainPage, IACTMainPage, ELECTROFILTERMainPage,
   REACTORMainPage, DENOXMainPage, STACKMainPage, SCRUBBERMainPage, IDFANMainPage, COOLINGTOWERMainPage,
   WATER_INJECTIONMainPage,
 
@@ -286,6 +286,8 @@ function Flow({
     'AIRINJECTION': { background: '#757575', color: '#fff' },
     // Traitement humide — bleu
     'QUENCH':          { background: '#1e88e5', color: '#fff' },
+    'SATURATOR':       { background: '#1e88e5', color: '#fff' },
+    'QUENCHsimple':    { background: '#1e88e5', color: '#fff' },
     'WATER_INJECTION': { background: '#1e88e5', color: '#fff' },
     'COOLINGTOWER':    { background: '#1e88e5', color: '#fff' },
     'DENOX':           { background: '#1e88e5', color: '#fff' },
@@ -589,6 +591,8 @@ function Flow({
       ...(mode === 'Bilan' ? { WHB: WHBMainPage } : { WHB: WHB_Parameter_Tab }),
       ...(mode === 'Bilan' ? { CO2: CO2MainPage } : { CO2: CO2_Parameter_Tab }),
       ...(mode === 'Bilan' ? { QUENCH: QUENCHMainPage } : { QUENCH: QUENCH_Parameter_Tab }),
+      ...(mode === 'Bilan' ? { SATURATOR: SATURATORMainPage } : { SATURATOR: QUENCH_Parameter_Tab }),
+      ...(mode === 'Bilan' ? { QUENCHsimple: QUENCHsimpleMainPage } : { QUENCHsimple: QUENCH_Parameter_Tab }),
       ...(mode === 'Bilan' ? { CYCLONE: CYCLONEMainPage } : { CYCLONE: CYCLONE_Parameter_Tab }),
       ...(mode === 'Bilan' ? { AIRINJECTION: AIRINJECTIONMainPage } : { AIRINJECTION: AIRINJECTION_Parameter_Tab }),
       ...(mode === 'Bilan' ? { SCRUBBER: SCRUBBERMainPage } : { SCRUBBER: SCRUBBER_Parameter_Tab }),
