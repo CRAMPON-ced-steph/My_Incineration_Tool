@@ -184,6 +184,32 @@ The selected-node outline thickness is overridden in `src/index.css`:
 
 ReactFlow's default is `0 0 0 0.5px`. Adjust the third value (`1.5px`) to change thickness.
 
+### Anti-pattern : ne JAMAIS définir un composant React à l'intérieur d'un autre composant
+
+```jsx
+// ❌ INTERDIT — InputField est recréé à chaque render, React démonte/remonte l'<input>,
+//               l'utilisateur perd le focus après chaque frappe.
+const ParentTab = () => {
+  const InputField = ({ id }) => <input value={p[id]} onChange={...} />;
+  return <InputField id="foo" />;
+};
+
+// ✅ CORRECT — InputField est défini au niveau module (référence stable).
+//    Si InputField a besoin de l'état du parent, utiliser un Context React.
+const InputFieldCtx = React.createContext(null);
+const InputField = ({ id }) => {
+  const { p, set } = React.useContext(InputFieldCtx);
+  return <input value={p[id]} onChange={set(id)} />;
+};
+const ParentTab = () => (
+  <InputFieldCtx.Provider value={{ p, set }}>
+    <InputField id="foo" />
+  </InputFieldCtx.Provider>
+);
+```
+
+Cette règle s'applique à **tout** sous-composant inline (`InputField`, `Row`, `Cell`, `FieldGroup`, etc.). Le symptôme est toujours le même : ejection du focus à chaque frappe.
+
 ### Known Patterns (not bugs)
 
 - **`innerData` mutations in `C_Components/Traitement_fumées.jsx`** (lines 200, 248) — `innerData[row.pollutant] = {...}` inside `calculateValues()` and `innerData['Poutput'] = masses_pollutant_output` at body level are intentional. `innerData` is a plain mutable shared object (not React state), so synchronous body-level mutations are safe and read immediately by downstream body-level code in the same render cycle. This is the established pattern for shared FGT utility components.

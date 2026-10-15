@@ -68,6 +68,45 @@ function haiderLevenspiel(Ar, phi, rho_g, rho_p, mu) {
 
 // ── Component ──────────────────────────────────────────────────────────────
 
+// InputField is defined at module level (not inside FluidisationTab) so React
+// never treats it as a new component type on re-render — which would unmount
+// the <input> and eject the user's cursor mid-entry.
+const _iS = {
+  label: { display: 'block', color: '#374151', fontWeight: '600', fontSize: '12px', marginBottom: '4px' },
+  input: { width: '100%', padding: '7px', border: '1px solid #d1d5db', borderRadius: '4px', fontSize: '13px', boxSizing: 'border-box' },
+};
+_iS.ro   = { ..._iS.input, background: '#f3f4f6', fontWeight: '600', color: '#374151', cursor: 'default' };
+_iS.auto = { ..._iS.input, background: '#eff6ff', border: '1px solid #93c5fd' };
+
+const InputFieldCtx = React.createContext(null);
+
+const InputField = ({ label, id, unit, step = 'any', readOnly = false, value, highlight }) => {
+  const { p, autoFields, set } = React.useContext(InputFieldCtx);
+  const isAuto = !readOnly && autoFields.has(id);
+  const source = AUTO_SOURCES[id];
+  return (
+    <div>
+      <label style={_iS.label}>
+        {label}
+        {unit && <span style={{ fontWeight: 400, color: '#6b7280' }}> [{unit}]</span>}
+        {isAuto && (
+          <span style={{ marginLeft: 6, fontSize: 10, background: '#dbeafe', color: '#1d4ed8', borderRadius: 3, padding: '1px 5px', fontWeight: 700 }}>
+            ↑ {source}
+          </span>
+        )}
+      </label>
+      <input
+        type={readOnly ? 'text' : 'number'}
+        step={step}
+        value={readOnly ? value : (p[id] ?? '')}
+        readOnly={readOnly}
+        onChange={readOnly ? undefined : set(id)}
+        style={{ ...(readOnly ? _iS.ro : isAuto ? _iS.auto : _iS.input), ...(highlight ?? {}) }}
+      />
+    </div>
+  );
+};
+
 const FluidisationTab = ({ nodeId, currentLanguage = 'fr', innerData = {}, innerDataTick }) => {
   void currentLanguage;
   void innerDataTick;
@@ -265,47 +304,10 @@ const FluidisationTab = ({ nodeId, currentLanguage = 'fr', innerData = {}, inner
 
   const sCard  = { background: 'white', padding: '20px', borderRadius: '8px', boxShadow: '0 2px 10px rgba(0,0,0,0.08)', marginBottom: '20px' };
   const sGrid3 = { display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px 20px', alignItems: 'start' };
-  const sLabel = { display: 'block', color: '#374151', fontWeight: '600', fontSize: '12px', marginBottom: '4px' };
-  const sInput = { width: '100%', padding: '7px', border: '1px solid #d1d5db', borderRadius: '4px', fontSize: '13px', boxSizing: 'border-box' };
-  const sRO    = { ...sInput, background: '#f3f4f6', fontWeight: '600', color: '#374151', cursor: 'default' };
-  const sAuto  = { ...sInput, background: '#eff6ff', border: '1px solid #93c5fd' };
   const sH2    = { color: '#1a202c', fontSize: '16px', fontWeight: '700', marginBottom: '16px', borderBottom: '2px solid #e5e7eb', paddingBottom: '8px' };
 
   const colorBg = (val, lo, hi) =>
     (val >= lo && val <= hi) ? { background: '#dcfce7' } : { background: '#fee2e2' };
-
-  // InputField: auto-populated fields get blue tint + source badge
-  const InputField = ({ label, id, unit, step = 'any', readOnly = false, value, highlight }) => {
-    const isAuto = !readOnly && autoFields.has(id);
-    const source = AUTO_SOURCES[id];
-    return (
-      <div>
-        <label style={sLabel}>
-          {label}
-          {unit   && <span style={{ fontWeight: 400, color: '#6b7280' }}> [{unit}]</span>}
-          {isAuto && (
-            <span style={{
-              marginLeft: 6, fontSize: 10, background: '#dbeafe', color: '#1d4ed8',
-              borderRadius: 3, padding: '1px 5px', fontWeight: 700,
-            }}>
-              ↑ {source}
-            </span>
-          )}
-        </label>
-        <input
-          type={readOnly ? 'text' : 'number'}
-          step={step}
-          value={readOnly ? value : (p[id] ?? '')}
-          readOnly={readOnly}
-          onChange={readOnly ? undefined : set(id)}
-          style={{
-            ...(readOnly ? sRO : isAuto ? sAuto : sInput),
-            ...(highlight ?? {}),
-          }}
-        />
-      </div>
-    );
-  };
 
   const sTh  = { padding: '8px 10px', background: '#f1f5f9', fontSize: '11px', fontWeight: '700', color: '#374151', border: '1px solid #e2e8f0', textAlign: 'center', whiteSpace: 'nowrap' };
   const sTd  = { padding: '6px 10px', fontSize: '12px', border: '1px solid #e2e8f0', textAlign: 'right' };
@@ -315,6 +317,7 @@ const FluidisationTab = ({ nodeId, currentLanguage = 'fr', innerData = {}, inner
   const autoCount = [...autoFields].filter((k) => k in AUTO_SOURCES).length;
 
   return (
+    <InputFieldCtx.Provider value={{ p, autoFields, set }}>
     <div style={{ padding: '20px', maxWidth: '1400px', margin: '0 auto' }}>
       <h1 style={{ color: '#1a202c', marginBottom: '8px' }}>
         💨 Fluidisation du lit d&apos;olivine — vitesse minimale et pressions
@@ -542,6 +545,7 @@ const FluidisationTab = ({ nodeId, currentLanguage = 'fr', innerData = {}, inner
         </p>
       </div>
     </div>
+    </InputFieldCtx.Provider>
   );
 };
 
