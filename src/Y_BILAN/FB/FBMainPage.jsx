@@ -412,6 +412,8 @@ const FBMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
       case 'fluidisation':
         return (
           <FluidisationTab
+            innerData={innerDataRef.current}
+            innerDataTick={innerDataTick}
             nodeId={nodeId}
             currentLanguage={currentLanguage}
           />
