@@ -32,6 +32,7 @@ export const translations = {
     'HX': 'HX',
     'OPEX': 'OPEX',
     'Rapport': 'Rapport',
+    'Fluidisation': 'Fluidisation',
 
     // ────────────────────────────────────────────────────────
     // ACTION BUTTONS - CLEAR / SAVE / SEND
@@ -487,6 +488,7 @@ export const translations = {
     'HX': 'HX',
     'OPEX': 'OPEX',
     'Rapport': 'Report',
+    'Fluidisation': 'Fluidisation',
 
     // ────────────────────────────────────────────────────────
     // ACTION BUTTONS - CLEAR / SAVE / SEND
@@ -935,6 +937,7 @@ export const translations = {
     'HX': 'HX',
     'OPEX': 'OPEX',
     'Rapport': 'Informe',
+    'Fluidisation': 'Fluidización',
     'Effacer': 'Borrar',
     'Enregistrer': 'Guardar',
     'Retour au flow': 'Volver al flujo',
@@ -1268,6 +1271,7 @@ export const translations = {
     'HX': 'HX',
     'OPEX': 'OPEX',
     'Rapport': 'Bericht',
+    'Fluidisation': 'Fluidisierung',
     'Effacer': 'Löschen',
     'Enregistrer': 'Speichern',
     'Retour au flow': 'Zurück zum Ablauf',
@@ -1601,6 +1605,7 @@ export const translations = {
     'HX': 'HX',
     'OPEX': 'OPEX',
     'Rapport': 'Rapporto',
+    'Fluidisation': 'Fluidizzazione',
     'Effacer': 'Cancella',
     'Enregistrer': 'Salva',
     'Retour au flow': 'Torna al flusso',
@@ -1934,6 +1939,7 @@ export const translations = {
     'HX': 'HX',
     'OPEX': 'OPEX',
     'Rapport': 'Relatório',
+    'Fluidisation': 'Fluidização',
     'Effacer': 'Apagar',
     'Enregistrer': 'Guardar',
     'Retour au flow': 'Voltar ao fluxo',
@@ -2267,6 +2273,7 @@ export const translations = {
     'HX': '换热器',
     'OPEX': 'OPEX',
     'Rapport': '报告',
+    'Fluidisation': '流化',
     'Effacer': '清除',
     'Enregistrer': '保存',
     'Retour au flow': '返回流程',
@@ -2600,6 +2607,7 @@ export const translations = {
     'HX': '熱交換器',
     'OPEX': 'OPEX',
     'Rapport': 'レポート',
+    'Fluidisation': '流動化',
     'Effacer': '消去',
     'Enregistrer': '保存',
     'Retour au flow': 'フローに戻る',
@@ -2933,6 +2941,7 @@ export const translations = {
     'HX': 'Теплообменник',
     'OPEX': 'OPEX',
     'Rapport': 'Отчёт',
+    'Fluidisation': 'Псевдоожижение',
     'Effacer': 'Очистить',
     'Enregistrer': 'Сохранить',
     'Retour au flow': 'Вернуться к схеме',
@@ -3266,6 +3275,7 @@ export const translations = {
     'HX': 'مبادل حراري',
     'OPEX': 'OPEX',
     'Rapport': 'تقرير',
+    'Fluidisation': 'التسييل',
     'Effacer': 'مسح',
     'Enregistrer': 'حفظ',
     'Retour au flow': 'العودة إلى المخطط',

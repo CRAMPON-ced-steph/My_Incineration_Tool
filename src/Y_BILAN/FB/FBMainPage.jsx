@@ -8,6 +8,7 @@ import { fmt } from '../../A_Transverse_fonction/formatNumber';
 
 import Pollutant from './3_Pollutant_Emission';
 import DimensionnementTab from './3_VouteTab';
+import FluidisationTab from './6_FluidisationTab';
 import Recuperateur from './4_Recuperator';
 import FBopex from './5_FB_Opex';
 import FBCalcOpex from './5_1_FB_calcul_Opex';
@@ -80,6 +81,7 @@ const FBMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
     { name: 'combustion', label: t('Combustion') || 'Combustion' },
     { name: 'pollutant', label: t('Polluant') || 'Polluant' },
     { name: 'voute', label: t('Voûte') || 'Voûte' },
+    { name: 'fluidisation', label: t('Fluidisation') || 'Fluidisation' },
     { name: 'HX', label: t('HX') || 'HX' },
     { name: 'opex', label: t('OPEX') || 'OPEX' },
     { name: 'rapport', label: t('Rapport') || 'Rapport' },
@@ -404,6 +406,14 @@ const FBMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
             onDataChange={handleDimensionnementData}
             currentLanguage={currentLanguage}
             nodeId={nodeId}
+          />
+        );
+
+      case 'fluidisation':
+        return (
+          <FluidisationTab
+            nodeId={nodeId}
+            currentLanguage={currentLanguage}
           />
         );
 
