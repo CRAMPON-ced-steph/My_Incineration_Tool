@@ -196,7 +196,7 @@ const FluidisationTab = ({ nodeId, currentLanguage = 'fr', innerData = {}, inner
     const S_garde = (Math.PI * Number(p.D_garde_m) * Number(p.D_garde_m)) / 4;
     const T_garde_K = Number(p.T_garde_C) + 273.15;
 
-    const DIAMETERS = [200, 300, 400, 500, 600, 700, 800];
+    const DIAMETERS = [200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100];
     const granuloTable = DIAMETERS.map((d_um_i) => {
       const d_i = d_um_i / 1e6;
       const Ar_i = archimedes(rho_g, rho_p, d_i, mu);
