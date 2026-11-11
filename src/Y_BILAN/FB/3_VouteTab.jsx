@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 
 import { Calcul_DH_Voute, calculDebitPT, PFreeBoard } from '../../A_Transverse_fonction/bilan_fct_FB';
 
@@ -6,43 +6,181 @@ import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './FB_traduction';
 
 import { fmt } from '../../A_Transverse_fonction/formatNumber';
-// ✅ Hook personnalisé pour traductions dynamiques
-const useTranslation = (currentLanguage = 'fr') => {
-  return useMemo(() => {
-    const languageCode = getLanguageCode(currentLanguage);
-    return (key) => translations[languageCode]?.[key] || translations['fr']?.[key] || key;
-  }, [currentLanguage]);
+
+const REACTEURS = {
+  R90: { DiametreFreeboard: 9.0 },
+  R85: { DiametreFreeboard: 8.5 },
+  R80: { DiametreFreeboard: 8.0 },
+  R72: { DiametreFreeboard: 7.2 },
+  R67: { DiametreFreeboard: 6.7 },
+  R63: { DiametreFreeboard: 6.2 },
+  R56: { DiametreFreeboard: 5.6 },
+  R50: { DiametreFreeboard: 5.0 },
+  R43: { DiametreFreeboard: 4.3 },
+  R36: { DiametreFreeboard: 3.6 },
+  R28:   { DiametreFreeboard: 2.85 },
+  Pilot: { DiametreFreeboard: 0.2116 },
 };
+
+const REACTEUR_DEFAULT_VOUTE = {
+  R90: '6.196',
+  R85: '5.836',
+  R80: '5.476',
+  R72: '4.9',
+  R67: '4.54',
+  R63: '3.97',
+  R56: '3.58',
+  R50: '3.15',
+  R43: '2.714',
+  R36: '2.258',
+  R28: '1.802',
+};
+
+const VOUTES = {
+  '6.196': { DiametreVoute: 6.196, NrTuyere: 638 },
+  '5.836': { DiametreVoute: 5.836, NrTuyere: 566 },
+  '5.476': { DiametreVoute: 5.476, NrTuyere: 498 },
+  '4.9':   { DiametreVoute: 4.9,   NrTuyere: 407 },
+  '4.54':  { DiametreVoute: 4.54,  NrTuyere: 335 },
+  '3.97':  { DiametreVoute: 3.97,  NrTuyere: 276 },
+  '3.58':  { DiametreVoute: 3.58,  NrTuyere: 217 },
+  '3.15':  { DiametreVoute: 3.15,  NrTuyere: 171 },
+  '2.714': { DiametreVoute: 2.714, NrTuyere: 126 },
+  '2.258': { DiametreVoute: 2.258, NrTuyere: 91  },
+  '1.802':   { DiametreVoute: 1.802,   NrTuyere: 59 },
+  '0.16147': { DiametreVoute: 0.16147, NrTuyere: 1  },
+};
+
+// Order from smallest to largest for auto-size search
+const REACTEUR_AUTO_ORDER = ['R28', 'R36', 'R43', 'R50', 'R56', 'R63', 'R67', 'R72', 'R80', 'R85', 'R90'];
+
+function computeCalculs(params) {
+  const NombreFour = Number(params.NombreFour) || 1;
+  const DebitVolFumeesHumide_Nm3hFour = (Number(params.DebitVolFumeesHumide_Nm3hFour) || 0) / NombreFour;
+  const VolTotalAirInstrumentation_Nm3h = Number(params.VolTotalAirInstrumentation_Nm3h) || 0;
+  const TempFreeboard_C = Number(params.TempFreeboard_C) || 870;
+  const PressionFreeboard_mmCe = 0;
+  const DebitFumeesHumides_m3hFour = calculDebitPT(DebitVolFumeesHumide_Nm3hFour, PressionFreeboard_mmCe, TempFreeboard_C);
+  const VolAirInstr20PctHautFour_Nm3h = calculDebitPT(0.2 * VolTotalAirInstrumentation_Nm3h, PressionFreeboard_mmCe, TempFreeboard_C);
+
+  const Modele = params.Modele;
+  const reacteur = REACTEURS[Modele];
+  if (!reacteur) return null;
+
+  const voute = VOUTES[params.DiametreVouteKey];
+  if (!voute) return null;
+
+  const DiametreFreeboard_m = reacteur.DiametreFreeboard;
+  const VitesseReelleFour_ms =
+    (DebitFumeesHumides_m3hFour - VolAirInstr20PctHautFour_Nm3h) /
+    (Math.PI * 0.25 * Math.pow(DiametreFreeboard_m, 2)) /
+    3600;
+
+  const NeutralisationCentre = params.NeutralisationCentre !== false;
+  const NbrTuyeresTotal = voute.NrTuyere;
+  const NbrTuyeresNeutral = NeutralisationCentre === false ? Math.ceil(NbrTuyeresTotal * 0.1) : 0;
+  const NbrTuyeres = NbrTuyeresTotal - NbrTuyeresNeutral;
+
+  const PressionVouteDefaut_mmCe = Number(params.PressionVouteDefaut_mmCe) || 2000;
+  const DiametreTrous_mm = Number(params.DiametreTrous_mm) || 5;
+  const DiametreVoute_m = voute.DiametreVoute;
+  const TempEntreeBoiteVent_C = Number(params.TempEntreeBoiteVent_C);
+  const VolAirEntreeBoiteVent_Nm3h = Number(params.VolAirEntreeBoiteVent_Nm3h);
+  const TempNiveauVoute_C = Number(params.TempNiveauVoute_C) || 720;
+  const DebitAirReelBoiteVentM3h_init_m3h = calculDebitPT(VolAirEntreeBoiteVent_Nm3h, PressionVouteDefaut_mmCe, TempEntreeBoiteVent_C);
+
+  let VitesseReelleTuyere_ms = Number(params.VitesseReelleTuyere_ms) || 90;
+
+  // Iteration 1
+  let PDC_Voute_Iter1 = Calcul_DH_Voute(PressionVouteDefaut_mmCe, TempEntreeBoiteVent_C, VitesseReelleTuyere_ms);
+  let PressionVoute_mmCe = 2000 - PDC_Voute_Iter1 * 1000;
+  let DebitAirReelBoiteVent_m3h = calculDebitPT(VolAirEntreeBoiteVent_Nm3h, PressionVoute_mmCe, TempNiveauVoute_C);
+
+  const SurfaceVoute_m2 = (Math.PI * Math.pow(DiametreVoute_m, 2)) / 4;
+
+  let DebitAirReelBoiteVentM3h_m3s = DebitAirReelBoiteVent_m3h / 3600;
+  const DiametreVouteCalcule_m = Math.pow((4 * DebitAirReelBoiteVentM3h_m3s) / Math.PI, 0.5);
+
+  let DebitReelTuyeres_m3s = DebitAirReelBoiteVentM3h_init_m3h / 3600 / NbrTuyeres;
+  let SurfaceTuyeresReelle_m2 = DebitReelTuyeres_m3s / 90;
+  let nb_de_trous = Math.ceil((4 * SurfaceTuyeresReelle_m2) / (Math.PI * Math.pow(DiametreTrous_mm / 1000, 2)));
+  SurfaceTuyeresReelle_m2 = (nb_de_trous * Math.PI * Math.pow(DiametreTrous_mm / 1000, 2)) / 4;
+  VitesseReelleTuyere_ms = SurfaceTuyeresReelle_m2 > 0 ? DebitReelTuyeres_m3s / SurfaceTuyeresReelle_m2 : 0;
+
+  const PDC_Voute_Iter1_saved = PDC_Voute_Iter1;
+  const PressionVoute_Iter1_mmCe = PressionVoute_mmCe;
+  const DebitAirReelBoiteVentIter1_m3h = DebitAirReelBoiteVent_m3h;
+  const DebitAirReelBoiteVentIter1_m3s = DebitAirReelBoiteVentIter1_m3h / 3600 / NombreFour;
+  const DebitReelTuyeresIter1_m3s = DebitReelTuyeres_m3s;
+  const SurfaceTuyeresReelleIter1_m2 = SurfaceTuyeresReelle_m2;
+  const NbTrousIter1 = nb_de_trous;
+  const VitesseReelleTuyereIter1_ms = VitesseReelleTuyere_ms;
+
+  // Iteration 2
+  PDC_Voute_Iter1 = Calcul_DH_Voute(PressionVouteDefaut_mmCe, TempEntreeBoiteVent_C, VitesseReelleTuyere_ms);
+  PressionVoute_mmCe = 2000 - PDC_Voute_Iter1 * 1000;
+  DebitAirReelBoiteVent_m3h = calculDebitPT(VolAirEntreeBoiteVent_Nm3h, PressionVoute_mmCe, TempNiveauVoute_C);
+  DebitAirReelBoiteVentM3h_m3s = DebitAirReelBoiteVent_m3h / 3600;
+  DebitReelTuyeres_m3s = DebitAirReelBoiteVentM3h_init_m3h / 3600 / NbrTuyeres;
+  SurfaceTuyeresReelle_m2 = DebitReelTuyeres_m3s / 90;
+  nb_de_trous = Math.ceil((4 * SurfaceTuyeresReelle_m2) / (Math.PI * Math.pow(DiametreTrous_mm / 1000, 2)));
+  SurfaceTuyeresReelle_m2 = (nb_de_trous * Math.PI * Math.pow(DiametreTrous_mm / 1000, 2)) / 4;
+  VitesseReelleTuyere_ms = SurfaceTuyeresReelle_m2 > 0 ? DebitReelTuyeres_m3s / SurfaceTuyeresReelle_m2 : 0;
+  const PressionFreeboard = PFreeBoard(PressionVouteDefaut_mmCe, PDC_Voute_Iter1);
+  const DebitAirReelBoiteVentIter2_m3s = DebitAirReelBoiteVent_m3h / 3600 / NombreFour;
+  const VitesseVoute2_ms = SurfaceVoute_m2 > 0 ? DebitAirReelBoiteVent_m3h / 3600 / SurfaceVoute_m2 : 0;
+
+  return {
+    NombreFour,
+    DebitVolFumeesHumide_Nm3hFour,
+    VolTotalAirInstrumentation_Nm3h,
+    DiametreTrous_mm,
+    TempNiveauVoute_C,
+    NeutralisationCentre,
+    TempFreeboard_C,
+    PressionFreeboard_mmCe,
+    PressionVouteDefaut_mmCe,
+    TempEntreeBoiteVent_C,
+    VolAirEntreeBoiteVent_Nm3h,
+    Modele,
+    DiametreVouteKey: params.DiametreVouteKey,
+    DiametreFreeboard_m,
+    DiametreVoute_m,
+    DebitFumeesHumides_m3hFour,
+    VolAirInstr20PctHautFour_Nm3h,
+    VitesseReelleFour_ms,
+    NbrTuyeresTotal,
+    NbrTuyeresNeutral,
+    NbrTuyeres,
+    SurfaceVoute_m2,
+    DiametreVouteCalcule_m,
+    DebitAirReelBoiteVentM3h_init_m3h,
+    PDC_Voute_Iter1: PDC_Voute_Iter1_saved,
+    PressionVoute_Iter1_mmCe,
+    DebitAirReelBoiteVentIter1_m3h,
+    DebitAirReelBoiteVentIter1_m3s,
+    DebitReelTuyeresIter1_m3s,
+    SurfaceTuyeresReelleIter1_m2,
+    NbTrousIter1,
+    VitesseReelleTuyereIter1_ms,
+    PDC_Voute_Iter2: PDC_Voute_Iter1,
+    PressionVoute_Iter2_mmCe: PressionVoute_mmCe,
+    DebitAirReelBoiteVentIter2_m3h: DebitAirReelBoiteVent_m3h,
+    DebitAirReelBoiteVentIter2_m3s,
+    VitesseVoute2_ms,
+    DebitReelTuyeresIter2_m3s: DebitReelTuyeres_m3s,
+    SurfaceTuyeresReelleIter2_m2: SurfaceTuyeresReelle_m2,
+    NbTrousIter2: nb_de_trous,
+    VitesseReelleTuyereIter2_ms: VitesseReelleTuyere_ms,
+    PressionFreeboard,
+  };
+}
 
 const DimensionnementTab = ({ innerData = {}, innerDataTick, onDataChange, currentLanguage = 'fr' }) => {
   void innerDataTick;
 
   const languageCode = getLanguageCode(currentLanguage);
   const t = (key) => translations[languageCode]?.[key] || translations['fr']?.[key] || key;
-
-  const REACTEURS = {
-    R72: { DiametreFreeboard: 7.2 },
-    R67: { DiametreFreeboard: 6.7 },
-    R63: { DiametreFreeboard: 6.2 },
-    R56: { DiametreFreeboard: 5.6 },
-    R50: { DiametreFreeboard: 5.0 },
-    R43: { DiametreFreeboard: 4.3 },
-    R36: { DiametreFreeboard: 3.6 },
-    R28:   { DiametreFreeboard: 2.85 },
-    Pilot: { DiametreFreeboard: 0.2116 },
-  };
-
-  const VOUTES = {
-    '4.9':   { DiametreVoute: 4.9,   NrTuyere: 407 },
-    '4.54':  { DiametreVoute: 4.54,  NrTuyere: 335 },
-    '3.97':  { DiametreVoute: 3.97,  NrTuyere: 276 },
-    '3.58':  { DiametreVoute: 3.58,  NrTuyere: 217 },
-    '3.15':  { DiametreVoute: 3.15,  NrTuyere: 171 },
-    '2.714': { DiametreVoute: 2.714, NrTuyere: 126 },
-    '2.258': { DiametreVoute: 2.258, NrTuyere: 91  },
-    '1.802':   { DiametreVoute: 1.802,   NrTuyere: 59 },
-    '0.16147': { DiametreVoute: 0.16147, NrTuyere: 1  },
-  };
 
   const [parametres, setParametres] = useState({
     NombreFour: innerData?.NombreFour?.toString() ?? '1',
@@ -61,6 +199,11 @@ const DimensionnementTab = ({ innerData = {}, innerDataTick, onDataChange, curre
     VitesseReelleTuyere_ms: '90',
   });
 
+  const [autoSizeActive, setAutoSizeActive] = useState(false);
+  const [autoSizeSearching, setAutoSizeSearching] = useState(false);
+  const [autoSizeResult, setAutoSizeResult] = useState(null);
+  const autoSizeCancelRef = useRef(false);
+
   useEffect(() => {
     setParametres((prev) => ({
       ...prev,
@@ -70,127 +213,7 @@ const DimensionnementTab = ({ innerData = {}, innerDataTick, onDataChange, curre
     }));
   }, [innerData?.FG_wet_Nm3_h, innerData?.Volume_air_balayage, innerData?.Temp_fumee_voute_C]);
 
-  const calculsComplets = useMemo(() => {
-    const NombreFour = Number(parametres.NombreFour) || 1;
-    const DebitVolFumeesHumide_Nm3hFour = (Number(parametres.DebitVolFumeesHumide_Nm3hFour) || 0) / NombreFour;
-    const VolTotalAirInstrumentation_Nm3h = Number(parametres.VolTotalAirInstrumentation_Nm3h) || 0;
-    const TempFreeboard_C = Number(parametres.TempFreeboard_C) || 870;
-    const PressionFreeboard_mmCe = 0;
-    const DebitFumeesHumides_m3hFour = calculDebitPT(DebitVolFumeesHumide_Nm3hFour, PressionFreeboard_mmCe, TempFreeboard_C);
-    const VolAirInstr20PctHautFour_Nm3h = calculDebitPT(0.2 * VolTotalAirInstrumentation_Nm3h, PressionFreeboard_mmCe, TempFreeboard_C);
-
-    const Modele = parametres.Modele;
-    const reacteur = REACTEURS[Modele];
-    if (!reacteur) return null;
-
-    const voute = VOUTES[parametres.DiametreVouteKey];
-    if (!voute) return null;
-
-    const DiametreFreeboard_m = reacteur.DiametreFreeboard;
-    const VitesseReelleFour_ms =
-      (DebitFumeesHumides_m3hFour - VolAirInstr20PctHautFour_Nm3h) /
-      (Math.PI * 0.25 * Math.pow(DiametreFreeboard_m, 2)) /
-      3600;
-
-    const NeutralisationCentre = parametres.NeutralisationCentre !== false;
-    const NbrTuyeresTotal = voute.NrTuyere;
-    const NbrTuyeresNeutral = NeutralisationCentre === false ? Math.ceil(NbrTuyeresTotal * 0.1) : 0;
-    const NbrTuyeres = NbrTuyeresTotal - NbrTuyeresNeutral;
-
-    const PressionVouteDefaut_mmCe = Number(parametres.PressionVouteDefaut_mmCe) || 2000;
-    const DiametreTrous_mm = Number(parametres.DiametreTrous_mm) || 5;
-    const DiametreVoute_m = voute.DiametreVoute;
-    const TempEntreeBoiteVent_C = Number(parametres.TempEntreeBoiteVent_C);
-    const VolAirEntreeBoiteVent_Nm3h = Number(parametres.VolAirEntreeBoiteVent_Nm3h);
-    const TempNiveauVoute_C = Number(parametres.TempNiveauVoute_C) || 720;
-    const DebitAirReelBoiteVentM3h_init_m3h = calculDebitPT(VolAirEntreeBoiteVent_Nm3h, PressionVouteDefaut_mmCe, TempEntreeBoiteVent_C);
-
-    let VitesseReelleTuyere_ms = Number(parametres.VitesseReelleTuyere_ms) || 90;
-
-    // Iteration 1
-    let PDC_Voute_Iter1 = Calcul_DH_Voute(PressionVouteDefaut_mmCe, TempEntreeBoiteVent_C, VitesseReelleTuyere_ms);
-    let PressionVoute_mmCe = 2000 - PDC_Voute_Iter1 * 1000;
-    let DebitAirReelBoiteVent_m3h = calculDebitPT(VolAirEntreeBoiteVent_Nm3h, PressionVoute_mmCe, TempNiveauVoute_C);
-
-    const SurfaceVoute_m2 = (Math.PI * Math.pow(DiametreVoute_m, 2)) / 4;
-
-    let DebitAirReelBoiteVentM3h_m3s = DebitAirReelBoiteVent_m3h / 3600;
-    const DiametreVouteCalcule_m = Math.pow((4 * DebitAirReelBoiteVentM3h_m3s) / Math.PI, 0.5);
-
-    let DebitReelTuyeres_m3s = DebitAirReelBoiteVentM3h_init_m3h / 3600 / NbrTuyeres;
-    let SurfaceTuyeresReelle_m2 = DebitReelTuyeres_m3s / 90;
-    let nb_de_trous = Math.ceil((4 * SurfaceTuyeresReelle_m2) / (Math.PI * Math.pow(DiametreTrous_mm / 1000, 2)));
-    SurfaceTuyeresReelle_m2 = (nb_de_trous * Math.PI * Math.pow(DiametreTrous_mm / 1000, 2)) / 4;
-    VitesseReelleTuyere_ms = SurfaceTuyeresReelle_m2 > 0 ? DebitReelTuyeres_m3s / SurfaceTuyeresReelle_m2 : 0;
-
-    const PDC_Voute_Iter1_saved = PDC_Voute_Iter1;
-    const PressionVoute_Iter1_mmCe = PressionVoute_mmCe;
-    const DebitAirReelBoiteVentIter1_m3h = DebitAirReelBoiteVent_m3h;
-    const DebitAirReelBoiteVentIter1_m3s = DebitAirReelBoiteVentIter1_m3h / 3600 / NombreFour;
-    const DebitReelTuyeresIter1_m3s = DebitReelTuyeres_m3s;
-    const SurfaceTuyeresReelleIter1_m2 = SurfaceTuyeresReelle_m2;
-    const NbTrousIter1 = nb_de_trous;
-    const VitesseReelleTuyereIter1_ms = VitesseReelleTuyere_ms;
-
-    // Iteration 2
-    PDC_Voute_Iter1 = Calcul_DH_Voute(PressionVouteDefaut_mmCe, TempEntreeBoiteVent_C, VitesseReelleTuyere_ms);
-    PressionVoute_mmCe = 2000 - PDC_Voute_Iter1 * 1000;
-    DebitAirReelBoiteVent_m3h = calculDebitPT(VolAirEntreeBoiteVent_Nm3h, PressionVoute_mmCe, TempNiveauVoute_C);
-    DebitAirReelBoiteVentM3h_m3s = DebitAirReelBoiteVent_m3h / 3600;
-    DebitReelTuyeres_m3s = DebitAirReelBoiteVentM3h_init_m3h / 3600 / NbrTuyeres;
-    SurfaceTuyeresReelle_m2 = DebitReelTuyeres_m3s / 90;
-    nb_de_trous = Math.ceil((4 * SurfaceTuyeresReelle_m2) / (Math.PI * Math.pow(DiametreTrous_mm / 1000, 2)));
-    SurfaceTuyeresReelle_m2 = (nb_de_trous * Math.PI * Math.pow(DiametreTrous_mm / 1000, 2)) / 4;
-    VitesseReelleTuyere_ms = SurfaceTuyeresReelle_m2 > 0 ? DebitReelTuyeres_m3s / SurfaceTuyeresReelle_m2 : 0;
-    const PressionFreeboard = PFreeBoard(PressionVouteDefaut_mmCe, PDC_Voute_Iter1);
-    const DebitAirReelBoiteVentIter2_m3s = DebitAirReelBoiteVent_m3h / 3600 / NombreFour;
-    const VitesseVoute2_ms = SurfaceVoute_m2 > 0 ? DebitAirReelBoiteVent_m3h / 3600 / SurfaceVoute_m2 : 0;
-
-    return {
-      NombreFour,
-      DebitVolFumeesHumide_Nm3hFour,
-      VolTotalAirInstrumentation_Nm3h,
-      DiametreTrous_mm,
-      TempNiveauVoute_C,
-      NeutralisationCentre,
-      TempFreeboard_C,
-      PressionFreeboard_mmCe,
-      PressionVouteDefaut_mmCe,
-      TempEntreeBoiteVent_C,
-      VolAirEntreeBoiteVent_Nm3h,
-      Modele,
-      DiametreVouteKey: parametres.DiametreVouteKey,
-      DiametreFreeboard_m,
-      DiametreVoute_m,
-      DebitFumeesHumides_m3hFour,
-      VolAirInstr20PctHautFour_Nm3h,
-      VitesseReelleFour_ms,
-      NbrTuyeresTotal,
-      NbrTuyeresNeutral,
-      NbrTuyeres,
-      SurfaceVoute_m2,
-      DiametreVouteCalcule_m,
-      DebitAirReelBoiteVentM3h_init_m3h,
-      PDC_Voute_Iter1: PDC_Voute_Iter1_saved,
-      PressionVoute_Iter1_mmCe,
-      DebitAirReelBoiteVentIter1_m3h,
-      DebitAirReelBoiteVentIter1_m3s,
-      DebitReelTuyeresIter1_m3s,
-      SurfaceTuyeresReelleIter1_m2,
-      NbTrousIter1,
-      VitesseReelleTuyereIter1_ms,
-      PDC_Voute_Iter2: PDC_Voute_Iter1,
-      PressionVoute_Iter2_mmCe: PressionVoute_mmCe,
-      DebitAirReelBoiteVentIter2_m3h: DebitAirReelBoiteVent_m3h,
-      DebitAirReelBoiteVentIter2_m3s,
-      VitesseVoute2_ms,
-      DebitReelTuyeresIter2_m3s: DebitReelTuyeres_m3s,
-      SurfaceTuyeresReelleIter2_m2: SurfaceTuyeresReelle_m2,
-      NbTrousIter2: nb_de_trous,
-      VitesseReelleTuyereIter2_ms: VitesseReelleTuyere_ms,
-      PressionFreeboard,
-    };
-  }, [parametres, REACTEURS]);
+  const calculsComplets = useMemo(() => computeCalculs(parametres), [parametres]);
 
   useEffect(() => {
     if (!calculsComplets || !onDataChange) return;
@@ -203,27 +226,78 @@ const DimensionnementTab = ({ innerData = {}, innerDataTick, onDataChange, curre
       NrTuyereTotal: voute?.NrTuyere,
       Pression_Freeboard: calculsComplets.PressionFreeboard,
     });
-  }, [calculsComplets, onDataChange, REACTEURS, VOUTES]);
+  }, [calculsComplets, onDataChange]);
 
+  const runAutoSize = useCallback(async () => {
+    autoSizeCancelRef.current = false;
+    setAutoSizeSearching(true);
+    setAutoSizeActive(false);
+    setAutoSizeResult(null);
 
+    const baseParams = { ...parametres };
+    const EauExtraite = innerData?.EauExtraite_kg_h ?? 0;
 
+    for (let n = 1; n <= 20; n++) {
+      for (const modele of REACTEUR_AUTO_ORDER) {
+        if (autoSizeCancelRef.current) return;
 
+        const defaultVoute = REACTEUR_DEFAULT_VOUTE[modele];
+        if (!defaultVoute) continue;
 
+        setParametres(prev => ({
+          ...prev,
+          NombreFour: String(n),
+          Modele: modele,
+          DiametreVouteKey: defaultVoute,
+        }));
 
+        await new Promise(r => setTimeout(r, 70));
+        if (autoSizeCancelRef.current) return;
 
+        const testParams = { ...baseParams, NombreFour: String(n), Modele: modele, DiametreVouteKey: defaultVoute };
+        const result = computeCalculs(testParams);
+        if (!result) continue;
 
+        const chargeEau = result.SurfaceVoute_m2 > 0
+          ? EauExtraite / result.NombreFour / result.SurfaceVoute_m2
+          : null;
+        const v1dec = Math.floor(result.VitesseVoute2_ms * 10) / 10;
+        const vitesseOk = v1dec >= 0.8 && v1dec <= 1.1;
+        const chargeEauOk = chargeEau !== null && chargeEau <= 540;
 
+        if (vitesseOk && chargeEauOk) {
+          setAutoSizeSearching(false);
+          setAutoSizeActive(true);
+          setAutoSizeResult({ found: true, NombreFour: n, Modele: modele, VitesseVoute2: result.VitesseVoute2_ms, chargeEau });
+          return;
+        }
+      }
+    }
 
+    setAutoSizeSearching(false);
+    setAutoSizeActive(false);
+    setAutoSizeResult({ found: false });
+  }, [parametres, innerData]);
 
-
-
-
-
-
-
+  const handleToggleAutoSize = useCallback(() => {
+    if (autoSizeSearching || autoSizeActive) {
+      autoSizeCancelRef.current = true;
+      setAutoSizeSearching(false);
+      setAutoSizeActive(false);
+      setAutoSizeResult(null);
+    } else {
+      runAutoSize();
+    }
+  }, [autoSizeSearching, autoSizeActive, runAutoSize]);
 
   const handleParametreChange = useCallback((key, value) => {
     setParametres((prev) => ({ ...prev, [key]: value }));
+    if (key === 'NombreFour' || key === 'Modele' || key === 'DiametreVouteKey') {
+      autoSizeCancelRef.current = true;
+      setAutoSizeSearching(false);
+      setAutoSizeActive(false);
+      setAutoSizeResult(null);
+    }
   }, []);
 
   const inputStyle = {
@@ -247,6 +321,23 @@ const DimensionnementTab = ({ innerData = {}, innerDataTick, onDataChange, curre
     marginBottom: '6px',
   };
 
+  const toggleBtnBase = {
+    padding: '5px 14px',
+    borderRadius: '20px',
+    border: 'none',
+    fontSize: '13px',
+    fontWeight: '600',
+    cursor: 'pointer',
+    whiteSpace: 'nowrap',
+    flexShrink: 0,
+  };
+  const toggleBtnOff      = { ...toggleBtnBase, background: '#e5e7eb', color: '#374151' };
+  const toggleBtnSearching = { ...toggleBtnBase, background: '#f59e0b', color: 'white' };
+  const toggleBtnOn       = { ...toggleBtnBase, background: '#10b981', color: 'white' };
+
+  const autoSizeBtnStyle = autoSizeSearching ? toggleBtnSearching : autoSizeActive ? toggleBtnOn : toggleBtnOff;
+  const autoSizeBtnLabel = autoSizeSearching ? '⏳ Recherche...' : autoSizeActive ? '✓ Auto size' : 'Auto size';
+
   return (
     <div style={{ padding: '20px', maxWidth: '1400px', margin: '0 auto' }}>
       <h1 style={{ color: '#1a202c' }}>🔄 {t('Dimensionnement') || 'Dimensionnement'}</h1>
@@ -260,9 +351,24 @@ const DimensionnementTab = ({ innerData = {}, innerDataTick, onDataChange, curre
           marginBottom: '20px',
         }}
       >
-        <h2 style={{ color: '#1a202c', fontSize: '20px', marginBottom: '20px' }}>
-          🔥 {t('Paramètres du Four') || 'Paramètres du Four'}
-        </h2>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
+          <h2 style={{ color: '#1a202c', fontSize: '20px', margin: 0 }}>
+            🔥 {t('Paramètres du Four') || 'Paramètres du Four'}
+          </h2>
+          <button onClick={handleToggleAutoSize} style={autoSizeBtnStyle}>
+            {autoSizeBtnLabel}
+          </button>
+          {autoSizeResult && !autoSizeResult.found && (
+            <span style={{ fontSize: '12px', color: '#dc2626', fontWeight: '600' }}>
+              ⚠ Aucune solution (vitesse voûte hors plage R28–R90)
+            </span>
+          )}
+          {autoSizeResult?.found && (
+            <span style={{ fontSize: '12px', color: '#059669', fontWeight: '600' }}>
+              → {autoSizeResult.Modele}, {autoSizeResult.NombreFour} four{autoSizeResult.NombreFour > 1 ? 's' : ''}
+            </span>
+          )}
+        </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '25px 20px', alignItems: 'start' }}>
           <div>
             <label style={labelStyle}>{t('Nombre de four')}</label>
@@ -278,7 +384,17 @@ const DimensionnementTab = ({ innerData = {}, innerDataTick, onDataChange, curre
             <label style={labelStyle}>{t('Modèle et diamètre du réacteur') || 'Modèle et diamètre du réacteur'}</label>
             <select
               value={parametres.Modele}
-              onChange={(e) => handleParametreChange('Modele', e.target.value)}
+              onChange={(e) => {
+                const modele = e.target.value;
+                const defaultVoute = REACTEUR_DEFAULT_VOUTE[modele];
+                setParametres(prev => ({
+                  ...prev,
+                  Modele: modele,
+                  ...(defaultVoute ? { DiametreVouteKey: defaultVoute } : {}),
+                }));
+                setAutoSizeActive(false);
+                setAutoSizeResult(null);
+              }}
               style={{ ...inputStyle, cursor: 'pointer' }}
             >
               {Object.keys(REACTEURS).map((key) => (
@@ -582,7 +698,8 @@ const DimensionnementTab = ({ innerData = {}, innerDataTick, onDataChange, curre
                 { label: 'Pression finale freeboard [mmCE]', val: fmt(calculsComplets.PressionFreeboard, 2) },
                 (() => {
                   const v = calculsComplets.VitesseVoute2_ms;
-                  const alerte = v > 0 && (v < 0.8 || v > 1.1) ? t('Hors plage [0.8 – 1.1 m/s]') : null;
+                  const v1dec = Math.floor(v * 10) / 10;
+                  const alerte = v > 0 && (v1dec < 0.8 || v1dec > 1.1) ? t('Hors plage [0.8 – 1.1 m/s]') : null;
                   return { label: 'Vitesse voute 2 [m/s]', val: fmt(v, 4), alerte };
                 })(),
                 {
