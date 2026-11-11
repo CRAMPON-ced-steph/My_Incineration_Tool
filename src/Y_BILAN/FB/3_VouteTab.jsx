@@ -202,6 +202,8 @@ const DimensionnementTab = ({ innerData = {}, innerDataTick, onDataChange, curre
   const [autoSizeActive, setAutoSizeActive] = useState(false);
   const [autoSizeSearching, setAutoSizeSearching] = useState(false);
   const [autoSizeResult, setAutoSizeResult] = useState(null);
+  const [maxModele, setMaxModele] = useState('R90');
+  const [maxNombreFour, setMaxNombreFour] = useState('20');
   const autoSizeCancelRef = useRef(false);
 
   useEffect(() => {
@@ -237,8 +239,12 @@ const DimensionnementTab = ({ innerData = {}, innerDataTick, onDataChange, curre
     const baseParams = { ...parametres };
     const EauExtraite = innerData?.EauExtraite_kg_h ?? 0;
 
-    for (let n = 1; n <= 20; n++) {
-      for (const modele of REACTEUR_AUTO_ORDER) {
+    const maxIdx = REACTEUR_AUTO_ORDER.indexOf(maxModele);
+    const ordreFiltre = maxIdx >= 0 ? REACTEUR_AUTO_ORDER.slice(0, maxIdx + 1) : REACTEUR_AUTO_ORDER;
+
+    const nMax = Math.max(1, parseInt(maxNombreFour, 10) || 20);
+    for (let n = 1; n <= nMax; n++) {
+      for (const modele of ordreFiltre) {
         if (autoSizeCancelRef.current) return;
 
         const defaultVoute = REACTEUR_DEFAULT_VOUTE[modele];
@@ -277,7 +283,7 @@ const DimensionnementTab = ({ innerData = {}, innerDataTick, onDataChange, curre
     setAutoSizeSearching(false);
     setAutoSizeActive(false);
     setAutoSizeResult({ found: false });
-  }, [parametres, innerData]);
+  }, [parametres, innerData, maxModele, maxNombreFour]);
 
   const handleToggleAutoSize = useCallback(() => {
     if (autoSizeSearching || autoSizeActive) {
@@ -358,9 +364,53 @@ const DimensionnementTab = ({ innerData = {}, innerDataTick, onDataChange, curre
           <button onClick={handleToggleAutoSize} style={autoSizeBtnStyle}>
             {autoSizeBtnLabel}
           </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '600', whiteSpace: 'nowrap' }}>max modèle</span>
+            <select
+              value={maxModele}
+              onChange={(e) => setMaxModele(e.target.value)}
+              disabled={autoSizeSearching}
+              style={{
+                padding: '5px 8px',
+                borderRadius: '20px',
+                border: '1px solid #d1d5db',
+                fontSize: '13px',
+                fontWeight: '600',
+                cursor: autoSizeSearching ? 'not-allowed' : 'pointer',
+                background: autoSizeSearching ? '#f3f4f6' : 'white',
+                color: '#374151',
+              }}
+            >
+              {REACTEUR_AUTO_ORDER.map((key) => (
+                <option key={key} value={key}>{key}</option>
+              ))}
+            </select>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '600', whiteSpace: 'nowrap' }}>max fours</span>
+            <input
+              type="number"
+              min="1"
+              max="99"
+              value={maxNombreFour}
+              disabled={autoSizeSearching}
+              onChange={(e) => setMaxNombreFour(e.target.value)}
+              style={{
+                width: '60px',
+                padding: '5px 8px',
+                borderRadius: '20px',
+                border: '1px solid #d1d5db',
+                fontSize: '13px',
+                fontWeight: '600',
+                textAlign: 'center',
+                background: autoSizeSearching ? '#f3f4f6' : 'white',
+                color: '#374151',
+              }}
+            />
+          </div>
           {autoSizeResult && !autoSizeResult.found && (
             <span style={{ fontSize: '12px', color: '#dc2626', fontWeight: '600' }}>
-              ⚠ Aucune solution (vitesse voûte hors plage R28–R90)
+              ⚠ Aucune solution jusqu&apos;à {maxModele}
             </span>
           )}
           {autoSizeResult?.found && (
