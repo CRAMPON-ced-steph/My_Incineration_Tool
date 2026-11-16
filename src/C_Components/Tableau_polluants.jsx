@@ -2,9 +2,10 @@ import React from 'react';
 import {conv_O2_ref} from '../A_Transverse_fonction/conv_calculation';
 import {molarMasses} from '../A_Transverse_fonction/constantes';
 import { fmt } from '../A_Transverse_fonction/formatNumber';
+import { tTab } from './Tableau_traduction';
 
 
-const PollutantCalculator = ({ masses, O2_mesure, O2_ref,Debit_fumees_sec_Nm3_h}) => {
+const PollutantCalculator = ({ masses, O2_mesure, O2_ref,Debit_fumees_sec_Nm3_h, currentLanguage}) => {
   const calculatePollutans = (masses) => {
     const pollutant_initial_mass = {
       HCl: parseFloat(masses.HCl) || 0,
@@ -129,10 +130,10 @@ const pollutant_mass_repartition = {
         <thead>
           <tr>
           
-            <th>Élément</th>
-            <th>Masse [kg/h]</th>
-            <th>kmole</th>
-            <th>Mass [%]</th>
+            <th>{tTab('Élément', currentLanguage)}</th>
+            <th>{tTab('Masse [kg/h]', currentLanguage)}</th>
+            <th>{tTab('kmole', currentLanguage)}</th>
+            <th>{tTab('Mass [%]', currentLanguage)}</th>
             <th>[mg/Nm3]</th>
             <th>[mg/Nm3 @ O2ref]</th>
           </tr>

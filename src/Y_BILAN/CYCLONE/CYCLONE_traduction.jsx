@@ -399,6 +399,10 @@ export const translations = {
   },
 
   de: {
+    // — Compléments de traduction (2026-11) —
+    'Fraction part. PCDD/F [%]': 'Partikelanteil PCDD/F [%]',
+    'Fraction part. Cd+Ti [%]': 'Partikelanteil Cd+Ti [%]',
+    'Fraction part. Sb..V [%]': 'Partikelanteil Sb,As,Pb..V [%]',
     // — Ajouts audit i18n (2026-07) —
     "Rapport": "Bericht",
     "Results": "Ergebnisse",
@@ -596,6 +600,10 @@ export const translations = {
   },
 
   es: {
+    // — Compléments de traduction (2026-11) —
+    'Fraction part. PCDD/F [%]': 'Fracción particulada PCDD/F [%]',
+    'Fraction part. Cd+Ti [%]': 'Fracción particulada Cd+Ti [%]',
+    'Fraction part. Sb..V [%]': 'Fracción particulada Sb,As,Pb..V [%]',
     // — Ajouts audit i18n (2026-07) —
     "Rapport": "Informe",
     "Cyclone — Rapport de synthèse": "Ciclón — Informe de síntesis",
@@ -791,6 +799,10 @@ export const translations = {
   },
 
   it: {
+    // — Compléments de traduction (2026-11) —
+    'Fraction part. PCDD/F [%]': 'Frazione particellare PCDD/F [%]',
+    'Fraction part. Cd+Ti [%]': 'Frazione particellare Cd+Ti [%]',
+    'Fraction part. Sb..V [%]': 'Frazione particellare Sb,As,Pb..V [%]',
     // — Ajouts audit i18n (2026-07) —
     "Rapport": "Rapporto",
     "Cyclone — Rapport de synthèse": "Ciclone — Rapporto di sintesi",
@@ -986,6 +998,10 @@ export const translations = {
   },
 
   pt: {
+    // — Compléments de traduction (2026-11) —
+    'Fraction part. PCDD/F [%]': 'Fração particulada PCDD/F [%]',
+    'Fraction part. Cd+Ti [%]': 'Fração particulada Cd+Ti [%]',
+    'Fraction part. Sb..V [%]': 'Fração particulada Sb,As,Pb..V [%]',
     // — Ajouts audit i18n (2026-07) —
     "Rapport": "Relatório",
     "Cyclone — Rapport de synthèse": "Ciclone — Relatório de síntese",
@@ -1181,6 +1197,10 @@ export const translations = {
   },
 
   zh: {
+    // — Compléments de traduction (2026-11) —
+    'Fraction part. PCDD/F [%]': '颗粒态比例 PCDD/F [%]',
+    'Fraction part. Cd+Ti [%]': '颗粒态比例 Cd+Ti [%]',
+    'Fraction part. Sb..V [%]': '颗粒态比例 Sb,As,Pb..V [%]',
     // — Ajouts audit i18n (2026-07) —
     "Rapport": "报告",
     "Cyclone — Rapport de synthèse": "旋风分离器——综合报告",
@@ -1376,6 +1396,10 @@ export const translations = {
   },
 
   ja: {
+    // — Compléments de traduction (2026-11) —
+    'Fraction part. PCDD/F [%]': '粒子状分率 PCDD/F [%]',
+    'Fraction part. Cd+Ti [%]': '粒子状分率 Cd+Ti [%]',
+    'Fraction part. Sb..V [%]': '粒子状分率 Sb,As,Pb..V [%]',
     // — Ajouts audit i18n (2026-07) —
     "Rapport": "レポート",
     "Cyclone — Rapport de synthèse": "サイクロン——総合レポート",
@@ -1571,6 +1595,10 @@ export const translations = {
   },
 
   ru: {
+    // — Compléments de traduction (2026-11) —
+    'Fraction part. PCDD/F [%]': 'Доля в твёрдой фазе PCDD/F [%]',
+    'Fraction part. Cd+Ti [%]': 'Доля в твёрдой фазе Cd+Ti [%]',
+    'Fraction part. Sb..V [%]': 'Доля в твёрдой фазе Sb,As,Pb..V [%]',
     // — Ajouts audit i18n (2026-07) —
     "Rapport": "Отчёт",
     "Cyclone — Rapport de synthèse": "Циклон — Сводный отчёт",
@@ -1766,6 +1794,10 @@ export const translations = {
   },
 
   ar: {
+    // — Compléments de traduction (2026-11) —
+    'Fraction part. PCDD/F [%]': 'الجزء الجسيمي PCDD/F [%]',
+    'Fraction part. Cd+Ti [%]': 'الجزء الجسيمي Cd+Ti [%]',
+    'Fraction part. Sb..V [%]': 'الجزء الجسيمي Sb,As,Pb..V [%]',
     // — Ajouts audit i18n (2026-07) —
     "Rapport": "تقرير",
     "Cyclone — Rapport de synthèse": "الإعصار — تقرير تجميعي",

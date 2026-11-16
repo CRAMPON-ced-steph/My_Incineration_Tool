@@ -923,6 +923,10 @@ export const translations = {
   // ESPAÑOL
   // ============================================================
   es: {
+    // — Compléments de traduction (2026-11) —
+    rawSludgeFlow: 'Caudal de lodo bruto',
+    mvFlowLabel: 'Caudal de MV',
+    mineralAshMM: 'Cenizas (MM)',
     // — Ajouts audit i18n (2026-07) —
     "Excès d'air Lit Fluidisé": "Exceso de aire del lecho fluidizado",
     "Excès d'air Combustible d'appoint": "Exceso de aire del combustible auxiliar",
@@ -1257,6 +1261,10 @@ export const translations = {
   // DEUTSCH
   // ============================================================
   de: {
+    // — Compléments de traduction (2026-11) —
+    rawSludgeFlow: 'Rohschlammdurchsatz',
+    mvFlowLabel: 'oTS-Durchsatz',
+    mineralAshMM: 'Asche (mineralisch)',
     // — Ajouts audit i18n (2026-07) —
     "Excès d'air Lit Fluidisé": "Luftüberschuss Wirbelschicht",
     "Excès d'air Combustible d'appoint": "Luftüberschuss Zusatzbrennstoff",
@@ -1591,6 +1599,10 @@ export const translations = {
   // ITALIANO
   // ============================================================
   it: {
+    // — Compléments de traduction (2026-11) —
+    rawSludgeFlow: 'Portata fango grezzo',
+    mvFlowLabel: 'Portata SV',
+    mineralAshMM: 'Ceneri (MM)',
     // — Ajouts audit i18n (2026-07) —
     "Excès d'air Lit Fluidisé": "Eccesso d'aria letto fluido",
     "Excès d'air Combustible d'appoint": "Eccesso d'aria combustibile ausiliario",
@@ -1925,6 +1937,10 @@ export const translations = {
   // PORTUGUÊS
   // ============================================================
   pt: {
+    // — Compléments de traduction (2026-11) —
+    rawSludgeFlow: 'Vazão de lodo bruto',
+    mvFlowLabel: 'Vazão de MV',
+    mineralAshMM: 'Cinzas (MM)',
     // — Ajouts audit i18n (2026-07) —
     "Excès d'air Lit Fluidisé": "Excesso de ar do leito fluidizado",
     "Excès d'air Combustible d'appoint": "Excesso de ar do combustível auxiliar",
@@ -2259,6 +2275,10 @@ export const translations = {
   // 中文 (CHINESE SIMPLIFIED)
   // ============================================================
   zh: {
+    // — Compléments de traduction (2026-11) —
+    rawSludgeFlow: '原污泥流量',
+    mvFlowLabel: '挥发分流量',
+    mineralAshMM: '灰分（矿物质）',
     // — Ajouts audit i18n (2026-07) —
     "Excès d'air Lit Fluidisé": "流化床过量空气",
     "Excès d'air Combustible d'appoint": "辅助燃料过量空气",
@@ -2593,6 +2613,10 @@ export const translations = {
   // 日本語 (JAPANESE)
   // ============================================================
   ja: {
+    // — Compléments de traduction (2026-11) —
+    rawSludgeFlow: '生汚泥流量',
+    mvFlowLabel: '有機物流量',
+    mineralAshMM: '灰分（無機物）',
     // — Ajouts audit i18n (2026-07) —
     "Excès d'air Lit Fluidisé": "流動床過剰空気",
     "Excès d'air Combustible d'appoint": "補助燃料過剰空気",
@@ -2927,6 +2951,10 @@ export const translations = {
   // РУССКИЙ (RUSSIAN)
   // ============================================================
   ru: {
+    // — Compléments de traduction (2026-11) —
+    rawSludgeFlow: 'Расход сырого осадка',
+    mvFlowLabel: 'Расход органического вещества',
+    mineralAshMM: 'Зола (минеральная часть)',
     // — Ajouts audit i18n (2026-07) —
     "Excès d'air Lit Fluidisé": "Избыток воздуха кипящего слоя",
     "Excès d'air Combustible d'appoint": "Избыток воздуха вспомогательного топлива",
@@ -3261,6 +3289,10 @@ export const translations = {
   // العربية (ARABIC)
   // ============================================================
   ar: {
+    // — Compléments de traduction (2026-11) —
+    rawSludgeFlow: 'تدفق الحمأة الخام',
+    mvFlowLabel: 'تدفق المواد المتطايرة',
+    mineralAshMM: 'الرماد (مواد معدنية)',
     // — Ajouts audit i18n (2026-07) —
     "Excès d'air Lit Fluidisé": "فائض هواء الطبقة المميعة",
     "Excès d'air Combustible d'appoint": "فائض هواء الوقود المساعد",

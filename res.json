@@ -1,0 +1,2812 @@
+{
+ "dicts": {
+  "Y_BILAN/AIRINJECTION/AIRINJECTION_traduction.jsx": {
+   "langs": [
+    "fr",
+    "en",
+    "de",
+    "es",
+    "it",
+    "pt",
+    "zh",
+    "ja",
+    "ru",
+    "ar"
+   ],
+   "nFr": 167,
+   "missing": {},
+   "extra": {},
+   "same": {
+    "en": 15,
+    "de": 6,
+    "es": 8,
+    "it": 7,
+    "pt": 8,
+    "zh": 6,
+    "ja": 5,
+    "ru": 6,
+    "ar": 5
+   },
+   "nonString": [],
+   "absentLangs": []
+  },
+  "Y_BILAN/BHF/BHF_traduction.jsx": {
+   "langs": [
+    "fr",
+    "en",
+    "de",
+    "it",
+    "es",
+    "pt",
+    "ru",
+    "zh",
+    "ja",
+    "ar"
+   ],
+   "nFr": 170,
+   "missing": {},
+   "extra": {},
+   "same": {
+    "en": 11,
+    "de": 6,
+    "it": 5,
+    "es": 4,
+    "pt": 6,
+    "ru": 3,
+    "zh": 2,
+    "ja": 3,
+    "ar": 3
+   },
+   "nonString": [],
+   "absentLangs": []
+  },
+  "Y_BILAN/COOLINGTOWER/COOLINGTOWER_traduction.jsx": {
+   "langs": [
+    "fr",
+    "en",
+    "de",
+    "es",
+    "it",
+    "pt",
+    "zh",
+    "ja",
+    "ru",
+    "ar"
+   ],
+   "nFr": 146,
+   "missing": {},
+   "extra": {},
+   "same": {
+    "en": 7,
+    "de": 4,
+    "es": 4,
+    "it": 3,
+    "pt": 5,
+    "zh": 0,
+    "ja": 0,
+    "ru": 1,
+    "ar": 1
+   },
+   "nonString": [],
+   "absentLangs": []
+  },
+  "Y_BILAN/CYCLONE/CYCLONE_traduction.jsx": {
+   "langs": [
+    "fr",
+    "en",
+    "de",
+    "es",
+    "it",
+    "pt",
+    "zh",
+    "ja",
+    "ru",
+    "ar"
+   ],
+   "nFr": 169,
+   "missing": {},
+   "extra": {},
+   "same": {
+    "en": 15,
+    "de": 6,
+    "es": 8,
+    "it": 7,
+    "pt": 8,
+    "zh": 6,
+    "ja": 5,
+    "ru": 6,
+    "ar": 5
+   },
+   "nonString": [],
+   "absentLangs": []
+  },
+  "Y_BILAN/DENOX/DENOX_traduction.jsx": {
+   "langs": [
+    "fr",
+    "en",
+    "de",
+    "it",
+    "es",
+    "pt",
+    "zh",
+    "ja",
+    "ru",
+    "ar"
+   ],
+   "nFr": 187,
+   "missing": {},
+   "extra": {},
+   "same": {
+    "en": 9,
+    "de": 7,
+    "it": 6,
+    "es": 6,
+    "pt": 6,
+    "zh": 4,
+    "ja": 4,
+    "ru": 4,
+    "ar": 4
+   },
+   "nonString": [],
+   "absentLangs": []
+  },
+  "Y_BILAN/ECHANGEURS/TUBEANDSHELL/TubeShell_traduction.jsx": {
+   "langs": [
+    "fr",
+    "en",
+    "es",
+    "de",
+    "it",
+    "pt",
+    "zh",
+    "ja",
+    "ru",
+    "ar"
+   ],
+   "nFr": 30,
+   "missing": {},
+   "extra": {},
+   "same": {
+    "en": 1,
+    "es": 0,
+    "de": 0,
+    "it": 0,
+    "pt": 0,
+    "zh": 0,
+    "ja": 0,
+    "ru": 0,
+    "ar": 0
+   },
+   "nonString": [],
+   "absentLangs": []
+  },
+  "Y_BILAN/ELECTROFILTER/ELECTROFILTER_traduction.jsx": {
+   "langs": [
+    "fr",
+    "en",
+    "de",
+    "es",
+    "it",
+    "pt",
+    "ru",
+    "zh",
+    "ja",
+    "ar"
+   ],
+   "nFr": 123,
+   "missing": {},
+   "extra": {},
+   "same": {
+    "en": 7,
+    "de": 3,
+    "es": 4,
+    "it": 1,
+    "pt": 5,
+    "ru": 0,
+    "zh": 0,
+    "ja": 0,
+    "ar": 0
+   },
+   "nonString": [],
+   "absentLangs": []
+  },
+  "Y_BILAN/FB/FB_traduction.jsx": {
+   "langs": [
+    "fr",
+    "en",
+    "es",
+    "de",
+    "it",
+    "pt",
+    "zh",
+    "ja",
+    "ru",
+    "ar"
+   ],
+   "nFr": 322,
+   "missing": {},
+   "extra": {},
+   "same": {
+    "en": 9,
+    "es": 7,
+    "de": 5,
+    "it": 6,
+    "pt": 7,
+    "zh": 4,
+    "ja": 4,
+    "ru": 4,
+    "ar": 4
+   },
+   "nonString": [],
+   "absentLangs": []
+  },
+  "Y_BILAN/GF/GF_traduction.jsx": {
+   "langs": [
+    "fr",
+    "en",
+    "es",
+    "de",
+    "it",
+    "pt",
+    "zh",
+    "ja",
+    "ru",
+    "ar"
+   ],
+   "nFr": 325,
+   "missing": {},
+   "extra": {},
+   "same": {
+    "en": 8,
+    "es": 7,
+    "de": 5,
+    "it": 6,
+    "pt": 7,
+    "zh": 4,
+    "ja": 4,
+    "ru": 4,
+    "ar": 4
+   },
+   "nonString": [],
+   "absentLangs": []
+  },
+  "Y_BILAN/IACT/IACT_traduction.jsx": {
+   "langs": [
+    "fr",
+    "en",
+    "de",
+    "it",
+    "es",
+    "pt",
+    "ru",
+    "zh",
+    "ja",
+    "ar"
+   ],
+   "nFr": 156,
+   "missing": {},
+   "extra": {},
+   "same": {
+    "en": 6,
+    "de": 3,
+    "it": 2,
+    "es": 3,
+    "pt": 3,
+    "ru": 1,
+    "zh": 1,
+    "ja": 1,
+    "ar": 1
+   },
+   "nonString": [],
+   "absentLangs": []
+  },
+  "Y_BILAN/IDFAN/IDFAN_traduction.jsx": {
+   "langs": [
+    "fr",
+    "en",
+    "es",
+    "de",
+    "it",
+    "pt",
+    "zh",
+    "ja",
+    "ru",
+    "ar"
+   ],
+   "nFr": 141,
+   "missing": {},
+   "extra": {},
+   "same": {
+    "en": 6,
+    "es": 5,
+    "de": 2,
+    "it": 3,
+    "pt": 5,
+    "zh": 2,
+    "ja": 3,
+    "ru": 2,
+    "ar": 3
+   },
+   "nonString": [],
+   "absentLangs": []
+  },
+  "Y_BILAN/QUENCH/QUENCH_Design_traduction.jsx": {
+   "langs": [
+    "fr",
+    "en",
+    "es",
+    "de",
+    "it",
+    "pt",
+    "ar",
+    "ru",
+    "ja",
+    "zh"
+   ],
+   "nFr": 60,
+   "missing": {},
+   "extra": {},
+   "same": {
+    "en": 1,
+    "es": 1,
+    "de": 0,
+    "it": 0,
+    "pt": 1,
+    "ar": 0,
+    "ru": 0,
+    "ja": 0,
+    "zh": 0
+   },
+   "nonString": [],
+   "absentLangs": []
+  },
+  "Y_BILAN/QUENCH/QUENCH_traduction.jsx": {
+   "langs": [
+    "fr",
+    "en",
+    "de",
+    "it",
+    "pt",
+    "es",
+    "zh",
+    "ja",
+    "ru",
+    "ar"
+   ],
+   "nFr": 191,
+   "missing": {},
+   "extra": {},
+   "same": {
+    "en": 9,
+    "de": 8,
+    "it": 7,
+    "pt": 7,
+    "es": 6,
+    "zh": 3,
+    "ja": 4,
+    "ru": 4,
+    "ar": 3
+   },
+   "nonString": [],
+   "absentLangs": []
+  },
+  "Y_BILAN/QUENCHsimple/QUENCHsimple_traduction.jsx": {
+   "langs": [
+    "fr",
+    "en",
+    "de",
+    "it",
+    "pt",
+    "es",
+    "zh",
+    "ja",
+    "ru",
+    "ar"
+   ],
+   "nFr": 194,
+   "missing": {},
+   "extra": {},
+   "same": {
+    "en": 9,
+    "de": 8,
+    "it": 7,
+    "pt": 7,
+    "es": 6,
+    "zh": 3,
+    "ja": 4,
+    "ru": 4,
+    "ar": 3
+   },
+   "nonString": [],
+   "absentLangs": []
+  },
+  "Y_BILAN/REACTOR/REACTOR_traduction.jsx": {
+   "langs": [
+    "fr",
+    "en",
+    "de",
+    "es",
+    "it",
+    "pt",
+    "ru",
+    "zh",
+    "ja",
+    "ar"
+   ],
+   "nFr": 235,
+   "missing": {},
+   "extra": {},
+   "same": {
+    "en": 17,
+    "de": 8,
+    "es": 7,
+    "it": 5,
+    "pt": 9,
+    "ru": 4,
+    "zh": 6,
+    "ja": 6,
+    "ar": 6
+   },
+   "nonString": [],
+   "absentLangs": []
+  },
+  "Y_BILAN/RK/RK_traduction.jsx": {
+   "langs": [
+    "fr",
+    "en",
+    "es",
+    "de",
+    "it",
+    "pt",
+    "ru",
+    "ja",
+    "zh",
+    "ar"
+   ],
+   "nFr": 213,
+   "missing": {},
+   "extra": {},
+   "same": {
+    "en": 11,
+    "es": 6,
+    "de": 5,
+    "it": 5,
+    "pt": 7,
+    "ru": 1,
+    "ja": 1,
+    "zh": 1,
+    "ar": 1
+   },
+   "nonString": [],
+   "absentLangs": []
+  },
+  "Y_BILAN/SATURATOR/SATURATOR_Design_traduction.jsx": {
+   "langs": [
+    "fr",
+    "en",
+    "es",
+    "de",
+    "it",
+    "pt",
+    "ar",
+    "ru",
+    "ja",
+    "zh"
+   ],
+   "nFr": 60,
+   "missing": {},
+   "extra": {},
+   "same": {
+    "en": 1,
+    "es": 1,
+    "de": 0,
+    "it": 0,
+    "pt": 1,
+    "ar": 0,
+    "ru": 0,
+    "ja": 0,
+    "zh": 0
+   },
+   "nonString": [],
+   "absentLangs": []
+  },
+  "Y_BILAN/SATURATOR/SATURATOR_traduction.jsx": {
+   "langs": [
+    "fr",
+    "en",
+    "de",
+    "it",
+    "pt",
+    "es",
+    "zh",
+    "ja",
+    "ru",
+    "ar"
+   ],
+   "nFr": 191,
+   "missing": {},
+   "extra": {},
+   "same": {
+    "en": 9,
+    "de": 8,
+    "it": 7,
+    "pt": 7,
+    "es": 6,
+    "zh": 3,
+    "ja": 4,
+    "ru": 4,
+    "ar": 3
+   },
+   "nonString": [],
+   "absentLangs": []
+  },
+  "Y_BILAN/SCRUBBER/SCRUBBER_traduction.jsx": {
+   "langs": [
+    "fr",
+    "en",
+    "de",
+    "es",
+    "it",
+    "pt",
+    "zh",
+    "ja",
+    "ru",
+    "ar"
+   ],
+   "nFr": 273,
+   "missing": {},
+   "extra": {},
+   "same": {
+    "en": 10,
+    "de": 4,
+    "es": 7,
+    "it": 4,
+    "pt": 7,
+    "zh": 3,
+    "ja": 4,
+    "ru": 3,
+    "ar": 4
+   },
+   "nonString": [],
+   "absentLangs": []
+  },
+  "Y_BILAN/SCRUBBER/TourLavage_traduction.jsx": {
+   "langs": [
+    "fr",
+    "en",
+    "es",
+    "de",
+    "it",
+    "pt",
+    "ar",
+    "ru",
+    "ja",
+    "zh"
+   ],
+   "nFr": 85,
+   "missing": {},
+   "extra": {},
+   "same": {
+    "en": 1,
+    "es": 0,
+    "de": 0,
+    "it": 0,
+    "pt": 0,
+    "ar": 0,
+    "ru": 0,
+    "ja": 0,
+    "zh": 0
+   },
+   "nonString": [],
+   "absentLangs": []
+  },
+  "Y_BILAN/SEPARATEURS/12/SEP12_traduction.jsx": {
+   "langs": [
+    "fr",
+    "en",
+    "es",
+    "de",
+    "it",
+    "pt",
+    "zh",
+    "ja",
+    "ru",
+    "ar"
+   ],
+   "nFr": 15,
+   "missing": {},
+   "extra": {},
+   "same": {
+    "en": 0,
+    "es": 0,
+    "de": 0,
+    "it": 0,
+    "pt": 0,
+    "zh": 0,
+    "ja": 0,
+    "ru": 0,
+    "ar": 0
+   },
+   "nonString": [],
+   "absentLangs": []
+  },
+  "Y_BILAN/SEPARATEURS/21/SEP21_traduction.jsx": {
+   "langs": [
+    "fr",
+    "en",
+    "es",
+    "de",
+    "it",
+    "pt",
+    "zh",
+    "ja",
+    "ru",
+    "ar"
+   ],
+   "nFr": 63,
+   "missing": {},
+   "extra": {},
+   "same": {
+    "en": 0,
+    "es": 0,
+    "de": 0,
+    "it": 0,
+    "pt": 0,
+    "zh": 0,
+    "ja": 0,
+    "ru": 0,
+    "ar": 0
+   },
+   "nonString": [],
+   "absentLangs": []
+  },
+  "Y_BILAN/STACK/STACK_traduction.jsx": {
+   "langs": [
+    "fr",
+    "de",
+    "es",
+    "it",
+    "pt",
+    "ru",
+    "zh",
+    "ja",
+    "ar",
+    "en"
+   ],
+   "nFr": 153,
+   "missing": {},
+   "extra": {},
+   "same": {
+    "de": 3,
+    "es": 7,
+    "it": 7,
+    "pt": 8,
+    "ru": 2,
+    "zh": 1,
+    "ja": 2,
+    "ar": 2,
+    "en": 10
+   },
+   "nonString": [],
+   "absentLangs": []
+  },
+  "Y_BILAN/WATER_INJECTION/WATER_INJECTION_traduction.jsx": {
+   "langs": [
+    "fr",
+    "en",
+    "de",
+    "it",
+    "pt",
+    "es",
+    "zh",
+    "ja",
+    "ru",
+    "ar"
+   ],
+   "nFr": 190,
+   "missing": {},
+   "extra": {},
+   "same": {
+    "en": 9,
+    "de": 8,
+    "it": 7,
+    "pt": 7,
+    "es": 6,
+    "zh": 3,
+    "ja": 4,
+    "ru": 4,
+    "ar": 3
+   },
+   "nonString": [],
+   "absentLangs": []
+  },
+  "Y_BILAN/WHB/WHB_traduction.jsx": {
+   "langs": [
+    "fr",
+    "en",
+    "de",
+    "es",
+    "it",
+    "pt",
+    "ru",
+    "zh",
+    "ja",
+    "ar"
+   ],
+   "nFr": 212,
+   "missing": {},
+   "extra": {},
+   "same": {
+    "en": 4,
+    "de": 1,
+    "es": 4,
+    "it": 1,
+    "pt": 4,
+    "ru": 1,
+    "zh": 2,
+    "ja": 3,
+    "ar": 3
+   },
+   "nonString": [],
+   "absentLangs": []
+  }
+ },
+ "usage": [
+  {
+   "f": "Y_BILAN/AIRINJECTION/1_AIRINJECTION_Flue_gas_ML.jsx",
+   "nT": 11,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/AIRINJECTION/2_AIRINJECTION_Pollutant_Emission_ML.jsx",
+   "nT": 11,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/AIRINJECTION/3_AIRINJECTION_Design_ML.jsx",
+   "nT": 24,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": [
+    "Casal and Martinez",
+    "Shepherd and Lappel"
+   ]
+  },
+  {
+   "f": "Y_BILAN/AIRINJECTION/4_AIRINJECTION_Opex.jsx",
+   "nT": 0,
+   "nTr": 0,
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/AIRINJECTION/AIRINJECTIONMainPage.jsx",
+   "nT": 6,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/AIRINJECTION/AIRINJECTION_Report.jsx",
+   "nT": 46,
+   "nTr": 9,
+   "absentPartout": [
+    "total"
+   ],
+   "absentFr": [],
+   "absentEn": [],
+   "trAbsent": [],
+   "trAbsentFr": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/BHF/1_BHF_Flue_gas_ML.jsx",
+   "nT": 10,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/BHF/2_BHF_Pollutant_Emission_ML.jsx",
+   "nT": 24,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": [
+    "None",
+    "CaOH2dry",
+    "CaOH2wet"
+   ]
+  },
+  {
+   "f": "Y_BILAN/BHF/3_BHF_Design_ML.jsx",
+   "nT": 33,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/BHF/4_BHF_Opex.jsx",
+   "nT": 0,
+   "nTr": 0,
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/BHF/BHFMainPage.jsx",
+   "nT": 6,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/BHF/BHF_Report.jsx",
+   "nT": 65,
+   "nTr": 14,
+   "absentPartout": [
+    "total"
+   ],
+   "absentFr": [],
+   "absentEn": [],
+   "trAbsent": [],
+   "trAbsentFr": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/CO2/1_Capture_Parameters.jsx",
+   "nT": 0,
+   "nTr": 0,
+   "hard": [
+    "Calculation parameters",
+    "Calculated parameters",
+    "Combustion air composition",
+    "At the stoechiometry",
+    "At the adiabaticity",
+    "Combustion air total",
+    "Flue gas composition",
+    "Flue gas at the stoechiometry",
+    "Output flue gas without water from extractor",
+    "Output flue gas with water from extractor",
+    "Export Results",
+    "Reset Values",
+    "Calculated temperature [°C]",
+    "Water Content [kg/Nm3]",
+    "Air factor calculated"
+   ]
+  },
+  {
+   "f": "Y_BILAN/CO2/2_Capture_Quench.jsx",
+   "nT": 0,
+   "nTr": 0,
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/CO2/3_Capture_Absorption.jsx",
+   "nT": 0,
+   "nTr": 0,
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/CO2/4_Capture_Desorption.jsx",
+   "nT": 0,
+   "nTr": 0,
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/CO2/5_Capture_Purification.jsx",
+   "nT": 0,
+   "nTr": 0,
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/CO2/6_Capture_Design.jsx",
+   "nT": 0,
+   "nTr": 0,
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/CO2/CO2MainPage.jsx",
+   "nT": 0,
+   "nTr": 0,
+   "hard": [
+    "Rotary Kiln Configuration",
+    "Back to Flow",
+    "Send",
+    "Capture Parameters"
+   ]
+  },
+  {
+   "f": "Y_BILAN/COOLINGTOWER/2_COOLINGTOWER_Flue_gas_ML.jsx",
+   "nT": 11,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/COOLINGTOWER/3_COOLINGTOWER_Pollutant_Emission_ML.jsx",
+   "nT": 13,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/COOLINGTOWER/4_COOLINGTOWER_Design_ML.jsx",
+   "nT": 48,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/COOLINGTOWER/5_COOLINGTOWER_Opex.jsx",
+   "nT": 0,
+   "nTr": 0,
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/COOLINGTOWER/COOLINGTOWERMainPage.jsx",
+   "nT": 0,
+   "nTr": 0,
+   "hard": [
+    "COOLINGTOWER Configuration",
+    "Back to Flow",
+    "Flue gases",
+    "Pollutant Emissions"
+   ]
+  },
+  {
+   "f": "Y_BILAN/COOLINGTOWER/COOLINGTOWER_Report.jsx",
+   "nT": 48,
+   "nTr": 12,
+   "absentPartout": [
+    "total"
+   ],
+   "absentFr": [],
+   "absentEn": [],
+   "trAbsent": [],
+   "trAbsentFr": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/CYCLONE/1_CYCLONE_Flue_gas_ML.jsx",
+   "nT": 11,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/CYCLONE/2_CYCLONE_Pollutant_Emission_ML.jsx",
+   "nT": 13,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/CYCLONE/3_CYCLONE_Design_ML.jsx",
+   "nT": 24,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": [
+    "Casal and Martinez",
+    "Shepherd and Lappel"
+   ]
+  },
+  {
+   "f": "Y_BILAN/CYCLONE/4_CYCLONE_Opex.jsx",
+   "nT": 0,
+   "nTr": 0,
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/CYCLONE/CYCLONEMainPage.jsx",
+   "nT": 7,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/CYCLONE/CYCLONE_Report.jsx",
+   "nT": 43,
+   "nTr": 9,
+   "absentPartout": [
+    "total"
+   ],
+   "absentFr": [],
+   "absentEn": [],
+   "trAbsent": [],
+   "trAbsentFr": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/DENOX/1_DENOX_Flue_gas_ML.jsx",
+   "nT": 28,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": [
+    "Process gaz",
+    "Potable",
+    "Refroidissement",
+    "Déminéralisé",
+    "Adoucie",
+    "Rivière"
+   ]
+  },
+  {
+   "f": "Y_BILAN/DENOX/2_DENOX_Pollutant_Emission_ML.jsx",
+   "nT": 44,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/DENOX/3_DENOX_Design1_ML.jsx",
+   "nT": 23,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": [
+    "Plaques catalytiques",
+    "Nid d'abeilles",
+    "Lit fixe"
+   ]
+  },
+  {
+   "f": "Y_BILAN/DENOX/4_DENOX_Opex.jsx",
+   "nT": 0,
+   "nTr": 0,
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/DENOX/DENOXMainPage.jsx",
+   "nT": 7,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/DENOX/DENOX_Report.jsx",
+   "nT": 43,
+   "nTr": 6,
+   "absentPartout": [
+    "total"
+   ],
+   "absentFr": [],
+   "absentEn": [],
+   "trAbsent": [],
+   "trAbsentFr": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/ECHANGEURS/TUBEANDSHELL/1_TUBEANDSHELL_Parameters.jsx",
+   "nT": 0,
+   "nTr": 0,
+   "hard": [
+    "Effacer mémoire",
+    "Choix du fluide :",
+    "Bilan par :",
+    "T sortie fluide",
+    "T entrée fluide",
+    "Côté fumées",
+    "T fumées entrée",
+    "Débit vol. fumées entrée",
+    "T fumées sortie",
+    "PDC écono",
+    "Enthalpie fumées entrée",
+    "Enthalpie fumées sortie",
+    "Enthalpie cédée fumées",
+    "Côté eau",
+    "T entrée eau (calculée)",
+    "T entrée eau",
+    "T sortie eau (calculée)",
+    "T sortie eau",
+    "Débit eau (calculé)",
+    "Débit eau",
+    "Enthalpie transmise à l'eau",
+    "cp eau à T_moy",
+    "Côté air",
+    "T entrée air (calculée)",
+    "T entrée air",
+    "T sortie air (calculée)",
+    "T sortie air",
+    "Débit air (calculé)",
+    "Débit air",
+    "Enthalpie transmise à l'air",
+    "cp air à T_moy",
+    "Caractéristiques échangeur",
+    "Rendement échangeur",
+    "Encrassement échangeur",
+    "ΔT logarithmique moyen",
+    "Facteur UA",
+    "Surface d'échange"
+   ]
+  },
+  {
+   "f": "Y_BILAN/ECHANGEURS/TUBEANDSHELL/TUBEANDSHELLMainPage.jsx",
+   "nT": 2,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": [
+    "Retour au Flow"
+   ]
+  },
+  {
+   "f": "Y_BILAN/ECHANGEURS/TUBEANDSHELL/TUBEANDSHELL_Report.jsx",
+   "nT": 27,
+   "nTr": 1,
+   "absentPartout": [
+    "total"
+   ],
+   "absentFr": [],
+   "absentEn": [],
+   "trAbsent": [],
+   "trAbsentFr": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/ELECTROFILTER/1_ELECTROFILTER_Flue_gas_ML.jsx",
+   "nT": 11,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/ELECTROFILTER/2_ELECTROFILTER_Pollutant_Emission_ML.jsx",
+   "nT": 24,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": [
+    "None",
+    "CaOH2dry",
+    "CaOH2wet"
+   ]
+  },
+  {
+   "f": "Y_BILAN/ELECTROFILTER/3_ELECTROFILTER_Design_ML.jsx",
+   "nT": 36,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": [
+    "Pertes de charge aéraulique",
+    "Dimensionnement de l'électrofiltre",
+    "Estimation des consommations électriques",
+    "Consommation d'air comprimé",
+    "Évacuation des résidus électrofiltre"
+   ]
+  },
+  {
+   "f": "Y_BILAN/ELECTROFILTER/4_ELECTROFILTER_Opex.jsx",
+   "nT": 0,
+   "nTr": 0,
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/ELECTROFILTER/ELECTROFILTERMainPage.jsx",
+   "nT": 6,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/ELECTROFILTER/ELECTROFILTER_Report.jsx",
+   "nT": 34,
+   "nTr": 3,
+   "absentPartout": [
+    "total"
+   ],
+   "absentFr": [],
+   "absentEn": [],
+   "trAbsent": [],
+   "trAbsentFr": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/FB/1_BouesTab.jsx",
+   "nT": 25,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": [
+    "Répartition des matières minérales",
+    "Courbe granulométrique — R(x) et F(x)",
+    "R(x) — refus cumulatif [%]",
+    "F(x) — tamisat cumulatif [%]",
+    "HF (Acide fluorhydrique)",
+    "d′ — diamètre caractéristique [µm]",
+    "n — coefficient d'uniformité [-]",
+    "d_cut — diamètre de coupure [µm]",
+    "Fraction fines → Traitement des fumées",
+    "Fraction grossière → lit"
+   ]
+  },
+  {
+   "f": "Y_BILAN/FB/2_CombustionTab.jsx",
+   "nT": 22,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": [
+    "Gaz naturel",
+    "Biogaz",
+    "Fioul",
+    "PCS boue (kcal/kg MV)",
+    "Eau Potable",
+    "Eau de refroidissement",
+    "Eau deminéralisée",
+    "Eau de rivière",
+    "Eau adoucie",
+    "— gaz appoint = 0 (forcé)",
+    "Flux d'air",
+    "Masse sèche (kg/h)",
+    "Somme (kg/h)",
+    "% massique",
+    "Mole O2 Excès",
+    "Masse air sec",
+    "de combustion",
+    "Volume air sec",
+    "Masse",
+    "humidité air",
+    "total",
+    "Volume",
+    "vapeur d'eau",
+    "Volume air de",
+    "combustible",
+    "Boue",
+    "Moles boues",
+    "Moles eau issue de la boue",
+    "Moles du gaz de combustion",
+    "Moles air de combustion des boues",
+    "Moles air instrumentation",
+    "Moles air secondaire",
+    "Moles air tertiaire",
+    "Masse composant boue",
+    "Masse air instrumentation",
+    "Masse air secondaire",
+    "Masse air tertiaire",
+    "Air sec de combustion totale",
+    "Volume air de combustible total",
+    "SUM Moles boue",
+    "SUM Moles comb appoint",
+    "SUM moles air (non combustion)",
+    "Masse comp. boue",
+    "Masse comp. gaz",
+    "Total",
+    "Moles issues de la boue",
+    "Moles combustible",
+    "Moles eau additionnelle dans carneau",
+    "Moles totale",
+    "Énergie",
+    "Boue entrée",
+    "Paramètre",
+    "Entrée (kW)",
+    "Sortie (kW)",
+    "TOTAL SORTIE (H_out)",
+    "std / not std",
+    "Masse brute",
+    "Masse sèche",
+    "Masse volatile",
+    "Masse eau",
+    "SO₂ récupéré",
+    "Air combustion boue",
+    "Air combustion gaz",
+    "Air de combustion des boues",
+    "Air de combustion gaz",
+    "Temp. boue entrée",
+    "Temp. fumée voûte / Freeboard",
+    "Temp. air fluidisation av. préch.",
+    "Temp. air secondaire",
+    "Temp. air tertiaire",
+    "Temp. air balayage",
+    "Pertes thermiques",
+    "Temp. air flu. ap. préch. (col. 8)",
+    "Rendement HX",
+    "Bilan détaillé",
+    "1. Matières minérales",
+    "Énergie nette boues",
+    "2. Air flu. neuf préch.",
+    "5. Énergie combustible",
+    "6. Pertes therm.",
+    "8. Air flu. ap. préch.",
+    "9. Air flu. av. préch.",
+    "10. Fumées four",
+    "11. Fumées préch.",
+    "12. Pertes imbrûlés",
+    "Température [°C]",
+    "Température air soufflante [°C]",
+    "Débit [m³(n)/h]",
+    "Masse air sec [kg/h]",
+    "Humidité [kgH2O/kgAS]",
+    "PCI boues in [kCal/kgMV]",
+    "Débit MS des boues [kg/h]",
+    "Débit eau à évaporer [kg/h]",
+    "Efficacité [%]",
+    "Énergie cédée par les fumées [kWh]",
+    "Énergie transmise [kWh]",
+    "Hair_ap_préchauffage",
+    "H_matière_minérale",
+    "Imbrûlés (CO + H₂)",
+    "Temp. air après préch.",
+    "Enthalpie air préch.",
+    "Hf fumées voûte",
+    "Hf fumées après HX",
+    "Temp. air soufflante"
+   ]
+  },
+  {
+   "f": "Y_BILAN/FB/3_Pollutant_Emission.jsx",
+   "nT": 34,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": [
+    "None",
+    "CaOH2dry",
+    "CaOH2wet"
+   ]
+  },
+  {
+   "f": "Y_BILAN/FB/3_VouteTab.jsx",
+   "nT": 24,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": [
+    "max modèle",
+    "max fours",
+    "True",
+    "False",
+    "Temperature Entree Boite à Vent [°C]",
+    "Temperature Niveau Voute [°C]",
+    "Pression niveau Voute par Defaut [mmCE]",
+    "Débit Air humide Entree Boite à Vent [Nm3/h]",
+    "Vitesse Reelle Tuyere [m/s]",
+    "PDC Voute Iter1 [mmCE]",
+    "Pression Voute Iter1 [mmCE]",
+    "Debit air reel boite à vent Iter1 [m3/h]",
+    "Debit air reel boite à vent Iter1 [m3/s]",
+    "Debit reel tuyeres Iter 1 [m3/s]",
+    "Nombre de trous iter 1",
+    "Surface Tuyeres Reelle Iter1 [m2]",
+    "Vitesse reelle tuyere Iter1 [m/s]",
+    "PDC Voute Iter2 [mmCE]",
+    "Pression Voute Iter2 [mmCE]",
+    "Debit air reel boite à vent Iter2 [m3/h]",
+    "Debit air reel boite à vent Iter2 [m3/s]",
+    "Debit reel tuyeres Iter 2 [m3/s]",
+    "Nombre de trous iter 2",
+    "Surface Tuyeres Reelle Iter2 [m2]",
+    "Surface voute [m2]",
+    "Vitesse voute 2 [m/s]",
+    "Vitesse reelle tuyere Iter2 [m/s]",
+    "Modèle",
+    "NbrTuyeres Actives",
+    "NbTrous/Tuyère",
+    "Pression finale freeboard [mmCE]",
+    "Charge MS théorique du radier [kg MS/h/m²]",
+    "Charge MV théorique [kg MV/h/m²]",
+    "Charge eau théorique [kg eau/h/m²]",
+    "Capacité thermique du four [kW]",
+    "Densité thermique du four [kW/m²]"
+   ]
+  },
+  {
+   "f": "Y_BILAN/FB/4_Recuperator.jsx",
+   "nT": 46,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": [
+    "P côté air entrée = P voûte + PDC_HX (mmCE)"
+   ]
+  },
+  {
+   "f": "Y_BILAN/FB/5_1_FB_calcul_Opex.jsx",
+   "nT": 0,
+   "nTr": 0,
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/FB/5_FB_Opex.jsx",
+   "nT": 0,
+   "nTr": 0,
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/FB/6_FluidisationTab.jsx",
+   "nT": 0,
+   "nTr": 0,
+   "hard": [
+    "Entrées",
+    "Propriétés du gaz à la température du lit",
+    "Perte de charge du lit et risque de slugging",
+    "Pressions de service et de calcul",
+    "Débits de gaz au lit",
+    "Sensibilité à la granulométrie (olivine)",
+    "U proposée / Umf",
+    "U Pyrofluid bas / Umf",
+    "U proposée / Ut",
+    "Sensibilité à la vitesse de conception (lit et zone de garde)",
+    "Q lit chaud [m³/s]",
+    "Q lit froid [m³/s]",
+    "Q normal [Nm³/h]",
+    "U/Umf (d choisi)",
+    "Q garde [m³/s]",
+    "Débit zone de garde = débit de fluidisation porté à T_garde. Produits de combustion et vapeur non inclus. H_garde = Q_garde × t_séjour / S_garde.",
+    "Vitesse proposée",
+    "Pyrofluid bas",
+    "Pyrofluid milieu",
+    "Pyrofluid haut",
+    "Température du lit",
+    "Diamètre des particules d",
+    "Masse volumique ρp",
+    "Sphéricité φ",
+    "Porosité à Umf ε_mf",
+    "Diamètre du lit D",
+    "Hauteur du lit tassé",
+    "Hauteur du lit dilaté",
+    "Vitesse Pyrofluid bas",
+    "Vitesse Pyrofluid haut",
+    "Température zone de garde",
+    "Diamètre zone de garde",
+    "Temps de séjour nominal",
+    "Débit gaz froid (ligne 19)",
+    "Température réf. débit froid",
+    "Masse molaire du gaz",
+    "Pression en voûte (service)",
+    "Pression de calcul Pyrofluid",
+    "Masse volumique ρg",
+    "Viscosité dynamique µ (Sutherland)",
+    "Diamètre des particules",
+    "Nombre d'Archimède Ar",
+    "Reynolds à Umf",
+    "Umf — indép. de H",
+    "U / Umf (vitesse proposée)",
+    "U / Umf (Pyrofluid bas de plage)",
+    "U / Umf (Pyrofluid haut de plage)",
+    "U / Ut (vitesse proposée)",
+    "ΔP lit à Umf",
+    "ΔP plaque min (10 % ΔP lit)",
+    "ΔP plaque min (30 % ΔP lit)",
+    "Rapport H/D lit tassé",
+    "H_ms max sans slugging (Baeyens)",
+    "Lit dilaté / H_ms",
+    "P service boîte à vent (plaque 10 %)",
+    "P service boîte à vent (plaque 30 %)",
+    "P calcul Pyrofluid",
+    "Marge calcul / service (plaque 30 %)",
+    "P calcul / seuil 0,5 barg (directive PED)",
+    "Section du lit",
+    "T réf. débit froid",
+    "Débit à T lit (U proposée)",
+    "Débit à T réf. (U proposée)",
+    "Débit normal à 0 °C (U proposée)",
+    "Vitesse lit si ligne 19 = débit chaud",
+    "Vitesse lit si ligne 19 = débit froid",
+    "Section zone de garde",
+    "T zone de garde"
+   ]
+  },
+  {
+   "f": "Y_BILAN/FB/CombustionTabHTML.jsx",
+   "nT": 18,
+   "nTr": 0,
+   "pb": "t() utilisé sans dictionnaire local importé",
+   "hard": [
+    "Gaz naturel",
+    "Biogaz",
+    "Fioul",
+    "Boue",
+    "Masse comp. boue",
+    "Masse comp. gaz",
+    "Total",
+    "% massique",
+    "Mole O2 Excès",
+    "Masse air sec",
+    "de combustion",
+    "Volume air sec",
+    "Masse",
+    "humidité air",
+    "total",
+    "Volume",
+    "vapeur d'eau",
+    "Volume air de",
+    "combustible",
+    "Moles boues",
+    "Moles eau issue de la boue",
+    "Moles du gaz de combustion",
+    "Moles air de combustion des boues",
+    "Moles air combustion gaz",
+    "Moles air instrumentation",
+    "Moles air secondaire",
+    "Moles air tertiaire",
+    "SUM Moles boue",
+    "SUM Moles comb appoint",
+    "SUM moles air (non combustion)",
+    "Moles issues de la boue",
+    "Moles combustible",
+    "Moles totale",
+    "Paramètre",
+    "Entrée (kW)",
+    "Sortie (kW)",
+    "TOTAL SORTIE (H_out)",
+    "Température [°C]",
+    "Débit MS des boues [kg/h]",
+    "Débit eau à évaporer [kg/h]",
+    "Efficacité [%]",
+    "Énergie cédée par fumées [kW]",
+    "Énergie transmise [kW]",
+    "Enthalpie [kW]",
+    "Masse brute",
+    "Masse sèche",
+    "Masse volatile",
+    "Masse eau",
+    "SO₂ récupéré",
+    "Temp. boue entrée",
+    "Temp. fumée voûte / Freeboard",
+    "Temp. air fluidisation av. préch.",
+    "Temp. air secondaire",
+    "Masse air secondaire",
+    "Temp. air tertiaire",
+    "Masse air tertiaire",
+    "Temp. air balayage",
+    "Pertes thermiques",
+    "Temp. fumée après HX",
+    "Rendement HX",
+    "Temp. air après préch.",
+    "Enthalpie air préch.",
+    "Hf fumées voûte",
+    "Hf fumées après HX",
+    "Temp. air soufflante",
+    "Air de combustion des boues",
+    "Air de combustion gaz",
+    "Bilan détaillé",
+    "Hair_ap_préchauffage",
+    "H_matière_minérale"
+   ]
+  },
+  {
+   "f": "Y_BILAN/FB/FBMainPage.jsx",
+   "nT": 19,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/FB/FB_Report.jsx",
+   "nT": 22,
+   "nTr": 164,
+   "absentPartout": [
+    "total"
+   ],
+   "absentFr": [],
+   "absentEn": [],
+   "trAbsent": [],
+   "trAbsentFr": [],
+   "hard": [
+    "Hair_ap_préchauffage",
+    "H_matière_minérale"
+   ]
+  },
+  {
+   "f": "Y_BILAN/FB/SchemaProcessus.jsx",
+   "nT": 24,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/FB/airCompositionUtils.js",
+   "nT": 0,
+   "nTr": 0,
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/GF/1_OmTab.jsx",
+   "nT": 21,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": [
+    "HF (Acide fluorhydrique)"
+   ]
+  },
+  {
+   "f": "Y_BILAN/GF/2_CombustionTab.jsx",
+   "nT": 22,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": [
+    "Gaz naturel",
+    "Biogaz",
+    "Fioul",
+    "Eau Potable",
+    "Eau de refroidissement",
+    "Eau deminéralisée",
+    "Eau de rivière",
+    "Eau adoucie",
+    "— gaz appoint = 0 (forcé)",
+    "Flux d'air",
+    "Masse sèche (kg/h)",
+    "Somme (kg/h)",
+    "% massique",
+    "Mole O2 Excès",
+    "Masse air sec",
+    "de combustion",
+    "Volume air sec",
+    "Masse",
+    "humidité air",
+    "total",
+    "Volume",
+    "vapeur d'eau",
+    "Volume air de",
+    "combustible",
+    "Moles OM",
+    "Moles eau issue de l'OM",
+    "Moles du gaz de combustion",
+    "Moles air de combustion des OM",
+    "Moles air combustion gaz",
+    "Moles air instrumentation",
+    "Moles air secondaire",
+    "Moles air tertiaire",
+    "Masse composant OM",
+    "Masse composant gaz",
+    "Masse air instrumentation",
+    "Masse air secondaire",
+    "Masse air tertiaire",
+    "Air sec de combustion totale",
+    "Volume air de combustible total",
+    "SUM Moles OM",
+    "SUM Moles comb appoint",
+    "SUM moles air (non combustion)",
+    "Masse comp. OM",
+    "Masse comp. gaz",
+    "Total",
+    "Moles issues de l'OM",
+    "Moles combustible",
+    "Moles eau additionnelle dans carneau",
+    "Moles totale",
+    "Énergie",
+    "OM entrée",
+    "Paramètre",
+    "Entrée (kW)",
+    "Sortie (kW)",
+    "TOTAL SORTIE (H_out)",
+    "Quantité d\\'ordures ménagères humides",
+    "Quantité d\\'ordures ménagères sèches",
+    "[kg OM sèches/h]",
+    "Masse eau",
+    "SO₂ récupéré",
+    "Air combustion OM",
+    "Air combustion gaz",
+    "Air de combustion des OM",
+    "Air de combustion gaz",
+    "Temp. OM entrée",
+    "Temp. fumée sortie SCC",
+    "Temp. air primaire",
+    "Temp. air secondaire",
+    "Temp. air tertiaire",
+    "Temp. air balayage",
+    "Pertes thermiques",
+    "Bilan détaillé",
+    "1. Matières inertes, cendres",
+    "Énergie nette OM",
+    "2. Air flu. neuf préch.",
+    "5. Énergie combustible",
+    "6. Pertes therm.",
+    "10. Fumées SCC",
+    "12. Pertes imbrûlés",
+    "Température [°C]",
+    "Température air soufflante [°C]",
+    "Débit [m³(n)/h]",
+    "Masse air sec [kg/h]",
+    "Humidité [kgH2O/kgAS]",
+    "Débit MS des OM [kg/h]",
+    "Débit eau à évaporer [kg/h]",
+    "Énergie cédée par les fumées [kWh]",
+    "Énergie transmise [kWh]",
+    "H_air_neuf_réch",
+    "H_gaz appoint",
+    "Imbrûlés (CO + H₂)",
+    "Hf fumées sortie SCC"
+   ]
+  },
+  {
+   "f": "Y_BILAN/GF/3_Pollutant_Emission.jsx",
+   "nT": 34,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": [
+    "None",
+    "CaOH2dry",
+    "CaOH2wet"
+   ]
+  },
+  {
+   "f": "Y_BILAN/GF/3_VouteTab.jsx",
+   "nT": 6,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": [
+    "Total :",
+    "Air combustion total :"
+   ]
+  },
+  {
+   "f": "Y_BILAN/GF/5_1_GF_calcul_Opex.jsx",
+   "nT": 0,
+   "nTr": 0,
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/GF/5_GF_Opex.jsx",
+   "nT": 0,
+   "nTr": 0,
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/GF/CombustionTabHTML.jsx",
+   "nT": 18,
+   "nTr": 0,
+   "pb": "t() utilisé sans dictionnaire local importé",
+   "hard": [
+    "Gaz naturel",
+    "Biogaz",
+    "Fioul",
+    "Masse comp. OM",
+    "Masse comp. gaz",
+    "Total",
+    "% massique",
+    "Mole O2 Excès",
+    "Masse air sec",
+    "de combustion",
+    "Volume air sec",
+    "Masse",
+    "humidité air",
+    "total",
+    "Volume",
+    "vapeur d'eau",
+    "Volume air de",
+    "combustible",
+    "Moles OM",
+    "Moles eau issue de l'OM",
+    "Moles du gaz de combustion",
+    "Moles air de combustion des OM",
+    "Moles air combustion gaz",
+    "Moles air instrumentation",
+    "Moles air secondaire",
+    "Moles air tertiaire",
+    "SUM Moles OM",
+    "SUM Moles comb appoint",
+    "SUM moles air (non combustion)",
+    "Moles issues de l'OM",
+    "Moles combustible",
+    "Moles totale",
+    "Paramètre",
+    "Entrée (kW)",
+    "Sortie (kW)",
+    "TOTAL SORTIE (H_out)",
+    "Énergie",
+    "OM entrée",
+    "Masse brute",
+    "Masse sèche",
+    "Masse volatile",
+    "Masse eau",
+    "SO₂ récupéré",
+    "Temp. OM entrée",
+    "Temp. fumée sortie SCC",
+    "Temp. air primaire",
+    "Temp. air secondaire",
+    "Masse air secondaire",
+    "Temp. air tertiaire",
+    "Masse air tertiaire",
+    "Temp. air balayage",
+    "Pertes thermiques",
+    "Hf fumées sortie SCC",
+    "Air de combustion des OM",
+    "Air de combustion gaz",
+    "Bilan détaillé",
+    "H_air_neuf_réch",
+    "H_gaz appoint",
+    "Imbrûlés (CO + H₂)",
+    "Température [°C]",
+    "Température air soufflante [°C]",
+    "Débit [m³(n)/h]",
+    "Masse air sec [kg/h]",
+    "Humidité [kgH2O/kgAS]",
+    "Débit MS des OM [kg/h]",
+    "Débit eau à évaporer [kg/h]",
+    "Énergie cédée par les fumées [kWh]",
+    "Énergie transmise [kWh]",
+    "1. Matières inertes, cendres",
+    "Énergie nette OM",
+    "5. Énergie combustible",
+    "6. Pertes therm.",
+    "10. Fumées SCC",
+    "12. Pertes imbrûlés"
+   ]
+  },
+  {
+   "f": "Y_BILAN/GF/GFMainPage.jsx",
+   "nT": 17,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/GF/GF_Report.jsx",
+   "nT": 17,
+   "nTr": 105,
+   "absentPartout": [
+    "total"
+   ],
+   "absentFr": [],
+   "absentEn": [],
+   "trAbsent": [],
+   "trAbsentFr": [],
+   "hard": [
+    "H_air_neuf_réch",
+    "H_gaz appoint"
+   ]
+  },
+  {
+   "f": "Y_BILAN/GF/SchemaProcessusGF.jsx",
+   "nT": 19,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/GF/airCompositionUtils.js",
+   "nT": 0,
+   "nTr": 0,
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/IACT/1_IACT_Flue_gas_ML.jsx",
+   "nT": 11,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/IACT/IACTMainPage.jsx",
+   "nT": 2,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": [
+    "IACT Configuration"
+   ]
+  },
+  {
+   "f": "Y_BILAN/IACT/IACT_Report.jsx",
+   "nT": 52,
+   "nTr": 1,
+   "absentPartout": [
+    "total"
+   ],
+   "absentFr": [],
+   "absentEn": [],
+   "trAbsent": [],
+   "trAbsentFr": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/IDFAN/1_IDFAN_Flue_gas1_ML.jsx",
+   "nT": 35,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/IDFAN/2_IDFAN_Pollutant_Emission_ML.jsx",
+   "nT": 14,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/IDFAN/4_IDFAN_Opex.jsx",
+   "nT": 0,
+   "nTr": 0,
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/IDFAN/IDFANMainPage.jsx",
+   "nT": 6,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/IDFAN/IDFAN_Report.jsx",
+   "nT": 23,
+   "nTr": 2,
+   "absentPartout": [
+    "total"
+   ],
+   "absentFr": [],
+   "absentEn": [],
+   "trAbsent": [],
+   "trAbsentFr": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/QUENCH/2_QUENCH_Flue_gas_ML.jsx",
+   "nT": 11,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/QUENCH/3_QUENCH_Pollutant_Emission_ML.jsx",
+   "nT": 25,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": [
+    "None",
+    "CaOH2dry",
+    "CaOH2wet"
+   ]
+  },
+  {
+   "f": "Y_BILAN/QUENCH/4_QUENCH_Design1_ML.jsx",
+   "nT": 46,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": [
+    "Pression aéraulique [mmCE]",
+    "Puissance pompe [kW]",
+    "Rendement pompe [%]"
+   ]
+  },
+  {
+   "f": "Y_BILAN/QUENCH/5_QUENCH_Opex.jsx",
+   "nT": 0,
+   "nTr": 0,
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/QUENCH/QUENCHMainPage.jsx",
+   "nT": 7,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/QUENCH/QUENCH_Report.jsx",
+   "nT": 71,
+   "nTr": 5,
+   "absentPartout": [
+    "total"
+   ],
+   "absentFr": [],
+   "absentEn": [],
+   "trAbsent": [],
+   "trAbsentFr": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/QUENCHsimple/2_QUENCHsimple_Flue_gas_ML.jsx",
+   "nT": 11,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/QUENCHsimple/3_QUENCHsimple_Pollutant_Emission_ML.jsx",
+   "nT": 25,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": [
+    "None",
+    "CaOH2dry",
+    "CaOH2wet"
+   ]
+  },
+  {
+   "f": "Y_BILAN/QUENCHsimple/4_QUENCHsimple_Design1_ML.jsx",
+   "nT": 71,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/QUENCHsimple/5_QUENCHsimple_Opex.jsx",
+   "nT": 0,
+   "nTr": 0,
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/QUENCHsimple/QUENCHsimpleMainPage.jsx",
+   "nT": 6,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/QUENCHsimple/QUENCHsimple_Report.jsx",
+   "nT": 47,
+   "nTr": 5,
+   "absentPartout": [
+    "total"
+   ],
+   "absentFr": [],
+   "absentEn": [],
+   "trAbsent": [],
+   "trAbsentFr": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/REACTOR/1_REACTOR_Flue_gas_ML.jsx",
+   "nT": 11,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/REACTOR/2_REACTOR_Pollutant_Emission_ML.jsx",
+   "nT": 25,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": [
+    "None",
+    "CaOH2dry",
+    "CaOH2wet"
+   ]
+  },
+  {
+   "f": "Y_BILAN/REACTOR/3_REACTOR_Design_ML.jsx",
+   "nT": 39,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": [
+    "Aeraulic Pressure [mmCE]",
+    "Flow Rate [Nm3/h]",
+    "Residence Time [s]",
+    "Agitation Type",
+    "Electric consumption belt [kW]",
+    "Number of cycles [Nb]",
+    "Compressed air pressure [Bar]",
+    "Air per cycle [Nm3/cycle]",
+    "Truck Type"
+   ]
+  },
+  {
+   "f": "Y_BILAN/REACTOR/4_REACTOR_Opex_ML.jsx",
+   "nT": 0,
+   "nTr": 0,
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/REACTOR/REACTORMainPage.jsx",
+   "nT": 6,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/REACTOR/REACTOR_Report.jsx",
+   "nT": 45,
+   "nTr": 6,
+   "absentPartout": [
+    "total"
+   ],
+   "absentFr": [],
+   "absentEn": [],
+   "trAbsent": [],
+   "trAbsentFr": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/RK/1_CombustionParameters1.jsx",
+   "nT": 1,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": [
+    "Packed waste",
+    "Direct lines"
+   ]
+  },
+  {
+   "f": "Y_BILAN/RK/2_Flue_gas1.jsx",
+   "nT": 16,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/RK/3_Pollutant_Emission1.jsx",
+   "nT": 35,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": [
+    "None",
+    "CaOH2dry",
+    "CaOH2wet"
+   ]
+  },
+  {
+   "f": "Y_BILAN/RK/4_RK_Design1.jsx",
+   "nT": 99,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": [
+    "value"
+   ]
+  },
+  {
+   "f": "Y_BILAN/RK/5_RK_Opex.jsx",
+   "nT": 0,
+   "nTr": 0,
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/RK/RKMainPage.jsx",
+   "nT": 0,
+   "nTr": 0,
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/RK/RK_Report.jsx",
+   "nT": 13,
+   "nTr": 108,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "trAbsent": [],
+   "trAbsentFr": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/SATURATOR/2_SATURATOR_Flue_gas_ML.jsx",
+   "nT": 11,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/SATURATOR/3_SATURATOR_Pollutant_Emission_ML.jsx",
+   "nT": 25,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": [
+    "None",
+    "CaOH2dry",
+    "CaOH2wet"
+   ]
+  },
+  {
+   "f": "Y_BILAN/SATURATOR/4_SATURATOR_Design1_ML.jsx",
+   "nT": 46,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": [
+    "Pression aéraulique [mmCE]",
+    "Puissance pompe [kW]",
+    "Rendement pompe [%]"
+   ]
+  },
+  {
+   "f": "Y_BILAN/SATURATOR/5_SATURATOR_Opex.jsx",
+   "nT": 0,
+   "nTr": 0,
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/SATURATOR/SATURATORMainPage.jsx",
+   "nT": 7,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/SATURATOR/SATURATOR_Report.jsx",
+   "nT": 71,
+   "nTr": 5,
+   "absentPartout": [
+    "total"
+   ],
+   "absentFr": [],
+   "absentEn": [],
+   "trAbsent": [],
+   "trAbsentFr": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/SCRUBBER/2_SCRUBBER_Flue_gas_ML.jsx",
+   "nT": 11,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/SCRUBBER/3_SCRUBBER_Pollutant_Emission_ML.jsx",
+   "nT": 28,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/SCRUBBER/4_SCRUBBER_TourLavage.jsx",
+   "nT": 16,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/SCRUBBER/5_SCRUBBER_Opex.jsx",
+   "nT": 0,
+   "nTr": 0,
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/SCRUBBER/Laveur_acid.jsx",
+   "nT": 42,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/SCRUBBER/Laveur_basique.jsx",
+   "nT": 39,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": [
+    "NaOH (Soude caustique)",
+    "Na2CO3 (Carbonate de sodium)",
+    "NaHCO3 (Bicarbonate de sodium)",
+    "Anneaux de Pall",
+    "Anneaux de Raschig",
+    "Selles de Berl",
+    "Garnissage structuré"
+   ]
+  },
+  {
+   "f": "Y_BILAN/SCRUBBER/SCRUBBERMainPage.jsx",
+   "nT": 7,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/SCRUBBER/SCRUBBER_Report.jsx",
+   "nT": 58,
+   "nTr": 3,
+   "absentPartout": [
+    "total"
+   ],
+   "absentFr": [],
+   "absentEn": [],
+   "trAbsent": [],
+   "trAbsentFr": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/SEPARATEURS/12/SEP12MainPage.jsx",
+   "nT": 3,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/SEPARATEURS/12/SEP12_fluegas_sep.jsx",
+   "nT": 14,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/SEPARATEURS/21/SEP21MainPage.jsx",
+   "nT": 5,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/SEPARATEURS/21/SEP21_Pollutant_Emission.jsx",
+   "nT": 8,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/SEPARATEURS/21/SEP21_fluegas_mixer.jsx",
+   "nT": 19,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/STACK/1_STACK_Flue_gas_ML.jsx",
+   "nT": 6,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/STACK/2_STACK_Pollutant_Emission_ML.jsx",
+   "nT": 8,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/STACK/3_STACK_Design2_ML.jsx",
+   "nT": 32,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/STACK/4_STACK_Opex_ML.jsx",
+   "nT": 0,
+   "nTr": 0,
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/STACK/STACKMainPage.jsx",
+   "nT": 7,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/STACK/STACK_Report.jsx",
+   "nT": 48,
+   "nTr": 1,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "trAbsent": [],
+   "trAbsentFr": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/WATER_INJECTION/2_WATER_INJECTION_Flue_gas_ML.jsx",
+   "nT": 11,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/WATER_INJECTION/3_WATER_INJECTION_Pollutant_Emission_ML.jsx",
+   "nT": 25,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": [
+    "None",
+    "CaOH2dry",
+    "CaOH2wet"
+   ]
+  },
+  {
+   "f": "Y_BILAN/WATER_INJECTION/4_WATER_INJECTION_Design1_ML.jsx",
+   "nT": 43,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/WATER_INJECTION/5_WATER_INJECTION_Opex.jsx",
+   "nT": 0,
+   "nTr": 0,
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/WATER_INJECTION/WATER_INJECTIONMainPage.jsx",
+   "nT": 6,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/WATER_INJECTION/WATER_INJECTION_Report.jsx",
+   "nT": 47,
+   "nTr": 5,
+   "absentPartout": [
+    "total"
+   ],
+   "absentFr": [],
+   "absentEn": [],
+   "trAbsent": [],
+   "trAbsentFr": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/WHB/1_WHB_Parameters_ML.jsx",
+   "nT": 23,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/WHB/2_WHB_Flue_gas_ML.jsx",
+   "nT": 10,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/WHB/3_WHB_Pollutant_Emission_ML.jsx",
+   "nT": 13,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/WHB/4_WHB_Design_ML.jsx",
+   "nT": 54,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": [
+    "frac_mol_CO",
+    "Export CSV"
+   ]
+  },
+  {
+   "f": "Y_BILAN/WHB/5_WHB_Opex.jsx",
+   "nT": 0,
+   "nTr": 0,
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/WHB/6_WHB_ValoVapeur3_ML.jsx",
+   "nT": 120,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": [
+    "T sat:"
+   ]
+  },
+  {
+   "f": "Y_BILAN/WHB/7_Various_boiler_calculations_ML.jsx",
+   "nT": 34,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/WHB/WHBMainPage.jsx",
+   "nT": 9,
+   "nTr": 0,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/WHB/WHB_Report.jsx",
+   "nT": 45,
+   "nTr": 4,
+   "absentPartout": [],
+   "absentFr": [],
+   "absentEn": [],
+   "trAbsent": [],
+   "trAbsentFr": [],
+   "hard": []
+  },
+  {
+   "f": "Y_BILAN/quench.jsx",
+   "nT": 0,
+   "nTr": 0,
+   "hard": [
+    "Quench — voie humide",
+    "Saturation adiabatique · absorption HCl au venturi · portage du module Pyrofluid VB.NET",
+    "saisie",
+    "calculé",
+    "hors plage",
+    "Corrélations reprises du code d'origine",
+    "Écarts assumés vs legacy",
+    "Diamètre du quench",
+    "Diamètre du cône saisi (sinon table standard)",
+    "Fumées en entrée",
+    "Débit CO₂",
+    "Débit H₂O vapeur",
+    "Débit N₂",
+    "Débit O₂",
+    "Débit SO₂",
+    "Débit HCl",
+    "Température",
+    "Dépression totale",
+    "Débit massique total",
+    "Débit volumique total",
+    "Vitesse de passage colonne",
+    "Paramètres du quench",
+    "Diamètre du cône",
+    "Température eau d'appoint",
+    "Efficacité d'absorption du venturi",
+    "Diamètre des gouttes pulvérisées",
+    "Constante de Nusselt",
+    "Coef. hauteur saturation",
+    "Partie saturation",
+    "Température de saturation Ts",
+    "Eau de saturation (évaporée)",
+    "Hauteur de saturation Zsat",
+    "Vitesse de passage au cône",
+    "Perte de charge venturi",
+    "Débit molaire d'incondensables",
+    "Temps d'évaporation des gouttes",
+    "Fumées en sortie",
+    "Débit massique",
+    "Débit volumique",
+    "Efficacité HCl",
+    "ρ fumées épurées (réel)",
+    "Bilans eau & recirculation",
+    "Débit eau d'appoint",
+    "Débit du liquide d'arrosage",
+    "Débit eau de recirculation",
+    "Débit purge",
+    "HCl absorbé (purge)",
+    "Fumées saturées (intermédiaire)",
+    "Débit massique saturé",
+    "Débit volumique saturé",
+    "ρ fumées saturées (réel)",
+    "Pp HCl sur solution",
+    "Tension vapeur H₂O à Ts",
+    "Diamètre du cône retenu",
+    "Cp fumées (à Tm)"
+   ]
+  },
+  {
+   "f": "Y_BILAN/tour-lavage.jsx",
+   "nT": 0,
+   "nTr": 0,
+   "hard": [
+    "Tour de lavage — voie humide",
+    "saisie",
+    "calculé",
+    "hors plage",
+    "Corrélations reprises du code d'origine",
+    "Écarts assumés vs legacy",
+    "Diamètre retenu",
+    "Composition des fumées invalide : le débit volumique total (ou sec) est nul. Vérifier les débits saisis.",
+    "Portage de TourLavage.vb / ClassTourLavage.vb (Pyrofluid 22.09.2009) — branches SousRef 0/1 et TypeVerif VSP/Autres.",
+    "Fumées en entrée (sortie quench)",
+    "Débit CO₂",
+    "Débit H₂O vapeur",
+    "Débit N₂",
+    "Débit O₂",
+    "Débit SO₂",
+    "Débit HCl",
+    "Poussières",
+    "Température",
+    "Dépression totale",
+    "Débit massique total",
+    "Débit volumique total",
+    "O₂ sur sec",
+    "Condenseur en tête de colonne",
+    "Colonne — choix & réactif",
+    "Débit du liquide d'arrosage",
+    "Soude — % massique NaOH",
+    "Sels de SO₂ dans la purge",
+    "Objectif SO₂ sortie",
+    "Objectif HCl sortie",
+    "Fumées en sortie",
+    "Débit volumique",
+    "Débit massique",
+    "Soude à injecter",
+    "Concentration solution",
+    "Quantité de NaOH (nominal)",
+    "Débit volumique (nominal)",
+    "Quantité de NaOH (maxi)",
+    "Caractéristiques du garnissage",
+    "Type (perte de charge)",
+    "Coef. hauteur saturation",
+    "Facteur de garnissage",
+    "Surface volumique",
+    "Diamètre / dimension",
+    "Tension superf. matériau",
+    "Hauteur garnissage SO₂",
+    "Hauteur garnissage HCl",
+    "Hauteur retenue",
+    "Perte de charge",
+    "Perte de charge / hauteur",
+    "Engorgement & vérifications",
+    "Flux réel (70 %)",
+    "Diamètre calculé",
+    "Taux de mouillage",
+    "Propriétés calculées",
+    "ρ fumées absorption (réel)",
+    "ρ fumées sortie (réel)",
+    "μ fumées",
+    "Débit eau d'appoint",
+    "Débit purge de SO₂",
+    "Purge totale colonne",
+    "SO₂ neutralisé",
+    "Surface mouillée (Onda)",
+    "Dévésiculeur",
+    "Diamètre retenu (arrondi 0,5)",
+    "Vitesse retenue",
+    "Température d'entrée du liquide",
+    "Température sortie condenseur",
+    "Débit condensat",
+    "Débit eau de refroid.",
+    "Température sortie liquide",
+    "Puissance échangée"
+   ]
+  }
+ ],
+ "reportDict": {
+  "langs": [
+   "fr",
+   "en",
+   "es",
+   "de",
+   "it",
+   "pt",
+   "ru",
+   "ja",
+   "zh",
+   "ar"
+  ],
+  "nFr": 308,
+  "missingEn": [],
+  "missingFr": []
+ }
+}
