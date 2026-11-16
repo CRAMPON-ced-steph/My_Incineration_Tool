@@ -34,11 +34,13 @@ function enthalpieFumees(T, m) {
 }
 
 // NB : « 11 ^ -6 » du VB (≈ 0) corrigé en 11.5e-6
-function chaleurEvac(ts, concHClAr) {
+// origine = true : coefficient du VB tel quel (11 ^ -6)
+function chaleurEvac(ts, concHClAr, origine = false) {
   const c = concHClAr / 100;
+  const k = origine ? Math.pow(11, -6) : 11.5e-6;
   return (
     (0.427 * ts + 80.5e-6 * ts * ts + 597 - ts) * (1 - c) +
-    c * (0.19 * ts + 11.5e-6 * ts * ts + 497 - 0.96 * ts)
+    c * (0.19 * ts + k * ts * ts + 497 - 0.96 * ts)
   );
 }
 
@@ -80,7 +82,13 @@ const parseValue = (v) => { const p = parseFloat(v); return isNaN(p) ? 0 : p; };
 // ═══════════════════════════════════════════════════════════════════
 // MOTEUR DE CALCUL (transcription de ClassQuench.Calcul) — exporté
 // ═══════════════════════════════════════════════════════════════════
+//
+// inp.modeOrigine = true  → calcul Pyrofluid d'origine (ClassQuench.vb à l'identique) :
+//   - Ts cherchée par pas de 0,1 °C à partir de 60 °C, puis Ts / 1,0005 et Psat × 0,9954
+//   - boucle acide relancée depuis la concentration initiale à chaque élargissement de tolérance
+// inp.modeOrigine = false → calcul corrigé (défaut) : Ts résolue exactement, sans coefficients.
 export function calculQuench(inp) {
+  const ORI = !!inp.modeOrigine;
   const T = inp.tempFumees;
   const masIn = { CO2: inp.mCO2, H2O: inp.mH2O, N2: inp.mN2, O2: inp.mO2, SO2: inp.mSO2, HCl: inp.mHCl };
   const volIn = volDe(masIn);
@@ -103,20 +111,33 @@ export function calculQuench(inp) {
 
   // ─── Boucle 1 : Ts par bissection sur Psat(Ts) = PpH2O(Ts) ───
   let concHClAr = 0.05;
-  const evapDe = (ts) => (entIn - enthalpieFumees(ts, masIn)) / chaleurEvac(ts, concHClAr);
+  const evapDe = (ts) => (entIn - enthalpieFumees(ts, masIn)) / chaleurEvac(ts, 0.05, ORI);
   const fTs = (ts) => {
     const evap = evapDe(ts);
     const pp = (p * (volIn.H2O + evap / 0.804)) / (volTot + evap / 0.804);
     return psatH2O(ts) - pp;
   };
-  let lo = 40, hi = Math.min(T - 1, 99.5);
-  if (fTs(lo) > 0 || fTs(hi) < 0) return { erreurTs: true };
-  for (let i = 0; i < 80; i++) {
-    const mid = (lo + hi) / 2;
-    if (fTs(mid) < 0) lo = mid; else hi = mid;
+  let ts, tensVapH2O;
+  if (ORI) {
+    // ORIGINE : boucle n° 1 du VB
+    let t0 = 60, deltaP1 = 1e7, comptB1 = 0, deltaP;
+    do {
+      deltaP = Math.abs(fTs(t0));
+      if (deltaP <= deltaP1) { deltaP1 = deltaP; t0 += 0.1; comptB1++; }
+    } while (!(deltaP > deltaP1 || comptB1 === 10000));
+    if (!isFinite(deltaP)) return { erreurTs: true };
+    ts = (t0 - 0.1) / 1.0005;
+    tensVapH2O = psatH2O(ts) * 0.9954;
+  } else {
+    let lo = 40, hi = Math.min(T - 1, 99.5);
+    if (fTs(lo) > 0 || fTs(hi) < 0) return { erreurTs: true };
+    for (let i = 0; i < 80; i++) {
+      const mid = (lo + hi) / 2;
+      if (fTs(mid) < 0) lo = mid; else hi = mid;
+    }
+    ts = (lo + hi) / 2;
+    tensVapH2O = psatH2O(ts);
   }
-  const ts = (lo + hi) / 2;
-  const tensVapH2O = psatH2O(ts);
   const debMasEvap = evapDe(ts);
 
   // ─── Boucle 2 : itération sur ConcHClRec (bilan enthalpique) ───
@@ -231,9 +252,11 @@ export function calculQuench(inp) {
       compt++;
     }
     deltaBoucle2 += 0.5;
+    // ORIGINE : le VB relance la boucle depuis les concentrations initiales
+    if (ORI) { concHClRec = 0.01; concHClAr = 0.05; }
   }
 
-  return res ? { ...res, converge } : null;
+  return res ? { ...res, converge, modeOrigine: ORI } : null;
 }
 
 // ═══════════════════════════════════════════════════════════════════
@@ -364,6 +387,7 @@ const QUENCHDesign = ({ innerData, setInnerData, upstreamT_IN, upstreamFG_IN, cu
     diamGouttes: getInitialValue('QD_diamGouttes', 700),
     constNusselt: getInitialValue('QD_constNusselt', 2),
     coefHautSat: getInitialValue('QD_coefHautSat', 1.5),
+    modeOrigine: getInitialValue('QD_modeOrigine', false),
   });
 
   const [typeEau, setTypeEau] = useState(getInitialValue('Type_eau', 'eau potable'));
@@ -435,6 +459,7 @@ const QUENCHDesign = ({ innerData, setInnerData, upstreamT_IN, upstreamFG_IN, cu
       QD_diamGouttes: quenchParams.diamGouttes,
       QD_constNusselt: quenchParams.constNusselt,
       QD_coefHautSat: quenchParams.coefHautSat,
+      QD_modeOrigine: quenchParams.modeOrigine,
       ...(r && !r.erreurTs
         ? {
             QD: r,
@@ -442,6 +467,7 @@ const QUENCHDesign = ({ innerData, setInnerData, upstreamT_IN, upstreamFG_IN, cu
             recup_Ts: r.ts,
             RoEpuree: r.roEpuree,
             T_quench_out: r.tempSortie,
+            P_quench_out_mmCE: P_out_mmCE,
             // Fumées épurées vers l'aval (entrée tour de lavage)
             FG_quench_out_kg_h: {
               CO2: r.masEp.CO2, H2O: r.masEp.H2O, O2: r.masEp.O2, N2: r.masEp.N2,
@@ -539,12 +565,21 @@ const QUENCHDesign = ({ innerData, setInnerData, upstreamT_IN, upstreamFG_IN, cu
           <span style={{ padding: '2px 8px', borderRadius: 4, backgroundColor: '#fff9c4', border: '1px solid #e0c96a' }}>{t('QD_legend_calc')}</span>
           <span style={{ padding: '2px 8px', borderRadius: 4, backgroundColor: '#ffcdd2', border: '1px solid #e57373' }}>🔴 {t('QD_legend_warn')}</span>
         </div>
-        <button
-          onClick={rechargerDepuisFlux}
-          style={{ padding: '6px 12px', background: '#4a90e2', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer', fontSize: 12, fontWeight: 'bold' }}
-        >
-          {t('QD_reload_from_flow')}
-        </button>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button
+            onClick={() => setQuenchParams((s) => ({ ...s, modeOrigine: !s.modeOrigine }))}
+            title={t('QD_origin_mode_hint')}
+            style={{ padding: '6px 12px', background: quenchParams.modeOrigine ? '#b45309' : '#e5e7eb', color: quenchParams.modeOrigine ? 'white' : '#374151', border: 'none', borderRadius: 4, cursor: 'pointer', fontSize: 12, fontWeight: 600 }}
+          >
+            {quenchParams.modeOrigine ? t('QD_origin_mode_on') : t('QD_origin_mode_off')}
+          </button>
+          <button
+            onClick={rechargerDepuisFlux}
+            style={{ padding: '6px 12px', background: '#4a90e2', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer', fontSize: 12, fontWeight: 'bold' }}
+          >
+            {t('QD_reload_from_flow')}
+          </button>
+        </div>
       </div>
 
       {warnings.length > 0 && (

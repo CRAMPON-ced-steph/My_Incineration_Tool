@@ -4,9 +4,17 @@
 export const tlTranslations = {
   fr: {
     TL_legend_input: 'saisie',
+    TL_origin_mode_on: 'Calcul Pyrofluid d\'origine : ACTIF',
+    TL_origin_mode_off: 'Calcul Pyrofluid d\'origine',
+    TL_origin_mode_hint: 'Reproduit ClassTourLavage.vb à l\'identique (revalidation). Désactivé : calcul corrigé.',
+    TL_origin_mode_note: 'Mode d\'origine : hauteurs dimensionnées sur 50 mg/Nm³ (SO₂) et 10 mg/Nm³ (HCl) ; le HCl en sortie est un résultat.',
+    TL_hcl_outlet_calc: 'HCl en sortie calculé (sec, 11 % O₂)',
     TL_legend_calc: 'calculé',
     TL_legend_warn: 'hors plage',
     TL_reload_from_flow: 'Recharger depuis le flux amont',
+    TL_quench_link_ok: 'Entrée = sortie du quench amont (fumées saturées, calcul Pyrofluid)',
+    TL_quench_link_stale: 'Les entrées ne correspondent plus à la sortie du quench amont — cliquer sur « Recharger depuis le flux amont ».',
+    TL_quench_link_absent: 'Aucun résultat de quench Pyrofluid en amont : les entrées viennent du flux générique et ne sont pas forcément saturées.',
     TL_err_invalid_composition: 'Composition des fumées invalide : débit volumique total ou sec nul.',
 
     TL_section_inlet: 'Fumées en entrée (sortie quench)',
@@ -103,9 +111,17 @@ export const tlTranslations = {
   },
   en: {
     TL_legend_input: 'input',
+    TL_origin_mode_on: 'Original Pyrofluid calculation: ON',
+    TL_origin_mode_off: 'Original Pyrofluid calculation',
+    TL_origin_mode_hint: 'Reproduces ClassTourLavage.vb exactly (revalidation). Off: corrected calculation.',
+    TL_origin_mode_note: 'Original mode: heights sized on 50 mg/Nm³ (SO₂) and 10 mg/Nm³ (HCl); outlet HCl is a result.',
+    TL_hcl_outlet_calc: 'Calculated outlet HCl (dry, 11% O₂)',
     TL_legend_calc: 'calculated',
     TL_legend_warn: 'out of range',
     TL_reload_from_flow: 'Reload from upstream flow',
+    TL_quench_link_ok: 'Inlet = upstream quench outlet (saturated flue gas, Pyrofluid calculation)',
+    TL_quench_link_stale: 'Inputs no longer match the upstream quench outlet — click "Reload from upstream flow".',
+    TL_quench_link_absent: 'No Pyrofluid quench result upstream: inputs come from the generic flow and may not be saturated.',
     TL_err_invalid_composition: 'Invalid flue gas composition: total or dry volume flow is zero.',
 
     TL_section_inlet: 'Inlet flue gas (quench outlet)',

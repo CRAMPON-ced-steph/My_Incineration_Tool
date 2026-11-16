@@ -4,6 +4,9 @@
 export const qdTranslations = {
   fr: {
     QD_legend_input: 'saisie',
+    QD_origin_mode_on: 'Calcul Pyrofluid d\'origine : ACTIF',
+    QD_origin_mode_off: 'Calcul Pyrofluid d\'origine',
+    QD_origin_mode_hint: 'Reproduit ClassQuench.vb à l\'identique (pas de 0,1 °C, Ts / 1,0005, Psat × 0,9954, relance de la boucle acide). Désactivé : calcul corrigé.',
     QD_legend_calc: 'calculé',
     QD_legend_warn: 'hors plage',
     QD_reload_from_flow: 'Recharger depuis le flux amont',
@@ -76,6 +79,9 @@ export const qdTranslations = {
   },
   en: {
     QD_legend_input: 'input',
+    QD_origin_mode_on: 'Original Pyrofluid calculation: ON',
+    QD_origin_mode_off: 'Original Pyrofluid calculation',
+    QD_origin_mode_hint: 'Reproduces ClassQuench.vb exactly (0.1 °C steps, Ts / 1.0005, Psat × 0.9954, acid loop restart). Off: corrected calculation.',
     QD_legend_calc: 'calculated',
     QD_legend_warn: 'out of range',
     QD_reload_from_flow: 'Reload from upstream flow',

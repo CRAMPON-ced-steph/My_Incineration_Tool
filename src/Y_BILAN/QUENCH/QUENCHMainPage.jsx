@@ -74,6 +74,7 @@ const QUENCHMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, curren
         T_quench_out: innerData['T_quench_out'],
         recup_Ts: innerData['recup_Ts'],
         RoEpuree: innerData['RoEpuree'],
+        P_quench_out_mmCE: innerData['P_quench_out_mmCE'],
         activeNodes_Elec: innerData['activeNodes_Elec'] || [],
         activeNodes_Eau: innerData['activeNodes_Eau'] || [],
         activeNodes_Reactifs: innerData['activeNodes_Reactifs'] || [],
