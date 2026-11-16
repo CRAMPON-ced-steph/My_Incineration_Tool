@@ -20,7 +20,7 @@ import {
   PCI_kcal_kg,
   PCS_kcal_kgMV,
   PCS_kcal_kg,
-  PCI_Dulong,
+  PCI_Jarosz,
 } from '../../A_Transverse_fonction/bilan_fct_FB';
 
 
@@ -66,8 +66,31 @@ const DEFAULT_HEAVY_METALS = {
   pb: 100,
   zn: 2000,
   pcddf: 0.0001,
-  ti: 1000,
+  ti: 2,      // Tl (thallium) — valeur Pyrofluid
   hf: 500,
+  mg: 4000,
+  mn: 20,
+  se: 30,
+};
+
+// ============================================================
+// PCI : valeur de la table par type de boue tant que la composition CHONS est celle
+// du type ; recalcul par Jarosz (comme Pyrofluid) dès que la composition est modifiée.
+// ============================================================
+
+const isCompositionModified = (sludgeType, chons) => {
+  const ref = DEFAULT_CHONS_VALUES[sludgeType];
+  if (!ref) return true;
+  return ['C', 'H', 'O', 'N', 'S', 'Cl'].some((el) => Math.abs((Number(chons[el]) || 0) - ref[el]) > 1e-6);
+};
+
+const resolvePCI = (sludgeType, chons) => {
+  const pci_jarosz = PCI_Jarosz(Number(chons.C) || 0, Number(chons.H) || 0, Number(chons.O) || 0, Number(chons.N) || 0, Number(chons.S) || 0);
+  if (isCompositionModified(sludgeType, chons)) {
+    const pci = Math.max(0, pci_jarosz);
+    return { pci_kcal_kgMV: pci, pci_kJ_kgMV: pci * 4.1868, pci_jarosz };
+  }
+  return { pci_kcal_kgMV: PCI_kcal_kgMV(sludgeType), pci_kJ_kgMV: PCI_kJ_kgMV(sludgeType), pci_jarosz };
 };
 
 // ============================================================
@@ -160,7 +183,10 @@ const BouesTab = ({ innerData, onInnerDataChange, currentLanguage, nodeId }) => 
   const [chons, setChons] = useState(() => lsGet(`bouesTab_chons_FB_${nodeId}`, defaultChons()));
   const [heavyMetals, setHeavyMetals] = useState(() => {
     const stored = lsGet(`bouesTab_heavyMetals_FB_${nodeId}`, {});
-    return { ...DEFAULT_HEAVY_METALS, ...stored };
+    const merged = { ...DEFAULT_HEAVY_METALS, ...stored };
+    // Migration : l'ancien défaut 1000 mg/kg (saisi comme « titane ») alimentait à tort le groupe Cd+Tl
+    if (Number(stored.ti) === 1000) merged.ti = DEFAULT_HEAVY_METALS.ti;
+    return merged;
   });
   const [rosinRammler, setRosinRammler] = useState(() =>
     lsGet(`bouesTab_rosinRammler_FB_${nodeId}`, DEFAULT_ROSIN_RAMMLER)
@@ -279,19 +305,18 @@ const BouesTab = ({ innerData, onInnerDataChange, currentLanguage, nodeId }) => 
     innerData.Cl_percent = Number(chons.Cl);
 
     // PCI / PCS
-    const pci_kJ_kgMV = PCI_kJ_kgMV(boue.sludgeType);
-    const pci_kcal_kgMV = PCI_kcal_kgMV(boue.sludgeType);
+    const { pci_kcal_kgMV, pci_kJ_kgMV, pci_jarosz } = resolvePCI(boue.sludgeType, chons);
     const pci_kcal_kg = PCI_kcal_kg(Number(boue.MS_pourcent), Number(boue.MV_pourcent), pci_kcal_kgMV);
     const pcs_kcal_kgMV = PCS_kcal_kgMV(pci_kcal_kgMV, Number(chons.H));
     const pcs_kcal_kg = PCS_kcal_kg(pci_kcal_kg, Number(boue.MS_pourcent), Number(boue.MV_pourcent), Number(chons.H));
-    const pci_dulong = PCI_Dulong(Number(chons.C), Number(chons.H), Number(chons.O), Number(chons.S));
 
     innerData.pciKJkgMV = pci_kJ_kgMV;
     innerData.PCIKCALKGMV = pci_kcal_kgMV;
     innerData.pciKcalkg = pci_kcal_kg;
     innerData.pcsKcalkgMV = pcs_kcal_kgMV;
     innerData.pcsKcalkg = pcs_kcal_kg;
-    innerData.pciDulong = pci_dulong;
+    innerData.pciJarosz = pci_jarosz;
+    innerData.pciCompositionModifiee = isCompositionModified(boue.sludgeType, chons);
 
     // Métaux lourds - Export individuel
     Object.keys(heavyMetals).forEach((metal) => {
@@ -313,6 +338,9 @@ const BouesTab = ({ innerData, onInnerDataChange, currentLanguage, nodeId }) => 
       pcddf: Number(heavyMetals.pcddf),
       ti: Number(heavyMetals.ti),
       hf: Number(heavyMetals.hf),
+      mg: Number(heavyMetals.mg ?? 4000),
+      mn: Number(heavyMetals.mn ?? 20),
+      se: Number(heavyMetals.se ?? 30),
     };
 
     // Calculs des masses métalliques [kg/h]
@@ -331,6 +359,9 @@ const BouesTab = ({ innerData, onInnerDataChange, currentLanguage, nodeId }) => 
     const PCDDF_kg_h = (Number(heavyMetals.pcddf) * MS_kg_h) / 1e6;
     const Ti_kg_h = (Number(heavyMetals.ti) * MS_kg_h) / 1e6;
     const HF_kg_h = (Number(heavyMetals.hf ?? 500) * MS_kg_h) / 1e6;
+    const Mg_kg_h = (Number(heavyMetals.mg ?? 4000) * MS_kg_h) / 1e6;
+    const Mn_kg_h = (Number(heavyMetals.mn ?? 20) * MS_kg_h) / 1e6;
+    const Se_kg_h = (Number(heavyMetals.se ?? 30) * MS_kg_h) / 1e6;
 
     const masse_pollutant_metallique_kg_h = {
       Al_kg_h,
@@ -346,6 +377,9 @@ const BouesTab = ({ innerData, onInnerDataChange, currentLanguage, nodeId }) => 
       PCDDF_kg_h,
       Ti_kg_h,
       HF_kg_h,
+      Mg_kg_h,
+      Mn_kg_h,
+      Se_kg_h,
     };
 
     innerData.masse_pollutant_metallique_kg_h = masse_pollutant_metallique_kg_h;
@@ -362,6 +396,9 @@ const BouesTab = ({ innerData, onInnerDataChange, currentLanguage, nodeId }) => 
     innerData.PCDDF_kg_h = PCDDF_kg_h;
     innerData.Ti_kg_h = Ti_kg_h;
     innerData.HF_kg_h = HF_kg_h;
+    innerData.Mg_kg_h = Mg_kg_h;
+    innerData.Mn_kg_h = Mn_kg_h;
+    innerData.Se_kg_h = Se_kg_h;
 
     // Rosin-Rammler — répartition matières minérales
     const rr_dprime = Number(rosinRammler.dprime) || 1;
@@ -434,12 +471,13 @@ const BouesTab = ({ innerData, onInnerDataChange, currentLanguage, nodeId }) => 
   // ============================================================
 
   const pciPcsDisplay = useMemo(() => {
-    const pci_kgMV = PCI_kcal_kgMV(boue.sludgeType);
+    const { pci_kcal_kgMV: pci_kgMV, pci_jarosz } = resolvePCI(boue.sludgeType, chons);
+    const modifiee = isCompositionModified(boue.sludgeType, chons);
     const pcs_kgMV = PCS_kcal_kgMV(pci_kgMV, Number(chons.H));
     const pci_kg   = PCI_kcal_kg(Number(boue.MS_pourcent), Number(boue.MV_pourcent), pci_kgMV);
     const pcs_kg   = PCS_kcal_kg(pci_kg, Number(boue.MS_pourcent), Number(boue.MV_pourcent), Number(chons.H));
-    return { pci_kgMV, pcs_kgMV, pci_kg, pcs_kg };
-  }, [boue.sludgeType, boue.MS_pourcent, boue.MV_pourcent, chons.H]);
+    return { pci_kgMV, pcs_kgMV, pci_kg, pcs_kg, pci_jarosz, modifiee };
+  }, [boue.sludgeType, boue.MS_pourcent, boue.MV_pourcent, chons.C, chons.H, chons.O, chons.N, chons.S, chons.Cl]);
 
   // ============================================================
   // STYLES
@@ -644,6 +682,7 @@ const BouesTab = ({ innerData, onInnerDataChange, currentLanguage, nodeId }) => 
             { label: 'PCS boue [kcal/kg MV]',     val: pciPcsDisplay.pcs_kgMV },
             { label: 'PCI boue [kcal/kg brut]',   val: pciPcsDisplay.pci_kg },
             { label: 'PCS boue [kcal/kg brut]',   val: pciPcsDisplay.pcs_kg },
+            { label: pciPcsDisplay.modifiee ? 'PCI Jarosz [kcal/kg MV] — appliqué (composition modifiée)' : 'PCI Jarosz [kcal/kg MV] — contrôle', val: pciPcsDisplay.pci_jarosz },
           ].map(({ label, val }) => (
             <div key={label}>
               <label style={labelStyle}>{label}</label>
@@ -716,8 +755,11 @@ const BouesTab = ({ innerData, onInnerDataChange, currentLanguage, nodeId }) => 
               { label: 'Pb (Plomb)', id: 'pb', def: 100 },
               { label: 'Zn (Zinc)', id: 'zn', def: 2000 },
               { label: 'PCDDF', id: 'pcddf', def: 0.0001, note: '10⁻⁴ mg/kg MS' },
-              { label: 'Ti (Titane)', id: 'ti', def: 1000, note: '1000 à 10000 mg/kg MS' },
+              { label: 'Tl (Thallium)', id: 'ti', def: 2 },
               { label: 'HF (Acide fluorhydrique)', id: 'hf', def: 500, note: '500 mg/kg MS' },
+              { label: 'Mg (Magnésium)', id: 'mg', def: 4000 },
+              { label: 'Mn (Manganèse)', id: 'mn', def: 20 },
+              { label: 'Se (Sélénium)', id: 'se', def: 30 },
             ].map(({ label, id, def, note }) => (
               <div key={id}>
                 <label style={labelStyle}>{label}</label>
@@ -771,6 +813,9 @@ const BouesTab = ({ innerData, onInnerDataChange, currentLanguage, nodeId }) => 
             const PCDDF_kg_h = (Number(heavyMetals.pcddf) * MS_kg_h) / 1e6;
             const Ti_kg_h = (Number(heavyMetals.ti) * MS_kg_h) / 1e6;
             const HF_kg_h = (Number(heavyMetals.hf ?? 500) * MS_kg_h) / 1e6;
+            const Mg_kg_h = (Number(heavyMetals.mg ?? 4000) * MS_kg_h) / 1e6;
+            const Mn_kg_h = (Number(heavyMetals.mn ?? 20) * MS_kg_h) / 1e6;
+            const Se_kg_h = (Number(heavyMetals.se ?? 30) * MS_kg_h) / 1e6;
 
             const masses = [
               { label: 'Al (Aluminium)', value: Al_kg_h, color: '#8b5cf6' },
@@ -784,8 +829,11 @@ const BouesTab = ({ innerData, onInnerDataChange, currentLanguage, nodeId }) => 
               { label: 'Pb (Plomb)', value: Pb_kg_h, color: '#64748b' },
               { label: 'Zn (Zinc)', value: Zn_kg_h, color: '#3b82f6' },
               { label: 'PCDDF', value: PCDDF_kg_h, color: '#a855f7' },
-              { label: 'Ti (Titane)', value: Ti_kg_h, color: '#14b8a6' },
+              { label: 'Tl (Thallium)', value: Ti_kg_h, color: '#14b8a6' },
               { label: 'HF (Acide fluorhydrique)', value: HF_kg_h, color: '#dc2626' },
+              { label: 'Mg (Magnésium)', value: Mg_kg_h, color: '#84cc16' },
+              { label: 'Mn (Manganèse)', value: Mn_kg_h, color: '#a16207' },
+              { label: 'Se (Sélénium)', value: Se_kg_h, color: '#0ea5e9' },
             ];
 
             return (
@@ -999,4 +1047,4 @@ const BouesTab = ({ innerData, onInnerDataChange, currentLanguage, nodeId }) => 
   );
 };
 
-export default BouesTab;
+export default BouesTab;
