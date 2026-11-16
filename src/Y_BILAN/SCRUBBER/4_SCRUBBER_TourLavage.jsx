@@ -136,7 +136,10 @@ export function calculTour(inp) {
   const volTotAbs = somme(volAbs);
   if (volTotAbs <= 0) return null;
   const y = { CO2: volAbs.CO2 / volTotAbs, H2O: volAbs.H2O / volTotAbs, O2: volAbs.O2 / volTotAbs, N2: volAbs.N2 / volTotAbs };
-  const roGaz = masTotAbs / ((volTotAbs * (tAbs + 273)) / 273);
+  // ORIGINE (sans sous-refroidissement) : masse volumique des fumées épurées fournie par le quench (RoEpuree)
+  const roGaz = ORI && !cond && inp.roEpureeQuench > 0
+    ? inp.roEpureeQuench
+    : masTotAbs / ((volTotAbs * (tAbs + 273)) / 273);
   const muGaz = muFumees(y, tAbs);
 
   // ─── Liquide de lavage ───
@@ -262,7 +265,8 @@ export function calculTour(inp) {
     if (cond) {
       masH2Os = masIn.H2O - cond.condensat;
     } else {
-      const ps = psatH2O(Tin);
+      // saturation à la température de saturation du quench (recup_Ts) quand elle est connue
+      const ps = psatH2O(inp.tsQuench > 0 ? inp.tsQuench : Tin);
       masH2Os = ps < 760 ? (ps / (760 - ps)) * molIncondS * (M.H2O / 1000) : masAbs.H2O;
     }
     let volH2OS = volAbs.H2O;
@@ -475,8 +479,11 @@ const TourLavageCalculator = ({ innerData = {}, setInnerData, currentLanguage = 
 
   // Valeurs initiales tirées du flux amont (node quench → onglets 2 & 3)
   const defaultsFromNode = useCallback(() => {
-    const FG = innerData?.FG_out_kg_h || innerData?.FG_OUT_kg_h || {};
-    const P = innerData?.Poutput || innerData?.PInput || {};
+    // Priorité à la sortie du quench amont calculée par le moteur Pyrofluid (fumées saturées et épurées) ;
+    // à défaut, flux générique du nœud amont.
+    const Q = innerData?.FG_quench_out_kg_h;
+    const FG = Q || innerData?.FG_out_kg_h || innerData?.FG_OUT_kg_h || {};
+    const P = Q || innerData?.Poutput || innerData?.PInput || {};
     return {
       mCO2: FG.CO2 ?? 2839,
       mH2O: FG.H2O ?? 17740,
@@ -485,8 +492,10 @@ const TourLavageCalculator = ({ innerData = {}, setInnerData, currentLanguage = 
       mSO2: P.SO2 ?? 31.61,
       mHCl: P.HCl ?? 5.78,
       mPoussieres: 0,
-      tempFumees: innerData?.T_sortie ?? innerData?.T_OUT ?? 84.66,
-      pTotal: 0,
+      tempFumees: (Q ? innerData?.T_quench_out : undefined) ?? innerData?.T_sortie ?? innerData?.T_OUT ?? 84.66,
+      pTotal: Q ? (innerData?.P_quench_out_mmCE ?? 0) : 0,
+      tsQuench: Q ? (innerData?.recup_Ts ?? 0) : 0,
+      roEpureeQuench: Q ? (innerData?.RoEpuree ?? 0) : 0,
       cibleSO2: 50, cibleHCl: 10,
       diamRetenu: 1.2, debArrosage: 25000, concLiqSO2: 4.5, pourNaOH: 30,
       typeGarn: 'VSP', facteurGarn: 82, surfaceVolGarn: 100, diamGarn: 0.051,
@@ -515,6 +524,7 @@ const TourLavageCalculator = ({ innerData = {}, setInnerData, currentLanguage = 
       ...s,
       mCO2: d.mCO2, mH2O: d.mH2O, mN2: d.mN2, mO2: d.mO2,
       mSO2: d.mSO2, mHCl: d.mHCl, tempFumees: d.tempFumees,
+      pTotal: d.pTotal, tsQuench: d.tsQuench, roEpureeQuench: d.roEpureeQuench,
     }));
   };
 
@@ -527,6 +537,17 @@ const TourLavageCalculator = ({ innerData = {}, setInnerData, currentLanguage = 
     setInp((s) => ({ ...s, diamRetenu: DIAM_STD[i], debArrosage: DEBIT_STD[i] * 1000 }));
 
   const r = useMemo(() => calculTour(inp), [inp]);
+
+  // ─── État de la liaison avec le quench amont ───
+  const liaisonQuench = useMemo(() => {
+    const Q = innerData?.FG_quench_out_kg_h;
+    if (!Q) return { present: false };
+    const proche = (a, b) => Math.abs((a ?? 0) - (b ?? 0)) <= 1e-6 * Math.max(1, Math.abs(b ?? 0));
+    const aJour =
+      proche(inp.mCO2, Q.CO2) && proche(inp.mH2O, Q.H2O) && proche(inp.mN2, Q.N2) && proche(inp.mO2, Q.O2) &&
+      proche(inp.mSO2, Q.SO2) && proche(inp.mHCl, Q.HCl) && proche(inp.tempFumees, innerData?.T_quench_out);
+    return { present: true, aJour, ts: innerData?.recup_Ts };
+  }, [innerData, inp]);
 
   // ─── Synchronisation innerData (compat rapport + OPEX + aval) ───
   const lastSync = useRef('');
@@ -587,6 +608,17 @@ const TourLavageCalculator = ({ innerData = {}, setInnerData, currentLanguage = 
             {t('Clear memory')}
           </button>
         </div>
+      </div>
+
+      <div style={{ padding: 8, marginBottom: 12, borderRadius: 4, fontSize: 12,
+        backgroundColor: !liaisonQuench.present ? '#fef3c7' : liaisonQuench.aJour ? '#ecfdf5' : '#fee2e2',
+        color: !liaisonQuench.present ? '#92400e' : liaisonQuench.aJour ? '#065f46' : '#991b1b',
+        border: `1px solid ${!liaisonQuench.present ? '#fcd34d' : liaisonQuench.aJour ? '#6ee7b7' : '#fca5a5'}` }}>
+        {!liaisonQuench.present
+          ? t('TL_quench_link_absent')
+          : liaisonQuench.aJour
+            ? `${t('TL_quench_link_ok')} (Ts = ${fmt(liaisonQuench.ts, 2)} °C)`
+            : t('TL_quench_link_stale')}
       </div>
 
       {!r && (

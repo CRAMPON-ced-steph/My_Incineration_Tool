@@ -12,6 +12,9 @@ export const tlTranslations = {
     TL_legend_calc: 'calculé',
     TL_legend_warn: 'hors plage',
     TL_reload_from_flow: 'Recharger depuis le flux amont',
+    TL_quench_link_ok: 'Entrée = sortie du quench amont (fumées saturées, calcul Pyrofluid)',
+    TL_quench_link_stale: 'Les entrées ne correspondent plus à la sortie du quench amont — cliquer sur « Recharger depuis le flux amont ».',
+    TL_quench_link_absent: 'Aucun résultat de quench Pyrofluid en amont : les entrées viennent du flux générique et ne sont pas forcément saturées.',
     TL_err_invalid_composition: 'Composition des fumées invalide : débit volumique total ou sec nul.',
 
     TL_section_inlet: 'Fumées en entrée (sortie quench)',
@@ -116,6 +119,9 @@ export const tlTranslations = {
     TL_legend_calc: 'calculated',
     TL_legend_warn: 'out of range',
     TL_reload_from_flow: 'Reload from upstream flow',
+    TL_quench_link_ok: 'Inlet = upstream quench outlet (saturated flue gas, Pyrofluid calculation)',
+    TL_quench_link_stale: 'Inputs no longer match the upstream quench outlet — click "Reload from upstream flow".',
+    TL_quench_link_absent: 'No Pyrofluid quench result upstream: inputs come from the generic flow and may not be saturated.',
     TL_err_invalid_composition: 'Invalid flue gas composition: total or dry volume flow is zero.',
 
     TL_section_inlet: 'Inlet flue gas (quench outlet)',
