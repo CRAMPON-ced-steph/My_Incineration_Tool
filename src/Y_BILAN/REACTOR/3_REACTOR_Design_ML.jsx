@@ -3,7 +3,7 @@ import { T_ref } from '../../A_Transverse_fonction/constantes';
 import TableGeneric from '../../C_Components/Tableau_generique';
 import { coeff_Nm3_to_m3 } from '../../A_Transverse_fonction/conv_calculation';
 import { getOpexData } from '../../A_Transverse_fonction/opexDataService';
-import REACTORimage from '/src/B_Images/SDA_img.png';
+import SprayDryer from '../../B_Images/SDA_img.jsx';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './REACTOR_traduction';
 
@@ -341,7 +341,7 @@ const REACTORDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
       {/* 2. Reactor Design */}
       <Section title={t('Reactor Design')}>
         <div style={{ flex: 1 }}>
-          <img src={REACTORimage} alt="Reactor" style={{ width: '100%', maxHeight: '300px', objectFit: 'contain' }} />
+          <div style={{ width: '100%', maxHeight: '300px', overflow: 'hidden' }}><SprayDryer /></div>
         </div>
         <div style={{ flex: 1 }}>
           <ParameterInput label="Flow Rate [Nm3/h]" value={reactorParams['Flow Rate [Nm3/h]']}

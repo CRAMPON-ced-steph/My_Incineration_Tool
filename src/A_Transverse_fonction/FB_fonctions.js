@@ -7,7 +7,7 @@ export const PCI_kcal_kgMV = (type_boue) => {
     case "PRIMAIRE":
       return 4781.06;
     case "MIXTE":
-      return 5629.76;
+      return 5300;
     case "BIOLOGIQUE":
       return 5629.76;
     case "DIGEREE":
@@ -26,7 +26,7 @@ const PCI_kJ_kgMV = (type_boue) => {
     case "PRIMAIRE":
       return 200017.34;
     case "MIXTE":
-      return 23570.68;
+      return 22190.04;
     case "BIOLOGIQUE":
       return 23570.68;
     case "DIGEREE":

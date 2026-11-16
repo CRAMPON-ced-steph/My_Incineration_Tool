@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { T_ref } from '../../A_Transverse_fonction/constantes';
 import TableGeneric from '../../C_Components/Tableau_generique';
 import '../../index.css';
-import stack_hauteur_hp from '../../B_Images/stack/Stack_hauteur_hp.png';
-import stack_multistack from '../../B_Images/stack/Stack_dependante_autre_cheminee.png';
-import stack_obstacles from '../../B_Images/stack/Stack_obstacle.png';
+import PlantPhotos from '../../B_Images/stack/Stack_hauteur_hp.jsx';
+import StripedStacks from '../../B_Images/stack/Stack_dependante_autre_cheminee.jsx';
+import StackHeightDiagram from '../../B_Images/stack/Stack_obstacle.jsx';
 import { getOpexData } from '../../A_Transverse_fonction/opexDataService';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './STACK_traduction';
@@ -294,7 +294,7 @@ const STACKdesign = ({ innerData, setInnerData, currentLanguage = 'fr', nodeId }
       <section style={{ marginBottom: '40px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px', alignItems: 'start',   background: '#f5f5f5', }}>
           <div>
-            <img src={stack_hauteur_hp} alt={t('stackTheoreticHeight')} style={{ width: '100%', maxWidth: '400px', borderRadius: '8px' }}/>
+            <div style={{ width: '100%', maxWidth: '400px' }}><PlantPhotos /></div>
           </div>
 
           <div>
@@ -418,7 +418,7 @@ const STACKdesign = ({ innerData, setInnerData, currentLanguage = 'fr', nodeId }
       <section style={{ marginBottom: '40px', marginTop: '40px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px', alignItems: 'start',   background: '#f5f5f5', }}>
           <div>
-            <img src={stack_multistack} alt={t('multiStackConfiguration')} style={{ width: '100%', maxWidth: '400px', borderRadius: '8px' }}/>
+            <div style={{ width: '100%', maxWidth: '400px' }}><StripedStacks /></div>
           </div>
 
           <div>
@@ -454,7 +454,7 @@ const STACKdesign = ({ innerData, setInnerData, currentLanguage = 'fr', nodeId }
       <section style={{ marginBottom: '40px', marginTop: '40px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px', alignItems: 'start',   background: '#f5f5f5', }}>
           <div>
-            <img src={stack_obstacles} alt={t('obstacleCalculation')} style={{ width: '100%', maxWidth: '400px', borderRadius: '8px' }}/>
+            <div style={{ width: '100%', maxWidth: '400px' }}><StackHeightDiagram /></div>
           </div>
 
           <div>

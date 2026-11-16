@@ -51,6 +51,50 @@ const DEFAULT_VALUES = {
   MV_percent: '70'
 };
 
+const getDisplayValue = (internalValue, mapping) => mapping[internalValue] || internalValue;
+
+const ToggleButton = ({ label, value, mapping, onChange, testId, isCalculating }) => {
+  const displayValue = getDisplayValue(value, mapping);
+  const isFirstOption = value === Object.keys(mapping)[0];
+  return (
+    <div style={{ marginTop: '10px', display: 'flex', alignItems: 'center' }}>
+      <label style={{ marginRight: '10px' }}>{label}:</label>
+      <button
+        onClick={onChange}
+        data-testid={testId}
+        className={`toggle-button ${isFirstOption ? 'toggle-button--option1' : 'toggle-button--option2'}`}
+        disabled={isCalculating}
+        aria-label={`${label}: ${displayValue}`}
+      >
+        {displayValue}
+      </button>
+    </div>
+  );
+};
+
+const WasteTypeSelector = ({ wasteType, onChange, isCalculating, wasteTypeMapping }) => (
+  <div style={{ marginBottom: '15px', display: 'flex', flexDirection: 'column', gap: '5px' }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+      <label style={{ fontSize: '14px', fontWeight: '500', color: '#333', minWidth: '120px', textAlign: 'left' }}>
+        Type de déchet:
+      </label>
+      <select
+        value={wasteType}
+        onChange={onChange}
+        disabled={isCalculating}
+        className="waste-type-selector"
+        style={{ flex: '1', padding: '8px 12px', borderRadius: '4px', border: '1px solid #ccc', backgroundColor: 'white', fontSize: '14px', minHeight: '36px', outline: 'none', transition: 'border-color 0.2s ease' }}
+        onFocus={(e) => e.target.style.borderColor = '#007bff'}
+        onBlur={(e) => e.target.style.borderColor = '#ccc'}
+      >
+        {Object.entries(wasteTypeMapping).map(([key, val]) => (
+          <option key={key} value={key}>{val}</option>
+        ))}
+      </select>
+    </div>
+  </div>
+);
+
 const FB_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguage, autoTrigger = false, nodeId }) => {
   // Refs stables — évite de recréer handleSendData à chaque update parent
   const nodeDataRef = useRef(nodeData);
@@ -286,11 +330,6 @@ const FB_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguag
     setWasteType(e.target.value);
   }, []);
 
-  // Mappage des valeurs pour l'affichage traduit
-  const getDisplayValue = useCallback((internalValue, mapping) => {
-    return mapping[internalValue] || internalValue;
-  }, []);
-
   // Mappings pour les traductions
   const balanceDisplayMapping = useMemo(() => ({
     [BALANCE_TYPES.DS]: 'DRY SOLIDS',
@@ -312,78 +351,6 @@ const FB_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguag
     [WASTE_TYPES.REFUS_DEGRILLAGE]: 'Refus dégrillage'
   }), []);
 
-  // Composant ToggleButton réutilisable
-  const ToggleButton = ({ label, value, mapping, onChange, testId }) => {
-    const displayValue = getDisplayValue(value, mapping);
-    const isFirstOption = value === Object.keys(mapping)[0];
-    
-    return (
-      <div style={{ marginTop: '10px', display: 'flex', alignItems: 'center' }}>
-        <label style={{ marginRight: '10px' }}>{label}:</label>
-        <button 
-          onClick={onChange}
-          data-testid={testId}
-          className={`toggle-button ${isFirstOption ? 'toggle-button--option1' : 'toggle-button--option2'}`}
-          disabled={isCalculating}
-          aria-label={`${label}: ${displayValue}`}
-        >
-          {displayValue}
-        </button>
-      </div>
-    );
-  };
-
-  // Composant pour le menu déroulant aligné avec les InputField
-  const WasteTypeSelector = () => (
-    <div style={{ 
-      marginBottom: '15px',
-      display: 'flex', 
-      flexDirection: 'column',
-      gap: '5px'
-    }}>
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '8px'
-      }}>
-        <label style={{ 
-          fontSize: '14px',
-          fontWeight: '500',
-          color: '#333',
-          minWidth: '120px',
-          textAlign: 'left'
-        }}>
-          Type de déchet:
-        </label>
-        <select 
-          value={wasteType}
-          onChange={handleWasteTypeChange}
-          disabled={isCalculating}
-          className="waste-type-selector"
-          style={{
-            flex: '1',
-            padding: '8px 12px',
-            borderRadius: '4px',
-            border: '1px solid #ccc',
-            backgroundColor: 'white',
-            fontSize: '14px',
-            minHeight: '36px',
-            outline: 'none',
-            transition: 'border-color 0.2s ease'
-          }}
-          onFocus={(e) => e.target.style.borderColor = '#007bff'}
-          onBlur={(e) => e.target.style.borderColor = '#ccc'}
-        >
-          {Object.entries(wasteTypeMapping).map(([key, value]) => (
-            <option key={key} value={key}>
-              {value}
-            </option>
-          ))}
-        </select>
-      </div>
-    </div>
-  );
-
   const hasCalculatedOnce = useRef(false);
   const hasAutoTriggered = useRef(false);
   useEffect(() => {
@@ -404,7 +371,12 @@ const FB_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguag
 
       {/* Menu déroulant pour le type de déchet */}
       <div className="waste-type-container">
-        <WasteTypeSelector />
+        <WasteTypeSelector
+          wasteType={wasteType}
+          onChange={handleWasteTypeChange}
+          isCalculating={isCalculating}
+          wasteTypeMapping={wasteTypeMapping}
+        />
       </div>
       
       <div className="inputs-container">
@@ -428,12 +400,13 @@ const FB_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguag
 
         {/* Toggle pour le type de bilan */}
         <div className="toggle-container">
-          <ToggleButton 
+          <ToggleButton
             label="Type de bilan"
             value={bilanType}
             mapping={balanceDisplayMapping}
             onChange={toggleBilanType}
             testId="balance-type-toggle"
+            isCalculating={isCalculating}
           />
         </div>
 
@@ -486,6 +459,7 @@ const FB_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLanguag
             mapping={diagramDisplayMapping}
             onChange={toggleDiagramMode}
             testId="diagram-toggle"
+            isCalculating={isCalculating}
           />
         </div>
 

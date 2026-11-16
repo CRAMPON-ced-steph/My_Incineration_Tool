@@ -430,6 +430,18 @@ const BouesTab = ({ innerData, onInnerDataChange, currentLanguage, nodeId }) => 
   }, []);
 
   // ============================================================
+  // PCI / PCS dérivés depuis l'état React (réactifs aux changements de boue/chons)
+  // ============================================================
+
+  const pciPcsDisplay = useMemo(() => {
+    const pci_kgMV = PCI_kcal_kgMV(boue.sludgeType);
+    const pcs_kgMV = PCS_kcal_kgMV(pci_kgMV, Number(chons.H));
+    const pci_kg   = PCI_kcal_kg(Number(boue.MS_pourcent), Number(boue.MV_pourcent), pci_kgMV);
+    const pcs_kg   = PCS_kcal_kg(pci_kg, Number(boue.MS_pourcent), Number(boue.MV_pourcent), Number(chons.H));
+    return { pci_kgMV, pcs_kgMV, pci_kg, pcs_kg };
+  }, [boue.sludgeType, boue.MS_pourcent, boue.MV_pourcent, chons.H]);
+
+  // ============================================================
   // STYLES
   // ============================================================
 
@@ -621,6 +633,20 @@ const BouesTab = ({ innerData, onInnerDataChange, currentLanguage, nodeId }) => 
               <label style={labelStyle}>
                 {label} {unit}
               </label>
+              <input type="text" value={fmt(Number(val), 1)} readOnly style={readOnlyStyle} />
+            </div>
+          ))}
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '15px', alignItems: 'start', marginTop: '15px' }}>
+          {[
+            { label: 'PCI boue [kcal/kg MV]',     val: pciPcsDisplay.pci_kgMV },
+            { label: 'PCS boue [kcal/kg MV]',     val: pciPcsDisplay.pcs_kgMV },
+            { label: 'PCI boue [kcal/kg brut]',   val: pciPcsDisplay.pci_kg },
+            { label: 'PCS boue [kcal/kg brut]',   val: pciPcsDisplay.pcs_kg },
+          ].map(({ label, val }) => (
+            <div key={label}>
+              <label style={labelStyle}>{label}</label>
               <input type="text" value={fmt(Number(val), 1)} readOnly style={readOnlyStyle} />
             </div>
           ))}

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import TableGeneric from '../../C_Components/Tableau_generique';
 import { coeff_Nm3_to_m3 } from '../../A_Transverse_fonction/conv_calculation';
 import { getOpexData } from '../../A_Transverse_fonction/opexDataService';
-import BHFimage from '../../B_Images/BHF_img.png';
+import ReverseAirBaghouse from '../../B_Images/BHF_img.jsx';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './BHF_traduction';
 
@@ -249,7 +249,7 @@ const BHFDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
       >
         <div style={{ display: 'flex', gap: '20px', marginBottom: '20px' }}>
           <div style={{ flex: 1 }}>
-            <img src={BHFimage} alt="BHF" style={{ width: '100%', maxWidth: '300px', objectFit: 'contain' }} />
+            <div style={{ width: '100%' }}><ReverseAirBaghouse /></div>
           </div>
           <div style={{ flex: 1, display: 'grid', gap: '15px' }}>
             <ParameterInput translationKey="Rendement de capture [%]" value={Rdt_capture}

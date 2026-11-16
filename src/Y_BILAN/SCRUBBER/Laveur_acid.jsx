@@ -5,6 +5,57 @@ import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './SCRUBBER_traduction';
 
 import { fmt } from '../../A_Transverse_fonction/formatNumber';
+
+const LaveurAcidCtx = React.createContext((k) => k);
+
+const Section = ({ title, results, children }) => {
+  const t = React.useContext(LaveurAcidCtx);
+  return (
+    <div style={{ marginBottom: '30px', padding: '20px', backgroundColor: '#f9f9f9', borderRadius: '8px' }}>
+      <h3 style={{ marginTop: 0, borderBottom: '2px solid #4a90e2', paddingBottom: '10px' }}>
+        {title}
+      </h3>
+      <div style={{ display: 'grid', gap: '15px' }}>
+        {children}
+        {results && results.length > 0 && (
+          <>
+            <h4 style={{ marginTop: '15px', marginBottom: '10px' }}>{t('Résultats')}</h4>
+            <TableGeneric elements={results} />
+          </>
+        )}
+      </div>
+    </div>
+  );
+};
+
+const ParameterInput = ({ translationKey, value, onChange, type = 'number', options = null, disabled = false, step }) => {
+  const t = React.useContext(LaveurAcidCtx);
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+      <label style={{ flex: 1, minWidth: '200px', textAlign: 'right', fontWeight: '500', color: '#333' }}>
+        {t(translationKey)}:
+      </label>
+      {options ? (
+        <select
+          value={value}
+          onChange={(e) => onChange(parseFloat(e.target.value))}
+          style={{ flex: '0 0 150px', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
+        >
+          {options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+        </select>
+      ) : (
+        <input
+          type={type}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          disabled={disabled}
+          style={{ flex: '0 0 150px', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
+        />
+      )}
+    </div>
+  );
+};
+
 // ===== CONSTANTES =====
 const constantes = {
   chaleurAbs: 850,
@@ -332,49 +383,6 @@ const HClScrubberCalculator = ({ innerData, setInnerData, currentLanguage = 'fr'
     return value.toFixed(decimals);
   };
 
-  // ===== COMPOSANTS UI =====
-  const Section = ({ title, results, children }) => (
-    <div style={{ marginBottom: '30px', padding: '20px', backgroundColor: '#f9f9f9', borderRadius: '8px' }}>
-      <h3 style={{ marginTop: 0, borderBottom: '2px solid #4a90e2', paddingBottom: '10px' }}>
-        {title}
-      </h3>
-      <div style={{ display: 'grid', gap: '15px' }}>
-        {children}
-        {results && results.length > 0 && (
-          <>
-            <h4 style={{ marginTop: '15px', marginBottom: '10px' }}>{t('Résultats')}</h4>
-            <TableGeneric elements={results} />
-          </>
-        )}
-      </div>
-    </div>
-  );
-
-  const ParameterInput = ({ translationKey, value, onChange, type = 'number', options = null, disabled = false }) => (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
-      <label style={{ flex: 1, minWidth: '200px', textAlign: 'right', fontWeight: '500', color: '#333' }}>
-        {t(translationKey)}:
-      </label>
-      {options ? (
-        <select
-          value={value}
-          onChange={(e) => onChange(parseFloat(e.target.value))}
-          style={{ flex: '0 0 150px', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
-        >
-          {options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
-        </select>
-      ) : (
-        <input
-          type={type}
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          disabled={disabled}
-          style={{ flex: '0 0 150px', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
-        />
-      )}
-    </div>
-  );
-
   // Résultats calculés
   const elementsEpuratoires = resultats ? [
     { text: t('Temp. sortie fumées'), value: formatNumber(resultats.temperatureFumeesSortie) + ' °C' },
@@ -404,6 +412,7 @@ const HClScrubberCalculator = ({ innerData, setInnerData, currentLanguage = 'fr'
   ] : [];
 
   return (
+    <LaveurAcidCtx.Provider value={t}>
     <div className="cadre_pour_onglet">
       {erreur && (
         <div style={{ padding: '12px', margin: '12px', borderRadius: '4px', backgroundColor: '#fee2e2', color: '#991b1b', border: '1px solid #fca5a5' }}>
@@ -491,6 +500,7 @@ const HClScrubberCalculator = ({ innerData, setInnerData, currentLanguage = 'fr'
         </>
       )}
     </div>
+    </LaveurAcidCtx.Provider>
   );
 };
 

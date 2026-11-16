@@ -36,12 +36,14 @@ const RETRO_REPORT_MAP = {
   IACT:           true,
   HX_TubeAndShell:true,
   WATER_INJECTION:true,
+  QUENCHsimple:   true,
+  SATURATOR:      true,
 };
 
 
 const EQUIPMENT_ORDER = [
   'RK+SCC', 'GF', 'FB', 'WHB', 'IACT', 'HX_TubeAndShell',
-  'QUENCH', 'WATER_INJECTION', 'DENOX', 'BHF', 'AIRINJECTION',
+  'QUENCH', 'QUENCHsimple', 'SATURATOR', 'WATER_INJECTION', 'DENOX', 'BHF', 'AIRINJECTION',
   'REACTOR', 'SCRUBBER', 'ELECTROFILTER', 'CYCLONE',
   'COOLINGTOWER', 'IDFAN', 'STACK',
 ];
@@ -641,7 +643,9 @@ const ReportBody = ({ node, tr }) => {
   if (label === 'FB')           return <FBReportBody           calculationResult={result} inputParams={inputData} tr={tr} />;
   if (label === 'GF')           return <GFReportBody           calculationResult={result} inputParams={inputData} tr={tr} />;
   if (label === 'IDFAN')        return <IDFANReportBody        calculationResult={result} inputParams={inputData} tr={tr} />;
-  if (label === 'QUENCH')       return <QUENCHReportBody       calculationResult={result} inputParams={inputData} tr={tr} />;
+  if (label === 'QUENCH')        return <QUENCHReportBody calculationResult={result} inputParams={inputData} tr={tr} />;
+  if (label === 'QUENCHsimple') return <QUENCHReportBody calculationResult={result} inputParams={inputData} tr={tr} />;
+  if (label === 'SATURATOR')    return <QUENCHReportBody calculationResult={result} inputParams={inputData} tr={tr} />;
   if (label === 'SCRUBBER')     return <SCRUBBERReportBody     calculationResult={result} inputParams={inputData} tr={tr} />;
   if (label === 'REACTOR')        return <REACTORReportBody        calculationResult={result} inputParams={inputData} tr={tr} />;
   if (label === 'WHB')            return <WHBReportBody            calculationResult={result} inputParams={inputData} tr={tr} />;

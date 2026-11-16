@@ -3,9 +3,11 @@ import React from 'react';
 import TableGeneric from './Tableau_generique';
 
 const DisplayDesignComponent = ({
-  imageSrc,                // Chemin de l'image
-  imageAlt = 'Image',      // Texte alternatif de l'image
-  imageWidth = '60%',      // Largeur de l'image
+  imageSrc,                // Chemin de l'image (PNG/JPG)
+  ImageComponent,          // Composant React SVG — prioritaire sur imageSrc
+  imageAlt = 'Image',      // Texte alternatif de l'image (ignoré si ImageComponent)
+  imageWidth = '60%',      // Largeur de l'image / du composant
+  imageAlign = 'center',   // Alignement horizontal de l'image : 'center', 'flex-start', 'flex-end'
   direction = 'row',       // 'row' ou 'column' pour la disposition
   title = 'Paramètres',    // Titre de la section des paramètres
   parametersObject,        // Objet contenant les paramètres à afficher/modifier
@@ -74,23 +76,23 @@ const DisplayDesignComponent = ({
         }}
       >
         {/* Image section */}
-        <div className="image_section" style={{ 
-          width: direction === 'row' ? '40%' : '100%',
-          display: 'flex',
-          justifyContent: 'center',
-          marginBottom: direction === 'column' ? '0px' : '0'
-        }}>
-          <img
-            src={imageSrc}
-            alt={imageAlt}
-            className="cadre_style_image"
-            style={{ width: imageWidth, marginBottom: '0px' }}
-          />
-        </div>
+        {(imageSrc || ImageComponent) && (
+          <div className="image_section" style={{
+            width: direction === 'row' ? '40%' : '100%',
+            display: 'flex',
+            justifyContent: imageAlign,
+            marginBottom: direction === 'column' ? '0px' : '0'
+          }}>
+            {ImageComponent
+              ? <div style={{ width: imageWidth }}><ImageComponent /></div>
+              : <img src={imageSrc} alt={imageAlt} className="cadre_style_image" style={{ width: imageWidth, marginBottom: '0px' }} />
+            }
+          </div>
+        )}
 
         {/* Parameters section */}
-        <div className="parameters_section" style={{ 
-          width: direction === 'row' ? '60%' : '100%' 
+        <div className="parameters_section" style={{
+          width: (direction === 'row' && (imageSrc || ImageComponent)) ? '60%' : '100%'
         }}>
           <div className="cadre_style_parametres">
             < h4 >{title}</h4>

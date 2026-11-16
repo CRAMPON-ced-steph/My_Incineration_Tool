@@ -3,11 +3,94 @@ import { T_ref } from '../../A_Transverse_fonction/constantes';
 import TableGeneric from '../../C_Components/Tableau_generique';
 import { coeff_Nm3_to_m3 } from '../../A_Transverse_fonction/conv_calculation';
 import { getOpexData } from '../../A_Transverse_fonction/opexDataService';
-import reactImage from '../../B_Images/quench_img.png';
+import SprayTower from '../../B_Images/quench_img.jsx';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './QUENCHsimple_traduction';
 
 import { fmt } from '../../A_Transverse_fonction/formatNumber';
+
+const QSDesignCtx = React.createContext((k) => k);
+
+const Section = ({ title, results, children }) => {
+  const t = React.useContext(QSDesignCtx);
+  return (
+    <div style={{ marginBottom: '30px', padding: '20px', backgroundColor: '#f9f9f9', borderRadius: '8px' }}>
+      <h3 style={{ marginTop: 0, borderBottom: '2px solid #4a90e2', paddingBottom: '10px' }}>
+        {title}
+      </h3>
+      <div style={{ display: 'grid', gap: '15px' }}>
+        {children}
+        {results && results.length > 0 && (
+          <>
+            <h4 style={{ marginTop: '15px', marginBottom: '10px' }}>{t('Résultats')}</h4>
+            <TableGeneric elements={results} />
+          </>
+        )}
+      </div>
+    </div>
+  );
+};
+
+const ParameterInput = ({ translationKey, value, onChange, type = 'number', options = null, disabled = false, step = '1' }) => {
+  const t = React.useContext(QSDesignCtx);
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+      <label style={{ flex: 1, minWidth: '250px', textAlign: 'right', fontWeight: '500', color: '#333' }}>
+        {t(translationKey)}:
+      </label>
+      {options ? (
+        <select
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          style={{ flex: '0 0 150px', padding: '8px', border: '1px solid #ddd', borderRadius: '4px', fontSize: '14px' }}
+        >
+          {options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+        </select>
+      ) : (
+        <input
+          type={type}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          disabled={disabled}
+          step={step}
+          style={{ flex: '0 0 150px', padding: '8px', border: '1px solid #ddd', borderRadius: '4px', fontSize: '14px' }}
+        />
+      )}
+    </div>
+  );
+};
+
+const ParameterInputWithSpinner = ({ translationKey, value, onChange, increment, onSpinnerChange }) => {
+  const t = React.useContext(QSDesignCtx);
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+      <label style={{ flex: 1, minWidth: '250px', textAlign: 'right', fontWeight: '500', color: '#333' }}>
+        {t(translationKey)}:
+      </label>
+      <div style={{ display: 'flex', gap: '8px', flex: '0 0 150px' }}>
+        <button
+          onClick={() => onSpinnerChange(translationKey, -increment)}
+          style={{ padding: '6px 12px', backgroundColor: '#f5f5f5', border: '1px solid #ddd', borderRadius: '4px', cursor: 'pointer' }}
+        >
+          −
+        </button>
+        <input
+          type="number"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          style={{ flex: 1, padding: '8px', border: '1px solid #ddd', borderRadius: '4px', textAlign: 'center', fontSize: '14px' }}
+        />
+        <button
+          onClick={() => onSpinnerChange(translationKey, increment)}
+          style={{ padding: '6px 12px', backgroundColor: '#f5f5f5', border: '1px solid #ddd', borderRadius: '4px', cursor: 'pointer' }}
+        >
+          +
+        </button>
+      </div>
+    </div>
+  );
+};
+
 const QUENCHsimpleDesign = ({ innerData, setInnerData, upstreamT_IN, currentLanguage = 'fr' }) => {
   const languageCode = getLanguageCode(currentLanguage);
   const t = (key) => {
@@ -249,78 +332,6 @@ const QUENCHsimpleDesign = ({ innerData, setInnerData, upstreamT_IN, currentLang
     }
   }, [Conso_elec_pompe_reelle_kW, Puissance_pompe_kW, Rendement_pompe, Eau_add, waterType, P_out_mmCE, DiameterQuench, P_pulverisation, nozzleType, PDC_mmCE, setInnerData, t]);
 
-  // UI Components
-  const Section = ({ title, results, children }) => (
-    <div style={{ marginBottom: '30px', padding: '20px', backgroundColor: '#f9f9f9', borderRadius: '8px' }}>
-      <h3 style={{ marginTop: 0, borderBottom: '2px solid #4a90e2', paddingBottom: '10px' }}>
-        {title}
-      </h3>
-      <div style={{ display: 'grid', gap: '15px' }}>
-        {children}
-        {results && results.length > 0 && (
-          <>
-            <h4 style={{ marginTop: '15px', marginBottom: '10px' }}>{t('Résultats')}</h4>
-            <TableGeneric elements={results} />
-          </>
-        )}
-      </div>
-    </div>
-  );
-
-  const ParameterInput = ({ translationKey, value, onChange, type = 'number', options = null, disabled = false, step = '1' }) => (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-      <label style={{ flex: 1, minWidth: '250px', textAlign: 'right', fontWeight: '500', color: '#333' }}>
-        {t(translationKey)}:
-      </label>
-      {options ? (
-        <select
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          style={{ flex: '0 0 150px', padding: '8px', border: '1px solid #ddd', borderRadius: '4px', fontSize: '14px' }}
-        >
-          {options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
-        </select>
-      ) : (
-        <input
-          type={type}
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          disabled={disabled}
-          step={step}
-          style={{ flex: '0 0 150px', padding: '8px', border: '1px solid #ddd', borderRadius: '4px', fontSize: '14px' }}
-        />
-      )}
-    </div>
-  );
-
-  const ParameterInputWithSpinner = ({ translationKey, value, onChange, increment }) => (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
-      <label style={{ flex: 1, minWidth: '250px', textAlign: 'right', fontWeight: '500', color: '#333' }}>
-        {t(translationKey)}:
-      </label>
-      <div style={{ display: 'flex', gap: '8px', flex: '0 0 150px' }}>
-        <button
-          onClick={() => handleSpinnerChange(translationKey, -increment)}
-          style={{ padding: '6px 12px', backgroundColor: '#f5f5f5', border: '1px solid #ddd', borderRadius: '4px', cursor: 'pointer' }}
-        >
-          −
-        </button>
-        <input
-          type="number"
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          style={{ flex: 1, padding: '8px', border: '1px solid #ddd', borderRadius: '4px', textAlign: 'center', fontSize: '14px' }}
-        />
-        <button
-          onClick={() => handleSpinnerChange(translationKey, increment)}
-          style={{ padding: '6px 12px', backgroundColor: '#f5f5f5', border: '1px solid #ddd', borderRadius: '4px', cursor: 'pointer' }}
-        >
-          +
-        </button>
-      </div>
-    </div>
-  );
-
   // Elements for tables
   const elements_PDC = [{ text: t('Pression de sortie [mmCE]'), value: P_out_mmCE.toFixed(2) }];
 
@@ -373,6 +384,7 @@ const QUENCHsimpleDesign = ({ innerData, setInnerData, upstreamT_IN, currentLang
   ];
 
   return (
+    <QSDesignCtx.Provider value={t}>
     <div className="cadre_pour_onglet">
       {/* PDC aéraulique */}
       <Section title={t('Pertes de charge aéraulique')} results={elements_PDC}>
@@ -389,13 +401,13 @@ const QUENCHsimpleDesign = ({ innerData, setInnerData, upstreamT_IN, currentLang
       >
         <div style={{ display: 'flex', gap: '30px', marginBottom: '20px' }}>
           <div style={{ flex: 1 }}>
-            <img src={reactImage} alt="Quench" style={{ width: '100%', maxWidth: '300px', objectFit: 'contain' }} />
+            <div style={{ width: '100%', maxWidth: '300px' }}><SprayTower /></div>
           </div>
           <div style={{ flex: 1, display: 'grid', gap: '15px' }}>
-            <ParameterInputWithSpinner translationKey="Quench diameter [m]" value={DiameterQuench} 
-              onChange={(v) => handleParametresChange('Quench diameter [m]', v)} increment={0.1} />
-            <ParameterInputWithSpinner translationKey="Pression pulverisation [bar]" value={P_pulverisation} 
-              onChange={(v) => handleParametresChange('Pression pulverisation [bar]', v)} increment={0.5} />
+            <ParameterInputWithSpinner translationKey="Quench diameter [m]" value={DiameterQuench}
+              onChange={(v) => handleParametresChange('Quench diameter [m]', v)} increment={0.1} onSpinnerChange={handleSpinnerChange} />
+            <ParameterInputWithSpinner translationKey="Pression pulverisation [bar]" value={P_pulverisation}
+              onChange={(v) => handleParametresChange('Pression pulverisation [bar]', v)} increment={0.5} onSpinnerChange={handleSpinnerChange} />
             <ParameterInput translationKey="Type de buse" value={nozzleType} 
               onChange={(v) => handleParametresChange('Type de buse', v)}
               options={Object.keys(nozzleTypes)} />
@@ -435,6 +447,7 @@ const QUENCHsimpleDesign = ({ innerData, setInnerData, upstreamT_IN, currentLang
       </div>
 
     </div>
+    </QSDesignCtx.Provider>
   );
 };
 

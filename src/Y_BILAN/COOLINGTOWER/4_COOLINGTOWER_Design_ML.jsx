@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import COOLINGTOWERImage from '/src/B_Images/quench_img.png';
+import SprayTower from '../../B_Images/quench_img.jsx';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './COOLINGTOWER_traduction';
 import { getOpexData } from '../../A_Transverse_fonction/opexDataService';
@@ -315,11 +315,7 @@ const COOLINGTOWERDesign = ({ innerData, setInnerData, currentLanguage = 'fr' })
     <div className="p-6 flex flex-col lg:flex-row items-start bg-gray-50">
       {/* ========== IMAGE COLUMN ========== */}
       <div className="lg:w-1/3 mb-6 lg:mb-0 lg:mr-8">
-        <img
-          src={COOLINGTOWERImage}
-          alt={t('COOLINGTOWER Image')}
-          className="w-full h-auto rounded-lg shadow-lg"
-        />
+        <SprayTower />
       </div>
 
       {/* ========== PARAMETERS & CALCULATIONS COLUMN ========== */}

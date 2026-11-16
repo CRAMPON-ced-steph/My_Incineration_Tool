@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { T_ref, P_ref } from '../../A_Transverse_fonction/constantes';
-import cycloneImage from '/src/B_Images/cyclone_img.png';
+import CycloneDiagram from '../../B_Images/cyclone_img.jsx';
 import TableGeneric from '../../C_Components/Tableau_generique';
 import { getOpexData } from '../../A_Transverse_fonction/opexDataService';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
@@ -272,7 +272,7 @@ const AIRINJECTIONDesign = ({ innerData, setInnerData, currentLanguage = 'fr' })
       <Section title={t('Cyclone Model Selection')} t={t}>
         <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
           <div style={{ flex: '0 0 300px' }}>
-            <img src={cycloneImage} alt="Cyclone Diagram" style={{ width: '100%', height: 'auto', borderRadius: '8px' }} />
+            <CycloneDiagram />
           </div>
           <div style={{ flex: 1 }}>
             <div style={{ marginBottom: '15px' }}>

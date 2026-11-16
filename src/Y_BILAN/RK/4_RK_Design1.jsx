@@ -13,16 +13,11 @@ import { Tsat_p, hL_T, hL_p, hV_p, hV_T, h_pT, CpL_T } from '../../A_Transverse_
 
 import { fmt } from '../../A_Transverse_fonction/formatNumber';
 // Import images
-import RK_tps_sejour from '../../B_Images/RK/RK_tps_sejour.png';
-import RK_front_shield from '../../B_Images/RK/RK_front_shield.png';
-import RK_pertes_thermiques from '../../B_Images/RK/RK_pertes_thermiques.png';
-import FondTransparent from '../../B_Images/fond_transparent.jpg';
-
-import SCC_img from '../../B_Images/SCC/SCC_img.png';
-import SCC_extracteur from '../../B_Images/SCC/SCC_extracteur.png';
-import SCC_formule from '../../B_Images/SCC/SCC_formule.png';
-
-import fond_transparent from '../../B_Images/fond_transparent.jpg';
+import KilnDiagram from '../../B_Images/RK/RK_tps_sejour.jsx';
+import RKFrontShield from '../../B_Images/RK/RK_front_shield.jsx';
+import SchemaHorizontal from '../../B_Images/RK/RK_pertes_thermiques.jsx';
+import SCCSchema from '../../B_Images/SCC/SCC_img.jsx';
+import ViewFactorFigure from '../../B_Images/SCC/SCC_formule.jsx';
 
 import { getOpexData } from '../../A_Transverse_fonction/opexDataService';
 import { dataArray_CO2 } from '../../D_Data_base/dataCO2';
@@ -824,9 +819,6 @@ const RKdesign = ({ innerData, setInnerData, currentLanguage = 'fr', nodeId }) =
 
       <DisplayDesignComponent
         title={t('aeraulicPressureLoss')}
-        imageSrc={fond_transparent}
-        imageAlt={t('aeraulicPressureLoss')}
-        imageWidth=""
         direction="column"
         parametersObject={PDC_calcul}
         resultsTitle={t('aeraulicPressureLoss')}
@@ -838,7 +830,7 @@ const RKdesign = ({ innerData, setInnerData, currentLanguage = 'fr', nodeId }) =
 
       <DisplayDesignComponent
         title={t('thermicalLossParameters')}
-        imageSrc={RK_tps_sejour}
+        ImageComponent={KilnDiagram}
         imageAlt={t('rotaryKilnDesign')}
         imageWidth="80%"
         direction="column"
@@ -900,7 +892,7 @@ const RKdesign = ({ innerData, setInnerData, currentLanguage = 'fr', nodeId }) =
 
       <DisplayDesignComponent
         title={t('lanceEstimation')}
-        imageSrc={RK_front_shield}
+        ImageComponent={RKFrontShield}
         imageAlt={t('lanceEstimation')}
         imageWidth="80%"
         direction="row"
@@ -918,9 +910,6 @@ const RKdesign = ({ innerData, setInnerData, currentLanguage = 'fr', nodeId }) =
 
       <DisplayDesignComponent
         title={t('facadeCooling')}
-        imageSrc={fond_transparent}
-        imageAlt={t('facadeCooling')}
-        imageWidth="0%"
         direction="column"
         parametersObject={Parametres_refroidissement}
         resultsTitle={t('facadeCooling')}
@@ -935,7 +924,7 @@ const RKdesign = ({ innerData, setInnerData, currentLanguage = 'fr', nodeId }) =
 
       <DisplayDesignComponent
         title={t('facadeThermicalLosses')}
-        imageSrc={RK_pertes_thermiques}
+        ImageComponent={SchemaHorizontal}
         imageAlt={t('facadeThermicalLosses')}
         imageWidth="60%"
         direction="column"
@@ -949,9 +938,6 @@ const RKdesign = ({ innerData, setInnerData, currentLanguage = 'fr', nodeId }) =
 
       <DisplayDesignComponent
         title={t('shellCooling')}
-        imageSrc={fond_transparent}
-        imageAlt={t('shellCooling')}
-        imageWidth="0%"
         direction="column"
         parametersObject={Parametres_refroidissement_virole}
         resultsTitle={t('shellCooling')}
@@ -963,7 +949,7 @@ const RKdesign = ({ innerData, setInnerData, currentLanguage = 'fr', nodeId }) =
 
       <DisplayDesignComponent
         title={t('sccDimensioning')}
-        imageSrc={SCC_img}
+        ImageComponent={SCCSchema}
         imageAlt={t('sccDimensioning')}
         imageWidth="60%"
         direction="row"
@@ -990,9 +976,6 @@ const RKdesign = ({ innerData, setInnerData, currentLanguage = 'fr', nodeId }) =
 
       <DisplayDesignComponent
         title={t('sccBurners')}
-        imageSrc={fond_transparent}
-        imageAlt={t('sccBurners')}
-        imageWidth=""
         direction="column"
         parametersObject={Parametres_bruleurs_SCC}
         resultsTitle={t('sccBurners')}
@@ -1008,9 +991,6 @@ const RKdesign = ({ innerData, setInnerData, currentLanguage = 'fr', nodeId }) =
 
       <DisplayDesignComponent
         title={t('sccThermicalLosses')}
-        imageSrc={FondTransparent}
-        imageAlt={t('sccThermicalLosses')}
-        imageWidth="0%"
         direction="column"
         parametersObject={Estimation_pertes_thermiques_SCC}
         resultsTitle={t('sccThermicalLosses')}
@@ -1022,9 +1002,6 @@ const RKdesign = ({ innerData, setInnerData, currentLanguage = 'fr', nodeId }) =
 
       <DisplayDesignComponent
         title={t('extractorConsumption')}
-        imageSrc={SCC_extracteur}
-        imageAlt={t('extractorConsumption')}
-        imageWidth="60%"
         direction="row"
         parametersObject={Estimation_conso_extracteur}
         resultsTitle={t('extractorConsumption')}
@@ -1039,9 +1016,6 @@ const RKdesign = ({ innerData, setInnerData, currentLanguage = 'fr', nodeId }) =
 
       <DisplayDesignComponent
         title={t('combustionAirFan')}
-        imageSrc={fond_transparent}
-        imageAlt={t('combustionAirFan')}
-        imageWidth="0%"
         direction="column"
         parametersObject={Estimation_conso_ventilateur_air_combustion}
         resultsTitle={t('combustionAirFan')}
@@ -1053,7 +1027,7 @@ const RKdesign = ({ innerData, setInnerData, currentLanguage = 'fr', nodeId }) =
 
       <DisplayDesignComponent
         title={t('extractorWaterEvaporation')}
-        imageSrc={SCC_formule}
+        ImageComponent={ViewFactorFigure}
         imageAlt={t('extractorWaterEvaporation')}
         imageWidth="30%"
         direction="column"

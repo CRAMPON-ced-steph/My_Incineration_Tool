@@ -4,6 +4,61 @@ import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './SCRUBBER_traduction';
 import { fmt } from '../../A_Transverse_fonction/formatNumber';
 
+const LaveurBasiqueCtx = React.createContext((k) => k);
+
+const SectionBasique = ({ title, results, children }) => {
+  const t = React.useContext(LaveurBasiqueCtx);
+  return (
+    <div style={{ marginBottom: '30px', padding: '20px', backgroundColor: '#f9f9f9', borderRadius: '8px' }}>
+      <h3 style={{ marginTop: 0, borderBottom: '2px solid #4a90e2', paddingBottom: '10px' }}>
+        {title}
+      </h3>
+      <div style={{ display: 'grid', gap: '15px' }}>
+        {children}
+        {results && results.length > 0 && (
+          <>
+            <h4 style={{ marginTop: '15px', marginBottom: '10px' }}>{t('Résultats')}</h4>
+            <TableGeneric elements={results} />
+          </>
+        )}
+      </div>
+    </div>
+  );
+};
+
+const ParameterInputBasique = ({ translationKey, value, onChange, type = 'number', options = null, step = '0.01' }) => {
+  const t = React.useContext(LaveurBasiqueCtx);
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+      <label style={{ flex: 1, minWidth: '200px', textAlign: 'right', fontWeight: '500', color: '#333' }}>
+        {t(translationKey)}:
+      </label>
+      {options ? (
+        <select
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          style={{ flex: '0 0 200px', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
+        >
+          {options.map(opt => (
+            <option key={opt.value} value={opt.value}>
+              {t(opt.label)}
+            </option>
+          ))}
+        </select>
+      ) : (
+        <input
+          type={type}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          step={step}
+          min="0"
+          style={{ flex: '0 0 150px', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
+        />
+      )}
+    </div>
+  );
+};
+
 // ===== CONSTANTES =====
 const reactifConfig = {
   naoh: { masse: 40.0, stoechiometrie: 2, nom: 'NaOH' },
@@ -179,54 +234,6 @@ const SO2ScrubberCalculator = ({ innerData = {}, setInnerData, currentLanguage =
     }
   }, [resultats, setInnerData]);
 
-  // ===== COMPOSANTS UI =====
-  const Section = ({ title, results, children }) => (
-    <div style={{ marginBottom: '30px', padding: '20px', backgroundColor: '#f9f9f9', borderRadius: '8px' }}>
-      <h3 style={{ marginTop: 0, borderBottom: '2px solid #4a90e2', paddingBottom: '10px' }}>
-        {title}
-      </h3>
-      <div style={{ display: 'grid', gap: '15px' }}>
-        {children}
-        {results && results.length > 0 && (
-          <>
-            <h4 style={{ marginTop: '15px', marginBottom: '10px' }}>{t('Résultats')}</h4>
-            <TableGeneric elements={results} />
-          </>
-        )}
-      </div>
-    </div>
-  );
-
-  const ParameterInput = ({ translationKey, value, onChange, type = 'number', options = null, step = '0.01' }) => (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
-      <label style={{ flex: 1, minWidth: '200px', textAlign: 'right', fontWeight: '500', color: '#333' }}>
-        {t(translationKey)}:
-      </label>
-      {options ? (
-        <select
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          style={{ flex: '0 0 200px', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
-        >
-          {options.map(opt => (
-            <option key={opt.value} value={opt.value}>
-              {t(opt.label)}
-            </option>
-          ))}
-        </select>
-      ) : (
-        <input
-          type={type}
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          step={step}
-          min="0"
-          style={{ flex: '0 0 150px', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
-        />
-      )}
-    </div>
-  );
-
   // ===== CONSTRUCTION DES RÉSULTATS =====
   const bilansMatiere = resultats ? [
     { text: t('Charge SO2 éliminée'), value: formatNumber(resultats.chargeSO2Eliminee) + ' kg/h' },
@@ -253,6 +260,7 @@ const SO2ScrubberCalculator = ({ innerData = {}, setInnerData, currentLanguage =
   ] : [];
 
   return (
+    <LaveurBasiqueCtx.Provider value={t}>
     <div className="cadre_pour_onglet">
       {erreur && (
         <div style={{ padding: '12px', margin: '12px', borderRadius: '4px', backgroundColor: '#fee2e2', color: '#991b1b', border: '1px solid #fca5a5' }}>
@@ -261,9 +269,9 @@ const SO2ScrubberCalculator = ({ innerData = {}, setInnerData, currentLanguage =
       )}
 
       {/* Section Fumées */}
-      <Section title={t('Données des Fumées')}>
+      <SectionBasiquetitle={t('Données des Fumées')}>
         {Object.entries(fumeParams).map(([key, value]) => (
-          <ParameterInput
+          <ParameterInputBasique
             key={key}
             translationKey={key}
             value={value}
@@ -271,11 +279,11 @@ const SO2ScrubberCalculator = ({ innerData = {}, setInnerData, currentLanguage =
             step="1"
           />
         ))}
-      </Section>
+      </SectionBasique>
 
       {/* Section Solution de Lavage */}
-      <Section title={t('Solution de Lavage')}>
-        <ParameterInput
+      <SectionBasiquetitle={t('Solution de Lavage')}>
+        <ParameterInputBasique
           translationKey="Type de réactif"
           value={washParams['Type de réactif']}
           onChange={(v) => setWashParams(prev => ({ ...prev, 'Type de réactif': v }))}
@@ -288,7 +296,7 @@ const SO2ScrubberCalculator = ({ innerData = {}, setInnerData, currentLanguage =
         {Object.entries(washParams).map(([key, value]) => {
           if (key === 'Type de réactif') return null;
           return (
-            <ParameterInput
+            <ParameterInputBasique
               key={key}
               translationKey={key}
               value={value}
@@ -297,14 +305,14 @@ const SO2ScrubberCalculator = ({ innerData = {}, setInnerData, currentLanguage =
             />
           );
         })}
-      </Section>
+      </SectionBasique>
 
       {/* Section Paramètres de Conception */}
-      <Section title={t('Paramètres de Conception')}>
+      <SectionBasiquetitle={t('Paramètres de Conception')}>
         {Object.entries(designParams).map(([key, value]) => {
           if (key === 'Type de garnissage') {
             return (
-              <ParameterInput
+              <ParameterInputBasique
                 key={key}
                 translationKey={key}
                 value={value}
@@ -319,7 +327,7 @@ const SO2ScrubberCalculator = ({ innerData = {}, setInnerData, currentLanguage =
             );
           }
           return (
-            <ParameterInput
+            <ParameterInputBasique
               key={key}
               translationKey={key}
               value={value}
@@ -328,15 +336,15 @@ const SO2ScrubberCalculator = ({ innerData = {}, setInnerData, currentLanguage =
             />
           );
         })}
-      </Section>
+      </SectionBasique>
 
       {/* Résultats */}
       {resultats && !erreur && (
         <>
-          <Section title={t('Bilans Matière')} results={bilansMatiere} />
-          <Section title={t('Dimensionnement Colonne')} results={dimensionnementColonne} />
-          <Section title={t('Débits de Solution')} results={debitsolution} />
-          <Section title={t('Paramètres de Transfert')} results={parametresTransfert} />
+          <SectionBasiquetitle={t('Bilans Matière')} results={bilansMatiere} />
+          <SectionBasiquetitle={t('Dimensionnement Colonne')} results={dimensionnementColonne} />
+          <SectionBasiquetitle={t('Débits de Solution')} results={debitsolution} />
+          <SectionBasiquetitle={t('Paramètres de Transfert')} results={parametresTransfert} />
 
           {/* Résumé */}
           <div style={{ padding: '20px', maxWidth: '1000px', margin: '0 auto', backgroundColor: '#e8f4f8', borderRadius: '8px' }}>
@@ -364,6 +372,7 @@ const SO2ScrubberCalculator = ({ innerData = {}, setInnerData, currentLanguage =
         </>
       )}
     </div>
+    </LaveurBasiqueCtx.Provider>
   );
 };
 

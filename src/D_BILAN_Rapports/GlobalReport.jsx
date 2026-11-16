@@ -21,6 +21,8 @@ import AIRINJECTION_Report from '../Y_BILAN/AIRINJECTION/AIRINJECTION_Report';
 import IACT_Report from '../Y_BILAN/IACT/IACT_Report';
 import TUBEANDSHELL_Report from '../Y_BILAN/ECHANGEURS/TUBEANDSHELL/TUBEANDSHELL_Report';
 import WATER_INJECTION_Report from '../Y_BILAN/WATER_INJECTION/WATER_INJECTION_Report';
+import QUENCHsimple_Report from '../Y_BILAN/QUENCHsimple/QUENCHsimple_Report';
+import SATURATOR_Report from '../Y_BILAN/SATURATOR/SATURATOR_Report';
 
 const REPORT_MAP = {
   'RK+SCC': RK_Report,
@@ -41,6 +43,8 @@ const REPORT_MAP = {
   IACT: IACT_Report,
   HX_TubeAndShell: TUBEANDSHELL_Report,
   WATER_INJECTION: WATER_INJECTION_Report,
+  QUENCHsimple: QUENCHsimple_Report,
+  SATURATOR: SATURATOR_Report,
 };
 
 const LINE_COLORS = [

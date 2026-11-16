@@ -2,12 +2,61 @@ import React, { useState, useEffect } from 'react';
 import TableGeneric from '../../C_Components/Tableau_generique';
 import { coeff_Nm3_to_m3 } from '../../A_Transverse_fonction/conv_calculation';
 import { getOpexData } from '../../A_Transverse_fonction/opexDataService';
-import ELECTROFILTERimage from '../../B_Images/electrofilter_img.png';
-import FondTransparent from '../../B_Images/fond_transparent.jpg';
+import BagFilterSynoptic from '../../B_Images/electrofilter_img.jsx';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './ELECTROFILTER_traduction';
 
 import { fmt } from '../../A_Transverse_fonction/formatNumber';
+
+const EFDesignCtx = React.createContext((k) => k);
+
+const Section = ({ title, results, children }) => {
+  const t = React.useContext(EFDesignCtx);
+  return (
+    <div style={{ marginBottom: '30px', padding: '20px', backgroundColor: '#f9f9f9', borderRadius: '8px' }}>
+      <h3 style={{ marginTop: 0, borderBottom: '2px solid #4a90e2', paddingBottom: '10px' }}>
+        {t(title)}
+      </h3>
+      <div style={{ display: 'grid', gap: '15px' }}>
+        {children}
+        {results && results.length > 0 && (
+          <>
+            <h4 style={{ marginTop: '15px', marginBottom: '10px' }}>{t('Results')}</h4>
+            <TableGeneric elements={results} />
+          </>
+        )}
+      </div>
+    </div>
+  );
+};
+
+const ParameterInput = ({ translationKey, value, onChange, options = null }) => {
+  const t = React.useContext(EFDesignCtx);
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+      <label style={{ flex: 1, minWidth: '250px', textAlign: 'right', fontWeight: '500', color: '#333' }}>
+        {t(translationKey)}:
+      </label>
+      {options ? (
+        <select
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          style={{ flex: '0 0 150px', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
+        >
+          {options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+        </select>
+      ) : (
+        <input
+          type="number"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          style={{ flex: '0 0 150px', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
+        />
+      )}
+    </div>
+  );
+};
+
 const ELECTROFILTER_Design = ({ innerData = {}, setInnerData, currentLanguage = 'fr' }) => {
   const languageCode = getLanguageCode(currentLanguage);
   
@@ -162,49 +211,6 @@ const ELECTROFILTER_Design = ({ innerData = {}, setInnerData, currentLanguage = 
     }
   };
 
-  // Composant Section réutilisable
-  const Section = ({ title, results, children }) => (
-    <div style={{ marginBottom: '30px', padding: '20px', backgroundColor: '#f9f9f9', borderRadius: '8px' }}>
-      <h3 style={{ marginTop: 0, borderBottom: '2px solid #4a90e2', paddingBottom: '10px' }}>
-        {t(title)}
-      </h3>
-      <div style={{ display: 'grid', gap: '15px' }}>
-        {children}
-        {results && results.length > 0 && (
-          <>
-            <h4 style={{ marginTop: '15px', marginBottom: '10px' }}>{t('Results')}</h4>
-            <TableGeneric elements={results} />
-          </>
-        )}
-      </div>
-    </div>
-  );
-
-  // Composant ParameterInput réutilisable
-  const ParameterInput = ({ translationKey, value, onChange, options = null }) => (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-      <label style={{ flex: 1, minWidth: '250px', textAlign: 'right', fontWeight: '500', color: '#333' }}>
-        {t(translationKey)}:
-      </label>
-      {options ? (
-        <select
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          style={{ flex: '0 0 150px', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
-        >
-          {options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
-        </select>
-      ) : (
-        <input
-          type="number"
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          style={{ flex: '0 0 150px', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
-        />
-      )}
-    </div>
-  );
-
   // Éléments génériques pour le tableau de résumé
   const elementsGeneric = [
     { text: t('Surface des plaques [m²]'), value: fmt(surfacePlaques, 2) },
@@ -257,6 +263,7 @@ const ELECTROFILTER_Design = ({ innerData = {}, setInnerData, currentLanguage = 
   ]);
 
   return (
+    <EFDesignCtx.Provider value={t}>
     <div className="cadre_pour_onglet">
       {/* Pertes de charge aéraulique */}
       <Section 
@@ -286,7 +293,7 @@ const ELECTROFILTER_Design = ({ innerData = {}, setInnerData, currentLanguage = 
       >
         <div style={{ display: 'flex', gap: '20px', marginBottom: '20px' }}>
           <div style={{ flex: 1 }}>
-            <img src={ELECTROFILTERimage} alt="Électrofiltre" style={{ width: '100%', maxWidth: '300px', objectFit: 'contain' }} />
+            <div style={{ width: '100%', maxWidth: '300px' }}><BagFilterSynoptic /></div>
           </div>
           <div style={{ flex: 1, display: 'grid', gap: '15px' }}>
             <ParameterInput 
@@ -391,6 +398,7 @@ const ELECTROFILTER_Design = ({ innerData = {}, setInnerData, currentLanguage = 
         <TableGeneric elements={elementsGeneric} />
       </div>
     </div>
+    </EFDesignCtx.Provider>
   );
 };
 

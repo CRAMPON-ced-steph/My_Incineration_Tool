@@ -81,7 +81,7 @@ export function calculTour(inp) {
   if (volTotIn <= 0 || volSecIn <= 0) return null;
 
   const pO2in = (volIn.O2 / volSecIn) * 100;
-  const corr = (o2) => 10 / (21 - o2); // correction à 11 % O2 sur sec
+  const corr = (o2) => { const d = 21 - o2; return d > 0 ? 10 / d : 10; }; // correction à 11 % O2 sur sec
   const concSO2In = ((masIn.SO2 * 1e6) / volSecIn) * corr(pO2in);
   const concHClIn = ((masIn.HCl * 1e6) / volSecIn) * corr(pO2in);
   const entIn = enthalpieFumees(Tin, masIn, 597);
@@ -123,6 +123,7 @@ export function calculTour(inp) {
   const volAbs = volDe(masAbs);
   const masTotAbs = somme(masAbs);
   const volTotAbs = somme(volAbs);
+  if (volTotAbs <= 0) return null;
   const y = { CO2: volAbs.CO2 / volTotAbs, H2O: volAbs.H2O / volTotAbs, O2: volAbs.O2 / volTotAbs, N2: volAbs.N2 / volTotAbs };
   const roGaz = masTotAbs / ((volTotAbs * (tAbs + 273)) / 273);
   const muGaz = muFumees(y, tAbs);

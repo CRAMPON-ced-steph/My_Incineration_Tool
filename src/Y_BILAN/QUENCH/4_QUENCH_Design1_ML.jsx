@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import TableGeneric from '../../C_Components/Tableau_generique';
 import { getOpexData } from '../../A_Transverse_fonction/opexDataService';
-import reactImage from '../../B_Images/quench_img.png';
+import SprayTower from '../../B_Images/quench_img.jsx';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './QUENCH_traduction';
 import { qdTranslations } from './QUENCH_Design_traduction';
@@ -90,7 +90,7 @@ export function calculQuench(inp) {
   if (volTot <= 0 || volSec <= 0 || masIn.HCl <= 0) return null;
 
   const p = 760 - Math.abs(inp.pTotal / 13.595);
-  const corr = (o2) => 10 / (21 - o2);
+  const corr = (o2) => { const d = 21 - o2; return d > 0 ? 10 / d : 10; };
   const pO2in = (volIn.O2 / volSec) * 100;
   const concHClInSec = ((masIn.HCl * 1e6) / volSec) * corr(pO2in);
   const concSO2InSec = ((masIn.SO2 * 1e6) / volSec) * corr(pO2in);
@@ -135,6 +135,7 @@ export function calculQuench(inp) {
     while (compt < 20000) {
       const pHClPart = ppHCl(ts, concHClRec);
       const pIncond = p - tensVapH2O - pHClPart;
+      if (pIncond <= 0) break;
 
       const fracMolHCl = pHClPart / p;
       const fracMolEau = 1 - fracMolHCl;
@@ -165,8 +166,8 @@ export function calculQuench(inp) {
       const volTotEp = somme(volEp);
       const volTotEpSec = volTotEp - volEp.H2O;
       const pO2s = (volEp.O2 / volTotEpSec) * 100;
-      const concHClSec = ((masEp.HCl / volTotEpSec) * 1e6 * 10) / (21 - pO2s);
-      const concSO2Sec = ((masEp.SO2 / volTotEpSec) * 1e6 * 10) / (21 - pO2s);
+      const concHClSec = ((masEp.HCl * 1e6) / volTotEpSec) * corr(pO2s);
+      const concSO2Sec = ((masEp.SO2 * 1e6) / volTotEpSec) * corr(pO2s);
       const debVolSortieReel = volTotEp * ((ts + 273) / 273) * (760 / p);
       const roEpuree = masTotEp / debVolSortieReel;
 
@@ -595,7 +596,7 @@ const QUENCHDesign = ({ innerData, setInnerData, upstreamT_IN, upstreamFG_IN, cu
       <QSection title={t('Dimensionnement du Quench')} results={elementsSaturation} t={t}>
         <div style={{ display: 'flex', gap: '30px', marginBottom: '10px' }}>
           <div style={{ flex: 1 }}>
-            <img src={reactImage} alt="Quench" style={{ width: '100%', maxWidth: '300px', objectFit: 'contain' }} />
+            <div style={{ width: '100%', maxWidth: '300px' }}><SprayTower /></div>
           </div>
           <div style={{ flex: 1.4, display: 'grid', gap: '12px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>

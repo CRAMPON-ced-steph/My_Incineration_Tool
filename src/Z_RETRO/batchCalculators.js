@@ -144,6 +144,36 @@ export const batchCalcMap = {
     return performCalculation_QUENCH_option_Qeau(nodeData, f(`Qeau_QUENCH_${nodeId}`, '0'), Teau, PDC);
   },
 
+  'QUENCHsimple': (nodeData, nodeId) => {
+    if (!nodeData?.result) return null;
+    const bilanType = ls(`QUENCH_bilanType_${nodeId}`, 'TEMPERATURE_BALANCE');
+    const Teau = f(`Teau_QUENCH_${nodeId}`, '15');
+    const PDC  = f(`PDC_aero_QUENCH_${nodeId}`, '10');
+    if (bilanType === 'TEMPERATURE_BALANCE') {
+      return performCalculation_QUENCH_option_T(
+        nodeData,
+        f(`T_amont_QUENCH_${nodeId}`, String(nodeData?.result?.dataFlow?.T ?? 200)),
+        Teau, PDC
+      );
+    }
+    return performCalculation_QUENCH_option_Qeau(nodeData, f(`Qeau_QUENCH_${nodeId}`, '0'), Teau, PDC);
+  },
+
+  'SATURATOR': (nodeData, nodeId) => {
+    if (!nodeData?.result) return null;
+    const bilanType = ls(`QUENCH_bilanType_${nodeId}`, 'TEMPERATURE_BALANCE');
+    const Teau = f(`Teau_QUENCH_${nodeId}`, '15');
+    const PDC  = f(`PDC_aero_QUENCH_${nodeId}`, '10');
+    if (bilanType === 'TEMPERATURE_BALANCE') {
+      return performCalculation_QUENCH_option_T(
+        nodeData,
+        f(`T_amont_QUENCH_${nodeId}`, String(nodeData?.result?.dataFlow?.T ?? 200)),
+        Teau, PDC
+      );
+    }
+    return performCalculation_QUENCH_option_Qeau(nodeData, f(`Qeau_QUENCH_${nodeId}`, '0'), Teau, PDC);
+  },
+
   'DENOX': (nodeData, nodeId) => {
     if (!nodeData?.result) return null;
     return performCalculation_DENOX_option_Qeau(

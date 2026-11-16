@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import TableGeneric from '../../C_Components/Tableau_generique';
 import { getOpexData } from '../../A_Transverse_fonction/opexDataService';
-import DENOXimage from '../../B_Images/DENOX_img.png';
+import ScrDenox from '../../B_Images/DENOX_img.jsx';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './DENOX_traduction';
 
@@ -302,12 +302,8 @@ const DENOXDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
       </Section>
 
       {/* Image */}
-      <div style={{ textAlign: 'center', marginBottom: '30px', padding: '20px' }}>
-        <img
-          src={DENOXimage}
-          alt="DENOX"
-          style={{ width: '100%', maxWidth: '400px', height: 'auto', borderRadius: '8px', objectFit: 'contain' }}
-        />
+      <div style={{ textAlign: 'left', marginBottom: '30px', padding: '20px' }}>
+        <div style={{ width: '100%', maxWidth: '400px' }}><ScrDenox /></div>
       </div>
 
       {/* Paramètres SCR */}

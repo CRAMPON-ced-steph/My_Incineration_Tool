@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import gfZonesImg from '../../B_Images/GF_zones.png';
+import GrateFurnace from '../../B_Images/GF_zones.jsx';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './GF_traduction';
 
@@ -42,7 +42,7 @@ const DimensionnementTab = ({ innerData = {}, innerDataTick, currentLanguage = '
       <h1 style={{ color: '#1a202c' }}>🔄 {t('Dimensionnement') || 'Dimensionnement'}</h1>
 
       <div style={{ background: 'white', padding: '20px', borderRadius: '8px', boxShadow: '0 2px 10px rgba(0,0,0,0.1)', marginBottom: '20px', textAlign: 'center' }}>
-        <img src={gfZonesImg} alt="GF Zones" style={{ maxWidth: '100%', height: 'auto' }} />
+        <GrateFurnace />
       </div>
 
       <div

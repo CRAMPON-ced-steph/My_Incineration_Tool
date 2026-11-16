@@ -67,6 +67,7 @@ const DEFAULT_EMISSIONS = {
   Masse_seche_kg_h: 0,
   Masse_mineral_kg_h: 0,
   PCI_boue_kcal_kgMV: 0,
+  PCS_boue_kcal_kgMV: 0,
   Masse_eau_kg_h: 0,
   eau_add_kg_h: 0,
   type_eau_add: 'EAU_POTABLE',
@@ -531,10 +532,35 @@ const CombustionTab = ({ innerData = {}, onInnerDataChange, onResultsChange, cur
   const [showExpertFumees, setShowExpertFumees] = useState(false);
   const [showDetailedBilan, setShowDetailedBilan] = useState(false);
   const [useGazAppoint, setUseGazAppoint] = useState(true);
+  const [fuelStd, setFuelStd] = useState(() => lsGet(`fuelStd_FB_${nodeId}`, true));
+  const [customFuelComp, setCustomFuelComp] = useState(() => {
+    const saved = lsGet(`customFuelComp_FB_${nodeId}`, null);
+    if (saved) return saved;
+    const savedEmissions = lsGet(`emissions_FB_${nodeId}`, {});
+    const fuelType = savedEmissions.type_energy || DEFAULT_EMISSIONS.type_energy;
+    const p = FUEL_PROPERTIES[fuelType] || FUEL_PROPERTIES.GAZ;
+    return { C_percent: p.C_percent, H_percent: p.H_percent, O_percent: p.O_percent, N_percent: p.N_percent, S_percent: p.S_percent, Cl_percent: p.Cl_percent };
+  });
 
   useEffect(() => { lsSet(`emissions_FB_${nodeId}`, emissions); }, [emissions]);
   useEffect(() => { lsSet(`thermalParams_FB_${nodeId}`, thermalParams); }, [thermalParams]);
   useEffect(() => { lsSet(`airComposition_FB_${nodeId}`, airComposition); }, [airComposition]);
+  useEffect(() => { lsSet(`fuelStd_FB_${nodeId}`, fuelStd); }, [fuelStd]);
+  useEffect(() => { lsSet(`customFuelComp_FB_${nodeId}`, customFuelComp); }, [customFuelComp]);
+
+  // Recalcul PCI via Dulong quand la composition custom change, restaure le PCI std sinon
+  useEffect(() => {
+    if (!fuelStd) {
+      const { C_percent: C, H_percent: H, O_percent: O, S_percent: S } = customFuelComp;
+      const pci = Math.max(0, 81 * C + 290 * (H - O / 8) + 25 * S);
+      setEmissions(prev => ({ ...prev, PCI_combustible: Math.round(pci) }));
+    } else {
+      setEmissions(prev => {
+        const p = FUEL_PROPERTIES[prev.type_energy] || FUEL_PROPERTIES.GAZ;
+        return { ...prev, PCI_combustible: p.pci };
+      });
+    }
+  }, [customFuelComp, fuelStd]);
 
   // Impose O2% massique sec (dérivé de O2% volumique sec) dans les 3 premiers flux d'air
   useEffect(() => {
@@ -559,6 +585,7 @@ const CombustionTab = ({ innerData = {}, onInnerDataChange, onResultsChange, cur
         Masse_seche_kg_h: innerData.MS_kg_h,
         Masse_mineral_kg_h: innerData.MM_kg_h,
         PCI_boue_kcal_kgMV: innerData.PCIKCALKGMV,
+        PCS_boue_kcal_kgMV: innerData.pcsKcalkgMV,
         Masse_eau_kg_h: innerData.EauExtraite_kg_h,
       };
       let changed = false;
@@ -568,9 +595,12 @@ const CombustionTab = ({ innerData = {}, onInnerDataChange, onResultsChange, cur
       });
       return changed ? next : prev;
     });
-  }, [innerData.MV_kg_h, innerData.BoueBrute_kg_h, innerData.MS_kg_h, innerData.MM_kg_h, innerData.PCIKCALKGMV, innerData.EauExtraite_kg_h]);
+  }, [innerData.MV_kg_h, innerData.BoueBrute_kg_h, innerData.MS_kg_h, innerData.MM_kg_h, innerData.PCIKCALKGMV, innerData.pcsKcalkgMV, innerData.EauExtraite_kg_h]);
 
-  const composition = useMemo(() => FUEL_PROPERTIES[emissions.type_energy] || FUEL_PROPERTIES.GAZ, [emissions.type_energy]);
+  const composition = useMemo(() => {
+    if (!fuelStd) return customFuelComp;
+    return FUEL_PROPERTIES[emissions.type_energy] || FUEL_PROPERTIES.GAZ;
+  }, [emissions.type_energy, fuelStd, customFuelComp]);
 
   const results = useMemo(() => {
     try {
@@ -725,6 +755,7 @@ const CombustionTab = ({ innerData = {}, onInnerDataChange, onResultsChange, cur
   const handleFuelChange = useCallback((fuelType) => {
     const p = FUEL_PROPERTIES[fuelType];
     setEmissions((prev) => ({ ...prev, type_energy: fuelType, densite_combustible: p.density, PCI_combustible: p.pci }));
+    setCustomFuelComp({ C_percent: p.C_percent, H_percent: p.H_percent, O_percent: p.O_percent, N_percent: p.N_percent, S_percent: p.S_percent, Cl_percent: p.Cl_percent });
   }, []);
   const handleEmission = useCallback((key, value) => { setEmissions((prev) => ({ ...prev, [key]: parseFloat(value) || 0 })); }, []);
   const handleThermal = useCallback((key, value) => { setThermalParams((prev) => ({ ...prev, [key]: parseFloat(value) || 0 })); }, []);
@@ -842,7 +873,10 @@ const CombustionTab = ({ innerData = {}, onInnerDataChange, onResultsChange, cur
       {/* ═══ COMBUSTIBLE ═══ */}
       <div style={card}>
         <div style={cardTitle}>🔥 {t('Paramètres de Combustion')}</div>
-        <div style={secTitle}>{t('Type de combustible')}</div>
+        <div style={{ ...secTitle, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span>{t('Type de combustible')}</span>
+          <ToggleSwitch label="std / not std" checked={!fuelStd} onChange={(v) => setFuelStd(!v)} />
+        </div>
         <div style={{ marginBottom: '25px' }}>
           <label style={labelStyle}>{t('Sélectionner le combustible')}</label>
           <select value={emissions.type_energy} onChange={(e) => handleFuelChange(e.target.value)} style={inputStyle}>
@@ -857,6 +891,26 @@ const CombustionTab = ({ innerData = {}, onInnerDataChange, onResultsChange, cur
           <div><label style={labelStyle}>{t('PCI')} (kcal/kg)</label>
             <input type="number" step="1" value={emissions.PCI_combustible} onChange={(e) => handleEmission('PCI_combustible', e.target.value)} style={inputStyle} /></div>
         </div>
+        {!fuelStd && (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '10px', marginTop: '15px', paddingTop: '15px', borderTop: '1px solid #e0e0e0' }}>
+            {[
+              { label: 'C (%)', key: 'C_percent' },
+              { label: 'H (%)', key: 'H_percent' },
+              { label: 'O (%)', key: 'O_percent' },
+              { label: 'N (%)', key: 'N_percent' },
+              { label: 'S (%)', key: 'S_percent' },
+              { label: 'Cl (%)', key: 'Cl_percent' },
+            ].map(({ label, key }) => (
+              <div key={key}>
+                <label style={{ ...labelStyle, fontSize: '12px' }}>{label}</label>
+                <input type="number" step="0.01"
+                  value={customFuelComp[key] ?? 0}
+                  onChange={(e) => setCustomFuelComp(prev => ({ ...prev, [key]: parseFloat(e.target.value) || 0 }))}
+                  style={inputStyle} />
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* ═══ BOUE ═══ */}
@@ -874,6 +928,10 @@ const CombustionTab = ({ innerData = {}, onInnerDataChange, onResultsChange, cur
             <div key={key}><label style={labelStyle}>{t(label)} {unit}</label>
               <input type="number" step="0.1" value={emissions[key] ?? 0} onChange={(e) => handleEmission(key, e.target.value)} style={inputStyle} /></div>
           ))}
+          <div>
+            <label style={labelStyle}>PCS boue (kcal/kg MV)</label>
+            <input type="text" readOnly value={emissions.PCS_boue_kcal_kgMV != null ? Math.round(emissions.PCS_boue_kcal_kgMV) : 0} style={{ ...inputStyle, backgroundColor: '#f3f4f6', fontWeight: 'bold', color: '#374151' }} />
+          </div>
         </div>
       </div>
 
