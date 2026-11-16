@@ -2,6 +2,14 @@
 
 export const translations = {
   fr: {
+    // — Textes sortis du code (2026-11) —
+    energyProduced: 'Énergie produite',
+    energyGainValued: 'Gain énergie valorisée',
+    energyGain: 'Gain énergie',
+    elecProduction: 'Production électrique',
+    steamHP: 'Débit vapeur HP',
+    steamMP: 'Débit vapeur MP',
+    steamBP: 'Débit vapeur BP',
     // Titre général
     opexDashboard: 'Tableau de Bord OPEX',
     
@@ -64,6 +72,14 @@ export const translations = {
   },
 
   en: {
+    // — Textes sortis du code (2026-11) —
+    energyProduced: 'Energy produced',
+    energyGainValued: 'Value of recovered energy',
+    energyGain: 'Energy revenue',
+    elecProduction: 'Power generation',
+    steamHP: 'HP steam flow',
+    steamMP: 'MP steam flow',
+    steamBP: 'LP steam flow',
     // General title
     opexDashboard: 'OPEX Dashboard',
     
@@ -126,6 +142,14 @@ export const translations = {
   },
 
   de: {
+    // — Textes sortis du code (2026-11) —
+    energyProduced: 'Erzeugte Energie',
+    energyGainValued: 'Erlös aus verwerteter Energie',
+    energyGain: 'Energieerlös',
+    elecProduction: 'Stromerzeugung',
+    steamHP: 'HD-Dampfstrom',
+    steamMP: 'MD-Dampfstrom',
+    steamBP: 'ND-Dampfstrom',
     // Allgemeiner Titel
     opexDashboard: 'OPEX-Dashboard',
     
@@ -188,6 +212,14 @@ export const translations = {
   },
 
   es: {
+    // — Textes sortis du code (2026-11) —
+    energyProduced: 'Energía producida',
+    energyGainValued: 'Ingreso por energía valorizada',
+    energyGain: 'Ingreso por energía',
+    elecProduction: 'Producción eléctrica',
+    steamHP: 'Caudal de vapor AP',
+    steamMP: 'Caudal de vapor MP',
+    steamBP: 'Caudal de vapor BP',
     // Título general
     opexDashboard: 'Panel de Control OPEX',
     
@@ -250,6 +282,14 @@ export const translations = {
   },
 
   it: {
+    // — Textes sortis du code (2026-11) —
+    energyProduced: 'Energia prodotta',
+    energyGainValued: 'Ricavo da energia valorizzata',
+    energyGain: 'Ricavo energia',
+    elecProduction: 'Produzione elettrica',
+    steamHP: 'Portata vapore AP',
+    steamMP: 'Portata vapore MP',
+    steamBP: 'Portata vapore BP',
     // Titolo generale
     opexDashboard: 'Dashboard OPEX',
     
@@ -312,6 +352,14 @@ export const translations = {
   },
 
   pt: {
+    // — Textes sortis du code (2026-11) —
+    energyProduced: 'Energia produzida',
+    energyGainValued: 'Ganho de energia valorizada',
+    energyGain: 'Ganho de energia',
+    elecProduction: 'Produção elétrica',
+    steamHP: 'Vazão de vapor AP',
+    steamMP: 'Vazão de vapor MP',
+    steamBP: 'Vazão de vapor BP',
     // Título geral
     opexDashboard: 'Painel OPEX',
     
@@ -374,6 +422,14 @@ export const translations = {
   },
 
   ru: {
+    // — Textes sortis du code (2026-11) —
+    energyProduced: 'Произведённая энергия',
+    energyGainValued: 'Доход от утилизированной энергии',
+    energyGain: 'Доход от энергии',
+    elecProduction: 'Выработка электроэнергии',
+    steamHP: 'Расход пара ВД',
+    steamMP: 'Расход пара СД',
+    steamBP: 'Расход пара НД',
     // Общее название
     opexDashboard: 'Панель OPEX',
     
@@ -436,6 +492,14 @@ export const translations = {
   },
 
   zh: {
+    // — Textes sortis du code (2026-11) —
+    energyProduced: '产出能量',
+    energyGainValued: '回收能量收益',
+    energyGain: '能量收益',
+    elecProduction: '发电量',
+    steamHP: '高压蒸汽流量',
+    steamMP: '中压蒸汽流量',
+    steamBP: '低压蒸汽流量',
     // 总标题
     opexDashboard: 'OPEX 仪表板',
     
@@ -498,6 +562,14 @@ export const translations = {
   },
 
   ja: {
+    // — Textes sortis du code (2026-11) —
+    energyProduced: '発生エネルギー',
+    energyGainValued: '回収エネルギー収益',
+    energyGain: 'エネルギー収益',
+    elecProduction: '発電量',
+    steamHP: '高圧蒸気流量',
+    steamMP: '中圧蒸気流量',
+    steamBP: '低圧蒸気流量',
     // 総タイトル
     opexDashboard: 'OPEXダッシュボード',
     
@@ -560,6 +632,14 @@ export const translations = {
   },
 
   ar: {
+    // — Textes sortis du code (2026-11) —
+    energyProduced: 'الطاقة المنتجة',
+    energyGainValued: 'عائد الطاقة المستردة',
+    energyGain: 'عائد الطاقة',
+    elecProduction: 'إنتاج الكهرباء',
+    steamHP: 'تدفق بخار الضغط العالي',
+    steamMP: 'تدفق بخار الضغط المتوسط',
+    steamBP: 'تدفق بخار الضغط المنخفض',
     // العنوان العام
     opexDashboard: 'لوحة OPEX',
     

@@ -120,6 +120,7 @@ const WHB_Parameters = ({ innerData, setInnerData, upstreamT_IN, upstreamFG_IN, 
     innerData['Temperature_vapeur_C'] = steamType === 'saturated' ? saturationSteamTemp : superheatedSteamTemp;
     innerData['Debit_eau_m3_h'] = Q_feedwater_kg_h / 1000;
     innerData['Q_steam_kg_h'] = Q_steam_kg_h;
+    innerData['P_recuperee_kW'] = H_diff / 3600; // kJ/h -> kW (lu par WHB_Report)
     innerData['Q_feedwater_kg_h'] = Q_feedwater_kg_h;
     innerData['Q_purge_kg_h'] = Q_purge_kg_h;
     innerData['Q_flash_drum_event_kg_h'] = Q_flash_drum_event_kg_h;

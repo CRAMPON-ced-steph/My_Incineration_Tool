@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { getOpexData } from '../../A_Transverse_fonction/opexDataService';
 import { fmt } from '../../A_Transverse_fonction/formatNumber';
+import { makeT } from '../../F_Gestion_Langues/localT';
+import { translations } from './OpexDashboard_traduction';
 
 const OpexDashboard = ({ 
   equipmentType, 
   innerData, 
   setInnerData,
-  equipmentConfig = {} 
+  equipmentConfig = {},
+  currentLanguage
 }) => {
+  const t = makeT(translations, currentLanguage);
   const { 
     availability, 
     ratioElec, 
@@ -38,14 +42,14 @@ const OpexDashboard = ({
     title: `${equipmentType} Opex Dashboard`,
     color: '#1a73e8',
     electricLabels: [
-      'Équipement 1',
-      'Équipement 2', 
-      'Équipement 3',
-      'Équipement 4',
-      'Équipement 5',
-      'Équipement 6',
-      'Équipement 7',
-      'Équipement 8'
+      t('equipment1'),
+      t('equipment2'), 
+      t('equipment3'),
+      t('equipment4'),
+      t('equipment5'),
+      t('equipment6'),
+      t('equipment7'),
+      t('equipment8')
     ]
   };
 
@@ -69,14 +73,14 @@ const OpexDashboard = ({
     const consoElec7 = toSignificantFigures(innerData?.consoElec7 || 0);
     const consoElec8 = toSignificantFigures(innerData?.consoElec8 || 0);
 
-    const labelElec1 = innerData?.labelElec1 || config.electricLabels[0] || 'Équipement 1';
-    const labelElec2 = innerData?.labelElec2 || config.electricLabels[1] || 'Équipement 2';
-    const labelElec3 = innerData?.labelElec3 || config.electricLabels[2] || 'Équipement 3';
-    const labelElec4 = innerData?.labelElec4 || config.electricLabels[3] || 'Équipement 4';
-    const labelElec5 = innerData?.labelElec5 || config.electricLabels[4] || 'Équipement 5';
-    const labelElec6 = innerData?.labelElec6 || config.electricLabels[5] || 'Équipement 6';
-    const labelElec7 = innerData?.labelElec7 || config.electricLabels[6] || 'Équipement 7';
-    const labelElec8 = innerData?.labelElec8 || config.electricLabels[7] || 'Équipement 8';
+    const labelElec1 = innerData?.labelElec1 || config.electricLabels[0] || t('equipment1');
+    const labelElec2 = innerData?.labelElec2 || config.electricLabels[1] || t('equipment2');
+    const labelElec3 = innerData?.labelElec3 || config.electricLabels[2] || t('equipment3');
+    const labelElec4 = innerData?.labelElec4 || config.electricLabels[3] || t('equipment4');
+    const labelElec5 = innerData?.labelElec5 || config.electricLabels[4] || t('equipment5');
+    const labelElec6 = innerData?.labelElec6 || config.electricLabels[5] || t('equipment6');
+    const labelElec7 = innerData?.labelElec7 || config.electricLabels[6] || t('equipment7');
+    const labelElec8 = innerData?.labelElec8 || config.electricLabels[7] || t('equipment8');
 
     const conso_air_co_N_m3 = toSignificantFigures(innerData?.conso_air_co_N_m3 || 0);
 
@@ -257,11 +261,11 @@ const OpexDashboard = ({
     ];
 
     const initialEauData = [
-      { key: 'row1', label: 'eau potable', value: params.Conso_EauPotable_m3.toString() },
-      { key: 'row2', label: 'eau de refroidissement', value: params.Conso_EauRefroidissement_m3.toString() },
-      { key: 'row3', label: 'eau déminéralisée', value: params.Conso_EauDemin_m3.toString() },
-      { key: 'row4', label: 'eau de rivière', value: params.Conso_EauRiviere_m3.toString() },
-      { key: 'row5', label: 'eau adoucie', value: params.Conso_EauAdoucie_m3.toString() },
+      { key: 'row1', label: t('waterDrinking'), value: params.Conso_EauPotable_m3.toString() },
+      { key: 'row2', label: t('waterCooling'), value: params.Conso_EauRefroidissement_m3.toString() },
+      { key: 'row3', label: t('waterDemineralized'), value: params.Conso_EauDemin_m3.toString() },
+      { key: 'row4', label: t('waterRiver'), value: params.Conso_EauRiviere_m3.toString() },
+      { key: 'row5', label: t('waterSoftened'), value: params.Conso_EauAdoucie_m3.toString() },
     ];
 
     const initialReactifsData = [
@@ -276,45 +280,45 @@ const OpexDashboard = ({
     ];
     
     const initialEnergieData = [
-      { key: 'row1', label: 'gaz H', value: params.conso_gaz_H_MW.toString() },
-      { key: 'row2', label: 'gaz L', value: params.conso_gaz_L_MW.toString() },
-      { key: 'row3', label: 'gaz process', value: params.conso_gaz_Process_MW.toString() },
+      { key: 'row1', label: t('gasH'), value: params.conso_gaz_H_MW.toString() },
+      { key: 'row2', label: t('gasL'), value: params.conso_gaz_L_MW.toString() },
+      { key: 'row3', label: t('gasProcess'), value: params.conso_gaz_Process_MW.toString() },
       { key: 'row4', label: 'fuel', value: params.conso_fuel_MW.toString() },
     ];
 
     // NOUVELLES DONNÉES: Energie Produite
     const initialEnergieProduiteData = [
-      { key: 'row1', label: 'Production électrique [kW]', value: params.production_electrique_kW.toString() },
-      { key: 'row2', label: 'Débit vapeur HP [T/h]', value: params.debit_vapeur_HP_th.toString() },
-      { key: 'row3', label: 'Débit vapeur MP [T/h]', value: params.debit_vapeur_MP_th.toString() },
-      { key: 'row4', label: 'Débit vapeur BP [T/h]', value: params.debit_vapeur_BP_th.toString() },
+      { key: 'row1', label: `${t('elecProduction')} [kW]`, value: params.production_electrique_kW.toString() },
+      { key: 'row2', label: `${t('steamHP')} [T/h]`, value: params.debit_vapeur_HP_th.toString() },
+      { key: 'row3', label: `${t('steamMP')} [T/h]`, value: params.debit_vapeur_MP_th.toString() },
+      { key: 'row4', label: `${t('steamBP')} [T/h]`, value: params.debit_vapeur_BP_th.toString() },
     ];
 
     // NOUVELLES DONNÉES: Gain énergie valorisée
     const initialGainEnergieData = [
-      { key: 'row1', label: 'Production électrique', value: derived.gain_elec_valorise.toString() },
-      { key: 'row2', label: 'Débit vapeur HP', value: derived.gain_vapeur_HP_valorise.toString() },
-      { key: 'row3', label: 'Débit vapeur MP', value: derived.gain_vapeur_MP_valorise.toString() },
-      { key: 'row4', label: 'Débit vapeur BP', value: derived.gain_vapeur_BP_valorise.toString() },
+      { key: 'row1', label: t('elecProduction'), value: derived.gain_elec_valorise.toString() },
+      { key: 'row2', label: t('steamHP'), value: derived.gain_vapeur_HP_valorise.toString() },
+      { key: 'row3', label: t('steamMP'), value: derived.gain_vapeur_MP_valorise.toString() },
+      { key: 'row4', label: t('steamBP'), value: derived.gain_vapeur_BP_valorise.toString() },
     ];
 
     const initialCo2Data = [
-      { key: 'row1', label: 'Conso élec', value: derived.CO2_conso_elec_kg.toString() },
-      { key: 'row2', label: 'Conso gaz/fuel', value: (derived.CO2_conso_gaz + derived.CO2_fuel).toString() },
-      { key: 'row3', label: 'Conso air comprimé', value: derived.CO2_air_co_kg.toString() },
-      { key: 'row4', label: 'Transport réactifs', value: derived.CO2_transport_reactifs_calc.toString() },
-      { key: 'row5', label: 'Transport Refidis/cendres', value: derived.CO2_transport_refidis_kg.toString() },
+      { key: 'row1', label: t('consumptionElec'), value: derived.CO2_conso_elec_kg.toString() },
+      { key: 'row2', label: t('consumptionGasFuel'), value: (derived.CO2_conso_gaz + derived.CO2_fuel).toString() },
+      { key: 'row3', label: t('consumptionCompressedAir'), value: derived.CO2_air_co_kg.toString() },
+      { key: 'row4', label: t('transportReagents'), value: derived.CO2_transport_reactifs_calc.toString() },
+      { key: 'row5', label: t('transportResiduesAsh'), value: derived.CO2_transport_refidis_kg.toString() },
     ];
 
     // CORRECTION: Utilisation des bonnes variables calculées
     const initialcoutData = [
-      { key: 'row1', label: 'Conso élec', value: derived.cout_conso_elec.toString() },
-      { key: 'row2', label: 'Conso gaz/fuel', value: (derived.cout_gaz + derived.cout_fuel).toString() },
-      { key: 'row3', label: 'Conso air comprimé', value: derived.cout_air_co.toString() },
-      { key: 'row4', label: 'Conso Eau', value: derived.cout_Eau.toString() },
-      { key: 'row5', label: 'Conso réactifs', value: derived.cout_reactifs.toString() },
-      { key: 'row6', label: 'Transport réactifs', value: derived.cout_transport_reactifs.toString() },
-      { key: 'row7', label: 'Transport Refidis/cendres', value: derived.cout_transport_refidis.toString() },
+      { key: 'row1', label: t('consumptionElec'), value: derived.cout_conso_elec.toString() },
+      { key: 'row2', label: t('consumptionGasFuel'), value: (derived.cout_gaz + derived.cout_fuel).toString() },
+      { key: 'row3', label: t('consumptionCompressedAir'), value: derived.cout_air_co.toString() },
+      { key: 'row4', label: t('consumptionWater'), value: derived.cout_Eau.toString() },
+      { key: 'row5', label: t('consumptionReagents'), value: derived.cout_reactifs.toString() },
+      { key: 'row6', label: t('transportReagents'), value: derived.cout_transport_reactifs.toString() },
+      { key: 'row7', label: t('transportResiduesAsh'), value: derived.cout_transport_refidis.toString() },
     ];
 
     return {
@@ -598,7 +602,7 @@ const OpexDashboard = ({
 
   // Fonction pour réinitialiser les données
   const resetData = () => {
-    if (window.confirm('Êtes-vous sûr de vouloir réinitialiser toutes les données?')) {
+    if (window.confirm(t('confirmReset'))) {
       const newInitialData = generateInitialData();
       setElecData([...newInitialData.initialElecData]);
       setEauData([...newInitialData.initialEauData]);
@@ -723,7 +727,7 @@ const OpexDashboard = ({
           alignItems: 'center'
         }}>
           <span>{title} {unit && `[${unit}]`}</span>
-          <span>Total: {fmt(displaySum)}</span>
+          <span>{t('total')}: {fmt(displaySum)}</span>
         </div>
         <div style={{ 
           border: `1px solid ${color}`, 
@@ -735,9 +739,9 @@ const OpexDashboard = ({
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
                 <tr>
-                  <th style={{ padding: '8px', textAlign: 'left', borderBottom: '1px solid #ddd' }}>Description</th>
-                  <th style={{ padding: '8px', textAlign: 'left', borderBottom: '1px solid #ddd' }}>Valeur</th>
-                  <th style={{ padding: '8px', textAlign: 'center', borderBottom: '1px solid #ddd', width: '80px' }}>Action</th>
+                  <th style={{ padding: '8px', textAlign: 'left', borderBottom: '1px solid #ddd' }}>{t('description')}</th>
+                  <th style={{ padding: '8px', textAlign: 'left', borderBottom: '1px solid #ddd' }}>{t('value')}</th>
+                  <th style={{ padding: '8px', textAlign: 'center', borderBottom: '1px solid #ddd', width: '80px' }}>{t('action')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -785,7 +789,7 @@ const OpexDashboard = ({
               color: '#666',
               fontStyle: 'italic'
             }}>
-              Aucune donnée à afficher (toutes les valeurs sont à 0)
+              {t('noDataToDisplay')}
             </div>
           )}
           <div style={{ 
@@ -808,7 +812,7 @@ const OpexDashboard = ({
                 cursor: 'pointer'
               }}
             >
-              Ajouter une ligne
+              {t('addRow')}
             </button>
             <div style={{ 
               fontWeight: 'bold', 
@@ -818,7 +822,7 @@ const OpexDashboard = ({
               borderRadius: '4px',
               border: '1px solid #ddd'
             }}>
-              Total: {fmt(displaySum)} {unit}
+              {t('total')}: {fmt(displaySum)} {unit}
             </div>
           </div>
         </div>
@@ -842,7 +846,7 @@ const OpexDashboard = ({
           alignItems: 'center', 
           marginBottom: '15px'
         }}>
-          <h2 style={{ marginTop: 0, marginBottom: 0 }}>Résumé des Consommations - {equipmentType}</h2>
+          <h2 style={{ marginTop: 0, marginBottom: 0 }}>{t('consumptionSummary')} - {equipmentType}</h2>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <span style={{ color: !isAnnualMode ? config.color : '#666', fontWeight: !isAnnualMode ? 'bold' : 'normal' }}>Horaire</span>
             <ToggleSwitch 
@@ -861,7 +865,7 @@ const OpexDashboard = ({
             borderRadius: '4px',
             minWidth: '150px'
           }}>
-            <div>Électricité [{getUnit('elec')}]</div>
+            <div>{t('electricity')} [{getUnit('elec')}]</div>
             <div style={{ fontSize: '24px', fontWeight: 'bold' }}>
               {fmt(activeNodes_Elec[0].data.consommationElec)}
             </div>
@@ -874,7 +878,7 @@ const OpexDashboard = ({
             borderRadius: '4px',
             minWidth: '150px'
           }}>
-            <div>Eau [{getUnit('eau')}]</div>
+            <div>{t('water')} [{getUnit('eau')}]</div>
             <div style={{ fontSize: '24px', fontWeight: 'bold' }}>
               {fmt(activeNodes_Eau[0].data.consommationEau)}
             </div>
@@ -887,7 +891,7 @@ const OpexDashboard = ({
             borderRadius: '4px',
             minWidth: '150px'
           }}>
-            <div>Réactifs [{getUnit('reactifs')}]</div>
+            <div>{t('reagents')} [{getUnit('reactifs')}]</div>
             <div style={{ fontSize: '24px', fontWeight: 'bold' }}>
               {fmt(activeNodes_Reactifs[0].data.consommationReactifs)}
             </div>
@@ -900,7 +904,7 @@ const OpexDashboard = ({
             borderRadius: '4px',
             minWidth: '150px'
           }}>
-            <div>Énergie [{getUnit('energie')}]</div>
+            <div>{t('energy')} [{getUnit('energie')}]</div>
             <div style={{ fontSize: '24px', fontWeight: 'bold' }}>
               {fmt(activeNodes_Energie[0].data.consommationEnergie)}
             </div>
@@ -913,7 +917,7 @@ const OpexDashboard = ({
             borderRadius: '4px',
             minWidth: '150px'
           }}>
-            <div>Énergie Produite [{getUnit('energieProduite')}]</div>
+            <div>{t('energyProduced')} [{getUnit('energieProduite')}]</div>
             <div style={{ fontSize: '24px', fontWeight: 'bold' }}>
               {fmt(activeNodes_EnergieProduite[0].data.energieProduite)}
             </div>
@@ -926,7 +930,7 @@ const OpexDashboard = ({
             borderRadius: '4px',
             minWidth: '150px'
           }}>
-            <div>Gain Énergie [{getUnit('gainEnergie')}]</div>
+            <div>{t('energyGain')} [{getUnit('gainEnergie')}]</div>
             <div style={{ fontSize: '24px', fontWeight: 'bold' }}>
               {fmt(activeNodes_GainEnergie[0].data.gainEnergie)}
             </div>
@@ -952,7 +956,7 @@ const OpexDashboard = ({
             borderRadius: '4px',
             minWidth: '150px'
           }}>
-            <div>Coût [{getUnit('cout')}]</div>
+            <div>{t('cost')} [{getUnit('cout')}]</div>
             <div style={{ fontSize: '24px', fontWeight: 'bold' }}>
               {fmt(activeNodes_cout[0].data.cout)}
             </div>
@@ -977,7 +981,7 @@ const OpexDashboard = ({
             cursor: 'pointer'
           }}
         >
-          Réinitialiser
+          {t('reset')}
         </button>
       </div>
 
@@ -986,7 +990,7 @@ const OpexDashboard = ({
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px' }}>
         <div style={{ flex: '1 1 45%', minWidth: '300px' }}>
           <DataTable 
-            title="Électricité" 
+            title={t('electricity')} 
             color="#4a90e2" 
             data={elecData} 
             setData={setElecData}
@@ -995,7 +999,7 @@ const OpexDashboard = ({
         </div>
         <div style={{ flex: '1 1 45%', minWidth: '300px' }}>
           <DataTable 
-            title="Eau" 
+            title={t('water')} 
             color="#2ecc71" 
             data={eauData} 
             setData={setEauData}
@@ -1004,7 +1008,7 @@ const OpexDashboard = ({
         </div>
         <div style={{ flex: '1 1 45%', minWidth: '300px' }}>
           <DataTable 
-            title="Réactifs" 
+            title={t('reagents')} 
             color="#e74c3c" 
             data={reactifsData} 
             setData={setReactifsData}
@@ -1013,7 +1017,7 @@ const OpexDashboard = ({
         </div>
         <div style={{ flex: '1 1 45%', minWidth: '300px' }}>
           <DataTable 
-            title="Énergie fossile consommée" 
+            title={t('fossilEnergyConsumed')} 
             color="#f39c12" 
             data={energieData} 
             setData={setEnergieData}
@@ -1022,7 +1026,7 @@ const OpexDashboard = ({
         </div>
         <div style={{ flex: '1 1 45%', minWidth: '300px' }}>
           <DataTable 
-            title="Énergie Produite" 
+            title={t('energyProduced')} 
             color="#16a085" 
             data={energieProduiteData} 
             setData={setEnergieProduiteData}
@@ -1031,7 +1035,7 @@ const OpexDashboard = ({
         </div>
         <div style={{ flex: '1 1 45%', minWidth: '300px' }}>
           <DataTable 
-            title="Gain énergie valorisée" 
+            title={t('energyGainValued')} 
             color="#27ae60" 
             data={gainEnergieData} 
             setData={setGainEnergieData}
@@ -1049,7 +1053,7 @@ const OpexDashboard = ({
         </div>
         <div style={{ flex: '1 1 45%', minWidth: '300px' }}>
           <DataTable 
-            title="Coût" 
+            title={t('cost')} 
             color="#34495e" 
             data={coutData} 
             setData={setCoutData}

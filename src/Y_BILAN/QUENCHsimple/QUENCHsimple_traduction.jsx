@@ -1,5 +1,10 @@
 ﻿export const translations = {
   fr: {
+    // — Compléments de traduction (2026-11) —
+    'Température moyenne gaz [°C]': 'Température moyenne gaz [°C]',
+    'λ fumées [W/m·K]': 'λ fumées [W/m·K]',
+    'K évaporation [m²/s]': 'K évaporation [m²/s]',
+    'Temps évaporation goutte [s]': 'Temps évaporation goutte [s]',
     // — Ajouts audit i18n (2026-07) —
     "Pression pulvérisation [bar]": "Pression pulvérisation [bar]",
     "Consommation eau [kg/h]": "Consommation eau [kg/h]",
@@ -225,6 +230,11 @@
   },
 
   en: {
+    // — Compléments de traduction (2026-11) —
+    'Température moyenne gaz [°C]': 'Mean gas temperature [°C]',
+    'λ fumées [W/m·K]': 'λ flue gas [W/m·K]',
+    'K évaporation [m²/s]': 'K evaporation [m²/s]',
+    'Temps évaporation goutte [s]': 'Droplet evaporation time [s]',
     // — Ajouts audit i18n (2026-07) —
     "Pression pulvérisation [bar]": "Spray pressure [bar]",
     "Consommation eau [kg/h]": "Water consumption [kg/h]",
@@ -451,6 +461,11 @@
 
 
   de: {
+    // — Compléments de traduction (2026-11) —
+    'Température moyenne gaz [°C]': 'Mittlere Gastemperatur [°C]',
+    'λ fumées [W/m·K]': 'λ Rauchgas [W/m·K]',
+    'K évaporation [m²/s]': 'K Verdampfung [m²/s]',
+    'Temps évaporation goutte [s]': 'Verdampfungszeit des Tropfens [s]',
     // — Ajouts audit i18n (2026-07) —
     "Pression pulvérisation [bar]": "Sprühdruck [bar]",
     "Consommation eau [kg/h]": "Wasserverbrauch [kg/h]",
@@ -676,6 +691,11 @@
   },
 
   it: {
+    // — Compléments de traduction (2026-11) —
+    'Température moyenne gaz [°C]': 'Temperatura media gas [°C]',
+    'λ fumées [W/m·K]': 'λ fumi [W/m·K]',
+    'K évaporation [m²/s]': 'K evaporazione [m²/s]',
+    'Temps évaporation goutte [s]': 'Tempo di evaporazione goccia [s]',
     // — Ajouts audit i18n (2026-07) —
     "Pression pulvérisation [bar]": "Pressione di nebulizzazione [bar]",
     "Consommation eau [kg/h]": "Consumo di acqua [kg/h]",
@@ -901,6 +921,11 @@
   },
 
   pt: {
+    // — Compléments de traduction (2026-11) —
+    'Température moyenne gaz [°C]': 'Temperatura média do gás [°C]',
+    'λ fumées [W/m·K]': 'λ gases [W/m·K]',
+    'K évaporation [m²/s]': 'K evaporação [m²/s]',
+    'Temps évaporation goutte [s]': 'Tempo de evaporação da gota [s]',
     // — Ajouts audit i18n (2026-07) —
     "Pression pulvérisation [bar]": "Pressão de pulverização [bar]",
     "Consommation eau [kg/h]": "Consumo de água [kg/h]",
@@ -1126,6 +1151,11 @@
   },
 
   es: {
+    // — Compléments de traduction (2026-11) —
+    'Température moyenne gaz [°C]': 'Temperatura media del gas [°C]',
+    'λ fumées [W/m·K]': 'λ gases [W/m·K]',
+    'K évaporation [m²/s]': 'K evaporación [m²/s]',
+    'Temps évaporation goutte [s]': 'Tiempo de evaporación de la gota [s]',
     // — Ajouts audit i18n (2026-07) —
     "Pression pulvérisation [bar]": "Presión de pulverización [bar]",
     "Consommation eau [kg/h]": "Consumo de agua [kg/h]",
@@ -1351,6 +1381,11 @@
   },
 
   zh: {
+    // — Compléments de traduction (2026-11) —
+    'Température moyenne gaz [°C]': '气体平均温度 [°C]',
+    'λ fumées [W/m·K]': 'λ 烟气 [W/m·K]',
+    'K évaporation [m²/s]': 'K 蒸发 [m²/s]',
+    'Temps évaporation goutte [s]': '液滴蒸发时间 [s]',
     // — Ajouts audit i18n (2026-07) —
     "Pression pulvérisation [bar]": "喷雾压力 [bar]",
     "Consommation eau [kg/h]": "耗水量 [kg/h]",
@@ -1576,6 +1611,11 @@
   },
 
   ja: {
+    // — Compléments de traduction (2026-11) —
+    'Température moyenne gaz [°C]': 'ガス平均温度 [°C]',
+    'λ fumées [W/m·K]': 'λ 排ガス [W/m·K]',
+    'K évaporation [m²/s]': 'K 蒸発 [m²/s]',
+    'Temps évaporation goutte [s]': '液滴蒸発時間 [s]',
     // — Ajouts audit i18n (2026-07) —
     "Pression pulvérisation [bar]": "噴霧圧力 [bar]",
     "Consommation eau [kg/h]": "水消費量 [kg/h]",
@@ -1801,6 +1841,11 @@
   },
 
   ru: {
+    // — Compléments de traduction (2026-11) —
+    'Température moyenne gaz [°C]': 'Средняя температура газа [°C]',
+    'λ fumées [W/m·K]': 'λ газов [Вт/м·К]',
+    'K évaporation [m²/s]': 'K испарения [м²/с]',
+    'Temps évaporation goutte [s]': 'Время испарения капли [с]',
     // — Ajouts audit i18n (2026-07) —
     "Pression pulvérisation [bar]": "Давление распыления [бар]",
     "Consommation eau [kg/h]": "Потребление воды [кг/ч]",
@@ -2026,6 +2071,11 @@
   },
 
   ar: {
+    // — Compléments de traduction (2026-11) —
+    'Température moyenne gaz [°C]': 'متوسط درجة حرارة الغاز [°C]',
+    'λ fumées [W/m·K]': 'λ الغازات [W/m·K]',
+    'K évaporation [m²/s]': 'K التبخر [m²/s]',
+    'Temps évaporation goutte [s]': 'زمن تبخر القطرة [s]',
     // — Ajouts audit i18n (2026-07) —
     "Pression pulvérisation [bar]": "ضغط الرش [بار]",
     "Consommation eau [kg/h]": "استهلاك الماء [كغ/س]",

@@ -1,5 +1,6 @@
 import React from 'react';
 import { fmt } from '../A_Transverse_fonction/formatNumber';
+import { tTab } from './Tableau_traduction';
 
 const GasTable = ({ data }) => {
   const gases = ['CO2', 'H2O', 'O2', 'N2','Q_dry_tot','Q_wet_tot'];
@@ -9,7 +10,7 @@ const GasTable = ({ data }) => {
     <table border="1" style={{ marginTop: '20px', width: '100%', textAlign: 'center', fontSize: '12px', }}>
       <thead>
         <tr>
-          <th>Unité</th>
+          <th>{tTab('Unité')}</th>
           {gases.map(gas => <th key={gas}>{gas}</th>)}
         </tr>
       </thead>

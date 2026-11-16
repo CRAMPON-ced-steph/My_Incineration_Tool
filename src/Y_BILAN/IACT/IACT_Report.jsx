@@ -275,7 +275,7 @@ const IACT_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
             <GasTable data={{
               'kg/h':  FG_OUT_kg_h,
               'Nm³/h': FG_in_Nm3,
-            }} />
+            }} t={tr} />
           </SubSection>
         </div>
       </Section>

@@ -3,8 +3,9 @@ import React from 'react';
 import { CO2_kg_m3, O2_kg_m3, N2_kg_m3, H2O_kg_m3 } from '../A_Transverse_fonction/conv_calculation';
 import { fh_CO2, fh_H2O, fh_O2, fh_N2 } from '../A_Transverse_fonction/enthalpy_gas';
 import { fmt } from '../A_Transverse_fonction/formatNumber';
+import { tTab } from './Tableau_traduction';
 
-const MassCalculator = ({ masses, TemperatureImposee }) => {
+const MassCalculator = ({ masses, TemperatureImposee, currentLanguage }) => {
   const calculateMasses = (masses) => {
     const initialMasses = {
       CO2: parseFloat(masses.CO2) || 0,
@@ -83,16 +84,16 @@ const MassCalculator = ({ masses, TemperatureImposee }) => {
       <table border="1" style={{ marginTop: '20px', width: '100%', textAlign: 'center',fontSize: '12px',}}>
         <thead>
           <tr>
-            <th>Paramètre</th>
+            <th>{tTab('Paramètre', currentLanguage)}</th>
             {elements.map((element) => (
-              <th key={element}>{element}</th>
+              <th key={element}>{element === 'Total' ? tTab('Total', currentLanguage) : element}</th>
             ))}
           </tr>
         </thead>
         <tbody>
           {headers.map((header, index) => (
             <tr key={header}>
-              <td>{header}</td>
+              <td>{tTab(header, currentLanguage)}</td>
               {elements.map((element) => (
                 <td key={element}>
                   {data[index][element] !== undefined

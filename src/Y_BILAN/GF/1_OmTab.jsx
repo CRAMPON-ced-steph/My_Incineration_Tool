@@ -652,7 +652,7 @@ const BouesTab = ({ innerData, currentLanguage, nodeId  }) => {
                   style={inputStyle}
                 />
                 <div style={{ fontSize: '11px', color: '#6b7280', marginTop: '4px' }}>
-                  {note ? `${note}` : `Défaut: ${def} mg/kg OM`}
+                  {note ? `${note}` : `${t('Défaut')}: ${def} mg/kg OM`}
                 </div>
               </div>
             ))}

@@ -11,6 +11,8 @@ export const translations = {
   // FRANÇAIS
   // ============================================================
   fr: {
+    // — Textes sortis du code (2026-11) —
+    'Défaut': 'Défaut',
     // — Ajouts audit i18n (2026-07) —
     "Quantité d'ordures ménagères sèches": "Quantité d'ordures ménagères sèches",
     "Quantité d'ordures ménagères humides": "Quantité d'ordures ménagères humides",
@@ -470,6 +472,8 @@ export const translations = {
   // ENGLISH
   // ============================================================
   en: {
+    // — Textes sortis du code (2026-11) —
+    'Défaut': 'Default',
     // — Ajouts audit i18n (2026-07) —
     "Quantité d'ordures ménagères sèches": "Dry household waste quantity",
     "Quantité d'ordures ménagères humides": "Wet household waste quantity",
@@ -929,6 +933,12 @@ export const translations = {
   // ESPAÑOL
   // ============================================================
   es: {
+    // — Textes sortis du code (2026-11) —
+    'Défaut': 'Por defecto',
+    // — Compléments de traduction (2026-11) —
+    rawOMFlow: 'Caudal de RSU bruto',
+    mvFlowLabel: 'Caudal de MV',
+    mineralAshMM: 'Cenizas (MM)',
     // — Ajouts audit i18n (2026-07) —
     "Quantité d'ordures ménagères sèches": "Cantidad de residuos domésticos secos",
     "Quantité d'ordures ménagères humides": "Cantidad de residuos domésticos húmedos",
@@ -1266,6 +1276,12 @@ export const translations = {
   // DEUTSCH
   // ============================================================
   de: {
+    // — Textes sortis du code (2026-11) —
+    'Défaut': 'Standard',
+    // — Compléments de traduction (2026-11) —
+    rawOMFlow: 'Rohmülldurchsatz',
+    mvFlowLabel: 'oTS-Durchsatz',
+    mineralAshMM: 'Asche (mineralisch)',
     // — Ajouts audit i18n (2026-07) —
     "Quantité d'ordures ménagères sèches": "Menge trockener Hausmüll",
     "Quantité d'ordures ménagères humides": "Menge nasser Hausmüll",
@@ -1603,6 +1619,12 @@ export const translations = {
   // ITALIANO
   // ============================================================
   it: {
+    // — Textes sortis du code (2026-11) —
+    'Défaut': 'Predefinito',
+    // — Compléments de traduction (2026-11) —
+    rawOMFlow: 'Portata RSU grezzi',
+    mvFlowLabel: 'Portata SV',
+    mineralAshMM: 'Ceneri (MM)',
     // — Ajouts audit i18n (2026-07) —
     "Quantité d'ordures ménagères sèches": "Quantità di rifiuti domestici secchi",
     "Quantité d'ordures ménagères humides": "Quantità di rifiuti domestici umidi",
@@ -1940,6 +1962,12 @@ export const translations = {
   // PORTUGUÊS
   // ============================================================
   pt: {
+    // — Textes sortis du code (2026-11) —
+    'Défaut': 'Padrão',
+    // — Compléments de traduction (2026-11) —
+    rawOMFlow: 'Vazão de RSU bruto',
+    mvFlowLabel: 'Vazão de MV',
+    mineralAshMM: 'Cinzas (MM)',
     // — Ajouts audit i18n (2026-07) —
     "Quantité d'ordures ménagères sèches": "Quantidade de resíduos domésticos secos",
     "Quantité d'ordures ménagères humides": "Quantidade de resíduos domésticos úmidos",
@@ -2277,6 +2305,12 @@ export const translations = {
   // 中文 (CHINESE SIMPLIFIED)
   // ============================================================
   zh: {
+    // — Textes sortis du code (2026-11) —
+    'Défaut': '默认',
+    // — Compléments de traduction (2026-11) —
+    rawOMFlow: '原生活垃圾流量',
+    mvFlowLabel: '挥发分流量',
+    mineralAshMM: '灰分（矿物质）',
     // — Ajouts audit i18n (2026-07) —
     "Quantité d'ordures ménagères sèches": "干生活垃圾量",
     "Quantité d'ordures ménagères humides": "湿生活垃圾量",
@@ -2614,6 +2648,12 @@ export const translations = {
   // 日本語 (JAPANESE)
   // ============================================================
   ja: {
+    // — Textes sortis du code (2026-11) —
+    'Défaut': '既定値',
+    // — Compléments de traduction (2026-11) —
+    rawOMFlow: '生ごみ流量',
+    mvFlowLabel: '有機物流量',
+    mineralAshMM: '灰分（無機物）',
     // — Ajouts audit i18n (2026-07) —
     "Quantité d'ordures ménagères sèches": "乾燥生活ごみ量",
     "Quantité d'ordures ménagères humides": "湿潤生活ごみ量",
@@ -2951,6 +2991,12 @@ export const translations = {
   // РУССКИЙ (RUSSIAN)
   // ============================================================
   ru: {
+    // — Textes sortis du code (2026-11) —
+    'Défaut': 'По умолчанию',
+    // — Compléments de traduction (2026-11) —
+    rawOMFlow: 'Расход исходных ТБО',
+    mvFlowLabel: 'Расход органического вещества',
+    mineralAshMM: 'Зола (минеральная часть)',
     // — Ajouts audit i18n (2026-07) —
     "Quantité d'ordures ménagères sèches": "Количество сухих бытовых отходов",
     "Quantité d'ordures ménagères humides": "Количество влажных бытовых отходов",
@@ -3288,6 +3334,12 @@ export const translations = {
   // العربية (ARABIC)
   // ============================================================
   ar: {
+    // — Textes sortis du code (2026-11) —
+    'Défaut': 'الافتراضي',
+    // — Compléments de traduction (2026-11) —
+    rawOMFlow: 'تدفق النفايات المنزلية الخام',
+    mvFlowLabel: 'تدفق المواد المتطايرة',
+    mineralAshMM: 'الرماد (مواد معدنية)',
     // — Ajouts audit i18n (2026-07) —
     "Quantité d'ordures ménagères sèches": "كمية النفايات المنزلية الجافة",
     "Quantité d'ordures ménagères humides": "كمية النفايات المنزلية الرطبة",
