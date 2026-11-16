@@ -93,6 +93,9 @@ const STACK_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
   const opex = computeOpexCosts(innerData);
 
   const hasDesignData = hp_min !== undefined;
+  const sd = innerData.stack_design; // nouvel onglet Design (portage Pyrofluid V4.5)
+  const zonesSD = [t('SD_zone0'), t('SD_zone1'), t('SD_zone2'), t('SD_zone3')];
+  const nomSD = (k) => (k === 'Poussieres' ? t('SD_dust') : k);
 
   return (
     <div style={styles.container}>
@@ -125,7 +128,51 @@ const STACK_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
 
       {/* ── Section 3 : Design cheminée ───────────────────────────────────── */}
       <Section title={`3. ${t('stackDesignTitle')}`}>
-        {!hasDesignData ? (
+        {sd && (
+          <>
+            <div style={styles.twoCol}>
+              <SubSection title={t('SD_report_inputs')}>
+                <KV label={t('wetMassFlow')} value={fmt(Qm_kg_h, 0)} />
+                <KV label={t('SD_QvN_wet')} value={fmt(Qv_Nm3_h, 0)} />
+                <KV label={t('SD_R')} value={fmt(sd.R, 0)} />
+                <KV label={t('SD_T_fumees')} value={fmt(sd.T, 1)} />
+                <KV label={t('SD_Tamb')} value={fmt(sd.Tamb, 1)} />
+                <KV label={t('SD_dT')} value={fmt(sd.dT, 1)} />
+                <KV label={t('SD_report_zone')} value={zonesSD[sd.zone] || '—'} />
+                <KV label={t('SD_report_governing')} value={sd.dimensionnant ? nomSD(sd.dimensionnant) : '—'} />
+              </SubSection>
+              <SubSection title={t('SD_report_heights')}>
+                <KV label={t('SD_hp')} value={fmt(sd.hp, 2)} />
+                <KV label={`${t('SD_hpc')} (${sd.nbVoisinesDependantes}/${sd.nbVoisines})`} value={sd.hpc > 0 ? fmt(sd.hpc, 2) : '—'} />
+                <KV label={`${t('SD_hpo')} (${sd.nbObstaclesDependants}/${sd.nbObstacles})`} value={sd.hpo > 0 ? fmt(sd.hpo, 2) : '—'} />
+                <KV label={t('SD_h_final')} value={fmt(sd.hFinale, 2)} />
+                <KV label={t('SD_velocity_used')} value={fmt(sd.vitesse, 2)} />
+                <KV label={t('SD_diameter')} value={fmt(sd.diametre, 2)} />
+              </SubSection>
+            </div>
+            <SubSection title={`${t('SD_compliance')} — ${t('SD_O2ref')} ${fmt(sd.O2ref, 1)}`}>
+              <table style={styles.table}>
+                <thead><tr>
+                  <th style={styles.th}>{t('SD_pollutant')}</th><th style={styles.th}>kg/h</th>
+                  <th style={styles.th}>{t('SD_conc_ref')}</th><th style={styles.th}>{t('SD_limit')}</th>
+                  <th style={styles.th}>%</th><th style={styles.th}>{t('SD_status')}</th>
+                </tr></thead>
+                <tbody>{Object.keys(sd.conformite || {}).map(k => {
+                  const c = sd.conformite[k];
+                  return (
+                    <tr key={k}>
+                      <td style={styles.tdLabel}>{nomSD(k)}</td><td style={styles.td}>{fmt(sd.q?.[k], 3)}</td>
+                      <td style={styles.td}>{fmt(c.conc, 2)}</td><td style={styles.td}>{c.limite > 0 ? fmt(c.limite, 1) : '—'}</td>
+                      <td style={styles.td}>{c.limite > 0 ? fmt(c.pct, 1) : '—'}</td>
+                      <td style={{ ...styles.td, fontWeight: 'bold', color: c.ok ? '#27ae60' : '#e74c3c' }}>{c.limite > 0 ? (c.ok ? `✔ ${t('compliantStatus')}` : `✘ ${t('nonCompliantStatus')}`) : '—'}</td>
+                    </tr>
+                  );
+                })}</tbody>
+              </table>
+            </SubSection>
+          </>
+        )}
+        {sd ? null : !hasDesignData ? (
           <p style={{ color: '#999', fontSize: 12, padding: '10px 14px' }}>
             {t('noDesignData')}
           </p>
@@ -146,7 +193,7 @@ const STACK_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
             </SubSection>
           </div>
         )}
-        {hasDesignData && (
+        {!sd && hasDesignData && (
           <SubSection title={t('regulatoryCompliance')}>
             <div style={{ ...styles.complianceBadge, borderColor: compliant ? '#27ae60' : '#e74c3c', background: compliant ? '#eafaf1' : '#fdf2f2' }}>
               <KV label={t('calculatedConcentrationMg')} value={fmt(concentration, 2)} />

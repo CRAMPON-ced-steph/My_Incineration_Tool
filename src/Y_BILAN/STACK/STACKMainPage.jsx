@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import STACKFlueGasParameters from './1_STACK_Flue_gas_ML';
 import STACKFlueGasPollutantEmission from './2_STACK_Pollutant_Emission_ML';
-import STACKDesign from './3_STACK_Design2_ML';
+// Ancien onglet Design conservé dans './3_STACK_Design2_ML' (plus utilisé) — remplacé par le portage Pyrofluid V4.5
+import STACKDesign from './3_STACK_Design3_ML';
 import STACKOpex from './4_STACK_Opex_ML';
 import STACK_Report from './STACK_Report';
 
