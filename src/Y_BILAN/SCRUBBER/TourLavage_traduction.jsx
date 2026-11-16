@@ -4,6 +4,11 @@
 export const tlTranslations = {
   fr: {
     TL_legend_input: 'saisie',
+    TL_origin_mode_on: 'Calcul Pyrofluid d\'origine : ACTIF',
+    TL_origin_mode_off: 'Calcul Pyrofluid d\'origine',
+    TL_origin_mode_hint: 'Reproduit ClassTourLavage.vb à l\'identique (revalidation). Désactivé : calcul corrigé.',
+    TL_origin_mode_note: 'Mode d\'origine : hauteurs dimensionnées sur 50 mg/Nm³ (SO₂) et 10 mg/Nm³ (HCl) ; le HCl en sortie est un résultat.',
+    TL_hcl_outlet_calc: 'HCl en sortie calculé (sec, 11 % O₂)',
     TL_legend_calc: 'calculé',
     TL_legend_warn: 'hors plage',
     TL_reload_from_flow: 'Recharger depuis le flux amont',
@@ -103,6 +108,11 @@ export const tlTranslations = {
   },
   en: {
     TL_legend_input: 'input',
+    TL_origin_mode_on: 'Original Pyrofluid calculation: ON',
+    TL_origin_mode_off: 'Original Pyrofluid calculation',
+    TL_origin_mode_hint: 'Reproduces ClassTourLavage.vb exactly (revalidation). Off: corrected calculation.',
+    TL_origin_mode_note: 'Original mode: heights sized on 50 mg/Nm³ (SO₂) and 10 mg/Nm³ (HCl); outlet HCl is a result.',
+    TL_hcl_outlet_calc: 'Calculated outlet HCl (dry, 11% O₂)',
     TL_legend_calc: 'calculated',
     TL_legend_warn: 'out of range',
     TL_reload_from_flow: 'Reload from upstream flow',

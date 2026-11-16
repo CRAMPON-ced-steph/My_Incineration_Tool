@@ -68,7 +68,14 @@ const parseValue = (v) => { const p = parseFloat(v); return isNaN(p) ? 0 : p; };
 // MOTEUR DE CALCUL (transcription de ClassTourLavage.Calcul)
 // Exporté pour test / réutilisation.
 // ═══════════════════════════════════════════════════════════════════
+//
+// inp.modeOrigine = true  → calcul Pyrofluid d'origine : reproduit ClassTourLavage.vb à l'identique,
+//                           y compris ses particularités (voir commentaires « ORIGINE »).
+// inp.modeOrigine = false → calcul corrigé (défaut).
+// Hypothèse commune : un quench est placé en amont, les fumées entrent saturées
+// (température d'entrée = température de saturation du quench, recup_Ts dans le VB).
 export function calculTour(inp) {
+  const ORI = !!inp.modeOrigine;
   const Tin = inp.tempFumees;
   const p = 760 - Math.abs(inp.pTotal / 13.595); // mmCE → mmHg
 
@@ -94,19 +101,21 @@ export function calculTour(inp) {
     const psatC = psatH2O(Tc);
     const molIncond = ((volTotIn - volIn.H2O - volIn.HCl) * 1000) / VM;
     const mH2Oc = psatC < p ? (psatC / (p - psatC)) * molIncond * (M.H2O / 1000) : masIn.H2O;
-    const condensat = Math.max(masIn.H2O - mH2Oc, 0);
+    // ORIGINE : condensat non borné à 0
+    const condensat = ORI ? masIn.H2O - mH2Oc : Math.max(masIn.H2O - mH2Oc, 0);
     const masC = { ...masIn, H2O: mH2Oc };
     const entOut = enthalpieFumees(Tc, masC, 547);
     const deltaEnt = entIn - entOut;
     const cpL = cpLiquide(inp.tempLiqRef);
     const dT = Tin - inp.tempLiqRef;
     const eauRefroid = dT !== 0 ? (deltaEnt / cpL - Tin * condensat) / dT : 0;
-    const eauEntreeCond = eauRefroid + inp.debArrosage;
+    // ORIGINE : 25 000 kg/h en dur (A12) au lieu du débit d'arrosage saisi
+    const eauEntreeCond = eauRefroid + (ORI ? 25000 : inp.debArrosage);
     const eauSortieCond = eauEntreeCond + condensat;
     const tSortieLiq = eauSortieCond > 0 ? (deltaEnt / cpL + eauEntreeCond * inp.tempLiqRef) / eauSortieCond : 0;
     const d1 = Tin - tSortieLiq;
     const d2 = Math.abs(inp.tempLiqRef - Tc);
-    const lmtd = d2 > 0 && d1 > 0 && d1 !== d2 ? (d1 - d2) / Math.log(d1 / d2) : d1;
+    const lmtd = d2 > 0 && d1 > 0 && d1 !== d2 ? (d1 - d2) / Math.log(d1 / d2) : (ORI && d2 === 0 ? 0 : d1);
     const cpg = cpgEau((Tin + Tc) / 2);
     const chalSenIn = entIn - masIn.H2O * 597;
     const chalSenOut = entOut - mH2Oc * 597;
@@ -121,6 +130,8 @@ export function calculTour(inp) {
 
   // ─── Gaz à l'entrée de la partie absorption ───
   const volAbs = volDe(masAbs);
+  // ORIGINE (avec sous-refroidissement) : le volume d'eau après condenseur reste celui de l'entrée
+  if (ORI && cond) volAbs.H2O = volIn.H2O;
   const masTotAbs = somme(masAbs);
   const volTotAbs = somme(volAbs);
   if (volTotAbs <= 0) return null;
@@ -208,36 +219,84 @@ export function calculTour(inp) {
     Math.pow(1 / (inp.surfaceVolGarn * inp.diamGarn), 2);
   const hutHCl = aw > 0 && kgHCl > 0 ? Gp / (roGaz * 8.314 * TK * aw * kgHCl) : 0;
 
-  // ─── NUT & hauteurs de garnissage ───
+  // ─── NUT, hauteurs de garnissage et fumées en sortie ───
   const cibleSO2 = Math.min(inp.cibleSO2, concSO2In);
-  const cibleHCl = Math.min(inp.cibleHCl, concHClIn);
-  const nutSO2 = concSO2In > cibleSO2 && cibleSO2 > 0 ? Math.log(concSO2In / cibleSO2) : 0;
-  const nutHCl = concHClIn > cibleHCl && cibleHCl > 0 ? Math.log(concHClIn / cibleHCl) : 0;
-  const hGarnSO2 = nutSO2 * hutSO2 * 1.5 + 0.49;
-  const hGarnHCl = nutHCl * hutHCl * 1.5 + 0.49;
-  const hGarnRetenue = (hGarnSO2 + hGarnHCl) * inp.coefHautSat;
-
-  // ─── Fumées en sortie : boucle itérative sur %O2 sec ───
-  const psatOut = psatH2O(tAbs);
-  const molIncondS = ((volAbs.CO2 + volAbs.N2 + volAbs.O2) * 1000) / VM;
-  const masH2Os = psatOut < p ? (psatOut / (p - psatOut)) * molIncondS * (M.H2O / 1000) : masAbs.H2O;
-
+  let cibleHCl = Math.min(inp.cibleHCl, concHClIn);
+  let nutSO2, nutHCl, hGarnSO2, hGarnHCl;
   let pO2s = pO2in;
   let volSecS = volTotAbs - volAbs.H2O;
-  let masSO2s = 0, masHCls = 0, volTotS = volTotAbs;
-  for (let i = 0; i < 200; i++) {
-    masSO2s = cibleSO2 * 1e-6 * ((21 - pO2s) / 10) * volSecS;
-    masHCls = cibleHCl * 1e-6 * ((21 - pO2s) / 10) * volSecS;
-    const vSO2 = (masSO2s * VM) / M.SO2;
-    const vHCl = (masHCls * VM) / M.HCl;
-    const vH2O = (masH2Os * VM) / M.H2O;
-    volTotS = volAbs.CO2 + volAbs.N2 + volAbs.O2 + vSO2 + vHCl + vH2O;
-    volSecS = volTotS - vH2O;
-    const pO2test = (volAbs.O2 / volSecS) * 100;
-    const diff = Math.abs(pO2s - pO2test);
-    pO2s = pO2test;
-    if (diff < 1e-5) break;
+  let masSO2s = 0, masHCls = 0, volTotS = volTotAbs, masH2Os;
+  let concHClSortie = cibleHCl;
+
+  if (!ORI) {
+    nutSO2 = concSO2In > cibleSO2 && cibleSO2 > 0 ? Math.log(concSO2In / cibleSO2) : 0;
+    nutHCl = concHClIn > cibleHCl && cibleHCl > 0 ? Math.log(concHClIn / cibleHCl) : 0;
+    hGarnSO2 = nutSO2 * hutSO2 * 1.5 + 0.49;
+    hGarnHCl = nutHCl * hutHCl * 1.5 + 0.49;
+    // Fumées en sortie : boucle itérative sur %O2 sec
+    const psatOut = psatH2O(tAbs);
+    const molIncondS = ((volAbs.CO2 + volAbs.N2 + volAbs.O2) * 1000) / VM;
+    masH2Os = psatOut < p ? (psatOut / (p - psatOut)) * molIncondS * (M.H2O / 1000) : masAbs.H2O;
+    for (let i = 0; i < 200; i++) {
+      masSO2s = cibleSO2 * 1e-6 * ((21 - pO2s) / 10) * volSecS;
+      masHCls = cibleHCl * 1e-6 * ((21 - pO2s) / 10) * volSecS;
+      const vSO2 = (masSO2s * VM) / M.SO2;
+      const vHCl = (masHCls * VM) / M.HCl;
+      const vH2O = (masH2Os * VM) / M.H2O;
+      volTotS = volAbs.CO2 + volAbs.N2 + volAbs.O2 + vSO2 + vHCl + vH2O;
+      volSecS = volTotS - vH2O;
+      const pO2test = (volAbs.O2 / volSecS) * 100;
+      const diff = Math.abs(pO2s - pO2test);
+      pO2s = pO2test;
+      if (diff < 1e-5) break;
+    }
+  } else {
+    // ORIGINE — transcription de la boucle Do … Loop de ClassTourLavage.Calcul :
+    //  - cibles de dimensionnement en dur : 50 mg/Nm3 (SO2) et 10 mg/Nm3 (HCl)
+    //  - sans sous-refroidissement : entrée exprimée en ppm volumiques (débit VOLUMIQUE × 1e6 / volume total),
+    //    hauteur SO2 = NUT × HUT × 1,5 + 0,049 ; facteur (100 − « PourcentH2O ») / 100 sur le SO2 sortant ;
+    //    eau sortante = saturation sous 760 mmHg
+    //  - avec sous-refroidissement : entrée en mg/Nm3 humide, + 0,49 ; eau sortante = eau en sortie de condenseur
+    //  - HCl en sortie = résultat : C_entrée / exp(H_HCl / HUT_SO2)
+    const molIncondS = ((volAbs.CO2 + volAbs.N2 + volAbs.O2) * 1000) / VM;
+    if (cond) {
+      masH2Os = masIn.H2O - cond.condensat;
+    } else {
+      const ps = psatH2O(Tin);
+      masH2Os = ps < 760 ? (ps / (760 - ps)) * molIncondS * (M.H2O / 1000) : masAbs.H2O;
+    }
+    let volH2OS = volAbs.H2O;
+    concHClSortie = 0; // valeur de départ ; converge en quelques itérations
+    nutSO2 = 0; nutHCl = 0; hGarnSO2 = 0.49; hGarnHCl = 0.49;
+    for (let i = 0; i < 500; i++) {
+      const fracSec = volTotS > 0 ? (volTotS - volH2OS) / volTotS : 0;
+      const numSO2 = cond ? (masAbs.SO2 * 1e6) / volTotAbs : (volIn.SO2 * 1e6) / volTotIn;
+      const numHCl = cond ? (masAbs.HCl * 1e6) / volTotAbs : (volIn.HCl * 1e6) / volTotIn;
+      const denSO2 = ((50 * (21 - pO2s)) / 10) * fracSec;
+      const denHCl = ((10 * (21 - pO2s)) / 10) * fracSec;
+      nutSO2 = numSO2 > 0 && denSO2 > 0 ? Math.log(numSO2 / denSO2) : 0;
+      nutHCl = numHCl > 0 && denHCl > 0 ? Math.log(numHCl / denHCl) : 0;
+      hGarnSO2 = nutSO2 * hutSO2 * 1.5 + (cond ? 0.49 : 0.049);
+      hGarnHCl = nutHCl * hutHCl * 1.5 + 0.49;
+      masSO2s = cibleSO2 * 1e-6 * ((21 - pO2s) / 10) * volSecS * (cond ? 1 : (100 - fracSec) / 100);
+      masHCls = Math.min(concHClSortie, concHClIn) * 1e-6 * ((21 - pO2s) / 10) * volSecS;
+      const vSO2 = (masSO2s * VM) / M.SO2;
+      const vHCl = (masHCls * VM) / M.HCl;
+      volH2OS = (masH2Os * VM) / M.H2O;
+      volTotS = volAbs.CO2 + volAbs.N2 + volAbs.O2 + vSO2 + vHCl + volH2OS;
+      volSecS = volTotS - volH2OS;
+      const pO2test = (volAbs.O2 / volSecS) * 100;
+      const diff = Math.abs(pO2s - pO2test);
+      const concPrev = concHClSortie;
+      concHClSortie = hutSO2 > 0
+        ? (((masAbs.HCl * 1e6) / volSecS) * (10 / (21 - pO2s))) / Math.exp(hGarnHCl / hutSO2)
+        : 0;
+      pO2s = pO2test;
+      if (diff < 1e-5 && Math.abs(concHClSortie - concPrev) < 1e-6) break;
+    }
+    cibleHCl = concHClSortie;
   }
+  const hGarnRetenue = (hGarnSO2 + hGarnHCl) * inp.coefHautSat;
   const masTotS = masAbs.CO2 + masAbs.N2 + masAbs.O2 + masSO2s + masHCls + masH2Os;
   const roSortie = masTotS / ((volTotS * (tAbs + 273)) / 273);
 
@@ -249,9 +308,11 @@ export function calculTour(inp) {
   } else if (inp.typeGarn === 'Autres' && sec > 0) {
     const a1 = 21.79 - 36.19 * Math.pow(vf1, 0.25) + 16.6 * Math.sqrt(vf1);
     const a2 = 7.06 + 10.3 * Math.pow(vf1, 0.25) - 10.36 * Math.sqrt(vf1);
-    const a3 =
-      (Math.pow(masTotAbs / 3600 / sec, 2) * inp.facteurGarn * Math.pow(nuLiq / nuLiq20, 0.2)) /
-      (9.81 * roGaz * roLiq);
+    // ORIGINE (avec sous-refroidissement) : flux à la puissance 1 et rapport de viscosités à la puissance 2
+    const a3 = ORI && cond
+      ? ((masTotAbs / (3600 * sec)) * inp.facteurGarn * Math.pow(nuLiq / nuLiq20, 2)) / (9.81 * roGaz * roLiq)
+      : (Math.pow(masTotAbs / 3600 / sec, 2) * inp.facteurGarn * Math.pow(nuLiq / nuLiq20, 0.2)) /
+        (9.81 * roGaz * roLiq);
     dPGarn = (98 * (a3 / vf2) * (a1 + a2 * (a3 / vf2))) / 9.81;
   }
   const dPGarnH = hGarnRetenue > 0 ? dPGarn / hGarnRetenue : 0;
@@ -259,7 +320,9 @@ export function calculTour(inp) {
   // ─── Dévésiculeur ───
   const vitDevesEng = 0.08 * 3600 * Math.sqrt(Math.max(roLiq - roSortie, 0) / roSortie);
   const secDeves = vitDevesEng > 0 ? masTotS / (roSortie * vitDevesEng) : 0;
-  const diamDeves = arrondi05(Math.sqrt((4 * secDeves) / Math.PI));
+  // ORIGINE (avec sous-refroidissement) : diamètre du dévésiculeur non arrondi
+  const diamDevesBrut = Math.sqrt((4 * secDeves) / Math.PI);
+  const diamDeves = ORI && cond ? diamDevesBrut : arrondi05(diamDevesBrut);
   const secDevesRet = (Math.PI * diamDeves * diamDeves) / 4;
   const vitRetenue = secDevesRet > 0 ? masTotS / secDevesRet : 0; // kg/(m2.h) ≈ m/h (legacy)
   const dPDeves = 0.0169 * roSortie * inp.epaisDeves * Math.pow(vitRetenue / 3600, 1.85);
@@ -296,6 +359,7 @@ export function calculTour(inp) {
     fluxEngor, fluxReel, diamCalc, sec,
     tauxMouil, rapport, tauxEngor,
     aw, Re, hutSO2, hutHCl, nutSO2, nutHCl, hGarnSO2, hGarnHCl, hGarnRetenue,
+    modeOrigine: ORI, concHClSortie: cibleHCl,
     cibleSO2, cibleHCl, masSO2s, masHCls, masH2Os, masTotS, volTotS, pO2s, roSortie,
     dPGarn, dPGarnH,
     vitDevesEng, diamDeves, vitRetenue, dPDeves,
@@ -429,6 +493,7 @@ const TourLavageCalculator = ({ innerData = {}, setInnerData, currentLanguage = 
       sigmaTenSup: 0.033, coefHautSat: 1.5,
       sousRef: false, tempLiqRef: 20, tempSortieCond: 40,
       epaisDeves: 444,
+      modeOrigine: false,
     };
   }, [innerData]);
 
@@ -508,6 +573,13 @@ const TourLavageCalculator = ({ innerData = {}, setInnerData, currentLanguage = 
           <span style={{ padding: '2px 8px', borderRadius: 4, backgroundColor: '#ffcdd2', border: '1px solid #e57373' }}>{t('TL_legend_warn')}</span>
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
+          <button
+            onClick={() => setInp((s) => ({ ...s, modeOrigine: !s.modeOrigine }))}
+            title={t('TL_origin_mode_hint')}
+            style={{ padding: '6px 12px', background: inp.modeOrigine ? '#b45309' : '#e5e7eb', color: inp.modeOrigine ? 'white' : '#374151', border: 'none', borderRadius: 4, cursor: 'pointer', fontSize: 12, fontWeight: 600 }}
+          >
+            {inp.modeOrigine ? t('TL_origin_mode_on') : t('TL_origin_mode_off')}
+          </button>
           <button onClick={rechargerDepuisFlux} style={{ padding: '6px 12px', background: '#4a90e2', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer', fontSize: 12 }}>
             {t('TL_reload_from_flow')}
           </button>
@@ -567,7 +639,13 @@ const TourLavageCalculator = ({ innerData = {}, setInnerData, currentLanguage = 
             <InField label="TL_naoh_pct" unit="%" step="0.5" value={inp.pourNaOH} onChange={setNum('pourNaOH')} t={t} />
             <InField label="TL_so2_salts" unit="%" step="0.1" value={inp.concLiqSO2} onChange={setNum('concLiqSO2')} t={t} />
             <InField label="TL_target_so2" unit="mg/Nm³" step="1" value={inp.cibleSO2} onChange={setNum('cibleSO2')} t={t} />
-            <InField label="TL_target_hcl" unit="mg/Nm³" step="1" value={inp.cibleHCl} onChange={setNum('cibleHCl')} t={t} />
+            <InField label="TL_target_hcl" unit="mg/Nm³" step="1" disabled={inp.modeOrigine} value={inp.cibleHCl} onChange={setNum('cibleHCl')} t={t} />
+            {r && inp.modeOrigine && (
+              <>
+                <OutField label="TL_hcl_outlet_calc" value={r.concHClSortie} unit="mg/Nm³" d={2} t={t} />
+                <div style={{ fontSize: 11, color: '#b45309', marginTop: 4 }}>{t('TL_origin_mode_note')}</div>
+              </>
+            )}
           </TLSection>
 
           <TLSection title={t('TL_section_packing')}>
