@@ -233,8 +233,12 @@ const DimensionnementTab = ({ innerData = {}, innerDataTick, onDataChange, curre
       DebitVolFumeesHumide_Nm3hFour: innerData?.FG_wet_Nm3_h ?? prev.DebitVolFumeesHumide_Nm3hFour,
       VolTotalAirInstrumentation_Nm3h: innerData?.Volume_air_balayage ?? prev.VolTotalAirInstrumentation_Nm3h,
       TempFreeboard_C: innerData?.Temp_fumee_voute_C ?? prev.TempFreeboard_C,
+      // Entrées de boîte à vent : suivent la combustion (elles n'étaient lues qu'à l'ouverture de l'onglet)
+      TempEntreeBoiteVent_C: innerData?.Tair_ap_prechauffe_C ?? prev.TempEntreeBoiteVent_C,
+      VolAirEntreeBoiteVent_Nm3h: innerData?.Q_air_comb_tot_Nm3_h ?? prev.VolAirEntreeBoiteVent_Nm3h,
     }));
-  }, [innerData?.FG_wet_Nm3_h, innerData?.Volume_air_balayage, innerData?.Temp_fumee_voute_C]);
+  }, [innerData?.FG_wet_Nm3_h, innerData?.Volume_air_balayage, innerData?.Temp_fumee_voute_C,
+    innerData?.Tair_ap_prechauffe_C, innerData?.Q_air_comb_tot_Nm3_h]);
 
   const calculsComplets = useMemo(() => computeCalculs(parametres), [parametres]);
 
