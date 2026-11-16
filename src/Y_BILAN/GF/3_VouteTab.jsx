@@ -127,8 +127,8 @@ const DimensionnementTab = ({ innerData = {}, innerDataTick, currentLanguage = '
 
               {/* Total */}
               <div style={{ marginTop: 8, fontSize: 12, color: '#555', display: 'flex', justifyContent: 'space-between' }}>
-                <span>Total : <b>{fmt(sumW, 0)}%</b></span>
-                <span>Air combustion total : <b>{fmt(totalAir, 0)} kg/h</b></span>
+                <span>{t('Total :')} <b>{fmt(sumW, 0)}%</b></span>
+                <span>{t('Air combustion total :')} <b>{fmt(totalAir, 0)} kg/h</b></span>
               </div>
             </div>
           );

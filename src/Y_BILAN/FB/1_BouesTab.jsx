@@ -678,11 +678,11 @@ const BouesTab = ({ innerData, onInnerDataChange, currentLanguage, nodeId }) => 
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '15px', alignItems: 'start', marginTop: '15px' }}>
           {[
-            { label: 'PCI boue [kcal/kg MV]',     val: pciPcsDisplay.pci_kgMV },
-            { label: 'PCS boue [kcal/kg MV]',     val: pciPcsDisplay.pcs_kgMV },
-            { label: 'PCI boue [kcal/kg brut]',   val: pciPcsDisplay.pci_kg },
-            { label: 'PCS boue [kcal/kg brut]',   val: pciPcsDisplay.pcs_kg },
-            { label: pciPcsDisplay.modifiee ? 'PCI Jarosz [kcal/kg MV] — appliqué (composition modifiée)' : 'PCI Jarosz [kcal/kg MV] — contrôle', val: pciPcsDisplay.pci_jarosz },
+            { label: t('PCI boue [kcal/kg MV]'),     val: pciPcsDisplay.pci_kgMV },
+            { label: t('PCS boue [kcal/kg MV]'),     val: pciPcsDisplay.pcs_kgMV },
+            { label: t('PCI boue [kcal/kg brut]'),   val: pciPcsDisplay.pci_kg },
+            { label: t('PCS boue [kcal/kg brut]'),   val: pciPcsDisplay.pcs_kg },
+            { label: pciPcsDisplay.modifiee ? t('PCI Jarosz [kcal/kg MV] — appliqué (composition modifiée)') : t('PCI Jarosz [kcal/kg MV] — contrôle'), val: pciPcsDisplay.pci_jarosz },
           ].map(({ label, val }) => (
             <div key={label}>
               <label style={labelStyle}>{label}</label>
@@ -757,9 +757,9 @@ const BouesTab = ({ innerData, onInnerDataChange, currentLanguage, nodeId }) => 
               { label: 'PCDDF', id: 'pcddf', def: 0.0001, note: '10⁻⁴ mg/kg MS' },
               { label: 'Tl (Thallium)', id: 'ti', def: 2 },
               { label: 'HF (Acide fluorhydrique)', id: 'hf', def: 500, note: '500 mg/kg MS' },
-              { label: 'Mg (Magnésium)', id: 'mg', def: 4000 },
-              { label: 'Mn (Manganèse)', id: 'mn', def: 20 },
-              { label: 'Se (Sélénium)', id: 'se', def: 30 },
+              { label: t('Mg (Magnésium)'), id: 'mg', def: 4000 },
+              { label: t('Mn (Manganèse)'), id: 'mn', def: 20 },
+              { label: t('Se (Sélénium)'), id: 'se', def: 30 },
             ].map(({ label, id, def, note }) => (
               <div key={id}>
                 <label style={labelStyle}>{label}</label>
@@ -774,7 +774,7 @@ const BouesTab = ({ innerData, onInnerDataChange, currentLanguage, nodeId }) => 
                   style={inputStyle}
                 />
                 <div style={{ fontSize: '11px', color: '#6b7280', marginTop: '4px' }}>
-                  {note ? `${note}` : `Défaut: ${def} mg/kg MS`}
+                  {note ? `${note}` : `${t('Défaut')}: ${def} mg/kg MS`}
                 </div>
               </div>
             ))}
@@ -831,9 +831,9 @@ const BouesTab = ({ innerData, onInnerDataChange, currentLanguage, nodeId }) => 
               { label: 'PCDDF', value: PCDDF_kg_h, color: '#a855f7' },
               { label: 'Tl (Thallium)', value: Ti_kg_h, color: '#14b8a6' },
               { label: 'HF (Acide fluorhydrique)', value: HF_kg_h, color: '#dc2626' },
-              { label: 'Mg (Magnésium)', value: Mg_kg_h, color: '#84cc16' },
-              { label: 'Mn (Manganèse)', value: Mn_kg_h, color: '#a16207' },
-              { label: 'Se (Sélénium)', value: Se_kg_h, color: '#0ea5e9' },
+              { label: t('Mg (Magnésium)'), value: Mg_kg_h, color: '#84cc16' },
+              { label: t('Mn (Manganèse)'), value: Mn_kg_h, color: '#a16207' },
+              { label: t('Se (Sélénium)'), value: Se_kg_h, color: '#0ea5e9' },
             ];
 
             return (
@@ -920,18 +920,18 @@ const BouesTab = ({ innerData, onInnerDataChange, currentLanguage, nodeId }) => 
         return (
           <div style={cardStyle}>
             <h2 style={{ color: '#1a202c', fontSize: '20px', marginBottom: '8px' }}>
-              Répartition des matières minérales
+              {t('Répartition des matières minérales')}
             </h2>
             <p style={{ color: '#6b7280', fontSize: '13px', marginBottom: '20px' }}>
-              Modèle de Rosin-Rammler — R(x) = exp[−(x/d′)ⁿ]
+              {t('Modèle de Rosin-Rammler — R(x) = exp[−(x/d′)ⁿ]')}
             </p>
 
             {/* Paramètres */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '15px', marginBottom: '24px' }}>
               {[
-                { label: "d′ — diamètre caractéristique [µm]", key: 'dprime', step: '10', note: "63,2 % de fines passent ce seuil" },
-                { label: "n — coefficient d'uniformité [-]",   key: 'n',      step: '0.1', note: "n > 2 : monodisperse | n ≈ 1 : polydisperse" },
-                { label: "d_cut — diamètre de coupure [µm]",   key: 'dcut',   step: '10', note: "Séparation lit fluidisé / cyclones" },
+                { label: t('d′ — diamètre caractéristique [µm]'), key: 'dprime', step: '10', note: t('63,2 % de fines passent ce seuil') },
+                { label: t('n — coefficient d\'uniformité [-]'),   key: 'n',      step: '0.1', note: t('n > 2 : monodisperse | n ≈ 1 : polydisperse') },
+                { label: t('d_cut — diamètre de coupure [µm]'),   key: 'dcut',   step: '10', note: t('Séparation lit fluidisé / cyclones') },
               ].map(({ label, key, step, note }) => (
                 <div key={key}>
                   <label style={labelStyle}>{label}</label>
@@ -951,8 +951,8 @@ const BouesTab = ({ innerData, onInnerDataChange, currentLanguage, nodeId }) => 
             {/* Résultats de partage */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '24px' }}>
               {[
-                { label: 'Fraction fines → Traitement des fumées',  pct: F_dcut * 100, mass: MM_cyclones, color: '#f97316' },
-                { label: 'Fraction grossière → lit',   pct: R_dcut * 100, mass: MM_lit,      color: '#10b981' },
+                { label: t('Fraction fines → Traitement des fumées'),  pct: F_dcut * 100, mass: MM_cyclones, color: '#f97316' },
+                { label: t('Fraction grossière → lit'),   pct: R_dcut * 100, mass: MM_lit,      color: '#10b981' },
               ].map(({ label, pct, mass, color }) => (
                 <div key={label} style={{ padding: '16px', background: '#f9fafb', border: `2px solid ${color}`, borderRadius: '8px' }}>
                   <div style={{ fontSize: '13px', fontWeight: '700', color, marginBottom: '8px' }}>{label}</div>
@@ -961,7 +961,7 @@ const BouesTab = ({ innerData, onInnerDataChange, currentLanguage, nodeId }) => 
                     {fmt(mass, 1)} kg/h
                   </div>
                   <div style={{ fontSize: '11px', color: '#6b7280', marginTop: '4px' }}>
-                    sur {fmt(MM_total, 1)} kg/h MM total
+                    {t('sur')} {fmt(MM_total, 1)} kg/h {t('MM total')}
                   </div>
                 </div>
               ))}
@@ -970,7 +970,7 @@ const BouesTab = ({ innerData, onInnerDataChange, currentLanguage, nodeId }) => 
             {/* Tableau de distribution */}
             <div>
               <h3 style={{ fontSize: '15px', color: '#374151', marginBottom: '12px' }}>
-                Courbe granulométrique — R(x) et F(x)
+                {t('Courbe granulométrique — R(x) et F(x)')}
               </h3>
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
                 <thead>
@@ -985,7 +985,7 @@ const BouesTab = ({ innerData, onInnerDataChange, currentLanguage, nodeId }) => 
                       F(x) — tamisat cumulatif [%]
                     </th>
                     <th style={{ padding: '8px 12px', border: '1px solid #e5e7eb', textAlign: 'center', color: '#374151' }}>
-                      Masse &gt; x [kg/h]
+                      {t('Masse > x [kg/h]')}
                     </th>
                   </tr>
                 </thead>
@@ -1037,7 +1037,7 @@ const BouesTab = ({ innerData, onInnerDataChange, currentLanguage, nodeId }) => 
                 </tbody>
               </table>
               <p style={{ fontSize: '11px', color: '#9ca3af', marginTop: '8px' }}>
-                Fond vert = particules &gt; d_cut (restent dans le lit) · Fond orange = particules &lt; d_cut (partent vers le Traitement des fumées)
+                {t('Fond vert = particules > d_cut (restent dans le lit) · Fond orange = particules < d_cut (partent vers le Traitement des fumées)')}
               </p>
             </div>
           </div>
