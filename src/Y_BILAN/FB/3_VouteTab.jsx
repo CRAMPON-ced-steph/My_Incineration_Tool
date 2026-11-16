@@ -53,6 +53,9 @@ const VOUTES = {
 
 // Dimensions hors standard (saisie libre du Ø freeboard, du Ø voûte et du nombre de tuyères)
 const HORS_STD = 'HORS_STD';
+// Plage de vitesse de fluidisation à la voûte [m/s] (alerte + recherche automatique)
+const VITESSE_VOUTE_MIN = 0.9;
+const VITESSE_VOUTE_MAX = 1.1;
 const NB_TROUS_MAX = 30; // plafond Pyrofluid (ClassDimFourVoute.CalculNbretrous)
 
 // Order from smallest to largest for auto-size search
@@ -291,7 +294,7 @@ const DimensionnementTab = ({ innerData = {}, innerDataTick, onDataChange, curre
           ? EauExtraite / result.NombreFour / result.SurfaceVoute_m2
           : null;
         const v1dec = Math.floor(result.VitesseVoute2_ms * 10) / 10;
-        const vitesseOk = v1dec >= 0.8 && v1dec <= 1.1;
+        const vitesseOk = v1dec >= VITESSE_VOUTE_MIN && v1dec <= VITESSE_VOUTE_MAX;
         const chargeEauOk = chargeEau !== null && chargeEau <= 540;
 
         if (vitesseOk && chargeEauOk) {
@@ -796,7 +799,7 @@ const DimensionnementTab = ({ innerData = {}, innerDataTick, onDataChange, curre
                 (() => {
                   const v = calculsComplets.VitesseVoute2_ms;
                   const v1dec = Math.floor(v * 10) / 10;
-                  const alerte = v > 0 && (v1dec < 0.8 || v1dec > 1.1) ? t('Hors plage [0.8 – 1.1 m/s]') : null;
+                  const alerte = v > 0 && (v1dec < VITESSE_VOUTE_MIN || v1dec > VITESSE_VOUTE_MAX) ? t('Hors plage [0.8 – 1.1 m/s]').replace('0.8', String(VITESSE_VOUTE_MIN)).replace('1.1', String(VITESSE_VOUTE_MAX)) : null;
                   return { label: 'Vitesse voute 2 [m/s]', val: fmt(v, 4), alerte };
                 })(),
                 {
