@@ -258,7 +258,7 @@ const DENOXDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
   ];
 
   const elementsSpecifiques = Object.entries(dimensionnementSpecifique).map(([key, value]) => ({
-    text: key,
+    text: t(key),
     value: value.toString()
   }));
 
@@ -294,9 +294,9 @@ const DENOXDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
             onChange={(e) => setTechnologieSelectionnee(e.target.value)}
             style={{ flex: '0 0 150px', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
           >
-            <option value="plaques">Plaques catalytiques</option>
-            <option value="nid_abeilles">Nid d'abeilles</option>
-            <option value="lit_fixe">Lit fixe</option>
+            <option value="plaques">{t('Plaques catalytiques')}</option>
+            <option value="nid_abeilles">{t("Nid d'abeilles")}</option>
+            <option value="lit_fixe">{t('Lit fixe')}</option>
           </select>
         </div>
       </Section>

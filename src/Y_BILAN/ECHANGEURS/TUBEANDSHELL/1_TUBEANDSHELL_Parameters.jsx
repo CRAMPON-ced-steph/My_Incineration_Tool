@@ -7,6 +7,8 @@ import { CpL_T } from '../../../A_Transverse_fonction/steam_table3';
 import { cp_air_kWh_m3_degree, D_TLM, Fact_UA, Surface_echange } from '../../../A_Transverse_fonction/bilan_fct_FB';
 
 import { fmt } from '../../../A_Transverse_fonction/formatNumber';
+import { makeT } from '../../../F_Gestion_Langues/localT';
+import { translations } from './TubeShell_traduction';
 import { cp_ref } from '../../../A_Transverse_fonction/constantes';
 const getStorageKey = (nodeId) => `TUBEANDSHELL_params_${nodeId}`;
 
@@ -95,7 +97,8 @@ const SectionTitle = ({ text }) => (
 );
 
 // ─── Composant principal ───────────────────────────────────────────────────────
-const TubeAndShellParameters = ({ innerData, upstreamT_IN, upstreamFG_IN, upstreamP_IN, nodeId }) => {
+const TubeAndShellParameters = ({ innerData, upstreamT_IN, upstreamFG_IN, upstreamP_IN, nodeId, currentLanguage }) => {
+  const t = makeT(translations, currentLanguage);
   const [params, setParams] = useState(() => {
     try {
       const saved = JSON.parse(localStorage.getItem(getStorageKey(nodeId)) || '{}');
@@ -252,100 +255,100 @@ const TubeAndShellParameters = ({ innerData, upstreamT_IN, upstreamFG_IN, upstre
 
   return (
     <div className="cadre_pour_onglet">
-      <h3>Tube &amp; Shell — Paramètres</h3>
+      <h3>{t('Tube & Shell — Paramètres')}</h3>
 
       <div className="cadre_param_bilan">
         <button
           onClick={clearMemory}
           style={{ padding: '6px 14px', backgroundColor: '#ff6b6b', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold', marginBottom: '14px' }}
         >
-          Effacer mémoire
+          {t('Effacer mémoire')}
         </button>
 
         {/* Dropdowns */}
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', marginBottom: '16px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <label style={{ fontWeight: '600', fontSize: '13px', whiteSpace: 'nowrap' }}>Choix du fluide :</label>
+            <label style={{ fontWeight: '600', fontSize: '13px', whiteSpace: 'nowrap' }}>{t('Choix du fluide :')}</label>
             <select value={params.fluide} onChange={(e) => set('fluide', e.target.value)}
               style={{ padding: '5px 10px', borderRadius: '4px', border: '1px solid #ccc', fontSize: '13px' }}>
-              <option value="eau">Eau</option>
-              <option value="air">Air</option>
+              <option value="eau">{t('Eau')}</option>
+              <option value="air">{t('Air')}</option>
             </select>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <label style={{ fontWeight: '600', fontSize: '13px', whiteSpace: 'nowrap' }}>Bilan par :</label>
+            <label style={{ fontWeight: '600', fontSize: '13px', whiteSpace: 'nowrap' }}>{t('Bilan par :')}</label>
             <select value={params.bilanType} onChange={(e) => set('bilanType', e.target.value)}
               style={{ padding: '5px 10px', borderRadius: '4px', border: '1px solid #ccc', fontSize: '13px' }}>
-              <option value="T_sortie">T sortie fluide</option>
-              <option value="T_entree">T entrée fluide</option>
-              <option value="debit">{fluide === 'eau' ? 'Débit eau entrée' : 'Débit air entrée'}</option>
+              <option value="T_sortie">{t('T sortie fluide')}</option>
+              <option value="T_entree">{t('T entrée fluide')}</option>
+              <option value="debit">{fluide === 'eau' ? t('Débit eau entrée') : t('Débit air entrée')}</option>
             </select>
           </div>
         </div>
 
         {/* Côté fumées */}
         <div style={sectionStyle}>
-          <SectionTitle text="Côté fumées" />
-          <InputRow label="T fumées entrée"          disabled value={fmt(T_FG_in, 1)}       unit="[°C]" />
-          <InputRow label="Débit vol. fumées entrée" disabled value={fmt(FG_tot_Nm3_h, 0)}   unit="[Nm³/h]" />
-          <InputRow label="T fumées sortie"          value={params.T_fumee_out ?? 0} onChange={(v) => set('T_fumee_out', v)} unit="[°C]" />
-          <InputRow label="PDC écono"                value={params.PDC_econo}        onChange={(v) => set('PDC_econo', v)}   unit="[mmCE]" />
-          <InputRowCalc label="Enthalpie fumées entrée"  value={H_FG_in_kWh}  unit="[kWh]" />
-          <InputRowCalc label="Enthalpie fumées sortie"  value={H_FG_out_kWh} unit="[kWh]" />
-          <InputRowCalc label="Enthalpie cédée fumées"   value={Q_FG_kWh}     unit="[kWh]" />
+          <SectionTitle text={t('Côté fumées')} />
+          <InputRow label={t('T fumées entrée')}          disabled value={fmt(T_FG_in, 1)}       unit="[°C]" />
+          <InputRow label={t('Débit vol. fumées entrée')} disabled value={fmt(FG_tot_Nm3_h, 0)}   unit="[Nm³/h]" />
+          <InputRow label={t('T fumées sortie')}          value={params.T_fumee_out ?? 0} onChange={(v) => set('T_fumee_out', v)} unit="[°C]" />
+          <InputRow label={t('PDC écono')}                value={params.PDC_econo}        onChange={(v) => set('PDC_econo', v)}   unit="[mmCE]" />
+          <InputRowCalc label={t('Enthalpie fumées entrée')}  value={H_FG_in_kWh}  unit="[kWh]" />
+          <InputRowCalc label={t('Enthalpie fumées sortie')}  value={H_FG_out_kWh} unit="[kWh]" />
+          <InputRowCalc label={t('Enthalpie cédée fumées')}   value={Q_FG_kWh}     unit="[kWh]" />
         </div>
 
         {/* Côté eau */}
         {fluide === 'eau' && (
           <div style={sectionStyle}>
-            <SectionTitle text="Côté eau" />
+            <SectionTitle text={t('Côté eau')} />
             {isCalc('T_fluide_in')
-              ? <InputRowCalc label="T entrée eau (calculée)" value={T_fluide_in_calc}  unit="[°C]" />
-              : <InputRow     label="T entrée eau"            value={params.T_fluide_in} onChange={(v) => set('T_fluide_in', v)}  unit="[°C]" minVal={0} />
+              ? <InputRowCalc label={t('T entrée eau (calculée)')} value={T_fluide_in_calc}  unit="[°C]" />
+              : <InputRow     label={t('T entrée eau')}            value={params.T_fluide_in} onChange={(v) => set('T_fluide_in', v)}  unit="[°C]" minVal={0} />
             }
             {isCalc('T_fluide_out')
-              ? <InputRowCalc label="T sortie eau (calculée)" value={T_fluide_out_calc}  unit="[°C]" />
-              : <InputRow     label="T sortie eau"            value={params.T_fluide_out} onChange={(v) => set('T_fluide_out', v)} unit="[°C]" />
+              ? <InputRowCalc label={t('T sortie eau (calculée)')} value={T_fluide_out_calc}  unit="[°C]" />
+              : <InputRow     label={t('T sortie eau')}            value={params.T_fluide_out} onChange={(v) => set('T_fluide_out', v)} unit="[°C]" />
             }
             {isCalc('m_eau')
-              ? <InputRowCalc label="Débit eau (calculé)" value={m_eau_calc} unit="[kg/h]" />
-              : <InputRow     label="Débit eau"           value={params.m_eau} onChange={(v) => set('m_eau', v)} unit="[kg/h]" />
+              ? <InputRowCalc label={t('Débit eau (calculé)')} value={m_eau_calc} unit="[kg/h]" />
+              : <InputRow     label={t('Débit eau')}           value={params.m_eau} onChange={(v) => set('m_eau', v)} unit="[kg/h]" />
             }
-            <InputRowCalc label="Enthalpie transmise à l'eau" value={Q_utile_eau_kWh} unit="[kWh]" />
-            <InputRowCalc label="cp eau à T_moy"              value={cp_fluide_val}    unit="[kJ/(kg·K)]" decimals={4} />
+            <InputRowCalc label={t('Enthalpie transmise à l\'eau')} value={Q_utile_eau_kWh} unit="[kWh]" />
+            <InputRowCalc label={t('cp eau à T_moy')}              value={cp_fluide_val}    unit="[kJ/(kg·K)]" decimals={4} />
           </div>
         )}
 
         {/* Côté air */}
         {fluide === 'air' && (
           <div style={sectionStyle}>
-            <SectionTitle text="Côté air" />
+            <SectionTitle text={t('Côté air')} />
             {isCalc('T_fluide_in')
-              ? <InputRowCalc label="T entrée air (calculée)" value={T_fluide_in_calc}  unit="[°C]" />
-              : <InputRow     label="T entrée air"            value={params.T_fluide_in} onChange={(v) => set('T_fluide_in', v)}  unit="[°C]" minVal={0} />
+              ? <InputRowCalc label={t('T entrée air (calculée)')} value={T_fluide_in_calc}  unit="[°C]" />
+              : <InputRow     label={t('T entrée air')}            value={params.T_fluide_in} onChange={(v) => set('T_fluide_in', v)}  unit="[°C]" minVal={0} />
             }
             {isCalc('T_fluide_out')
-              ? <InputRowCalc label="T sortie air (calculée)" value={T_fluide_out_calc}  unit="[°C]" />
-              : <InputRow     label="T sortie air"            value={params.T_fluide_out} onChange={(v) => set('T_fluide_out', v)} unit="[°C]" />
+              ? <InputRowCalc label={t('T sortie air (calculée)')} value={T_fluide_out_calc}  unit="[°C]" />
+              : <InputRow     label={t('T sortie air')}            value={params.T_fluide_out} onChange={(v) => set('T_fluide_out', v)} unit="[°C]" />
             }
             {isCalc('V_air')
-              ? <InputRowCalc label="Débit air (calculé)"     value={V_air_calc}   unit="[Nm³/h]" />
-              : <InputRow     label="Débit air"               value={params.V_air} onChange={(v) => set('V_air', v)} unit="[Nm³/h]" />
+              ? <InputRowCalc label={t('Débit air (calculé)')}     value={V_air_calc}   unit="[Nm³/h]" />
+              : <InputRow     label={t('Débit air')}               value={params.V_air} onChange={(v) => set('V_air', v)} unit="[Nm³/h]" />
             }
-            <InputRowCalc label="Enthalpie transmise à l'air" value={Q_utile_eau_kWh} unit="[kWh]" />
-            <InputRowCalc label="cp air à T_moy"              value={cp_fluide_val}    unit="[kWh/(Nm³·°C)]" decimals={6} />
+            <InputRowCalc label={t('Enthalpie transmise à l\'air')} value={Q_utile_eau_kWh} unit="[kWh]" />
+            <InputRowCalc label={t('cp air à T_moy')}              value={cp_fluide_val}    unit="[kWh/(Nm³·°C)]" decimals={6} />
           </div>
         )}
 
         {/* Caractéristiques échangeur */}
         <div style={sectionStyle}>
-          <SectionTitle text="Caractéristiques échangeur" />
-          <InputRow     label="Rendement échangeur"    value={params.Rendement}    onChange={(v) => set('Rendement', v)}    unit="[%]" />
-          <InputRow     label="Encrassement échangeur" value={params.Encrassement} onChange={(v) => set('Encrassement', v)} unit="[%]" />
-          <InputRowCalc label="ΔT logarithmique moyen" value={d_tlm}       unit="[°C]" />
-          <InputRowCalc label="Facteur UA"             value={fact_ua}     unit="[kW/K]"      decimals={2} />
+          <SectionTitle text={t('Caractéristiques échangeur')} />
+          <InputRow     label={t('Rendement échangeur')}    value={params.Rendement}    onChange={(v) => set('Rendement', v)}    unit="[%]" />
+          <InputRow     label={t('Encrassement échangeur')} value={params.Encrassement} onChange={(v) => set('Encrassement', v)} unit="[%]" />
+          <InputRowCalc label={t('ΔT logarithmique moyen')} value={d_tlm}       unit="[°C]" />
+          <InputRowCalc label={t('Facteur UA')}             value={fact_ua}     unit="[kW/K]"      decimals={2} />
           <InputRowCalc label={`U liste (${fluide})`}  value={Fact_U_list} unit="[kW/(m²·K)]" decimals={0} />
-          <InputRowCalc label="Surface d'échange"      value={surface}     unit="[m²]"        decimals={2} />
+          <InputRowCalc label={t('Surface d\'échange')}      value={surface}     unit="[m²]"        decimals={2} />
         </div>
       </div>
     </div>

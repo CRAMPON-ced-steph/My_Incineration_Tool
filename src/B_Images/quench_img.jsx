@@ -1,4 +1,6 @@
 import React from "react";
+import { makeT } from "../F_Gestion_Langues/localT";
+import { schemaTranslations } from "./quench_img_traduction";
 
 /**
  * Laveur de gaz (tour de pulvérisation) : entrée de gaz non épuré, quatre rampes
@@ -12,7 +14,7 @@ const WATER = "#2fbcf0";
 const TXT = "#5b7cf5";
 const FONT = "'Open Sans', 'Segoe UI', Arial, sans-serif";
 
-const Txt = ({ x, y, w, children }) => (
+const Txt = ({ x, y, children }) => (
   <text
     x={x}
     y={y}
@@ -20,8 +22,6 @@ const Txt = ({ x, y, w, children }) => (
     fontWeight="700"
     fill={TXT}
     fontFamily={FONT}
-    textLength={w}
-    lengthAdjust="spacingAndGlyphs"
   >
     {children}
   </text>
@@ -50,7 +50,10 @@ function Rail({ y, xTrunk }) {
   );
 }
 
-export default function SprayTower({ width = 300 }) {
+export default function SprayTower({ width = 300, currentLanguage }) {
+  const t = makeT(schemaTranslations, currentLanguage);
+  // Schéma bilingue : ligne anglaise fixe + ligne dans la langue choisie (masquée si elle ferait doublon)
+  const doublon = t('Gaz épuré') === schemaTranslations.en['Gaz épuré'];
   const ticks = [
     [78, 88],
     [150, 158],
@@ -122,17 +125,17 @@ export default function SprayTower({ width = 300 }) {
 
       {/* ---------- textes ---------- */}
       <Txt x="216" y="22" w="61">Purified gas</Txt>
-      <Txt x="221" y="40" w="52">Gaz épuré</Txt>
-      <Txt x="5" y="56" w="112">Matelas dévésiculeur</Txt>
+      {!doublon && <Txt x="221" y="40" w="52">{t('Gaz épuré')}</Txt>}
+      {!doublon && <Txt x="5" y="56" w="112">{t('Matelas dévésiculeur')}</Txt>}
       <Txt x="5" y="69" w="111">Dewatering mattress</Txt>
       <Txt x="268" y="130" w="39">Rinsing</Txt>
-      <Txt x="268" y="144" w="40">Rincage</Txt>
+      {!doublon && <Txt x="268" y="144" w="40">{t('Rinçage')}</Txt>}
       <Txt x="256" y="341" w="76">Sprayed water</Txt>
-      <Txt x="250" y="354" w="90">Liquide pulvérisé</Txt>
+      {!doublon && <Txt x="250" y="354" w="90">{t('Liquide pulvérisé')}</Txt>}
       <Txt x="13" y="397" w="77">Unpurified gas</Txt>
-      <Txt x="13" y="411" w="77">Gaz non épuré</Txt>
+      {!doublon && <Txt x="13" y="411" w="77">{t('Gaz non épuré')}</Txt>}
       <Txt x="250" y="491" w="113">Purging and recycling</Txt>
-      <Txt x="258" y="505" w="97">Purge et recyclage</Txt>
+      {!doublon && <Txt x="258" y="505" w="97">{t('Purge et recyclage')}</Txt>}
     </svg>
   );
 }

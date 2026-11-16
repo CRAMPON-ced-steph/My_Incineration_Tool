@@ -1,5 +1,7 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { fmt } from '../../A_Transverse_fonction/formatNumber';
+import { makeT } from '../../F_Gestion_Langues/localT';
+import { translations } from './FB_traduction';
 
 // ── Constants ──────────────────────────────────────────────────────────────
 const MU_REF = 1.716e-5;   // Pa·s  air at 273.15 K
@@ -81,7 +83,7 @@ _iS.auto = { ..._iS.input, background: '#eff6ff', border: '1px solid #93c5fd' };
 const InputFieldCtx = React.createContext(null);
 
 const InputField = ({ label, id, unit, step = 'any', readOnly = false, value, highlight }) => {
-  const { p, autoFields, set } = React.useContext(InputFieldCtx);
+  const { p, autoFields, set, t } = React.useContext(InputFieldCtx);
   const isAuto = !readOnly && autoFields.has(id);
   const source = AUTO_SOURCES[id];
   return (
@@ -91,7 +93,7 @@ const InputField = ({ label, id, unit, step = 'any', readOnly = false, value, hi
         {unit && <span style={{ fontWeight: 400, color: '#6b7280' }}> [{unit}]</span>}
         {isAuto && (
           <span style={{ marginLeft: 6, fontSize: 10, background: '#dbeafe', color: '#1d4ed8', borderRadius: 3, padding: '1px 5px', fontWeight: 700 }}>
-            ↑ {source}
+            ↑ {t ? t(source) : source}
           </span>
         )}
       </label>
@@ -108,7 +110,7 @@ const InputField = ({ label, id, unit, step = 'any', readOnly = false, value, hi
 };
 
 const FluidisationTab = ({ nodeId, currentLanguage = 'fr', innerData = {}, innerDataTick }) => {
-  void currentLanguage;
+  const t = makeT(translations, currentLanguage);
   void innerDataTick;
 
   const storageKey = `fluidisation_params_FB_${nodeId}`;
@@ -317,164 +319,164 @@ const FluidisationTab = ({ nodeId, currentLanguage = 'fr', innerData = {}, inner
   const autoCount = [...autoFields].filter((k) => k in AUTO_SOURCES).length;
 
   return (
-    <InputFieldCtx.Provider value={{ p, autoFields, set }}>
+    <InputFieldCtx.Provider value={{ p, autoFields, set, t }}>
     <div style={{ padding: '20px', maxWidth: '1400px', margin: '0 auto' }}>
       <h1 style={{ color: '#1a202c', marginBottom: '8px' }}>
-        💨 Fluidisation du lit d&apos;olivine — vitesse minimale et pressions
+        💨 {t("Fluidisation du lit d'olivine — vitesse minimale et pressions")}
       </h1>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
         <p style={{ color: '#6b7280', fontSize: '13px', margin: 0 }}>
-          Modèles : Wen &amp; Yu (Umf) · Haider &amp; Levenspiel (Ut) · Baeyens &amp; Geldart (slugging) · Sutherland (viscosité)
+          {t('Modèles : Wen & Yu (Umf) · Haider & Levenspiel (Ut) · Baeyens & Geldart (slugging) · Sutherland (viscosité)')}
         </p>
         {autoCount > 0 && (
           <span style={{
             fontSize: 11, background: '#dbeafe', color: '#1d4ed8',
             borderRadius: 4, padding: '3px 8px', fontWeight: 700, whiteSpace: 'nowrap',
           }}>
-            {autoCount} champ{autoCount > 1 ? 's' : ''} synchronisé{autoCount > 1 ? 's' : ''} depuis les autres onglets
+            {autoCount} {t('champ(s) synchronisé(s) depuis les autres onglets')}
           </span>
         )}
       </div>
 
       {/* ── ENTRÉES ─────────────────────────────────────────────────────── */}
       <div style={sCard}>
-        <h2 style={sH2}>Entrées</h2>
+        <h2 style={sH2}>{t('Entrées')}</h2>
         <div style={sGrid3}>
-          <InputField label="Température du lit"           id="T_lit_C"        unit="°C"     step="0.1" />
-          <InputField label="Pression"                     id="P_Pa"           unit="Pa"     step="100" />
-          <InputField label="Diamètre des particules d"    id="d_um"           unit="µm"     step="10" />
-          <InputField label="Masse volumique ρp"           id="rho_p"          unit="kg/m³"  step="50" />
-          <InputField label="Sphéricité φ"                 id="phi"            unit="—"      step="0.05" />
-          <InputField label="Porosité à Umf ε_mf"          id="eps_mf"         unit="—"      step="0.01" />
-          <InputField label="Diamètre du lit D"            id="D_lit_m"        unit="m"      step="0.001" />
-          <InputField label="Hauteur du lit tassé"         id="H_tasse_m"      unit="m"      step="0.01" />
-          <InputField label="Hauteur du lit dilaté"        id="H_dilate_m"     unit="m"      step="0.01" />
-          <InputField label="Vitesse proposée"             id="U_propose_ms"   unit="m/s"    step="0.01" />
-          <InputField label="Vitesse Pyrofluid bas"        id="U_pyro_bas_ms"  unit="m/s"    step="0.05" />
-          <InputField label="Vitesse Pyrofluid haut"       id="U_pyro_haut_ms" unit="m/s"    step="0.05" />
-          <InputField label="Température zone de garde"    id="T_garde_C"      unit="°C"     step="1" />
-          <InputField label="Diamètre zone de garde"       id="D_garde_m"      unit="m"      step="0.001" />
-          <InputField label="Temps de séjour nominal"      id="t_sejour_s"     unit="s"      step="0.5" />
-          <InputField label="Débit gaz froid (ligne 19)"   id="Q_froid_m3s"    unit="m³/s"   step="0.0001" />
-          <InputField label="Température réf. débit froid" id="T_ref_froid_C"  unit="°C"     step="1" />
-          <InputField label="Masse molaire du gaz"         id="M_gaz"          unit="kg/mol" step="0.0001" />
-          <InputField label="Pression en voûte (service)"  id="P_voute_mbar"   unit="mbar"   step="0.5" />
-          <InputField label="Pression de calcul Pyrofluid" id="P_calcul_mmCE"  unit="mmCE"   step="50" />
+          <InputField label={t('Température du lit')}           id="T_lit_C"        unit="°C"     step="0.1" />
+          <InputField label={t('Pression')}                     id="P_Pa"           unit="Pa"     step="100" />
+          <InputField label={t('Diamètre des particules d')}    id="d_um"           unit="µm"     step="10" />
+          <InputField label={t('Masse volumique ρp')}           id="rho_p"          unit="kg/m³"  step="50" />
+          <InputField label={t('Sphéricité φ')}                 id="phi"            unit="—"      step="0.05" />
+          <InputField label={t('Porosité à Umf ε_mf')}          id="eps_mf"         unit="—"      step="0.01" />
+          <InputField label={t('Diamètre du lit D')}            id="D_lit_m"        unit="m"      step="0.001" />
+          <InputField label={t('Hauteur du lit tassé')}         id="H_tasse_m"      unit="m"      step="0.01" />
+          <InputField label={t('Hauteur du lit dilaté')}        id="H_dilate_m"     unit="m"      step="0.01" />
+          <InputField label={t('Vitesse proposée')}             id="U_propose_ms"   unit="m/s"    step="0.01" />
+          <InputField label={t('Vitesse Pyrofluid bas')}        id="U_pyro_bas_ms"  unit="m/s"    step="0.05" />
+          <InputField label={t('Vitesse Pyrofluid haut')}       id="U_pyro_haut_ms" unit="m/s"    step="0.05" />
+          <InputField label={t('Température zone de garde')}    id="T_garde_C"      unit="°C"     step="1" />
+          <InputField label={t('Diamètre zone de garde')}       id="D_garde_m"      unit="m"      step="0.001" />
+          <InputField label={t('Temps de séjour nominal')}      id="t_sejour_s"     unit="s"      step="0.5" />
+          <InputField label={t('Débit gaz froid (ligne 19)')}   id="Q_froid_m3s"    unit="m³/s"   step="0.0001" />
+          <InputField label={t('Température réf. débit froid')} id="T_ref_froid_C"  unit="°C"     step="1" />
+          <InputField label={t('Masse molaire du gaz')}         id="M_gaz"          unit="kg/mol" step="0.0001" />
+          <InputField label={t('Pression en voûte (service)')}  id="P_voute_mbar"   unit="mbar"   step="0.5" />
+          <InputField label={t('Pression de calcul Pyrofluid')} id="P_calcul_mmCE"  unit="mmCE"   step="50" />
         </div>
       </div>
 
       {/* ── PROPRIÉTÉS DU GAZ ────────────────────────────────────────────── */}
       <div style={sCard}>
-        <h2 style={sH2}>Propriétés du gaz à la température du lit</h2>
+        <h2 style={sH2}>{t('Propriétés du gaz à la température du lit')}</h2>
         <div style={sGrid3}>
-          <InputField label="Température du lit"                   unit="K"    readOnly value={fmt(calc.T_K, 2)} />
-          <InputField label="Masse volumique ρg"                   unit="kg/m³" readOnly value={fmt(calc.rho_g, 4)} />
-          <InputField label="Viscosité dynamique µ (Sutherland)"   unit="Pa·s" readOnly value={calc.mu.toExponential(4)} />
+          <InputField label={t('Température du lit')}                   unit="K"    readOnly value={fmt(calc.T_K, 2)} />
+          <InputField label={t('Masse volumique ρg')}                   unit="kg/m³" readOnly value={fmt(calc.rho_g, 4)} />
+          <InputField label={t('Viscosité dynamique µ (Sutherland)')}   unit="Pa·s" readOnly value={calc.mu.toExponential(4)} />
         </div>
       </div>
 
       {/* ── VITESSE MINIMALE (WEN & YU) ──────────────────────────────────── */}
       <div style={sCard}>
-        <h2 style={sH2}>Vitesse minimale de fluidisation — Wen &amp; Yu</h2>
+        <h2 style={sH2}>{t('Vitesse minimale de fluidisation — Wen & Yu')}</h2>
         <div style={sGrid3}>
-          <InputField label="Diamètre des particules"           unit="m"   readOnly value={calc.d_m.toExponential(4)} />
-          <InputField label="Nombre d'Archimède Ar"             unit="—"   readOnly value={fmt(calc.Ar, 2)}  highlight={{ background: '#fef9c3' }} />
-          <InputField label="Reynolds à Umf"                    unit="—"   readOnly value={fmt(calc.Re_mf, 4)} />
-          <InputField label="Umf — indép. de H"                 unit="m/s" readOnly value={fmt(calc.Umf, 4)} highlight={{ background: '#bbf7d0' }} />
-          <InputField label="U / Umf (vitesse proposée)"        unit="—"   readOnly value={fmt(calc.U_Umf, 2)}     highlight={colorBg(calc.U_Umf, 2, 10)} />
-          <InputField label="U / Umf (Pyrofluid bas de plage)"  unit="—"   readOnly value={fmt(calc.U_Umf_bas, 2)} />
-          <InputField label="U / Umf (Pyrofluid haut de plage)" unit="—"   readOnly value={fmt(calc.U_Umf_haut, 2)} />
+          <InputField label={t('Diamètre des particules')}           unit="m"   readOnly value={calc.d_m.toExponential(4)} />
+          <InputField label={t('Nombre d\'Archimède Ar')}             unit="—"   readOnly value={fmt(calc.Ar, 2)}  highlight={{ background: '#fef9c3' }} />
+          <InputField label={t('Reynolds à Umf')}                    unit="—"   readOnly value={fmt(calc.Re_mf, 4)} />
+          <InputField label={t('Umf — indép. de H')}                 unit="m/s" readOnly value={fmt(calc.Umf, 4)} highlight={{ background: '#bbf7d0' }} />
+          <InputField label={t('U / Umf (vitesse proposée)')}        unit="—"   readOnly value={fmt(calc.U_Umf, 2)}     highlight={colorBg(calc.U_Umf, 2, 10)} />
+          <InputField label={t('U / Umf (Pyrofluid bas de plage)')}  unit="—"   readOnly value={fmt(calc.U_Umf_bas, 2)} />
+          <InputField label={t('U / Umf (Pyrofluid haut de plage)')} unit="—"   readOnly value={fmt(calc.U_Umf_haut, 2)} />
         </div>
         <p style={{ fontSize: '11px', color: '#6b7280', marginTop: '8px' }}>
-          Ar = ρg (ρp − ρg) g d³ / µ² · Re_mf = √(33,7² + 0,0408 Ar) − 33,7 · Umf = Re_mf µ / (ρg d) · Lit bouillonnant : U/Umf entre 2 et 10
+          Ar = ρg (ρp − ρg) g d³ / µ² · Re_mf = √(33,7² + 0,0408 Ar) − 33,7 · Umf = Re_mf µ / (ρg d) · {t('Lit bouillonnant : U/Umf entre 2 et 10')}
         </p>
       </div>
 
       {/* ── VITESSE TERMINALE (HAIDER & LEVENSPIEL) ─────────────────────── */}
       <div style={sCard}>
-        <h2 style={sH2}>Vitesse terminale — Haider &amp; Levenspiel</h2>
+        <h2 style={sH2}>{t('Vitesse terminale — Haider & Levenspiel')}</h2>
         <div style={sGrid3}>
-          <InputField label="d* adimensionnel"             unit="—"   readOnly value={fmt(calc.d_star, 3)} />
-          <InputField label="Ut* adimensionnel"            unit="—"   readOnly value={fmt(calc.Ut_star, 4)} />
+          <InputField label={t('d* adimensionnel')}             unit="—"   readOnly value={fmt(calc.d_star, 3)} />
+          <InputField label={t('Ut* adimensionnel')}            unit="—"   readOnly value={fmt(calc.Ut_star, 4)} />
           <InputField label="Ut"                           unit="m/s" readOnly value={fmt(calc.Ut, 3)}    highlight={{ background: '#bbf7d0' }} />
-          <InputField label="U / Ut (vitesse proposée)"    unit="—"   readOnly value={fmt(calc.U_Ut, 4)}
+          <InputField label={t('U / Ut (vitesse proposée)')}    unit="—"   readOnly value={fmt(calc.U_Ut, 4)}
                       highlight={calc.U_Ut < 0.5 ? { background: '#dcfce7' } : { background: '#fef9c3' }} />
         </div>
         <p style={{ fontSize: '11px', color: '#6b7280', marginTop: '8px' }}>
-          d* = Ar^(1/3) · Ut* = [18/d*² + (2,335 − 1,744 φ)/√d*]⁻¹ · Ut = Ut* [µ(ρp−ρg)g/ρg²]^(1/3) · U/Ut doit rester ≪ 1
+          d* = Ar^(1/3) · Ut* = [18/d*² + (2,335 − 1,744 φ)/√d*]⁻¹ · Ut = Ut* [µ(ρp−ρg)g/ρg²]^(1/3) · {t('U/Ut doit rester ≪ 1')}
         </p>
       </div>
 
       {/* ── PERTE DE CHARGE & SLUGGING ───────────────────────────────────── */}
       <div style={sCard}>
-        <h2 style={sH2}>Perte de charge du lit et risque de slugging</h2>
+        <h2 style={sH2}>{t('Perte de charge du lit et risque de slugging')}</h2>
         <div style={sGrid3}>
-          <InputField label="ΔP lit à Umf"                   unit="Pa"  readOnly value={fmt(calc.dP_lit, 0)} />
-          <InputField label="ΔP lit à Umf"                   unit="kPa" readOnly value={fmt(calc.dP_lit / 1000, 2)} />
-          <InputField label="ΔP plaque min (10 % ΔP lit)"    unit="Pa"  readOnly value={fmt(calc.dP_plaque_10, 0)} />
-          <InputField label="ΔP plaque min (30 % ΔP lit)"    unit="Pa"  readOnly value={fmt(calc.dP_plaque_30, 0)} />
-          <InputField label="Rapport H/D lit tassé"           unit="—"   readOnly value={fmt(calc.H_D, 2)} />
-          <InputField label="H_ms max sans slugging (Baeyens)" unit="m"  readOnly value={fmt(calc.H_ms, 2)} />
-          <InputField label="Lit dilaté / H_ms"               unit="—"  readOnly value={fmt(calc.ratio_dilate, 3)}
+          <InputField label={t('ΔP lit à Umf')}                   unit="Pa"  readOnly value={fmt(calc.dP_lit, 0)} />
+          <InputField label={t('ΔP lit à Umf')}                   unit="kPa" readOnly value={fmt(calc.dP_lit / 1000, 2)} />
+          <InputField label={t('ΔP plaque min (10 % ΔP lit)')}    unit="Pa"  readOnly value={fmt(calc.dP_plaque_10, 0)} />
+          <InputField label={t('ΔP plaque min (30 % ΔP lit)')}    unit="Pa"  readOnly value={fmt(calc.dP_plaque_30, 0)} />
+          <InputField label={t('Rapport H/D lit tassé')}           unit="—"   readOnly value={fmt(calc.H_D, 2)} />
+          <InputField label={t('H_ms max sans slugging (Baeyens)')} unit="m"  readOnly value={fmt(calc.H_ms, 2)} />
+          <InputField label={t('Lit dilaté / H_ms')}               unit="—"  readOnly value={fmt(calc.ratio_dilate, 3)}
                       highlight={calc.ratio_dilate < 1 ? { background: '#dcfce7' } : { background: '#fee2e2' }} />
         </div>
         <p style={{ fontSize: '11px', color: '#6b7280', marginTop: '8px' }}>
-          ΔP = (1−ε_mf)(ρp−ρg) g H · H_ms = 1,9 D^0,3 (Baeyens &amp; Geldart, SI) · Lit dilaté/H_ms &lt; 1 : pas de slugging attendu
+          ΔP = (1−ε_mf)(ρp−ρg) g H · H_ms = 1,9 D^0,3 (Baeyens &amp; Geldart, SI) · {t('Lit dilaté/H_ms < 1 : pas de slugging attendu')}
         </p>
       </div>
 
       {/* ── PRESSIONS DE SERVICE & DE CALCUL ────────────────────────────── */}
       <div style={sCard}>
-        <h2 style={sH2}>Pressions de service et de calcul</h2>
+        <h2 style={sH2}>{t('Pressions de service et de calcul')}</h2>
         <div style={sGrid3}>
-          <InputField label="Pression en voûte (service)"              unit="Pa"   readOnly value={fmt(calc.P_voute_Pa, 0)} />
-          <InputField label="P service boîte à vent (plaque 10 %)"     unit="Pa"   readOnly value={fmt(calc.P_service_10, 0)} />
-          <InputField label="P service boîte à vent (plaque 30 %)"     unit="Pa"   readOnly value={fmt(calc.P_service_30, 0)} />
-          <InputField label="P calcul Pyrofluid"                        unit="Pa"   readOnly value={fmt(calc.P_calcul_Pa, 0)} />
-          <InputField label="P calcul Pyrofluid"                        unit="kPa"  readOnly value={fmt(calc.P_calcul_kPa, 2)} />
-          <InputField label="P calcul Pyrofluid"                        unit="mbar" readOnly value={fmt(calc.P_calcul_mbar, 1)} />
-          <InputField label="P calcul Pyrofluid"                        unit="barg" readOnly value={fmt(calc.P_calcul_barg, 4)} />
-          <InputField label="Marge calcul / service (plaque 30 %)"      unit="—"   readOnly value={fmt(calc.marge, 2)}
+          <InputField label={t('Pression en voûte (service)')}              unit="Pa"   readOnly value={fmt(calc.P_voute_Pa, 0)} />
+          <InputField label={t('P service boîte à vent (plaque 10 %)')}     unit="Pa"   readOnly value={fmt(calc.P_service_10, 0)} />
+          <InputField label={t('P service boîte à vent (plaque 30 %)')}     unit="Pa"   readOnly value={fmt(calc.P_service_30, 0)} />
+          <InputField label={t('P calcul Pyrofluid')}                        unit="Pa"   readOnly value={fmt(calc.P_calcul_Pa, 0)} />
+          <InputField label={t('P calcul Pyrofluid')}                        unit="kPa"  readOnly value={fmt(calc.P_calcul_kPa, 2)} />
+          <InputField label={t('P calcul Pyrofluid')}                        unit="mbar" readOnly value={fmt(calc.P_calcul_mbar, 1)} />
+          <InputField label={t('P calcul Pyrofluid')}                        unit="barg" readOnly value={fmt(calc.P_calcul_barg, 4)} />
+          <InputField label={t('Marge calcul / service (plaque 30 %)')}      unit="—"   readOnly value={fmt(calc.marge, 2)}
                       highlight={calc.marge >= 1.5 ? { background: '#dcfce7' } : { background: '#fef9c3' }} />
-          <InputField label="P calcul / seuil 0,5 barg (directive PED)" unit="—"   readOnly value={fmt(calc.rapport_05barg, 3)}
+          <InputField label={t('P calcul / seuil 0,5 barg (directive PED)')} unit="—"   readOnly value={fmt(calc.rapport_05barg, 3)}
                       highlight={calc.rapport_05barg < 1 ? { background: '#dcfce7' } : { background: '#fee2e2' }} />
         </div>
         <p style={{ fontSize: '11px', color: '#6b7280', marginTop: '8px' }}>
-          P service = P voûte + ΔP lit + ΔP plaque (conduites et réchauffeur non inclus) · P calcul &lt; 0,5 barg → sous seuil directive équipements sous pression
+          {t('P service = P voûte + ΔP lit + ΔP plaque (conduites et réchauffeur non inclus) · P calcul < 0,5 barg → sous seuil directive équipements sous pression')}
         </p>
       </div>
 
       {/* ── DÉBITS AU LIT ────────────────────────────────────────────────── */}
       <div style={sCard}>
-        <h2 style={sH2}>Débits de gaz au lit</h2>
+        <h2 style={sH2}>{t('Débits de gaz au lit')}</h2>
         <div style={sGrid3}>
-          <InputField label="Section du lit"                      unit="m²"    readOnly value={fmt(calc.S_lit, 5)} />
-          <InputField label="T réf. débit froid"                  unit="K"     readOnly value={fmt(calc.T_ref_K, 2)} />
-          <InputField label="Débit à T lit (U proposée)"          unit="m³/s"  readOnly value={fmt(calc.Q_chaud, 5)} />
-          <InputField label="Débit à T réf. (U proposée)"         unit="m³/s"  readOnly value={fmt(calc.Q_ref, 5)} />
-          <InputField label="Débit normal à 0 °C (U proposée)"    unit="Nm³/h" readOnly value={fmt(calc.Q_normal_Nm3h, 2)} />
-          <InputField label="Vitesse lit si ligne 19 = débit chaud" unit="m/s" readOnly value={fmt(calc.U_l19_chaud, 4)} />
-          <InputField label="Vitesse lit si ligne 19 = débit froid" unit="m/s" readOnly value={fmt(calc.U_l19_froid, 4)} />
-          <InputField label="Section zone de garde"               unit="m²"    readOnly value={fmt(calc.S_garde, 5)} />
-          <InputField label="T zone de garde"                     unit="K"     readOnly value={fmt(calc.T_garde_K, 2)} />
+          <InputField label={t('Section du lit')}                      unit="m²"    readOnly value={fmt(calc.S_lit, 5)} />
+          <InputField label={t('T réf. débit froid')}                  unit="K"     readOnly value={fmt(calc.T_ref_K, 2)} />
+          <InputField label={t('Débit à T lit (U proposée)')}          unit="m³/s"  readOnly value={fmt(calc.Q_chaud, 5)} />
+          <InputField label={t('Débit à T réf. (U proposée)')}         unit="m³/s"  readOnly value={fmt(calc.Q_ref, 5)} />
+          <InputField label={t('Débit normal à 0 °C (U proposée)')}    unit="Nm³/h" readOnly value={fmt(calc.Q_normal_Nm3h, 2)} />
+          <InputField label={t('Vitesse lit si ligne 19 = débit chaud')} unit="m/s" readOnly value={fmt(calc.U_l19_chaud, 4)} />
+          <InputField label={t('Vitesse lit si ligne 19 = débit froid')} unit="m/s" readOnly value={fmt(calc.U_l19_froid, 4)} />
+          <InputField label={t('Section zone de garde')}               unit="m²"    readOnly value={fmt(calc.S_garde, 5)} />
+          <InputField label={t('T zone de garde')}                     unit="K"     readOnly value={fmt(calc.T_garde_K, 2)} />
         </div>
       </div>
 
       {/* ── SENSIBILITÉ GRANULOMÉTRIE ─────────────────────────────────────── */}
       <div style={sCard}>
-        <h2 style={sH2}>Sensibilité à la granulométrie (olivine)</h2>
+        <h2 style={sH2}>{t('Sensibilité à la granulométrie (olivine)')}</h2>
         <div style={{ overflowX: 'auto' }}>
           <table style={{ borderCollapse: 'collapse', width: '100%', fontSize: '12px' }}>
             <thead>
               <tr>
                 <th style={sTh}>d [µm]</th>
                 <th style={sTh}>Ar [—]</th>
-                <th style={sTh}>Re à Umf [—]</th>
+                <th style={sTh}>{t('Re à Umf [—]')}</th>
                 <th style={sTh}>Umf [m/s]</th>
-                <th style={sTh}>U proposée / Umf</th>
-                <th style={sTh}>U Pyrofluid bas / Umf</th>
+                <th style={sTh}>{t('U proposée / Umf')}</th>
+                <th style={sTh}>{t('U Pyrofluid bas / Umf')}</th>
                 <th style={sTh}>Ut [m/s]</th>
-                <th style={sTh}>U proposée / Ut</th>
+                <th style={sTh}>{t('U proposée / Ut')}</th>
               </tr>
             </thead>
             <tbody>
@@ -497,32 +499,32 @@ const FluidisationTab = ({ nodeId, currentLanguage = 'fr', innerData = {}, inner
           </table>
         </div>
         <p style={{ fontSize: '11px', color: '#6b7280', marginTop: '8px' }}>
-          Ligne bleue = diamètre sélectionné. Vert : U/Umf ∈ [2,10] (lit bouillonnant). Rouge : hors plage.
+          {t('Ligne bleue = diamètre sélectionné. Vert : U/Umf ∈ [2,10] (lit bouillonnant). Rouge : hors plage.')}
         </p>
       </div>
 
       {/* ── SENSIBILITÉ VITESSE DE CONCEPTION ───────────────────────────── */}
       <div style={sCard}>
-        <h2 style={sH2}>Sensibilité à la vitesse de conception (lit et zone de garde)</h2>
+        <h2 style={sH2}>{t('Sensibilité à la vitesse de conception (lit et zone de garde)')}</h2>
         <div style={{ overflowX: 'auto' }}>
           <table style={{ borderCollapse: 'collapse', width: '100%', fontSize: '12px' }}>
             <thead>
               <tr>
-                <th style={sTh}>Cas</th>
+                <th style={sTh}>{t('Cas')}</th>
                 <th style={sTh}>U [m/s]</th>
-                <th style={sTh}>Q lit chaud [m³/s]</th>
-                <th style={sTh}>Q lit froid [m³/s]</th>
-                <th style={sTh}>Q normal [Nm³/h]</th>
-                <th style={sTh}>U/Umf (d choisi)</th>
+                <th style={sTh}>{t('Q lit chaud [m³/s]')}</th>
+                <th style={sTh}>{t('Q lit froid [m³/s]')}</th>
+                <th style={sTh}>{t('Q normal [Nm³/h]')}</th>
+                <th style={sTh}>{t('U/Umf (d choisi)')}</th>
                 <th style={sTh}>U/Umf (800 µm)</th>
-                <th style={sTh}>Q garde [m³/s]</th>
-                <th style={sTh}>H garde [{p.t_sejour_s} s] [m]</th>
+                <th style={sTh}>{t('Q garde [m³/s]')}</th>
+                <th style={sTh}>{t('H garde')} [{p.t_sejour_s} s] [m]</th>
               </tr>
             </thead>
             <tbody>
               {calc.vitesseTable.map((row) => (
                 <tr key={row.label}>
-                  <td style={{ ...sTdC, textAlign: 'left', background: '#f8fafc', fontWeight: '600' }}>{row.label}</td>
+                  <td style={{ ...sTdC, textAlign: 'left', background: '#f8fafc', fontWeight: '600' }}>{t(row.label)}</td>
                   <td style={sTdC}>{fmt(row.U_i, 4)}</td>
                   <td style={sTd}>{fmt(row.Q_chaud, 5)}</td>
                   <td style={sTd}>{fmt(row.Q_froid, 5)}</td>
@@ -541,7 +543,7 @@ const FluidisationTab = ({ nodeId, currentLanguage = 'fr', innerData = {}, inner
           </table>
         </div>
         <p style={{ fontSize: '11px', color: '#6b7280', marginTop: '8px' }}>
-          Débit zone de garde = débit de fluidisation porté à T_garde. Produits de combustion et vapeur non inclus. H_garde = Q_garde × t_séjour / S_garde.
+          {t('Débit zone de garde = débit de fluidisation porté à T_garde. Produits de combustion et vapeur non inclus. H_garde = Q_garde × t_séjour / S_garde.')}
         </p>
       </div>
     </div>
