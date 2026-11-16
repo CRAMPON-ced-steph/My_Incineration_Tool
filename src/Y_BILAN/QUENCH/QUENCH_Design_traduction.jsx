@@ -153,6 +153,10 @@ export const qdTranslations = {
     QD_report_bilans: 'Water balances',
   },
   es: {
+    // — Compléments de traduction (2026-11) —
+    QD_origin_mode_on: 'Cálculo Pyrofluid original: ACTIVO',
+    QD_origin_mode_off: 'Cálculo Pyrofluid original',
+    QD_origin_mode_hint: 'Reproduce ClassQuench.vb de forma idéntica (paso de 0,1 °C, Ts / 1,0005, Psat × 0,9954, reinicio del bucle ácido). Desactivado: cálculo corregido.',
     QD_legend_input: 'entrada',
     QD_legend_calc: 'calculado',
     QD_legend_warn: 'fuera de rango',
@@ -215,6 +219,10 @@ export const qdTranslations = {
     QD_report_bilans: 'Balances de agua',
   },
   de: {
+    // — Compléments de traduction (2026-11) —
+    QD_origin_mode_on: 'Original-Pyrofluid-Berechnung: AKTIV',
+    QD_origin_mode_off: 'Original-Pyrofluid-Berechnung',
+    QD_origin_mode_hint: 'Bildet ClassQuench.vb identisch nach (Schritt 0,1 °C, Ts / 1,0005, Psat × 0,9954, Neustart der Säureschleife). Deaktiviert: korrigierte Berechnung.',
     QD_legend_input: 'Eingabe',
     QD_legend_calc: 'berechnet',
     QD_legend_warn: 'außerhalb des Bereichs',
@@ -277,6 +285,10 @@ export const qdTranslations = {
     QD_report_bilans: 'Wasserbilanzen',
   },
   it: {
+    // — Compléments de traduction (2026-11) —
+    QD_origin_mode_on: 'Calcolo Pyrofluid originale: ATTIVO',
+    QD_origin_mode_off: 'Calcolo Pyrofluid originale',
+    QD_origin_mode_hint: 'Riproduce ClassQuench.vb in modo identico (passo di 0,1 °C, Ts / 1,0005, Psat × 0,9954, riavvio del ciclo acido). Disattivato: calcolo corretto.',
     QD_legend_input: 'inserimento',
     QD_legend_calc: 'calcolato',
     QD_legend_warn: 'fuori intervallo',
@@ -339,6 +351,10 @@ export const qdTranslations = {
     QD_report_bilans: 'Bilanci acqua',
   },
   pt: {
+    // — Compléments de traduction (2026-11) —
+    QD_origin_mode_on: 'Cálculo Pyrofluid original: ATIVO',
+    QD_origin_mode_off: 'Cálculo Pyrofluid original',
+    QD_origin_mode_hint: 'Reproduz ClassQuench.vb de forma idêntica (passo de 0,1 °C, Ts / 1,0005, Psat × 0,9954, reinício do laço ácido). Desativado: cálculo corrigido.',
     QD_legend_input: 'entrada',
     QD_legend_calc: 'calculado',
     QD_legend_warn: 'fora da faixa',
@@ -401,6 +417,10 @@ export const qdTranslations = {
     QD_report_bilans: 'Balanços de água',
   },
   ar: {
+    // — Compléments de traduction (2026-11) —
+    QD_origin_mode_on: 'حساب Pyrofluid الأصلي: مفعّل',
+    QD_origin_mode_off: 'حساب Pyrofluid الأصلي',
+    QD_origin_mode_hint: 'يعيد إنتاج ClassQuench.vb بشكل مطابق (خطوة 0,1 °C، Ts / 1,0005، Psat × 0,9954، إعادة تشغيل حلقة الحمض). عند التعطيل: الحساب المصحّح.',
     QD_legend_input: 'إدخال',
     QD_legend_calc: 'محسوب',
     QD_legend_warn: 'خارج النطاق',
@@ -463,6 +483,10 @@ export const qdTranslations = {
     QD_report_bilans: 'موازنات الماء',
   },
   ru: {
+    // — Compléments de traduction (2026-11) —
+    QD_origin_mode_on: 'Исходный расчёт Pyrofluid: ВКЛ',
+    QD_origin_mode_off: 'Исходный расчёт Pyrofluid',
+    QD_origin_mode_hint: 'Точно воспроизводит ClassQuench.vb (шаг 0,1 °C, Ts / 1,0005, Psat × 0,9954, перезапуск кислотного цикла). Выключено: исправленный расчёт.',
     QD_legend_input: 'ввод',
     QD_legend_calc: 'расчёт',
     QD_legend_warn: 'вне диапазона',
@@ -525,6 +549,10 @@ export const qdTranslations = {
     QD_report_bilans: 'Балансы воды',
   },
   ja: {
+    // — Compléments de traduction (2026-11) —
+    QD_origin_mode_on: 'Pyrofluid 原計算：有効',
+    QD_origin_mode_off: 'Pyrofluid 原計算',
+    QD_origin_mode_hint: 'ClassQuench.vb を忠実に再現（0,1 °C 刻み、Ts / 1,0005、Psat × 0,9954、酸ループの再開）。無効時：修正計算。',
     QD_legend_input: '入力',
     QD_legend_calc: '計算値',
     QD_legend_warn: '範囲外',
@@ -587,6 +615,10 @@ export const qdTranslations = {
     QD_report_bilans: '水収支',
   },
   zh: {
+    // — Compléments de traduction (2026-11) —
+    QD_origin_mode_on: 'Pyrofluid 原始计算：已启用',
+    QD_origin_mode_off: 'Pyrofluid 原始计算',
+    QD_origin_mode_hint: '完全复现 ClassQuench.vb（步长 0,1 °C、Ts / 1,0005、Psat × 0,9954、酸循环重启）。关闭时：修正计算。',
     QD_legend_input: '输入',
     QD_legend_calc: '计算值',
     QD_legend_warn: '超出范围',

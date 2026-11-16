@@ -391,7 +391,7 @@ const DimensionnementTab = ({ innerData = {}, innerDataTick, onDataChange, curre
             {autoSizeBtnLabel}
           </button>
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '600', whiteSpace: 'nowrap' }}>max modèle</span>
+            <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '600', whiteSpace: 'nowrap' }}>{t('max modèle')}</span>
             <select
               value={maxModele}
               onChange={(e) => setMaxModele(e.target.value)}
@@ -413,7 +413,7 @@ const DimensionnementTab = ({ innerData = {}, innerDataTick, onDataChange, curre
             </select>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '600', whiteSpace: 'nowrap' }}>max fours</span>
+            <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '600', whiteSpace: 'nowrap' }}>{t('max fours')}</span>
             <input
               type="number"
               min="1"
@@ -569,7 +569,7 @@ const DimensionnementTab = ({ innerData = {}, innerDataTick, onDataChange, curre
             >
               {Object.keys(VOUTES).map((key) => (
                 <option key={key} value={key}>
-                  Ø voûte {VOUTES[key].DiametreVoute} m — {VOUTES[key].NrTuyere} tuyères
+                  {t('Ø voûte')} {VOUTES[key].DiametreVoute} m — {VOUTES[key].NrTuyere} {t('tuyères')}
                 </option>
               ))}
               <option value={HORS_STD}>{t('Hors standard (saisie libre)')}</option>
@@ -624,10 +624,10 @@ const DimensionnementTab = ({ innerData = {}, innerDataTick, onDataChange, curre
             />
           </div>
           {[
-            { label: 'Temperature Entree Boite à Vent [°C]', key: 'TempEntreeBoiteVent_C', step: '10', readOnly: true },
+            { label: t('Temperature Entree Boite à Vent [°C]'), key: 'TempEntreeBoiteVent_C', step: '10', readOnly: true },
             { label: 'Temperature Niveau Voute [°C]', key: 'TempNiveauVoute_C', step: '10' },
-            { label: 'Pression niveau Voute par Defaut [mmCE]', key: 'PressionVouteDefaut_mmCe', step: '100' },
-            { label: 'Débit Air humide Entree Boite à Vent [Nm3/h]', key: 'VolAirEntreeBoiteVent_Nm3h', step: '10', decimals: 2, readOnly: true },
+            { label: t('Pression niveau Voute par Defaut [mmCE]'), key: 'PressionVouteDefaut_mmCe', step: '100' },
+            { label: t('Débit Air humide Entree Boite à Vent [Nm3/h]'), key: 'VolAirEntreeBoiteVent_Nm3h', step: '10', decimals: 2, readOnly: true },
             { label: 'Vitesse Reelle Tuyere [m/s]', key: 'VitesseReelleTuyere_ms', step: '1' },
           ].map(({ label, key, step, decimals, readOnly }) => (
             <div key={key}>
@@ -668,12 +668,12 @@ const DimensionnementTab = ({ innerData = {}, innerDataTick, onDataChange, curre
                 bg: '#fef3c7',
               },
               {
-                label: 'Debit air reel boite à vent Iter1 [m3/h]',
+                label: t('Debit air reel boite à vent Iter1 [m3/h]'),
                 val: fmt(calculsComplets.DebitAirReelBoiteVentIter1_m3h),
                 bg: '#fef3c7',
               },
               {
-                label: 'Debit air reel boite à vent Iter1 [m3/s]',
+                label: t('Debit air reel boite à vent Iter1 [m3/s]'),
                 val: fmt(calculsComplets.DebitAirReelBoiteVentIter1_m3s, 4),
                 bg: '#fef3c7',
               },
@@ -682,7 +682,7 @@ const DimensionnementTab = ({ innerData = {}, innerDataTick, onDataChange, curre
                 val: fmt(calculsComplets.DebitReelTuyeresIter1_m3s, 4),
                 bg: '#dcfce7',
               },
-              { label: 'Nombre de trous iter 1', val: calculsComplets.NbTrousIter1, bg: '#dcfce7' },
+              { label: t('Nombre de trous iter 1'), val: calculsComplets.NbTrousIter1, bg: '#dcfce7' },
               {
                 label: 'Surface Tuyeres Reelle Iter1 [m2]',
                 val: fmt(calculsComplets.SurfaceTuyeresReelleIter1_m2, 6),
@@ -725,12 +725,12 @@ const DimensionnementTab = ({ innerData = {}, innerDataTick, onDataChange, curre
                 bg: '#fed7aa',
               },
               {
-                label: 'Debit air reel boite à vent Iter2 [m3/h]',
+                label: t('Debit air reel boite à vent Iter2 [m3/h]'),
                 val: fmt(calculsComplets.DebitAirReelBoiteVentIter2_m3h),
                 bg: '#fed7aa',
               },
               {
-                label: 'Debit air reel boite à vent Iter2 [m3/s]',
+                label: t('Debit air reel boite à vent Iter2 [m3/s]'),
                 val: fmt(calculsComplets.DebitAirReelBoiteVentIter2_m3s, 4),
                 bg: '#fed7aa',
               },
@@ -739,7 +739,7 @@ const DimensionnementTab = ({ innerData = {}, innerDataTick, onDataChange, curre
                 val: fmt(calculsComplets.DebitReelTuyeresIter2_m3s, 4),
                 bg: '#bbf7d0',
               },
-              { label: 'Nombre de trous iter 2', val: calculsComplets.NbTrousIter2, bg: '#bbf7d0' },
+              { label: t('Nombre de trous iter 2'), val: calculsComplets.NbTrousIter2, bg: '#bbf7d0' },
               {
                 label: 'Surface Tuyeres Reelle Iter2 [m2]',
                 val: fmt(calculsComplets.SurfaceTuyeresReelleIter2_m2, 6),
@@ -791,9 +791,9 @@ const DimensionnementTab = ({ innerData = {}, innerDataTick, onDataChange, curre
             </h4>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '15px', fontSize: '13px', color: '#1e40af' }}>
               {[
-                { label: 'Modèle', val: parametres.Modele },
+                { label: t('Modèle'), val: parametres.Modele },
                 { label: 'NbrTuyeres Actives', val: calculsComplets.NbrTuyeres },
-                { label: 'NbTrous/Tuyère', val: calculsComplets.NbTrousIter2 },
+                { label: t('NbTrous/Tuyère'), val: calculsComplets.NbTrousIter2 },
                 { label: 'VitesseReelleTuyere [m/s]', val: fmt(calculsComplets.VitesseReelleTuyereIter2_ms, 1) },
                 { label: 'Pression finale freeboard [mmCE]', val: fmt(calculsComplets.PressionFreeboard, 2) },
                 (() => {
@@ -803,11 +803,11 @@ const DimensionnementTab = ({ innerData = {}, innerDataTick, onDataChange, curre
                   return { label: 'Vitesse voute 2 [m/s]', val: fmt(v, 4), alerte };
                 })(),
                 {
-                  label: 'Charge MS théorique du radier [kg MS/h/m²]',
+                  label: t('Charge MS théorique du radier [kg MS/h/m²]'),
                   val: calculsComplets.SurfaceVoute_m2 > 0 ? fmt((innerData?.MS_kg_h ?? 0) / calculsComplets.NombreFour / calculsComplets.SurfaceVoute_m2) : '-',
                 },
                 {
-                  label: 'Charge MV théorique [kg MV/h/m²]',
+                  label: t('Charge MV théorique [kg MV/h/m²]'),
                   val: calculsComplets.SurfaceVoute_m2 > 0 ? fmt((innerData?.MV_kg_h ?? 0) / calculsComplets.NombreFour / calculsComplets.SurfaceVoute_m2) : '-',
                 },
                 (() => {
@@ -815,10 +815,10 @@ const DimensionnementTab = ({ innerData = {}, innerDataTick, onDataChange, curre
                     ? (innerData?.EauExtraite_kg_h ?? 0) / calculsComplets.NombreFour / calculsComplets.SurfaceVoute_m2
                     : null;
                   const alerte = chargeEau !== null && chargeEau > 540 ? t('Charge eau > 540 kg/h/m²') : null;
-                  return { label: 'Charge eau théorique [kg eau/h/m²]', val: chargeEau !== null ? fmt(chargeEau) : '-', alerte };
+                  return { label: t('Charge eau théorique [kg eau/h/m²]'), val: chargeEau !== null ? fmt(chargeEau) : '-', alerte };
                 })(),
                 {
-                  label: 'Capacité thermique du four [kW]',
+                  label: t('Capacité thermique du four [kW]'),
                   val: (() => {
                     const H_in = innerData?.H_in_kW ?? 0;
                     const H_pertes = innerData?.H_pertes_kW ?? 0;
@@ -828,7 +828,7 @@ const DimensionnementTab = ({ innerData = {}, innerDataTick, onDataChange, curre
                   })(),
                 },
                 {
-                  label: 'Densité thermique du four [kW/m²]',
+                  label: t('Densité thermique du four [kW/m²]'),
                   val: (() => {
                     const H_in = innerData?.H_in_kW ?? 0;
                     const H_pertes = innerData?.H_pertes_kW ?? 0;
@@ -840,7 +840,7 @@ const DimensionnementTab = ({ innerData = {}, innerDataTick, onDataChange, curre
                   })(),
                 },
                 {
-                  label: 'Charge thermique du radier [Th/m²/h]',
+                  label: t('Charge thermique du radier [Th/m²/h]'),
                   val: (() => {
                     const H_in = innerData?.H_in_kW ?? 0;
                     const H_pertes = innerData?.H_pertes_kW ?? 0;
