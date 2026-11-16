@@ -177,7 +177,7 @@ const FBMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
           pciKcalkg:   innerDataRef.current['pciKcalkg']   ?? 0,
           pcsKcalkgMV: innerDataRef.current['pcsKcalkgMV'] ?? 0,
           pcsKcalkg:   innerDataRef.current['pcsKcalkg']   ?? 0,
-          pciDulong:   innerDataRef.current['pciDulong']   ?? 0,
+          pciJarosz:   innerDataRef.current['pciJarosz']   ?? 0,
 
           // Métaux lourds (mg/kg MS)
           heavyMetalsData: innerDataRef.current['heavyMetalsData'] || {},
@@ -196,6 +196,9 @@ const FBMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
           PCDDF_kg_h: innerDataRef.current['PCDDF_kg_h'] ?? 0,
           Ti_kg_h:    innerDataRef.current['Ti_kg_h']    ?? 0,
           HF_kg_h:    innerDataRef.current['HF_kg_h']    ?? 0,
+          Mg_kg_h:    innerDataRef.current['Mg_kg_h']    ?? 0,
+          Mn_kg_h:    innerDataRef.current['Mn_kg_h']    ?? 0,
+          Se_kg_h:    innerDataRef.current['Se_kg_h']    ?? 0,
 
           // === AIR DE COMBUSTION ===
           Masse_air_sec_combustion_tot_kg_h:    innerDataRef.current['Masse_air_sec_combustion_tot_kg_h']    ?? 0,
@@ -604,4 +607,4 @@ const FBMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
   );
 };
 
-export default FBMainPage;
+export default FBMainPage;

@@ -35,7 +35,7 @@ const PCI_kJ_kgMV_VALUES = {
   'MIXTE': 22190.04,
   'BIOLOGIQUE': 23570.68,
   'DIGEREE': 22662.56,
-  'GRAISSE': 36399.02,
+  'GRAISSE': 36499.02,
   'REFUS_DEGRILLAGE': 24237.38
 };
 
@@ -327,6 +327,12 @@ export const MoleNOx = (tpMS, tpMV, tpPCI, Qboue, TempFreeBoard, MoleO2, MoleAzo
 
 export const PCI_Dulong = (C, H, O, S) => {
   return 80.9 * C + 342.5 * (H - O / 8) + 22.5 * S;
+};
+
+// PCI [kcal/kg MV] selon l'équation de Jarosz (source : PERRY modifié) — formule Pyrofluid (ClassBoue.CalculPCI)
+// C, H, O, N, S en % massique sur MV
+export const PCI_Jarosz = (C, H, O, N, S) => {
+  return 81.4 * C + 285.6 * H + 21.6 * S - 30 * (O + N);
 };
 
 export const PCI_incomplete = (MFCOTot, MFH2Tot) => {

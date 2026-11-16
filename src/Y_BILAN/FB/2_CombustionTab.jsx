@@ -38,8 +38,13 @@ import SchemaProcessus from './SchemaProcessus';
 
 const FUEL_PROPERTIES = {
  
-   GAZ: { density: 0.75, pci: 7300, C_percent: 88.7, H_percent: 7.4, O_percent: 0.6, N_percent: 0.9, S_percent: 1.2, Cl_percent: 0 },
-  BIOGAZ: { density: 1.15, pci: 5000, C_percent: 75, H_percent: 25, O_percent: 0, N_percent: 0, S_percent: 0, Cl_percent: 0 },
+  // density : kg/Nm³ (gaz) ou kg/m³ (fioul) ; pci : kcal/Nm³ (gaz) ou kcal/kg (fioul) ; composition : % massique
+  // GAZ : gaz naturel type H (92 % CH4, 5 % C2H6, 1 % C3H8, 1,5 % N2, 0,5 % CO2 en volume)
+  GAZ: { density: 0.774, pci: 8875, C_percent: 73.06, H_percent: 23.60, O_percent: 0.92, N_percent: 2.42, S_percent: 0, Cl_percent: 0 },
+  // GAZ_V45 : « gaz naturel » par défaut de Pyrofluid V4.5 (9 351,82 kcal/kg × 0,87 kg/Nm³) — pour la revalidation
+  GAZ_V45: { density: 0.87, pci: 8136.08, C_percent: 89.8, H_percent: 7.5, O_percent: 0.6, N_percent: 0.9, S_percent: 1.2, Cl_percent: 0 },
+  // BIOGAZ : 60 % CH4 / 40 % CO2 en volume
+  BIOGAZ: { density: 1.215, pci: 5142, C_percent: 44.11, H_percent: 8.88, O_percent: 47.01, N_percent: 0, S_percent: 0, Cl_percent: 0 },
   FIOUL: { density: 850, pci: 10223, C_percent: 86.0, H_percent: 13.6, O_percent: 0.1, N_percent: 0.1, S_percent: 0.2, Cl_percent: 0 },
 };
 
@@ -55,8 +60,8 @@ const DEFAULT_AIR_COMPOSITION = {
 
 const DEFAULT_EMISSIONS = {
   type_energy: 'GAZ',
-  densite_combustible: 0.75,
-  PCI_combustible: 7300,
+  densite_combustible: 0.774,
+  PCI_combustible: 8875,
   Exces_air_lit: 78,
   Exces_air_combustible: 78,
   O2_pct_air_combustion: 21,
@@ -136,6 +141,13 @@ function runIterativeCalc({
 
   // Fraction massique O2 dans l'air de combustion (dérivée de O2% volumique sec)
   const o2MassFrac = o2VolToO2Mass(O2_pct_vol) / 100;
+
+  // Normalisation à 100 % de la composition du combustible (évite toute perte de masse)
+  const compKeys = ['C_percent', 'H_percent', 'O_percent', 'N_percent', 'S_percent', 'Cl_percent'];
+  const sumComp = compKeys.reduce((acc, k) => acc + (Number(composition?.[k]) || 0), 0);
+  const kNorm = sumComp > 0 ? 100 / sumComp : 1;
+  composition = Object.fromEntries(compKeys.map((k) => [k, (Number(composition?.[k]) || 0) * kNorm]));
+  const pertesFrac = (Pertes_thermiques_pourcent || 0) / 100;
 
   for (let iter = 0; iter < MAX_ITER; iter++) {
     const Mgaz = {
@@ -236,8 +248,9 @@ function runIterativeCalc({
     const MF_SO2 = MB_S + MG_S;
     const MF_HCl = MB_Cl + MG_Cl;
 
-    const MF_CO2 = (MF_C * Math.sqrt(Math.max(MF_O2, 0))) / (0.05 + Math.sqrt(Math.max(MF_O2, 0)));
-    const MF_CO = MF_C - MF_CO2;
+    let MF_CO2 = (MF_C * Math.sqrt(Math.max(MF_O2, 0))) / (0.05 + Math.sqrt(Math.max(MF_O2, 0)));
+    let MF_CO = MF_C - MF_CO2;
+    let MF_H2 = 0;
 
     const MolesO2excBoue = (Maire_sec_comb_boue * (1 - 1 / (1 + Exces_air_lit / 100)) * o2MassFrac * 1000) / 32;
     const MoleO2excesAirInstrumentation = (Maire_balayage * o2MassFrac * 1000) / 32;
@@ -245,12 +258,30 @@ function runIterativeCalc({
     const MoleO2excesAirTertiaire = (Masse_air_tertiaire_kg_h * (airTert.O2_pct / 100) * 1000) / 32;
 
     const MF_O2exc_primary = MolesO2excGaz + MolesO2excBoue + MoleO2excesAirInstrumentation;
-    const MF_O2exc = MF_O2exc_primary + MoleO2excesAirSecondaire + MoleO2excesAirTertiaire;
-    const ParamB1 = MF_O2 - 2 * MF_C - 2 * MF_O2exc - 2 * MF_SO2;
+    let MF_O2exc = MF_O2exc_primary + MoleO2excesAirSecondaire + MoleO2excesAirTertiaire;
+    let ParamB1 = MF_O2 - 2 * MF_C - 2 * MF_O2exc - 2 * MF_SO2;
+    let sousStoechio = false;
+    if (MF_O2exc <= 0 && MF_C > 0) {
+      // Défaut d'air : équilibre du gaz à l'eau CO + H2O <-> CO2 + H2 (ClassCalcFour.CalculCompFumees)
+      try {
+        const O_tot = MF_O2 + 2 * (MoleO2excesAirSecondaire + MoleO2excesAirTertiaire);
+        const H_prim = MB_H + MG_H;
+        const co = Mole_CO(Temp_fumee_voute_C, MF_C, O_tot, MF_O2, MF_HCl, 0, MF_SO2, H_prim);
+        const h2 = Mole_H2(Temp_fumee_voute_C, MF_C, O_tot, MF_O2, MF_HCl, 0, MF_SO2, H_prim);
+        if (isFinite(co) && isFinite(h2) && h2 >= 0) {
+          MF_CO = co;
+          MF_CO2 = MF_C - co;
+          MF_H2 = h2;
+          MF_O2exc = 0;
+          ParamB1 = O_tot - 2 * MF_C - 2 * MF_SO2 - MF_HCl;
+          sousStoechio = true;
+        }
+      } catch { /* pas de solution d'équilibre : on conserve la corrélation CO */ }
+    }
     const MF_H2O_primary = ParamB1 + MF_CO;
     const MF_H2O = MF_H2O_primary + (Masse_air_secondaire_kg_h + Masse_air_tertiaire_kg_h) * Teneur_en_eau_kgH2O_kgAS / 18.015 * 1000;
 
-    const MF_NOX = MoleNOx(MS_pourcent, MV_pourcent, PCI_boue_kcal_kgMV, BoueBrute_kg_h) || 0;
+    const MF_NOX = MoleNOx(MS_pourcent, MV_pourcent, PCI_boue_kcal_kgMV, BoueBrute_kg_h, Temp_fumee_voute_C, Math.max(MF_O2exc, 0), MB_N) || 0;
     const MF_N2 = (MF_N - MF_NOX) / 2;
 
     const FG_SO2 = (MF_SO2 * molarMasses.SO2) / 1000;
@@ -262,7 +293,7 @@ function runIterativeCalc({
     const FG_NOX = (MF_NOX * molarMasses.NOx) / 1000;
     const FG_N2 = (MF_N2 * molarMasses.N2) / 1000;
     const FG_SO2reel = FG_SO2 * (1 - SO2_recupere_cendre_pourcent / 100);
-    const FG_H2 = 0;
+    const FG_H2 = (MF_H2 * 2.016) / 1000;
 
     const FGv_SO2 = FG_SO2 / massVolumique.SO2;
     const FGv_HCl = FG_HCl / massVolumique.HCl;
@@ -274,9 +305,10 @@ function runIterativeCalc({
     const FGv_N2 = FG_N2 / massVolumique.N2;
     const FGv_SO2reel = FG_SO2reel / massVolumique.SO2;
 
-    const FG_wet_Nm3 = FGv_HCl + FGv_CO2 + FGv_CO + FGv_H2O + FGv_O2exc + FGv_NOX + FGv_N2 + FGv_SO2reel;
+    const FGv_H2 = FG_H2 / massVolumique.H2;
+    const FG_wet_Nm3 = FGv_HCl + FGv_CO2 + FGv_CO + FGv_H2O + FGv_H2 + FGv_O2exc + FGv_NOX + FGv_N2 + FGv_SO2reel;
     const FG_dry_Nm3 = FG_wet_Nm3 - FGv_H2O;
-    const FG_wet_kg = FG_HCl + FG_CO2 + FG_CO + FG_H2O + FG_O2exc + FG_NOX + FG_N2 + FG_SO2reel;
+    const FG_wet_kg = FG_HCl + FG_CO2 + FG_CO + FG_H2O + FG_H2 + FG_O2exc + FG_NOX + FG_N2 + FG_SO2reel;
     const FG_dry_kg = FG_wet_kg - FG_H2O;
 
     const Maire_sec_boue_tot = Maire_sec_comb_boue + Maire_balayage;
@@ -298,7 +330,7 @@ function runIterativeCalc({
     const Meau_air3 = Teneur_en_eau_kgH2O_kgAS * Masse_air_tertiaire_kg_h;
     const H_air3 = cp_air(Temp_air_tertiaire_C) * Masse_air_tertiaire_kg_h + cp_dt_h2o(Temp_air_tertiaire_C) * Meau_air3;
 
-    const Pertes = ((PCI_boue_kcal_kgMV * Masse_volatile_kg_h * (Pertes_thermiques_pourcent / 100)) / 3600) * cp_ref;
+    const Pertes_boue = ((PCI_boue_kcal_kgMV * Masse_volatile_kg_h * pertesFrac) / 3600) * cp_ref;
 
     const T_soufflante = Temp_air_fluidisation_av_prechauffe_C + 45;
 
@@ -323,12 +355,17 @@ function runIterativeCalc({
       ? Masse_gaz_kg_h * PCI_gaz_kWh_Nm3
       : (Masse_gaz_kg_h / densite_combustible) * PCI_gaz_kWh_Nm3;
 
+    // Pertes thermiques appliquées au PCI de la boue ET du combustible d'appoint (convention Pyrofluid V4.5)
+    const Pertes_combustible = H_gaz_inter * pertesFrac;
+    const Pertes = Pertes_boue + Pertes_combustible;
+
     const H_in = H_NET_BOUE + H_Evap_add + H_air_prech + H_balayage + H_gaz_inter;
     const H_imbrule_kW = (2415 * FG_CO + FG_H2 * 28240) / 860;
     const H_out = H_MM + Hf_voute + Pertes + H_imbrule_kW;
     const H_gaz = H_out - H_in;
 
-    const Q_gaz_Nm3 = PCI_gaz_kWh_Nm3 > 0 ? H_gaz / PCI_gaz_kWh_Nm3 : 0;
+    // (1 - pertes) : chaque kWh de combustible ajouté n'apporte que (1 - pertes) kWh nets
+    const Q_gaz_Nm3 = PCI_gaz_kWh_Nm3 > 0 && pertesFrac < 1 ? H_gaz / (PCI_gaz_kWh_Nm3 * (1 - pertesFrac)) : 0;
     const Q_gaz_kg = isLiquidFuel ? Q_gaz_Nm3 : Q_gaz_Nm3 * densite_combustible;
 
     const Rho_FG_kg_Nm3 = Vvap_boue > 0 ? FG_wet_kg / FG_wet_Nm3 : 0;
@@ -456,7 +493,8 @@ function runIterativeCalc({
         H_NETTE_BOUE_kW: H_NET_BOUE,
         H_air_fluidisation_av_prechauffe_kW: H_air_flu,
         H_air_secondaire_kW: H_air2, H_air_tertiaire_kW: H_air3,
-        Pertes_thermiques_kW: Pertes,
+        Pertes_thermiques_kW: Pertes, Pertes_boue_kW: Pertes_boue, Pertes_combustible_kW: Pertes_combustible,
+        sousStoechio, FG_Nm3_h_H2: FGv_H2, Somme_composition_combustible_pct: sumComp,
         Temp_air_soufflante_C: T_soufflante,
         Masse_eau_air_balayage_kg_h: Meau_balayage,
         H_air_balayage_instrumentation_kW: H_balayage,
@@ -513,6 +551,66 @@ const ToggleSwitch = ({ label, checked, onChange }) => (
 );
 
 // ============================================================
+// INDICATEURS D'ÉQUILIBRE + EAU DE REFROIDISSEMENT AUTO
+// (ClassCalcFour : TempFreeboardEquilibre, TempEquilibre, CalculSicciteEquilibre, CalculDebitEauRef)
+// Calculés sur le bilan SANS combustible d'appoint.
+// ============================================================
+
+function bissection(fn, lo, hi) {
+  let flo = fn(lo), fhi = fn(hi);
+  if (!isFinite(flo) || !isFinite(fhi) || flo * fhi > 0) return null;
+  for (let i = 0; i < 80; i++) {
+    const mid = (lo + hi) / 2;
+    const fm = fn(mid);
+    if (flo * fm <= 0) { hi = mid; fhi = fm; } else { lo = mid; flo = fm; }
+  }
+  return (lo + hi) / 2;
+}
+
+function computeEquilibre(args, eauAuto) {
+  const out = { Bilan_sans_appoint_kW: null, T_freeboard_eq_C: null, T_air_eq_C: null, Siccite_eq_pct: null, eau_auto_kg_h: 0 };
+  try {
+    const r0 = runIterativeCalc({ ...args, forceGazZero: true });
+    if (!r0 || !isFinite(r0.H_in) || !isFinite(r0.H_out) || !(args.Masse_seche_kg_h > 0)) return out;
+    const bilan = r0.H_in - r0.H_out; // > 0 : excédent ; < 0 : déficit à couvrir par l'appoint
+    out.Bilan_sans_appoint_kW = bilan;
+    const Tv = args.Temp_fumee_voute_C;
+
+    // Température d'équilibre du freeboard : fumées + cendres + pertes + imbrûlés = apports
+    out.T_freeboard_eq_C = bissection((T) =>
+      Hfvoute_kW(T, r0.FG_kg_h_HCl, r0.FG_kg_h_CO2, r0.FG_kg_h_CO, r0.FG_kg_h_H2O, r0.FG_kg_h_H2, r0.FG_kg_h_O2exces, r0.FG_kg_h_N2, r0.FG_kg_h_SO2reel)
+      + fh_MM_kW(T, args.Masse_mineral_kg_h) + r0.Pertes_thermiques_kW + r0.H_imbrule_kW - r0.H_in, 0, 3000);
+
+    // Température d'air de fluidisation qui équilibre le bilan sans appoint
+    const Mair = r0.Masse_air_sec_combustion_tot_kg_h || 0;
+    const hum = args.Teneur_en_eau_kgH2O_kgAS || 0;
+    const cibleAir = (r0.Hair_ap_prechauffage_kW || 0) - bilan;
+    if (Mair > 0 && cibleAir > 0) {
+      out.T_air_eq_C = bissection((T) => cp_air(T) * Mair + cp_dt_h2o(T) * Mair * hum - cibleAir, 0, 3000);
+    }
+
+    // Siccité d'équilibre : eau à retirer (déficit) ou à ajouter (excédent) pour annuler le bilan
+    const hVap = cp_dt_h2o(Tv) * 3600; // kJ/kg, vapeur de 0 °C à T voûte
+    const denomBoue = (2501.6 - cp_ref * args.Temp_boue_entree_C) + hVap;
+    const eauEq = denomBoue > 0 ? (bilan * 3600) / denomBoue : 0;
+    const eauTot = args.Masse_seche_kg_h + args.Masse_eau_kg_h + eauEq;
+    if (eauTot > 0) out.Siccite_eq_pct = Math.min(100, (args.Masse_seche_kg_h / eauTot) * 100);
+
+    // Eau de refroidissement (15 °C) nécessaire quand le bilan est excédentaire
+    if (eauAuto && bilan > 0) {
+      const denomEau = (2501.6 - cp_ref * 15) + hVap;
+      let extra = (bilan * 3600) / denomEau;
+      for (let i = 0; i < 4; i++) {
+        const r = runIterativeCalc({ ...args, forceGazZero: true, eau_add_kg_h: (args.eau_add_kg_h || 0) + extra });
+        extra += ((r.H_in - r.H_out) * 3600) / denomEau;
+      }
+      out.eau_auto_kg_h = Math.max(0, extra);
+    }
+  } catch (err) { console.error('Erreur calcul équilibre:', err); }
+  return out;
+}
+
+// ============================================================
 // COMPOSANT PRINCIPAL
 // ============================================================
 
@@ -532,6 +630,8 @@ const CombustionTab = ({ innerData = {}, onInnerDataChange, onResultsChange, cur
   const [showExpertFumees, setShowExpertFumees] = useState(false);
   const [showDetailedBilan, setShowDetailedBilan] = useState(false);
   const [useGazAppoint, setUseGazAppoint] = useState(true);
+  const [eauAuto, setEauAuto] = useState(() => lsGet(`eauAuto_FB_${nodeId}`, true));
+  useEffect(() => { lsSet(`eauAuto_FB_${nodeId}`, eauAuto); }, [eauAuto]);
   const [fuelStd, setFuelStd] = useState(() => lsGet(`fuelStd_FB_${nodeId}`, true));
   const [customFuelComp, setCustomFuelComp] = useState(() => {
     const saved = lsGet(`customFuelComp_FB_${nodeId}`, null);
@@ -557,7 +657,7 @@ const CombustionTab = ({ innerData = {}, onInnerDataChange, onResultsChange, cur
     } else {
       setEmissions(prev => {
         const p = FUEL_PROPERTIES[prev.type_energy] || FUEL_PROPERTIES.GAZ;
-        return { ...prev, PCI_combustible: p.pci };
+        return { ...prev, PCI_combustible: p.pci, densite_combustible: p.density };
       });
     }
   }, [customFuelComp, fuelStd]);
@@ -602,9 +702,7 @@ const CombustionTab = ({ innerData = {}, onInnerDataChange, onResultsChange, cur
     return FUEL_PROPERTIES[emissions.type_energy] || FUEL_PROPERTIES.GAZ;
   }, [emissions.type_energy, fuelStd, customFuelComp]);
 
-  const results = useMemo(() => {
-    try {
-      return runIterativeCalc({
+  const calcArgs = useMemo(() => ({
         composition,
         sludgeC: innerData.C_percent || 0, sludgeH: innerData.H_percent || 0,
         sludgeO: innerData.O_percent || 0, sludgeN: innerData.N_percent || 0,
@@ -638,12 +736,20 @@ const CombustionTab = ({ innerData = {}, onInnerDataChange, onResultsChange, cur
         airComposition,
         forceGazZero: !useGazAppoint,
         O2_pct_vol: emissions.O2_pct_air_combustion ?? DEFAULT_EMISSIONS.O2_pct_air_combustion,
-      });
-    } catch (err) { console.error('Erreur calcul combustion:', err); return {}; }
-  }, [emissions, thermalParams, composition, airComposition, useGazAppoint,
+  }), [emissions, thermalParams, composition, airComposition, useGazAppoint,
     innerData.C_percent, innerData.H_percent, innerData.O_percent,
     innerData.N_percent, innerData.S_percent, innerData.Cl_percent,
     innerData.MS_pourcent, innerData.MV_pourcent, innerData.BoueBrute_kg_h]);
+
+  // Indicateurs d'équilibre (sans appoint) et eau de refroidissement automatique
+  const equilibre = useMemo(() => computeEquilibre(calcArgs, eauAuto), [calcArgs, eauAuto]);
+  const eau_add_effective_kg_h = (calcArgs.eau_add_kg_h || 0) + (equilibre.eau_auto_kg_h || 0);
+
+  const results = useMemo(() => {
+    try {
+      return runIterativeCalc({ ...calcArgs, eau_add_kg_h: eau_add_effective_kg_h });
+    } catch (err) { console.error('Erreur calcul combustion:', err); return {}; }
+  }, [calcArgs, eau_add_effective_kg_h]);
 
   // ---- Mise à jour innerData + notification au parent ----
   useEffect(() => {
@@ -677,7 +783,7 @@ const CombustionTab = ({ innerData = {}, onInnerDataChange, onResultsChange, cur
     innerData.m_co = results.FG_kg_h_CO || 0;
     innerData.m_co2 = results.FG_kg_h_CO2 || 0;
     innerData.m_h2o = results.FG_kg_h_H2O || 0;
-    innerData.m_h2 = 0;
+    innerData.m_h2 = results.FG_kg_h_H2 || 0;
     innerData.m_n2 = results.FG_kg_h_N2 || 0;
     innerData.m_o2 = results.FG_kg_h_O2exces || 0;
     innerData.m_so2 = results.FG_kg_h_SO2reel || 0;
@@ -695,14 +801,19 @@ const CombustionTab = ({ innerData = {}, onInnerDataChange, onResultsChange, cur
     innerData.H_gaz_residuel = results.H_gaz || 0;
     const H_gaz_appoint_kW = results.H_gaz_inter || 0;
     const fuelType = emissions.type_energy;
-    const eau_add_m3_h = (emissions.eau_add_kg_h || 0) / 1000;
+    const eau_add_m3_h = (eau_add_effective_kg_h || 0) / 1000;
+    innerData.eau_refroidissement_auto_kg_h = equilibre.eau_auto_kg_h || 0;
+    innerData.Bilan_sans_appoint_kW = equilibre.Bilan_sans_appoint_kW;
+    innerData.T_freeboard_equilibre_C = equilibre.T_freeboard_eq_C;
+    innerData.T_air_equilibre_C = equilibre.T_air_eq_C;
+    innerData.Siccite_equilibre_pct = equilibre.Siccite_eq_pct;
     const waterType = emissions.type_eau_add ?? 'EAU_POTABLE';
     innerData.Conso_EauPotable_m3        = waterType === 'EAU_POTABLE'         ? eau_add_m3_h : 0;
     innerData.Conso_EauRefroidissement_m3 = waterType === 'EAU_REFROIDISSEMENT' ? eau_add_m3_h : 0;
     innerData.Conso_EauDemin_m3          = waterType === 'EAU_DEMINERALISEE'   ? eau_add_m3_h : 0;
     innerData.Conso_EauRiviere_m3        = waterType === 'EAU_RIVIERE'         ? eau_add_m3_h : 0;
     innerData.Conso_EauAdoucie_m3        = waterType === 'EAU_ADOUCIE'         ? eau_add_m3_h : 0;
-    innerData.conso_gaz_H_MW       = fuelType === 'GAZ'    ? H_gaz_appoint_kW/1000  : 0;
+    innerData.conso_gaz_H_MW       = (fuelType === 'GAZ' || fuelType === 'GAZ_V45') ? H_gaz_appoint_kW/1000  : 0;
     innerData.conso_gaz_L_MW       = fuelType === 'GAZ'    ? 0 : 0;
     innerData.conso_gaz_Process_MW = fuelType === 'BIOGAZ' ? H_gaz_appoint_kW/1000  : 0;
     innerData.conso_fuel_MW        = fuelType === 'FIOUL'  ? H_gaz_appoint_kW/1000  : 0;
@@ -734,7 +845,7 @@ const CombustionTab = ({ innerData = {}, onInnerDataChange, onResultsChange, cur
     onInnerDataChange?.();
     onResultsChange?.({
       m_co: results.FG_kg_h_CO || 0, m_co2: results.FG_kg_h_CO2 || 0,
-      m_h2o: results.FG_kg_h_H2O || 0, m_h2: 0,
+      m_h2o: results.FG_kg_h_H2O || 0, m_h2: results.FG_kg_h_H2 || 0,
       m_n2: results.FG_kg_h_N2 || 0, m_o2: results.FG_kg_h_O2exces || 0,
       m_so2: results.FG_kg_h_SO2reel || 0, m_chcl: results.FG_kg_h_HCl || 0,
       Temp_fumee_voute_C: thermalParams.Temp_fumee_voute_C || 870,
@@ -750,7 +861,7 @@ const CombustionTab = ({ innerData = {}, onInnerDataChange, onResultsChange, cur
       Masse_air_sec_combustion_tot_kg_h: results.Masse_air_sec_combustion_tot_kg_h || 0,
       Rdt_HX: thermalParams.Rdt_HX || 0.85, Tair_ap_prechauffe_C: results.Tair_ap_prechauffe_C || 0,
     });
-  }, [results, emissions, innerData, thermalParams, onInnerDataChange, onResultsChange]);
+  }, [results, emissions, innerData, thermalParams, equilibre, eau_add_effective_kg_h, onInnerDataChange, onResultsChange]);
 
   const handleFuelChange = useCallback((fuelType) => {
     const p = FUEL_PROPERTIES[fuelType];
@@ -881,6 +992,7 @@ const CombustionTab = ({ innerData = {}, onInnerDataChange, onResultsChange, cur
           <label style={labelStyle}>{t('Sélectionner le combustible')}</label>
           <select value={emissions.type_energy} onChange={(e) => handleFuelChange(e.target.value)} style={inputStyle}>
             <option value="GAZ">Gaz naturel</option>
+            <option value="GAZ_V45">Gaz naturel (Pyrofluid V4.5)</option>
             <option value="BIOGAZ">Biogaz</option>
             <option value="FIOUL">Fioul</option>
           </select>
@@ -891,6 +1003,11 @@ const CombustionTab = ({ innerData = {}, onInnerDataChange, onResultsChange, cur
           <div><label style={labelStyle}>{t('PCI')} (kcal/kg)</label>
             <input type="number" step="1" value={emissions.PCI_combustible} onChange={(e) => handleEmission('PCI_combustible', e.target.value)} style={inputStyle} /></div>
         </div>
+        {!fuelStd && (
+          <div style={{ fontSize: '12px', color: Math.abs((results.Somme_composition_combustible_pct ?? 100) - 100) < 0.05 ? '#6b7280' : '#b45309', marginTop: '10px' }}>
+            Σ = {f(results.Somme_composition_combustible_pct ?? 0, 2)} % — {t('composition normalisée à 100 % pour le calcul')}
+          </div>
+        )}
         {!fuelStd && (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '10px', marginTop: '15px', paddingTop: '15px', borderTop: '1px solid #e0e0e0' }}>
             {[
@@ -962,6 +1079,12 @@ const CombustionTab = ({ innerData = {}, onInnerDataChange, onResultsChange, cur
               <option value="EAU_ADOUCIE">Eau adoucie</option>
             </select>
           </div>
+          <div><label style={labelStyle}>{t('Eau de refroidissement calculée')} (kg/h)</label>
+            <input type="text" readOnly value={f(equilibre.eau_auto_kg_h || 0, 1)} style={{ ...inputStyle, backgroundColor: '#f3f4f6', fontWeight: 'bold', color: '#374151' }} />
+            <div style={{ marginTop: '6px' }}>
+              <ToggleSwitch label={t('Eau de refroidissement auto (bilan excédentaire)')} checked={eauAuto} onChange={setEauAuto} />
+            </div>
+          </div>
         </div>
       </div>
 
@@ -990,6 +1113,24 @@ const CombustionTab = ({ innerData = {}, onInnerDataChange, onResultsChange, cur
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '15px', marginTop: '15px' }}>
           <div><label style={labelStyle}>Rho_FG (kg/Nm³)</label>
             <div style={{ ...resultBox, backgroundColor: '#e3f2fd', color: '#1565c0' }}>{f(results.Rho_FG_kg_Nm3, 4)}</div></div>
+          <div><label style={labelStyle}>{t('Pertes thermiques')} (kW)</label>
+            <div style={{ ...resultBox, backgroundColor: '#e3f2fd', color: '#1565c0' }}>{f(results.Pertes_thermiques_kW)}</div></div>
+          {results.sousStoechio && (
+            <div><label style={labelStyle}>H₂ (kg/h) — {t("défaut d'air")}</label>
+              <div style={{ ...resultBox, backgroundColor: '#fef2f2', color: '#b91c1c' }}>{f(results.FG_kg_h_H2)}</div></div>
+          )}
+        </div>
+        <div style={{ ...secTitle }}>{t("Équilibre thermique sans combustible d'appoint")}</div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '15px' }}>
+          {[
+            { label: 'Bilan sans appoint (kW)', val: equilibre.Bilan_sans_appoint_kW, d: 1 },
+            { label: 'T° freeboard équilibre (°C)', val: equilibre.T_freeboard_eq_C, d: 1 },
+            { label: 'T° air boîte à vent équilibre (°C)', val: equilibre.T_air_eq_C, d: 1 },
+            { label: "Siccité d'équilibre (%)", val: equilibre.Siccite_eq_pct, d: 1 },
+          ].map(({ label, val, d }) => (
+            <div key={label}><label style={labelStyle}>{t(label)}</label>
+              <div style={{ ...resultBox, backgroundColor: '#e3f2fd', color: '#1565c0' }}>{f(val, d)}</div></div>
+          ))}
         </div>
       </div>
 

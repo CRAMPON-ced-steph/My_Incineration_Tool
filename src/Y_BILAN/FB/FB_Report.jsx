@@ -417,7 +417,7 @@ const FB_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
   const pciKcalkg          = innerData.pciKcalkg          ?? 0;
   const pcsKcalkgMV        = innerData.pcsKcalkgMV        ?? 0;
   const pcsKcalkg          = innerData.pcsKcalkg          ?? 0;
-  const pciDulong          = innerData.pciDulong          ?? 0;
+  const pciJarosz          = innerData.pciJarosz          ?? 0;
 
   const heavyMetalsData    = innerData.heavyMetalsData    || {};
   const metalMasses        = {
@@ -432,8 +432,11 @@ const FB_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
     Pb:    innerData.Pb_kg_h    ?? 0,
     Zn:    innerData.Zn_kg_h    ?? 0,
     PCDDF: innerData.PCDDF_kg_h ?? 0,
-    Ti:    innerData.Ti_kg_h    ?? 0,
-    Hf:    innerData.HF_kg_h    ?? 0,
+    Tl:    innerData.Ti_kg_h    ?? 0,
+    HF:    innerData.HF_kg_h    ?? 0,
+    Mg:    innerData.Mg_kg_h    ?? 0,
+    Mn:    innerData.Mn_kg_h    ?? 0,
+    Se:    innerData.Se_kg_h    ?? 0,
   };
 
   // ── Section 2 : Combustion ───────────────────────────────────────────────────
@@ -652,7 +655,7 @@ const FB_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
             <KV label="PCI [kcal/kg boue]"value={fmt(pciKcalkg, 0)}   />
             <KV label="PCS [kcal/kg MV]"  value={fmt(pcsKcalkgMV, 0)} />
             <KV label="PCS [kcal/kg boue]"value={fmt(pcsKcalkg, 0)}   />
-            <KV label="PCI Dulong [kcal/kg MV]" value={fmt(pciDulong, 0)} />
+            <KV label="PCI Jarosz [kcal/kg MV]" value={fmt(pciJarosz, 0)} />
           </SubSection>
         </div>
 
@@ -663,7 +666,7 @@ const FB_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
             <thead>
               <tr>
                 {Object.keys(heavyMetalsData).map(k => (
-                  <th key={k} style={styles.th}>{k.toUpperCase()}</th>
+                  <th key={k} style={styles.th}>{k === 'ti' ? 'TL' : k.toUpperCase()}</th>
                 ))}
               </tr>
             </thead>
