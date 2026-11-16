@@ -11,6 +11,17 @@ export const translations = {
   // FRANÇAIS
   // ============================================================
   fr: {
+    // — Clés de l'alignement V4.5 (2026-11) —
+    'composition normalisée à 100 % pour le calcul': 'composition normalisée à 100 % pour le calcul',
+    'Eau de refroidissement calculée': 'Eau de refroidissement calculée',
+    'Eau de refroidissement auto (bilan excédentaire)': 'Eau de refroidissement auto (bilan excédentaire)',
+    'défaut d\'air': 'défaut d\'air',
+    'Équilibre thermique sans combustible d\'appoint': 'Équilibre thermique sans combustible d\'appoint',
+    'Hors standard (saisie libre)': 'Hors standard (saisie libre)',
+    'Ø freeboard hors standard [m]': 'Ø freeboard hors standard [m]',
+    'Ø voûte hors standard [m]': 'Ø voûte hors standard [m]',
+    'Oui': 'Oui',
+    'Non': 'Non',
     // — Textes sortis du code (2026-11) —
     'Fluidisation du lit d\'olivine — vitesse minimale et pressions': 'Fluidisation du lit d\'olivine — vitesse minimale et pressions',
     'Modèles : Wen & Yu (Umf) · Haider & Levenspiel (Ut) · Baeyens & Geldart (slugging) · Sutherland (viscosité)': 'Modèles : Wen & Yu (Umf) · Haider & Levenspiel (Ut) · Baeyens & Geldart (slugging) · Sutherland (viscosité)',
@@ -552,6 +563,17 @@ export const translations = {
   // ENGLISH
   // ============================================================
   en: {
+    // — Clés de l'alignement V4.5 (2026-11) —
+    'composition normalisée à 100 % pour le calcul': 'composition normalised to 100 % for the calculation',
+    'Eau de refroidissement calculée': 'Calculated cooling water',
+    'Eau de refroidissement auto (bilan excédentaire)': 'Automatic cooling water (surplus balance)',
+    'défaut d\'air': 'air deficiency',
+    'Équilibre thermique sans combustible d\'appoint': 'Thermal equilibrium without auxiliary fuel',
+    'Hors standard (saisie libre)': 'Non-standard (free input)',
+    'Ø freeboard hors standard [m]': 'Non-standard freeboard Ø [m]',
+    'Ø voûte hors standard [m]': 'Non-standard dome Ø [m]',
+    'Oui': 'Yes',
+    'Non': 'No',
     // — Textes sortis du code (2026-11) —
     'Fluidisation du lit d\'olivine — vitesse minimale et pressions': 'Olivine bed fluidisation — minimum velocity and pressures',
     'Modèles : Wen & Yu (Umf) · Haider & Levenspiel (Ut) · Baeyens & Geldart (slugging) · Sutherland (viscosité)': 'Models: Wen & Yu (Umf) · Haider & Levenspiel (Ut) · Baeyens & Geldart (slugging) · Sutherland (viscosity)',
@@ -1093,6 +1115,17 @@ export const translations = {
   // ESPAÑOL
   // ============================================================
   es: {
+    // — Clés de l'alignement V4.5 (2026-11) —
+    'composition normalisée à 100 % pour le calcul': 'composición normalizada al 100 % para el cálculo',
+    'Eau de refroidissement calculée': 'Agua de refrigeración calculada',
+    'Eau de refroidissement auto (bilan excédentaire)': 'Agua de refrigeración automática (balance excedentario)',
+    'défaut d\'air': 'defecto de aire',
+    'Équilibre thermique sans combustible d\'appoint': 'Equilibrio térmico sin combustible auxiliar',
+    'Hors standard (saisie libre)': 'Fuera de estándar (entrada libre)',
+    'Ø freeboard hors standard [m]': 'Ø freeboard fuera de estándar [m]',
+    'Ø voûte hors standard [m]': 'Ø bóveda fuera de estándar [m]',
+    'Oui': 'Sí',
+    'Non': 'No',
     // — Textes sortis du code (2026-11) —
     'Fluidisation du lit d\'olivine — vitesse minimale et pressions': 'Fluidización del lecho de olivino — velocidad mínima y presiones',
     'Modèles : Wen & Yu (Umf) · Haider & Levenspiel (Ut) · Baeyens & Geldart (slugging) · Sutherland (viscosité)': 'Modelos: Wen & Yu (Umf) · Haider & Levenspiel (Ut) · Baeyens & Geldart (slugging) · Sutherland (viscosidad)',
@@ -1516,6 +1549,17 @@ export const translations = {
   // DEUTSCH
   // ============================================================
   de: {
+    // — Clés de l'alignement V4.5 (2026-11) —
+    'composition normalisée à 100 % pour le calcul': 'Zusammensetzung für die Berechnung auf 100 % normiert',
+    'Eau de refroidissement calculée': 'Berechnetes Kühlwasser',
+    'Eau de refroidissement auto (bilan excédentaire)': 'Automatisches Kühlwasser (Überschussbilanz)',
+    'défaut d\'air': 'Luftmangel',
+    'Équilibre thermique sans combustible d\'appoint': 'Thermisches Gleichgewicht ohne Stützbrennstoff',
+    'Hors standard (saisie libre)': 'Nicht Standard (freie Eingabe)',
+    'Ø freeboard hors standard [m]': 'Ø Freeboard nicht Standard [m]',
+    'Ø voûte hors standard [m]': 'Ø Gewölbe nicht Standard [m]',
+    'Oui': 'Ja',
+    'Non': 'Nein',
     // — Textes sortis du code (2026-11) —
     'Fluidisation du lit d\'olivine — vitesse minimale et pressions': 'Fluidisierung des Olivinbetts — Mindestgeschwindigkeit und Drücke',
     'Modèles : Wen & Yu (Umf) · Haider & Levenspiel (Ut) · Baeyens & Geldart (slugging) · Sutherland (viscosité)': 'Modelle: Wen & Yu (Umf) · Haider & Levenspiel (Ut) · Baeyens & Geldart (Slugging) · Sutherland (Viskosität)',
@@ -1939,6 +1983,17 @@ export const translations = {
   // ITALIANO
   // ============================================================
   it: {
+    // — Clés de l'alignement V4.5 (2026-11) —
+    'composition normalisée à 100 % pour le calcul': 'composizione normalizzata al 100 % per il calcolo',
+    'Eau de refroidissement calculée': 'Acqua di raffreddamento calcolata',
+    'Eau de refroidissement auto (bilan excédentaire)': 'Acqua di raffreddamento automatica (bilancio eccedentario)',
+    'défaut d\'air': 'difetto d\'aria',
+    'Équilibre thermique sans combustible d\'appoint': 'Equilibrio termico senza combustibile ausiliario',
+    'Hors standard (saisie libre)': 'Fuori standard (inserimento libero)',
+    'Ø freeboard hors standard [m]': 'Ø freeboard fuori standard [m]',
+    'Ø voûte hors standard [m]': 'Ø volta fuori standard [m]',
+    'Oui': 'Sì',
+    'Non': 'No',
     // — Textes sortis du code (2026-11) —
     'Fluidisation du lit d\'olivine — vitesse minimale et pressions': 'Fluidizzazione del letto di olivina — velocità minima e pressioni',
     'Modèles : Wen & Yu (Umf) · Haider & Levenspiel (Ut) · Baeyens & Geldart (slugging) · Sutherland (viscosité)': 'Modelli: Wen & Yu (Umf) · Haider & Levenspiel (Ut) · Baeyens & Geldart (slugging) · Sutherland (viscosità)',
@@ -2362,6 +2417,17 @@ export const translations = {
   // PORTUGUÊS
   // ============================================================
   pt: {
+    // — Clés de l'alignement V4.5 (2026-11) —
+    'composition normalisée à 100 % pour le calcul': 'composição normalizada a 100 % para o cálculo',
+    'Eau de refroidissement calculée': 'Água de resfriamento calculada',
+    'Eau de refroidissement auto (bilan excédentaire)': 'Água de resfriamento automática (balanço excedente)',
+    'défaut d\'air': 'falta de ar',
+    'Équilibre thermique sans combustible d\'appoint': 'Equilíbrio térmico sem combustível auxiliar',
+    'Hors standard (saisie libre)': 'Fora do padrão (entrada livre)',
+    'Ø freeboard hors standard [m]': 'Ø freeboard fora do padrão [m]',
+    'Ø voûte hors standard [m]': 'Ø abóbada fora do padrão [m]',
+    'Oui': 'Sim',
+    'Non': 'Não',
     // — Textes sortis du code (2026-11) —
     'Fluidisation du lit d\'olivine — vitesse minimale et pressions': 'Fluidização do leito de olivina — velocidade mínima e pressões',
     'Modèles : Wen & Yu (Umf) · Haider & Levenspiel (Ut) · Baeyens & Geldart (slugging) · Sutherland (viscosité)': 'Modelos: Wen & Yu (Umf) · Haider & Levenspiel (Ut) · Baeyens & Geldart (slugging) · Sutherland (viscosidade)',
@@ -2785,6 +2851,17 @@ export const translations = {
   // 中文 (CHINESE SIMPLIFIED)
   // ============================================================
   zh: {
+    // — Clés de l'alignement V4.5 (2026-11) —
+    'composition normalisée à 100 % pour le calcul': '计算时组分归一化为 100 %',
+    'Eau de refroidissement calculée': '计算冷却水量',
+    'Eau de refroidissement auto (bilan excédentaire)': '自动冷却水（热平衡有余）',
+    'défaut d\'air': '缺氧',
+    'Équilibre thermique sans combustible d\'appoint': '无辅助燃料的热平衡',
+    'Hors standard (saisie libre)': '非标准（自由输入）',
+    'Ø freeboard hors standard [m]': '非标准稀相区 Ø [m]',
+    'Ø voûte hors standard [m]': '非标准拱顶 Ø [m]',
+    'Oui': '是',
+    'Non': '否',
     // — Textes sortis du code (2026-11) —
     'Fluidisation du lit d\'olivine — vitesse minimale et pressions': '橄榄石床层流化 — 最小速度与压力',
     'Modèles : Wen & Yu (Umf) · Haider & Levenspiel (Ut) · Baeyens & Geldart (slugging) · Sutherland (viscosité)': '模型：Wen & Yu (Umf) · Haider & Levenspiel (Ut) · Baeyens & Geldart（节涌）· Sutherland（粘度）',
@@ -3208,6 +3285,17 @@ export const translations = {
   // 日本語 (JAPANESE)
   // ============================================================
   ja: {
+    // — Clés de l'alignement V4.5 (2026-11) —
+    'composition normalisée à 100 % pour le calcul': '計算用に組成を 100 % に正規化',
+    'Eau de refroidissement calculée': '冷却水（計算値）',
+    'Eau de refroidissement auto (bilan excédentaire)': '冷却水の自動計算（熱収支余剰時）',
+    'défaut d\'air': '空気不足',
+    'Équilibre thermique sans combustible d\'appoint': '助燃料なしの熱平衡',
+    'Hors standard (saisie libre)': '標準外（自由入力）',
+    'Ø freeboard hors standard [m]': '標準外フリーボード Ø [m]',
+    'Ø voûte hors standard [m]': '標準外ドーム Ø [m]',
+    'Oui': 'はい',
+    'Non': 'いいえ',
     // — Textes sortis du code (2026-11) —
     'Fluidisation du lit d\'olivine — vitesse minimale et pressions': 'オリビン層の流動化 — 最小速度と圧力',
     'Modèles : Wen & Yu (Umf) · Haider & Levenspiel (Ut) · Baeyens & Geldart (slugging) · Sutherland (viscosité)': 'モデル：Wen & Yu (Umf) · Haider & Levenspiel (Ut) · Baeyens & Geldart（スラッギング）· Sutherland（粘度）',
@@ -3631,6 +3719,17 @@ export const translations = {
   // РУССКИЙ (RUSSIAN)
   // ============================================================
   ru: {
+    // — Clés de l'alignement V4.5 (2026-11) —
+    'composition normalisée à 100 % pour le calcul': 'состав нормирован к 100 % для расчёта',
+    'Eau de refroidissement calculée': 'Расчётная охлаждающая вода',
+    'Eau de refroidissement auto (bilan excédentaire)': 'Автоматическая охлаждающая вода (избыточный баланс)',
+    'défaut d\'air': 'недостаток воздуха',
+    'Équilibre thermique sans combustible d\'appoint': 'Тепловое равновесие без дополнительного топлива',
+    'Hors standard (saisie libre)': 'Нестандартный (свободный ввод)',
+    'Ø freeboard hors standard [m]': 'Ø надслоевого пространства, нестандартный [м]',
+    'Ø voûte hors standard [m]': 'Ø свода, нестандартный [м]',
+    'Oui': 'Да',
+    'Non': 'Нет',
     // — Textes sortis du code (2026-11) —
     'Fluidisation du lit d\'olivine — vitesse minimale et pressions': 'Псевдоожижение слоя оливина — минимальная скорость и давления',
     'Modèles : Wen & Yu (Umf) · Haider & Levenspiel (Ut) · Baeyens & Geldart (slugging) · Sutherland (viscosité)': 'Модели: Wen & Yu (Umf) · Haider & Levenspiel (Ut) · Baeyens & Geldart (поршневой режим) · Sutherland (вязкость)',
@@ -4054,6 +4153,17 @@ export const translations = {
   // العربية (ARABIC)
   // ============================================================
   ar: {
+    // — Clés de l'alignement V4.5 (2026-11) —
+    'composition normalisée à 100 % pour le calcul': 'التركيب مُطبَّع إلى 100 % للحساب',
+    'Eau de refroidissement calculée': 'ماء التبريد المحسوب',
+    'Eau de refroidissement auto (bilan excédentaire)': 'ماء تبريد تلقائي (توازن فائض)',
+    'défaut d\'air': 'نقص الهواء',
+    'Équilibre thermique sans combustible d\'appoint': 'التوازن الحراري دون وقود إضافي',
+    'Hors standard (saisie libre)': 'خارج القياسي (إدخال حر)',
+    'Ø freeboard hors standard [m]': 'Ø المنطقة الحرة غير القياسي [m]',
+    'Ø voûte hors standard [m]': 'Ø القبة غير القياسي [m]',
+    'Oui': 'نعم',
+    'Non': 'لا',
     // — Textes sortis du code (2026-11) —
     'Fluidisation du lit d\'olivine — vitesse minimale et pressions': 'تمييع سرير الأوليفين — السرعة الدنيا والضغوط',
     'Modèles : Wen & Yu (Umf) · Haider & Levenspiel (Ut) · Baeyens & Geldart (slugging) · Sutherland (viscosité)': 'النماذج: Wen & Yu (Umf) · Haider & Levenspiel (Ut) · Baeyens & Geldart (slugging) · Sutherland (اللزوجة)',
