@@ -11,6 +11,11 @@ export const translations = {
   // FRANÇAIS
   // ============================================================
   fr: {
+    // — Mode « Calcul Pyrofluid d'origine » (onglet Combustion) —
+    'Calcul Pyrofluid d\'origine : ACTIF': 'Calcul Pyrofluid d\'origine : ACTIF',
+    'Calcul Pyrofluid d\'origine': 'Calcul Pyrofluid d\'origine',
+    'FB_origin_mode_hint': 'Reproduit ClassCalcFour.vb : enthalpie des fumées par les Cp de Pyrofluid et chaleur latente de l\'eau à 596,8 kcal/kg. Désactivé : corrélations de l\'outil.',
+    'FB_origin_mode_note': 'Cp des fumées et chaleur latente de Pyrofluid V4.5',
     // — Textes des onglets sortis du code, lot 2 (2026-11) —
     'Air instrumentation': 'Air instrumentation',
     'Air secondaire': 'Air secondaire',
@@ -706,6 +711,11 @@ export const translations = {
   // ENGLISH
   // ============================================================
   en: {
+    // — Mode « Calcul Pyrofluid d'origine » (onglet Combustion) —
+    'Calcul Pyrofluid d\'origine : ACTIF': 'Original Pyrofluid calculation: ON',
+    'Calcul Pyrofluid d\'origine': 'Original Pyrofluid calculation',
+    'FB_origin_mode_hint': 'Reproduces ClassCalcFour.vb: flue gas enthalpy with Pyrofluid Cp values and water latent heat of 596.8 kcal/kg. Off: tool correlations.',
+    'FB_origin_mode_note': 'Pyrofluid V4.5 flue gas Cp and latent heat',
     'Hair_ap_préchauffage': 'Hair_ap_préchauffage',
     'H_matière_minérale': 'H_matière_minérale',
     'Hf_voûte': 'Hf_voûte',
@@ -1401,6 +1411,11 @@ export const translations = {
   // ESPAÑOL
   // ============================================================
   es: {
+    // — Mode « Calcul Pyrofluid d'origine » (onglet Combustion) —
+    'Calcul Pyrofluid d\'origine : ACTIF': 'Cálculo Pyrofluid original: ACTIVO',
+    'Calcul Pyrofluid d\'origine': 'Cálculo Pyrofluid original',
+    'FB_origin_mode_hint': 'Reproduce ClassCalcFour.vb: entalpía de los gases con los Cp de Pyrofluid y calor latente del agua de 596,8 kcal/kg. Desactivado: correlaciones de la herramienta.',
+    'FB_origin_mode_note': 'Cp de gases y calor latente de Pyrofluid V4.5',
     'Hair_ap_préchauffage': 'Hair_ap_préchauffage',
     'H_matière_minérale': 'H_matière_minérale',
     'Hf_voûte': 'Hf_voûte',
@@ -1978,6 +1993,11 @@ export const translations = {
   // DEUTSCH
   // ============================================================
   de: {
+    // — Mode « Calcul Pyrofluid d'origine » (onglet Combustion) —
+    'Calcul Pyrofluid d\'origine : ACTIF': 'Original-Pyrofluid-Berechnung: AKTIV',
+    'Calcul Pyrofluid d\'origine': 'Original-Pyrofluid-Berechnung',
+    'FB_origin_mode_hint': 'Bildet ClassCalcFour.vb nach: Rauchgasenthalpie mit den Pyrofluid-Cp-Werten und Verdampfungswärme des Wassers 596,8 kcal/kg. Deaktiviert: Korrelationen des Tools.',
+    'FB_origin_mode_note': 'Rauchgas-Cp und Verdampfungswärme nach Pyrofluid V4.5',
     'Hair_ap_préchauffage': 'Hair_ap_préchauffage',
     'H_matière_minérale': 'H_matière_minérale',
     'Hf_voûte': 'Hf_voûte',
@@ -2555,6 +2575,11 @@ export const translations = {
   // ITALIANO
   // ============================================================
   it: {
+    // — Mode « Calcul Pyrofluid d'origine » (onglet Combustion) —
+    'Calcul Pyrofluid d\'origine : ACTIF': 'Calcolo Pyrofluid originale: ATTIVO',
+    'Calcul Pyrofluid d\'origine': 'Calcolo Pyrofluid originale',
+    'FB_origin_mode_hint': 'Riproduce ClassCalcFour.vb: entalpia dei fumi con i Cp di Pyrofluid e calore latente dell\'acqua di 596,8 kcal/kg. Disattivato: correlazioni dello strumento.',
+    'FB_origin_mode_note': 'Cp dei fumi e calore latente di Pyrofluid V4.5',
     'Hair_ap_préchauffage': 'Hair_ap_préchauffage',
     'H_matière_minérale': 'H_matière_minérale',
     'Hf_voûte': 'Hf_voûte',
@@ -3132,6 +3157,11 @@ export const translations = {
   // PORTUGUÊS
   // ============================================================
   pt: {
+    // — Mode « Calcul Pyrofluid d'origine » (onglet Combustion) —
+    'Calcul Pyrofluid d\'origine : ACTIF': 'Cálculo Pyrofluid original: ATIVO',
+    'Calcul Pyrofluid d\'origine': 'Cálculo Pyrofluid original',
+    'FB_origin_mode_hint': 'Reproduz ClassCalcFour.vb: entalpia dos gases com os Cp do Pyrofluid e calor latente da água de 596,8 kcal/kg. Desativado: correlações da ferramenta.',
+    'FB_origin_mode_note': 'Cp dos gases e calor latente do Pyrofluid V4.5',
     'Hair_ap_préchauffage': 'Hair_ap_préchauffage',
     'H_matière_minérale': 'H_matière_minérale',
     'Hf_voûte': 'Hf_voûte',
@@ -3709,6 +3739,11 @@ export const translations = {
   // 中文 (CHINESE SIMPLIFIED)
   // ============================================================
   zh: {
+    // — Mode « Calcul Pyrofluid d'origine » (onglet Combustion) —
+    'Calcul Pyrofluid d\'origine : ACTIF': 'Pyrofluid 原始计算：已启用',
+    'Calcul Pyrofluid d\'origine': 'Pyrofluid 原始计算',
+    'FB_origin_mode_hint': '复现 ClassCalcFour.vb：烟气焓采用 Pyrofluid 的 Cp，水的汽化潜热取 596,8 kcal/kg。关闭时：采用本工具的关联式。',
+    'FB_origin_mode_note': 'Pyrofluid V4.5 的烟气 Cp 与潜热',
     'Hair_ap_préchauffage': 'Hair_ap_préchauffage',
     'H_matière_minérale': 'H_matière_minérale',
     'Hf_voûte': 'Hf_voûte',
@@ -4286,6 +4321,11 @@ export const translations = {
   // 日本語 (JAPANESE)
   // ============================================================
   ja: {
+    // — Mode « Calcul Pyrofluid d'origine » (onglet Combustion) —
+    'Calcul Pyrofluid d\'origine : ACTIF': 'Pyrofluid 原計算：有効',
+    'Calcul Pyrofluid d\'origine': 'Pyrofluid 原計算',
+    'FB_origin_mode_hint': 'ClassCalcFour.vb を再現：排ガスエンタルピーは Pyrofluid の Cp、水の潜熱は 596,8 kcal/kg。無効時：ツールの相関式。',
+    'FB_origin_mode_note': 'Pyrofluid V4.5 の排ガス Cp と潜熱',
     'Hair_ap_préchauffage': 'Hair_ap_préchauffage',
     'H_matière_minérale': 'H_matière_minérale',
     'Hf_voûte': 'Hf_voûte',
@@ -4863,6 +4903,11 @@ export const translations = {
   // РУССКИЙ (RUSSIAN)
   // ============================================================
   ru: {
+    // — Mode « Calcul Pyrofluid d'origine » (onglet Combustion) —
+    'Calcul Pyrofluid d\'origine : ACTIF': 'Исходный расчёт Pyrofluid: ВКЛ',
+    'Calcul Pyrofluid d\'origine': 'Исходный расчёт Pyrofluid',
+    'FB_origin_mode_hint': 'Воспроизводит ClassCalcFour.vb: энтальпия газов по Cp Pyrofluid и теплота парообразования воды 596,8 ккал/кг. Выключено: корреляции программы.',
+    'FB_origin_mode_note': 'Cp газов и теплота парообразования по Pyrofluid V4.5',
     'Hair_ap_préchauffage': 'Hair_ap_préchauffage',
     'H_matière_minérale': 'H_matière_minérale',
     'Hf_voûte': 'Hf_voûte',
@@ -5440,6 +5485,11 @@ export const translations = {
   // العربية (ARABIC)
   // ============================================================
   ar: {
+    // — Mode « Calcul Pyrofluid d'origine » (onglet Combustion) —
+    'Calcul Pyrofluid d\'origine : ACTIF': 'حساب Pyrofluid الأصلي: مفعّل',
+    'Calcul Pyrofluid d\'origine': 'حساب Pyrofluid الأصلي',
+    'FB_origin_mode_hint': 'يعيد إنتاج ClassCalcFour.vb: المحتوى الحراري للغازات بمعاملات Cp الخاصة بـ Pyrofluid والحرارة الكامنة للماء 596,8 kcal/kg. عند التعطيل: ارتباطات الأداة.',
+    'FB_origin_mode_note': 'Cp الغازات والحرارة الكامنة وفق Pyrofluid V4.5',
     'Hair_ap_préchauffage': 'Hair_ap_préchauffage',
     'H_matière_minérale': 'H_matière_minérale',
     'Hf_voûte': 'Hf_voûte',
