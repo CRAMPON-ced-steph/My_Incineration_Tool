@@ -214,7 +214,9 @@ function runIterativeCalc({
 
     const MF_C = MB_C + MG_C;
     const MF_H = MB_H + MG_H + MAirSec_H + MAirTert_H;
-    const MF_O2 = MB_O + MG_O;
+    // L'oxygène de l'air secondaire et tertiaire figure dans l'O2 en excès : il doit aussi figurer
+    // dans l'oxygène disponible, sinon il est retiré de l'eau des fumées
+    const MF_O2 = MB_O + MG_O + MAirSec_O + MAirTert_O;
     const MF_N = MB_N + MG_N + MAirSec_N + MAirTert_N;
     const MF_SO2 = MB_S + MG_S;
     const MF_HCl = MB_Cl + MG_Cl;

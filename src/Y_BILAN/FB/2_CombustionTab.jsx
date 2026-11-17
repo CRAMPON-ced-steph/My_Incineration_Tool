@@ -243,7 +243,10 @@ function runIterativeCalc({
 
     const MF_C = MB_C + MG_C;
     const MF_H = MB_H + MG_H + MAirSec_H + MAirTert_H;
-    const MF_O2 = MB_O + MG_O;
+    const MF_O2_prim = MB_O + MG_O;
+    // L'oxygène de l'air secondaire et tertiaire figure dans l'O2 en excès : il doit aussi figurer
+    // dans l'oxygène disponible, sinon il est retiré de l'eau des fumées (ClassCalcFour : MasseGaz / RapportGazO2)
+    const MF_O2 = MF_O2_prim + MAirSec_O + MAirTert_O;
     const MF_N = MB_N + MG_N + MAirSec_N + MAirTert_N;
     const MF_SO2 = MB_S + MG_S;
     const MF_HCl = MB_Cl + MG_Cl;
@@ -264,10 +267,10 @@ function runIterativeCalc({
     if (MF_O2exc <= 0 && MF_C > 0) {
       // Défaut d'air : équilibre du gaz à l'eau CO + H2O <-> CO2 + H2 (ClassCalcFour.CalculCompFumees)
       try {
-        const O_tot = MF_O2 + 2 * (MoleO2excesAirSecondaire + MoleO2excesAirTertiaire);
+        const O_tot = MF_O2; // inclut déjà l'O de l'air secondaire et tertiaire
         const H_prim = MB_H + MG_H;
-        const co = Mole_CO(Temp_fumee_voute_C, MF_C, O_tot, MF_O2, MF_HCl, 0, MF_SO2, H_prim);
-        const h2 = Mole_H2(Temp_fumee_voute_C, MF_C, O_tot, MF_O2, MF_HCl, 0, MF_SO2, H_prim);
+        const co = Mole_CO(Temp_fumee_voute_C, MF_C, O_tot, MF_O2_prim, MF_HCl, 0, MF_SO2, H_prim);
+        const h2 = Mole_H2(Temp_fumee_voute_C, MF_C, O_tot, MF_O2_prim, MF_HCl, 0, MF_SO2, H_prim);
         if (isFinite(co) && isFinite(h2) && h2 >= 0) {
           MF_CO = co;
           MF_CO2 = MF_C - co;
@@ -359,7 +362,8 @@ function runIterativeCalc({
     const Pertes_combustible = H_gaz_inter * pertesFrac;
     const Pertes = Pertes_boue + Pertes_combustible;
 
-    const H_in = H_NET_BOUE + H_Evap_add + H_air_prech + H_balayage + H_gaz_inter;
+    // Air secondaire et tertiaire : leur enthalpie d'entrée est un apport (ClassCalcFour : QApportGaz + QApportEauGaz)
+    const H_in = H_NET_BOUE + H_Evap_add + H_air_prech + H_air2 + H_air3 + H_balayage + H_gaz_inter;
     const H_imbrule_kW = (2415 * FG_CO + FG_H2 * 28240) / 860;
     const H_out = H_MM + Hf_voute + Pertes + H_imbrule_kW;
     const H_gaz = H_out - H_in;
@@ -792,6 +796,8 @@ const CombustionTab = ({ innerData = {}, onInnerDataChange, onResultsChange, cur
     innerData.H_pertes_kW = results.Pertes_thermiques_kW || 0;
     innerData.H_imbrule_kW = results.H_imbrule_kW || 0;
     innerData.H_air_balayage_kW = results.H_air_balayage_instrumentation_kW || 0;
+    innerData.H_air_secondaire_kW = results.H_air_secondaire_kW || 0;
+    innerData.H_air_tertiaire_kW = results.H_air_tertiaire_kW || 0;
     innerData.H_air_soufflante_kW = results.H_air_soufflante_kW || 0;
     innerData.Meau_air_comburant = results.Meau_air_comburant || 0;
     innerData.H_NETTE_BOUE_kW = results.H_NETTE_BOUE_kW || 0;
@@ -1942,6 +1948,8 @@ const CombustionTab = ({ innerData = {}, onInnerDataChange, onResultsChange, cur
                 { label: 'H_NETTE_BOUE', in: results.H_NETTE_BOUE_kW, out: null },
                 { label: 'Hair_ap_préchauffage', in: results.Hair_ap_prechauffage_kW, out: null },
                 { label: 'H_air_balayage', in: results.H_air_balayage_instrumentation_kW, out: null },
+                { label: 'H_air_secondaire', in: results.H_air_secondaire_kW, out: null },
+                { label: 'H_air_tertiaire', in: results.H_air_tertiaire_kW, out: null },
                 { label: emissions.type_energy === 'FIOUL' ? 'H_fioul_appoint' : 'H_gaz appoint', in: results.H_gaz_inter ?? null, out: null },
                 { label: 'H_matière_minérale', in: null, out: results.H_matiere_minerale_kW },
                 { label: 'Hf_voûte', in: null, out: results.Hf_voute_kW },
