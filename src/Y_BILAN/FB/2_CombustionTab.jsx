@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { molarMasses, massVolumique, cp_ref } from '../../A_Transverse_fonction/constantes';
+import { molarMasses, massVolumique, cp_ref, Lv } from '../../A_Transverse_fonction/constantes';
 
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './FB_traduction';
@@ -117,7 +117,7 @@ function o2VolToO2Mass(o2Vol) {
 //   - chaleur latente de l'eau 596,8 kcal/kg (CalculQapport : CpEau × T − 596,8)
 // Hors mode d'origine : corrélations de l'outil (enthalpy_gas.js) et 2 501,6 kJ/kg (597,5 kcal/kg).
 // ============================================================
-const LATENTE_OUTIL_kJ_kg = 2501.6;
+const LATENTE_OUTIL_kJ_kg = Lv; // 2 501,6 kJ/kg (constantes.js)
 const LATENTE_PYROFLUID_kJ_kg = 596.8 * 4.1868;
 const latenteEau = (modeOrigine) => (modeOrigine ? LATENTE_PYROFLUID_kJ_kg : LATENTE_OUTIL_kJ_kg);
 // Même ordre d'arguments que Hfvoute_kW

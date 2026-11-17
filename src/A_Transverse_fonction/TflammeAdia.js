@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Calculator } from 'lucide-react';
-import { T_ref } from "./constantes";
+import { T_ref, Lv } from "./constantes";
 
 // ============================================================================
 // FONCTION PURE DE CALCUL DE COMBUSTION - VERSION CORRIGÉE
@@ -183,7 +183,7 @@ export const calculerCombustion = (composition, O2_fumees, debit_gaz, temp_air) 
                        CpN2(temp_air) * V_N2_air + CpAr() * V_Ar_air) / volume_air_sec;
     
     const h_air_sensible = cp_air_moy * volume_air_sec * temp_air;
-    const h_air_latent = 2501.6 * masse_H2O_air;
+    const h_air_latent = Lv * masse_H2O_air;
     const h_air_total = h_air_sensible + h_air_latent;
 
     const hs_total_kJ = hs * debit_gaz * 3600;
@@ -195,7 +195,7 @@ export const calculerCombustion = (composition, O2_fumees, debit_gaz, temp_air) 
     
     const h_fum_sec_sensible = volume_fumees_sec * cp_fum_moy * T;
     const h_eau_sensible = V_H2O_fum * CpH2O(T) * T;
-    const h_eau_latente = 2501.6 * masse_H2O_fum;
+    const h_eau_latente = Lv * masse_H2O_fum;
     const h_fumees_total = h_fum_sec_sensible + h_eau_sensible + h_eau_latente;
 
     const rendement = (hs_total_kJ + h_air_total - h_fumees_total + delta_hf) / hi_total_kJ;

@@ -13,7 +13,10 @@ export const P_ref = 101325; // Pression de référence en Pascals
 
 export const cp_ref = 4.1868;
 
-export const Lv = 590 *cp_ref;
+// Chaleur latente de vaporisation de l'eau à 0 °C : 597,5 kcal/kg = 2 501,6 kJ/kg.
+// Référence des enthalpies : eau liquide à 0 °C → vapeur à 0 °C (Lv) → vapeur chauffée de 0 °C à T (fh_H2O).
+// (Avant : 590 kcal/kg = valeur vers 13 °C, trop faible de 1,2 %.)
+export const Lv = 597.5 * cp_ref;
 
 
 export const molarMasses = {
