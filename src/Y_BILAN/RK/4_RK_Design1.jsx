@@ -114,7 +114,10 @@ const RKdesign = ({ innerData, setInnerData, currentLanguage = 'fr', nodeId }) =
   // Calculations
   const L_D = Diametre_interne_m !== 0 ? Longueur_four_m / Diametre_interne_m : 0;
   const P = Diametre_interne_m ** 2 * Longueur_four_m * 0.21;
-  const vitesse_m_s = Debit_fumee_humide_Nm3_h / ((Math.PI * Diametre_interne_m ** 2) / 4) / 3600;
+  // Vitesse réelle des fumées en sortie de four : Nm³/h → m³/h à T sortie (avant : Nm³/h, ≈ 4,3× trop faible à 900 °C)
+  const T_sortie_four_C = innerData?.T_OUT ?? 900;
+  const Debit_fumee_humide_m3_h = coeff_Nm3_to_m3(0, T_sortie_four_C) * Debit_fumee_humide_Nm3_h;
+  const vitesse_m_s = Debit_fumee_humide_m3_h / ((Math.PI * Diametre_interne_m ** 2) / 4) / 3600;
   const pente_mm_m = Math.tan((pente * Math.PI) / 180) * 1000;
   const R_m = Diametre_interne_m / 2;
   const Theta = pente;
