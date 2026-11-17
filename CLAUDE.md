@@ -590,3 +590,7 @@ Doit être l'**inverse cohérent** de `option_T` :
 - **Polluants** (`3_Pollutant_Emission1.jsx`) : replis `?? 0` au lieu de `|| 1` (plus de Cl, S, inertes fantômes à 1 kg/h). `Tableau_polluants.jsx` renvoie 0 (et non Infinity) si le débit sec est nul.
 - **Design** : vitesse des fumées dans le four en m³/h réels à `T_OUT` (`coeff_Nm3_to_m3`). Le taux de remplissage (Freeman) était déjà correct (×100).
 - **OPEX** : l'onglet Design écrit déjà consoElec1-8, gaz, air comprimé, eau, réactifs, cendres dans innerData. `RKMainPage.jsx` le garde monté en arrière-plan (invisible) pour que l'OPEX et le rapport soient alimentés sans ouvrir l'onglet Design.
+
+### Points ouverts
+
+Les anomalies relevées mais non corrigées (GF, RK) sont listées dans `a_faire.md` à la racine du dépôt. Cocher / retirer une ligne une fois corrigée.
