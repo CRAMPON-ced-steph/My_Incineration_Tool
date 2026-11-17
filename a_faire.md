@@ -3,6 +3,16 @@
 Points relevés lors des audits du 17/11/2026, non encore corrigés.
 Chiffres obtenus avec les valeurs par défaut de l'outil, sauf mention contraire.
 
+## Ordre de correction proposé
+
+1. **Autres équipements — transmission et stabilité** : résultats non transmis à l'aval, boucles de rendu infinies des onglets Design, plantage OPEX DeNOx.
+2. **Eau injectée comptée deux fois** (`Qeau_added_to_be_at_T`) : touche dix équipements.
+3. **GF — bilan et rapport** : base de la composition (décision à prendre), chaleur latente comptée deux fois, clé du rapport.
+4. **RK — bilan énergie et facteur d'air** (décision à prendre sur l'eau de l'extracteur).
+5. **Entrées d'air parasites** (13 nœuds) et **ventilateur de tirage** (conversion en m³/h réels).
+6. **GF** : table des combustibles, mâchefers et OPEX, restes du lit fluidisé, valeurs par défaut.
+7. Le reste (points mineurs, nœud CO₂, mode Retro).
+
 ---
 
 ## GF — four à grille (`src/Y_BILAN/GF`)
