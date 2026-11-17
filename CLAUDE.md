@@ -552,3 +552,13 @@ Doit être l'**inverse cohérent** de `option_T` :
 - Composition amont : `Qm_H2O_kg_h - Qeau` (on RETIRE l'eau injectée, elle n'est pas encore présente en amont). Cohérent avec `temp_bef_add_wat` qui calcule l'amont avec `(m_H2O - Qeau)`.
 - Clé de sortie : `Qm_H2O_kg_h` (et non `Qm_H2O_total_kg_h`) — attendue par les nœuds/rapports en amont.
 - Un `Qeau` supérieur à la teneur en eau du gaz aval sature `temp_bef_add_wat` à sa borne (T ≈ 3000 °C) : ce n'est pas un bug, c'est un débit d'eau physiquement trop grand pour ce débit de gaz.
+
+---
+
+## Enthalpies des gaz — NIST Shomate (2026-11-17)
+
+`A_Transverse_fonction/enthalpy_gas.js` : `fh_CO2`, `fh_N2`, `fh_O2`, `fh_H2O`, `fh_CO`, `fh_H2`, `fh_SO2`, `fh_HCl` utilisent désormais l'équation de Shomate du NIST Chemistry WebBook (plages officielles, intégration analytique par morceaux, h(0 °C) = 0, continuité aux bornes). Écart vs NIST-JANAF < 0,1 %. Mêmes signatures (T en °C → kJ/kg), donc tous les appelants (~40 fichiers) en bénéficient sans modification.
+- Les anciennes corrélations (Kelley) sont conservées sous le suffixe `_Kelley` (non utilisées). Elles sous-estimaient CO2 de 1,4 % et SO2 de 1,4 % à 870 °C, et `fh_H2O` avait un décalage de +13,7 kJ/kg à 0 °C.
+- Les fonctions d'entropie `fs_*` et les solides (`fh_CaO`, `fh_SiO2`…) ne sont pas modifiés.
+- `Y_BILAN/FB/2_CombustionTab.jsx` : la température de sortie HX est inversée par bissection avec la même loi d'enthalpie que celle qui a donné la cible (avant : `TempSortieFumees`, polynômes Pyrofluid, même en mode outil).
+- Ne pas modifier les polynômes Pyrofluid (`cp_dt_*`, `H_Fumees` dans `bilan_fct_FB.jsx`) : ils servent au mode « Calcul Pyrofluid d'origine ».

@@ -1,6 +1,83 @@
 import { T_ref } from "./constantes";
 
-export const fh_CO2 = (T) => {
+// ─────────────────────────────────────────────────────────────────────────────
+// Enthalpies sensibles des gaz — NIST Chemistry WebBook, équation de Shomate
+//   cp° = A + B·t + C·t² + D·t³ + E/t²     [J/mol/K], t = T[K] / 1000
+//   h(T) = ∫ cp° dT de 0 °C (273,15 K) à T  →  kJ/kg, h(0 °C) = 0 (gaz parfait)
+// Intégration analytique par morceaux sur les plages publiées par le NIST :
+// h est continue aux changements de plage par construction.
+// Hors plage, extrapolation de la plage voisine (H2O sous 500 K : écart sur cp
+// < 0,2 % vs JANAF à 273–400 K ; autres gaz : 273–298 K seulement).
+// Source : https://webbook.nist.gov (Chase, NIST-JANAF Thermochemical Tables, 1998).
+// Remplace les corrélations de Kelley (≤ 2 % d'écart, ex. CO2 −1,4 % à 870 °C,
+// H2O décalé de +13,7 kJ/kg à 0 °C) — conservées plus bas sous le suffixe _Kelley.
+// Plage : [T_max (K), A, B, C, D, E]
+// ─────────────────────────────────────────────────────────────────────────────
+const SHOMATE = {
+  CO2: { M: 44.0095, plages: [
+    [1200,     24.99735,  55.18696,  -33.69137,  7.948387, -0.136638],
+    [Infinity, 58.16639,   2.720074,  -0.492289, 0.038844, -6.447293]] },
+  N2: { M: 28.0134, plages: [
+    [500,      28.98641,   1.853978,  -9.647459, 16.63537,  0.000117],
+    [2000,     19.50583,  19.88705,   -8.598535,  1.369784, 0.527601],
+    [Infinity, 35.51872,   1.128728,  -0.196103,  0.014662, -4.553760]] },
+  O2: { M: 31.9988, plages: [
+    [700,      31.32234, -20.23531,   57.86644, -36.50624, -0.007374],
+    [2000,     30.03235,   8.772972,  -3.988133,  0.788313, -0.741599],
+    [Infinity, 20.91111,  10.72071,   -2.020498,  0.146449,  9.245722]] },
+  H2O: { M: 18.0153, plages: [
+    [1700,     30.09200,   6.832514,   6.793435, -2.534480,  0.082139],
+    [Infinity, 41.96426,   8.622053,  -1.499780,  0.098119, -11.15764]] },
+  CO: { M: 28.0101, plages: [
+    [1300,     25.56759,   6.096130,   4.054656, -2.671301,  0.131021],
+    [Infinity, 35.15070,   1.300095,  -0.205921,  0.013550, -3.282780]] },
+  H2: { M: 2.01588, plages: [
+    [1000,     33.066178, -11.363417, 11.432816, -2.772874, -0.158558],
+    [2500,     18.563083,  12.257357, -2.859786,  0.268238,  1.977990],
+    [Infinity, 43.413560,  -4.293079,  1.272428, -0.096876, -20.533862]] },
+  SO2: { M: 64.0638, plages: [
+    [1200,     21.43049,  74.35094,  -57.75217,  16.35534,  0.086731],
+    [Infinity, 57.48188,   1.009328,  -0.076290,  0.005174, -4.045401]] },
+  HCl: { M: 36.4609, plages: [
+    [1200,     32.12392, -13.45805,   19.86852,  -6.853936, -0.049672],
+    [Infinity, 31.91923,   3.203184,  -0.541539,  0.035925, -3.438525]] },
+};
+
+// Primitive de cp° en t : A·t + B·t²/2 + C·t³/3 + D·t⁴/4 − E/t   [kJ/mol]
+const primitiveShomate = (p, t) => p[1] * t + p[2] * t * t / 2 + p[3] * t * t * t / 3 + p[4] * t * t * t * t / 4 - p[5] / t;
+
+// Construit h(T °C) [kJ/kg] : constantes d'intégration calculées une fois pour
+// imposer h(0 °C) = 0 et la continuité aux bornes de plage.
+const enthalpieShomate = ({ M, plages }) => {
+  const K = [];
+  plages.forEach((p, i) => {
+    if (i === 0) K.push(-primitiveShomate(p, T_ref / 1000));
+    else {
+      const tb = plages[i - 1][0] / 1000;
+      K.push(primitiveShomate(plages[i - 1], tb) + K[i - 1] - primitiveShomate(p, tb));
+    }
+  });
+  return (T) => {
+    const TK = T + T_ref;
+    let i = 0;
+    while (i < plages.length - 1 && TK > plages[i][0]) i++;
+    return (primitiveShomate(plages[i], TK / 1000) + K[i]) * 1000 / M;
+  };
+};
+
+// Enthalpies sensibles [kJ/kg] entre 0 °C et T [°C]
+export const fh_CO2 = enthalpieShomate(SHOMATE.CO2);
+export const fh_N2 = enthalpieShomate(SHOMATE.N2);
+export const fh_O2 = enthalpieShomate(SHOMATE.O2);
+export const fh_H2O = enthalpieShomate(SHOMATE.H2O); // vapeur ; chaleur latente ajoutée par l'appelant
+export const fh_CO = enthalpieShomate(SHOMATE.CO);
+export const fh_H2 = enthalpieShomate(SHOMATE.H2);
+export const fh_SO2 = enthalpieShomate(SHOMATE.SO2);
+export const fh_HCl = enthalpieShomate(SHOMATE.HCl);
+
+// ── Anciennes corrélations (Kelley / Maier-Kelley) — conservées, plus utilisées ──
+
+export const fh_CO2_Kelley = (T) => {
   T += T_ref;
   const A = 1.0034;
   const B = 0.000205;
@@ -11,7 +88,7 @@ export const fh_CO2 = (T) => {
   return result;
 };
 
-export const fh_O2 = (T) => {
+export const fh_O2_Kelley = (T) => {
   T += T_ref;
   let A, B, C, d, K;
   if (T < 1000) {
@@ -31,7 +108,7 @@ export const fh_O2 = (T) => {
   return result;
 };
 
-export const  fh_SO2 = (T) => {
+export const fh_SO2_Kelley = (T) => {
   T += T_ref;
   const A = 0.678;
   const B = 0.000166;
@@ -42,7 +119,7 @@ export const  fh_SO2 = (T) => {
   return result;
 };
 
-export const fh_HCl = (T) => {
+export const fh_HCl_Kelley = (T) => {
   T += T_ref;
   const A = 0.7279;
   const B = 0.000126;
@@ -53,7 +130,7 @@ export const fh_HCl = (T) => {
   return result;
 };
 
-export const fh_N2 = (T) => {
+export const fh_N2_Kelley = (T) => {
   T += T_ref;
   let A, B, C, d, K;
   if (T < 800) {
@@ -73,7 +150,7 @@ export const fh_N2 = (T) => {
   return result;
 };
 
-export const fh_H2O = (T) => {
+export const fh_H2O_Kelley = (T) => {
   T += T_ref;
   const A = 1.6658;
   const B = 0.0005945;
@@ -272,7 +349,7 @@ export const fsDOLOMIE_DECAR = (T) => {
   return 0.3094 * fs_MgO(T) + 0.6708 * fs_CaO(T) + 1.98 * fs_SiO2(T);
 };
 
-export const fh_H2 = (T) => {
+export const fh_H2_Kelley = (T) => {
   const A = 6.483;
   const B = 0.002215;
   const C = -0.000003298;
@@ -332,7 +409,7 @@ export const fh_C2H6 = (T) => {
   return result;
 };
 
-export const fh_CO = (T) => {
+export const fh_CO_Kelley = (T) => {
   const A = 7.373;
   const B = -0.00307;
   const C = 0.000006662;
