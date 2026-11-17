@@ -562,3 +562,9 @@ Doit être l'**inverse cohérent** de `option_T` :
 - Les fonctions d'entropie `fs_*` et les solides (`fh_CaO`, `fh_SiO2`…) ne sont pas modifiés.
 - `Y_BILAN/FB/2_CombustionTab.jsx` : la température de sortie HX est inversée par bissection avec la même loi d'enthalpie que celle qui a donné la cible (avant : `TempSortieFumees`, polynômes Pyrofluid, même en mode outil).
 - Ne pas modifier les polynômes Pyrofluid (`cp_dt_*`, `H_Fumees` dans `bilan_fct_FB.jsx`) : ils servent au mode « Calcul Pyrofluid d'origine ».
+
+### Chaleur latente de l'eau — une seule valeur (2026-11-17)
+
+`constantes.js` : `Lv = 597.5 * cp_ref` = 2 501,6 kJ/kg (chaleur latente à 0 °C ; avant 590 kcal/kg, valeur vers 13 °C, −1,2 %). Référence de toutes les enthalpies d'eau : liquide à 0 °C → vapeur à 0 °C (`Lv`) → vapeur chauffée de 0 °C à T (`fh_H2O`). Les valeurs écrites en dur (2501.6 dans FB/GF/TflammeAdia, 540 × 4.1868 dans `h_fumee` et `Tableau_fumee_inverse`) ont été remplacées par `Lv`.
+- Ne pas utiliser 540 kcal/kg (latente à 100 °C) avec `fh_H2O`, qui part de 0 °C.
+- Exceptions volontaires : 597 kcal/kg dans les onglets Design quench/saturateur/tour de lavage (formules Pyrofluid d'origine) et 596,8 kcal/kg du mode « Calcul Pyrofluid d'origine » de FB.

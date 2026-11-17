@@ -1,4 +1,4 @@
-import { T_ref } from "./constantes";
+import { T_ref, Lv } from "./constantes";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Enthalpies sensibles des gaz — NIST Chemistry WebBook, équation de Shomate
@@ -478,7 +478,7 @@ export const fh_inerte = (p_caco3, p_sio2, p_fe2o3, T) => {
 
 export const h_fumee = (T, m_CO2, m_H2O, M_N2, M_O2) => {
   const H_CO2 = fh_CO2(T) * m_CO2;
-  const H_H2O = (fh_H2O(T) + 540 * 4.1868) * m_H2O;
+  const H_H2O = (fh_H2O(T) + Lv) * m_H2O;
   const H_N2 = fh_N2(T) * M_N2;
   const H_O2 = fh_O2(T) * M_O2;
   return H_CO2 + H_N2 + H_O2 + H_H2O;

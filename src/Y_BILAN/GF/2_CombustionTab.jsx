@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { molarMasses, massVolumique, cp_ref } from '../../A_Transverse_fonction/constantes';
+import { molarMasses, massVolumique, cp_ref, Lv } from '../../A_Transverse_fonction/constantes';
 
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './GF_traduction';
@@ -273,8 +273,8 @@ function runIterativeCalc({
 
     const H_MV = (PCI_OM_kcal_kgOM * BoueBrute_kg_h * cp_ref) / 3600;
     const H_MS = fh_MS_kW(Temp_boue_entree_C, Masse_seche_kg_h) || 0;
-    const H_Evap = (Masse_eau_kg_h * (cp_ref * Temp_boue_entree_C - 2501.6)) / 3600;
-    const H_Evap_add = (eau_add_kg_h * (cp_ref * 15 - 2501.6)) / 3600;
+    const H_Evap = (Masse_eau_kg_h * (cp_ref * Temp_boue_entree_C - Lv)) / 3600;
+    const H_Evap_add = (eau_add_kg_h * (cp_ref * 15 - Lv)) / 3600;
     const H_cendres = fh_MM_kW(Temp_fumee_voute_C, Masse_mineral_kg_h) || 0;
     const H_NET_OM = H_MV + H_MS + H_Evap;
 
@@ -1655,7 +1655,7 @@ const CombustionTab = ({ innerData = {}, onInnerDataChange, onResultsChange, cur
                     { label: t('Débit eau à évaporer [kg/h]'),     vals: [null, null, emissions.Masse_eau_kg_h, null, null, null, null, null, null, null, null, null, null] },
                     { label: t('Énergie cédée par les fumées [kWh]'), vals: [null, null, null, null, null, null, null, null, null, null, null, null, null] },
                     { label: t('Énergie transmise [kWh]'),         vals: [null, null, null, null, null, null, null, null, null, null, null, null, null] },
-                    { label: t('Enthalpie [kWh]'),                 vals: [(emissions.Masse_brute_kg_h * emissions.PCI_OM_kcal_kgOM * cp_ref) / 3600, fh_MS_kW(thermalParams.Temp_boue_entree_C, emissions.Masse_seche_kg_h), (emissions.Masse_eau_kg_h * (cp_ref * thermalParams.Temp_boue_entree_C - 2501.6)) / 3600, results.H_matiere_minerale_kW, results.H_NETTE_OM_kW, results.H_air_fluidisation_av_prechauffe_kW, results.H_air_secondaire_kW, results.H_air_tertiaire_kW, results.H_gaz_inter, results.Pertes_thermiques_kW, results.H_air_balayage_instrumentation_kW, results.Hf_voute_kW, results.H_imbrule_kW] },
+                    { label: t('Enthalpie [kWh]'),                 vals: [(emissions.Masse_brute_kg_h * emissions.PCI_OM_kcal_kgOM * cp_ref) / 3600, fh_MS_kW(thermalParams.Temp_boue_entree_C, emissions.Masse_seche_kg_h), (emissions.Masse_eau_kg_h * (cp_ref * thermalParams.Temp_boue_entree_C - Lv)) / 3600, results.H_matiere_minerale_kW, results.H_NETTE_OM_kW, results.H_air_fluidisation_av_prechauffe_kW, results.H_air_secondaire_kW, results.H_air_tertiaire_kW, results.H_gaz_inter, results.Pertes_thermiques_kW, results.H_air_balayage_instrumentation_kW, results.Hf_voute_kW, results.H_imbrule_kW] },
                   ].map((row, ri) => (
                     <tr key={ri} style={{ backgroundColor: ri % 2 === 0 ? '#FAFAFA' : '#fff' }}>
                       <td style={{ ...TD, fontWeight: 'bold', textAlign: 'left', position: 'sticky', left: 0, backgroundColor: ri % 2 === 0 ? '#FAFAFA' : '#fff', zIndex: 1 }}>{row.label}</td>

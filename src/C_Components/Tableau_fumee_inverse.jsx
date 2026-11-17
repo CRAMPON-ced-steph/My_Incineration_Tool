@@ -2,6 +2,7 @@ import React from 'react';
 
 import { CO2_kg_m3, O2_kg_m3, N2_kg_m3, H2O_kg_m3 } from '../A_Transverse_fonction/conv_calculation';
 import { fh_CO2, fh_H2O, fh_O2, fh_N2 } from '../A_Transverse_fonction/enthalpy_gas';
+import { Lv } from '../A_Transverse_fonction/constantes';
 import { fmt } from '../A_Transverse_fonction/formatNumber';
 import { tTab } from './Tableau_traduction';
 
@@ -51,7 +52,7 @@ const MassCalculator = ({ masses, TemperatureImposee, currentLanguage }) => {
     const enthalpie = {
       CO2: fh_CO2(TemperatureImposee)*initialMasses.CO2/3600,
       O2: fh_O2( TemperatureImposee)*initialMasses.O2/3600,
-      H2O: (fh_H2O( TemperatureImposee)+540*4.1868)*initialMasses.H2O/3600,
+      H2O: (fh_H2O( TemperatureImposee)+Lv)*initialMasses.H2O/3600,
       N2: fh_N2( TemperatureImposee)*initialMasses.N2/3600,
     };
 
