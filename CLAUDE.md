@@ -583,3 +583,10 @@ Doit être l'**inverse cohérent** de `option_T` :
 
 - **Turbine WHB, mode « sans turbine »** : les niveaux de pression plus bas sont alimentés par vanne de détente → **isenthalpique** (h = h entrée, vapeur surchauffée), plus isentropique. Libellé « Enthalpie massique vapeur » (`specificSteamEnthalpy`, 10 langues) distinct de `steamEnthalpy` [kJ/h] de l'onglet Paramètres.
 - **FB, composition de combustible personnalisée** : `pciDulong_kcal_kg` (2_CombustionTab.jsx) — composition ramenée à 100 %, PCS de Dulong → PCI (− 9 H/100 × Lv), puis × densité pour un gaz (kcal/Nm³). Contrôle : gaz naturel 8 870 kcal/Nm³ (table 8 875). Dulong sous-estime les gaz riches en O lié au C (biogaz ≈ −6 %).
+
+### Four rotatif (Y_BILAN/RK) — corrections du 2026-11-17
+
+- **Chlore** : un atome de Cl lie un atome de H (HCl). Coefficient O2 stœchiométrique du Cl = **−0,25** kmol O2/kmol Cl (avant −0,5) ; eau stœchiométrique = H2 − **Cl/2** (avant H2 − Cl) dans `1_CombustionParameters1.jsx`, `2_Flue_gas1.jsx` et la copie `Y_BILAN/CO2/1_Capture_Parameters.jsx`.
+- **Polluants** (`3_Pollutant_Emission1.jsx`) : replis `?? 0` au lieu de `|| 1` (plus de Cl, S, inertes fantômes à 1 kg/h). `Tableau_polluants.jsx` renvoie 0 (et non Infinity) si le débit sec est nul.
+- **Design** : vitesse des fumées dans le four en m³/h réels à `T_OUT` (`coeff_Nm3_to_m3`). Le taux de remplissage (Freeman) était déjà correct (×100).
+- **OPEX** : l'onglet Design écrit déjà consoElec1-8, gaz, air comprimé, eau, réactifs, cendres dans innerData. `RKMainPage.jsx` le garde monté en arrière-plan (invisible) pour que l'OPEX et le rapport soient alimentés sans ouvrir l'onglet Design.

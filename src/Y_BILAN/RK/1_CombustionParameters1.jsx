@@ -345,10 +345,11 @@ const CombustionParameters = ({ innerData, currentLanguage = 'fr', nodeId }) => 
         set_Water_kg_h (updatedRows2[0].data['Water  [kg/h]'])
         set_Inert_kg_h (updatedRows2[0].data['Inert  [kg/h]'])
 
-        const coeff_O2_stoechio = {C :1 , H : 0.5, O : -1, N :0,S : 1, Cl : -0.5}
+        // Cl lie un atome H (HCl) : 0,5 H2 de moins à brûler par kmol de Cl → −0,25 kmol O2 (avant −0,5)
+        const coeff_O2_stoechio = {C :1 , H : 0.5, O : -1, N :0,S : 1, Cl : -0.25}
         updatedRows2[4].data[col] = updatedRows2[3].data[col]  * coeff_O2_stoechio[element];
         updatedRows2[5].data['C [kg/h]'] =   0;
-        updatedRows2[5].data['H [kg/h]'] =    updatedRows2[3].data['H [kg/h]'] ;
+        updatedRows2[5].data['H [kg/h]'] = updatedRows2[3].data['H [kg/h]'] - updatedRows2[3].data['Cl [kg/h]'] / 2; // H2O = H2 − Cl/2 (HCl)
         updatedRows2[5].data['O [kg/h]'] =0;
         updatedRows2[5].data['N [kg/h]'] = 0;
         updatedRows2[5].data['S [kg/h]'] = 0;

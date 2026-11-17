@@ -101,18 +101,19 @@ const FlueGasPollutantEmission = ({ innerData, currentLanguage = 'fr', nodeId })
   const HF_stoechiométrie = emissions2.hfStoechiometrie;
 
   // Données d'entrée depuis innerData
-  const Masse_C = innerData?.Cmass || 1;
-  const Debit_fumees_sec_Nm3_h = innerData?.FG_RK_OUT_Nm3_h?.dry || 10000;
-  const Debit_fumees_humide_Nm3_h = innerData?.FG_RK_OUT_Nm3_h?.wet || 10000;
-  const FG_O2_calcule = innerData?.O2_calcule || 12;
-  const masse_dechets = innerData?.masse || 10;
-  const Inert_kg_h = innerData?.Inertmass || 1;
+  const Masse_C = innerData?.Cmass ?? 0;
+  const Debit_fumees_sec_Nm3_h = innerData?.FG_RK_OUT_Nm3_h?.dry ?? 0;
+  const Debit_fumees_humide_Nm3_h = innerData?.FG_RK_OUT_Nm3_h?.wet ?? 0;
+  const FG_O2_calcule = innerData?.O2_calcule ?? 12;
+  const masse_dechets = innerData?.masse ?? 0;
+  const Inert_kg_h = innerData?.Inertmass ?? 0;
 
   // Calculs des masses de polluants d'entrée
-  const Masse_polluant_Cl_kg_h = innerData?.Clmass || 1;
-  const Masse_polluant_HCl_kg_h = Masse_polluant_Cl_kg_h * 36.46 / 35.45;
-  const Masse_polluant_S_kg_h = innerData?.Smass || 1;
-  const Masse_polluant_SO2_kg_h = Masse_polluant_S_kg_h * 64 / 32;
+  // Replis « ?? 0 » : une valeur nulle reste nulle (avant « || 1 » → 1 kg/h de Cl, S, inertes fantômes)
+  const Masse_polluant_Cl_kg_h = innerData?.Clmass ?? 0;
+  const Masse_polluant_HCl_kg_h = Masse_polluant_Cl_kg_h * molarMasses.HCl / molarMasses.Cl;
+  const Masse_polluant_S_kg_h = innerData?.Smass ?? 0;
+  const Masse_polluant_SO2_kg_h = Masse_polluant_S_kg_h * molarMasses.SO2 / molarMasses.S;
   const Masse_polluant_HF_kg_h = HF_pourcent / 100 * masse_dechets;
   const Masse_polluant_NOx_kg_h = NOx_mg_Nm3 * Debit_fumees_sec_Nm3_h / 1e6;
   const Masse_polluant_Dust_FlyAshes_kg_h = FlyAsh_g_Nm3 * Debit_fumees_sec_Nm3_h / 1000;
@@ -150,9 +151,9 @@ const FlueGasPollutantEmission = ({ innerData, currentLanguage = 'fr', nodeId })
     Cl: Masse_polluant_Cl_kg_h,
     S: Masse_polluant_S_kg_h,
     SO2: Masse_polluant_SO2_kg_h,
-    N2: innerData?.FG_OUT_kg_h?.N2 || 1,
+    N2: innerData?.FG_OUT_kg_h?.N2 ?? 0,
     NOx: Masse_polluant_NOx_kg_h,
-    CO2: innerData?.FG_OUT_kg_h?.CO2 || 1,
+    CO2: innerData?.FG_OUT_kg_h?.CO2 ?? 0,
     NH3: SNCR_enabled ? NH3_consumption_kg_h : 0,
     DustFlyAsh: Masse_polluant_Dust_FlyAshes_kg_h,
     Mercury: Masse_polluant_Hg_kg_h,

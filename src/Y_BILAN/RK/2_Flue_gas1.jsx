@@ -90,7 +90,7 @@ const FlueGasParameters = ({ innerData, currentLanguage = 'fr', nodeId }) => {
   const cvw_kJ_kg = innerData.cvw_kJ_kg;
 
   let FG_CO2_stoechio_Nm3_h = innerData.Cmoles * 22.4;
-  let FG_H2O_stoechio_Nm3_h = (innerData.Hmoles - innerData.Clmoles + innerData.masse_eau_input / 18) * 22.4 + Air_combustion_stoechio_H2O_kg_h * 22.4 / 18;
+  let FG_H2O_stoechio_Nm3_h = (innerData.Hmoles - innerData.Clmoles / 2 + innerData.masse_eau_input / 18) * 22.4 + Air_combustion_stoechio_H2O_kg_h * 22.4 / 18;
   let FG_O2_stoechio_Nm3_h = (Air_factor - 1) * 0.21 * Air_combustion_stoechio_sec_tot_Nm3_h; // Nm³ (avant : kg/h pris pour des Nm³/h)
   let FG_N2_stoechio_Nm3_h = innerData.Nmoles * 22.4 + Air_stoechio_kmole * 0.79 * 22.4 * Air_factor;
   let FG_CO2_stoechio_kg_h = CO2_m3_kg(FG_CO2_stoechio_Nm3_h);

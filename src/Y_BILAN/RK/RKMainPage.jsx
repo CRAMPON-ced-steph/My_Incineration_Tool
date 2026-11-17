@@ -102,6 +102,15 @@ const RKMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
     return active ? active.content : null;
   };
 
+  // L'onglet Design calcule et écrit dans innerData les données OPEX (électricité, gaz,
+  // air comprimé, eau, réactifs, cendres, transport). Il reste monté en arrière-plan
+  // (invisible) pour que l'OPEX et le rapport soient à jour sans ouvrir l'onglet Design.
+  const renderDesignEnArrierePlan = () => {
+    if (activeTab === 'design') return null;
+    const design = tabs.find((tab) => tab.name === 'design');
+    return design ? <div style={{ display: 'none' }} aria-hidden="true">{design.content}</div> : null;
+  };
+
   const sendAllData = () => {
     if (!onSendData || typeof onSendData !== 'function') {
       console.error('❌ ERROR: onSendData callback is not defined or is not a function!');
@@ -231,6 +240,7 @@ const RKMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
         }}
       >
         {renderTabContent()}
+        {renderDesignEnArrierePlan()}
       </div>
     </div>
   );
