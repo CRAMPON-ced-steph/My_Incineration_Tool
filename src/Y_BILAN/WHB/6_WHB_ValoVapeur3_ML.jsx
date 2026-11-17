@@ -148,10 +148,12 @@ const TurbineCalculator = ({ innerData, setInnerData, currentLanguage = 'fr' }) 
         niveaux.forEach(niveau => {
           niveau.temperatureSaturation = calculerTemperatureSaturation(niveau.pression);
           if (niveau.pression < parameters.pressionEntree) {
-            niveau.enthalpie = calculerEnthalpieIsentropique(niveau.pression, s1);
-            niveau.entropie = s1;
-            niveau.surchauffe = 0;
-            niveau.titre = calculerTitre(niveau.pression, niveau.enthalpie);
+            // Sans turbine : détente par vanne (laminage) → isenthalpique, h = h entrée.
+            // La vapeur se retrouve surchauffée (ou plus sèche), pas humide.
+            niveau.enthalpie = h1;
+            niveau.entropie = s_ph(niveau.pression, h1);
+            niveau.surchauffe = Math.max(0, T_ph(niveau.pression, h1) - niveau.temperatureSaturation);
+            niveau.titre = calculerTitre(niveau.pression, h1);
           } else {
             niveau.enthalpie = calculerEnthalpieVapeur(niveau.pression, parameters.temperatureEntree);
             niveau.entropie = calculerEntropieVapeur(niveau.pression, parameters.temperatureEntree);
@@ -598,9 +600,9 @@ const TurbineCalculator = ({ innerData, setInnerData, currentLanguage = 'fr' }) 
                     </div>
                     <div style={{display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '8px'}}>
                       <div style={{fontSize: '12px', color: '#374151'}}><strong>T sat:</strong> {fmt(niveau.temperatureSaturation, 0)}{t('degreeC')}</div>
-                      <div style={{fontSize: '12px', color: '#374151'}}><strong>{t('steamEnthalpy')}:</strong> {fmt(niveau.enthalpie, 0)} {t('kJperKg')}</div>
+                      <div style={{fontSize: '12px', color: '#374151'}}><strong>{t('specificSteamEnthalpy')}:</strong> {fmt(niveau.enthalpie, 0)} {t('kJperKg')}</div>
                       <div style={{fontSize: '12px', color: '#374151'}}><strong>{t('inletEntropy')}:</strong> {fmt(niveau.entropie, 2)} {t('kJperKgK')}</div>
-                      <div style={{fontSize: '12px', color: '#374151'}}><strong>{t('superheating')}:</strong> {niveau.surchauffe}{t('degreeC')}</div>
+                      <div style={{fontSize: '12px', color: '#374151'}}><strong>{t('superheating')}:</strong> {fmt(niveau.surchauffe, 0)}{t('degreeC')}</div>
                       <div style={{fontSize: '12px', color: '#374151'}}><strong>{t('quality')}:</strong> {fmt((niveau.titre * 100), 1)}{t('percent')}</div>
                     </div>
                     {niveau.titre < 1 && <div style={{fontSize: '11px', color: '#dc2626', marginTop: '5px', fontStyle: 'italic'}}>⚠️ {t('wetSteamWarning')}</div>}
@@ -658,7 +660,7 @@ const TurbineCalculator = ({ innerData, setInnerData, currentLanguage = 'fr' }) 
                         <div style={{fontSize: '12px', color: '#374151'}}><strong>{t('inletPressure')}:</strong> {soutirage.pression} {t('bar')}</div>
                         <div style={{fontSize: '12px', color: '#374151'}}><strong>{t('inletTemperature')}:</strong> {fmt(soutirage.temperature, 0)}{t('degreeC')}</div>
                         <div style={{fontSize: '12px', color: '#374151'}}><strong>{t('steamFlow')}:</strong> {fmt(soutirage.debitKgH, 0)} kg/h ({soutirage.debitPct}{t('percent')})</div>
-                        <div style={{fontSize: '12px', color: '#374151'}}><strong>{t('steamEnthalpy')}:</strong> {fmt(soutirage.enthalpie, 0)} {t('kJperKg')}</div>
+                        <div style={{fontSize: '12px', color: '#374151'}}><strong>{t('specificSteamEnthalpy')}:</strong> {fmt(soutirage.enthalpie, 0)} {t('kJperKg')}</div>
                         <div style={{fontSize: '12px', color: '#374151'}}><strong>{t('specificWork')}:</strong> {fmt(soutirage.travailSpecifique, 0)} {t('kJperKg')}</div>
                       </div>
                     </div>

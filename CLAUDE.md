@@ -578,3 +578,8 @@ Doit être l'**inverse cohérent** de `option_T` :
 - **Cl / S** dans les onglets polluants : `HCl × M_Cl / M_HCl` et `SO2 × M_S / M_SO2` (molarMasses). DeNOx non modifié (choix de Cédric).
 - **RK / CO2** : O2 en excès des fumées stœchiométriques calculé en Nm³ (avant : kg/h pris pour des Nm³/h).
 - **DeNOx** : réchauffage (TflammeAdia, mélange par moyenne volumique) volontairement laissé tel quel — ne pas modifier.
+
+### Turbine sans turbine et PCI Dulong (2026-11-17)
+
+- **Turbine WHB, mode « sans turbine »** : les niveaux de pression plus bas sont alimentés par vanne de détente → **isenthalpique** (h = h entrée, vapeur surchauffée), plus isentropique. Libellé « Enthalpie massique vapeur » (`specificSteamEnthalpy`, 10 langues) distinct de `steamEnthalpy` [kJ/h] de l'onglet Paramètres.
+- **FB, composition de combustible personnalisée** : `pciDulong_kcal_kg` (2_CombustionTab.jsx) — composition ramenée à 100 %, PCS de Dulong → PCI (− 9 H/100 × Lv), puis × densité pour un gaz (kcal/Nm³). Contrôle : gaz naturel 8 870 kcal/Nm³ (table 8 875). Dulong sous-estime les gaz riches en O lié au C (biogaz ≈ −6 %).
