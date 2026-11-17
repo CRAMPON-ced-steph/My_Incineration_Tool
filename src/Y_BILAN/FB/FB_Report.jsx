@@ -507,6 +507,8 @@ const FB_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
   const H_pertes_kW          = innerData.H_pertes_kW         ?? 0;
   const H_imbrule_kW         = innerData.H_imbrule_kW        ?? 0;
   const H_air_balayage_kW    = innerData.H_air_balayage_kW   ?? 0;
+  const H_air_secondaire_kW  = innerData.H_air_secondaire_kW ?? 0;
+  const H_air_tertiaire_kW   = innerData.H_air_tertiaire_kW  ?? 0;
   const H_air_soufflante_kW  = innerData.H_air_soufflante_kW ?? 0;
 
   // Valeurs écrites depuis CombustionTab (via mes ajouts), ou dérivées si absent
@@ -795,6 +797,8 @@ const FB_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
                 { label: 'H_NETTE_BOUE',        vin: H_NETTE_BOUE_kW,         vout: null },
                 { label: 'Hair_ap_préchauffage', vin: Hair_ap_prechauffage_kW,  vout: null },
                 { label: 'H_air_balayage',       vin: H_air_balayage_kW,        vout: null },
+                { label: 'H_air_secondaire',     vin: H_air_secondaire_kW,      vout: null },
+                { label: 'H_air_tertiaire',      vin: H_air_tertiaire_kW,       vout: null },
                 { label: isFioul ? 'H_fioul_appoint' : 'H_gaz appoint', vin: H_gaz_inter, vout: null },
                 { label: 'H_matière_minérale',   vin: null, vout: H_matiere_minerale_kW },
                 { label: 'Hf_voûte',             vin: null, vout: Hf_voute_kW },
