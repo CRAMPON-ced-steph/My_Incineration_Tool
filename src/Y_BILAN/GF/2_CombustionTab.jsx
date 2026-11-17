@@ -16,9 +16,9 @@ const useTranslation = (currentLanguage = 'fr') => {
 
 
 import {
-  cp_dt_h2o, fh_MS_kW, fh_MM_kW, Hfvoute_kW,
+  hAir_kW, hVap_kW, fh_MS_kW, fh_MM_kW, Hfvoute_kW,
   Masse_Air_Instrumentation, Mole_Excess_O2, Mole_Excess_O2_air_varia,
-  MoleNOx, Mole_CO, Mole_H2, cp_air, Masse_Air_Comb_gaz_Func, MasseAir_e, Vol_Air_e,
+  MoleNOx, Mole_CO, Mole_H2, Masse_Air_Comb_gaz_Func, MasseAir_e, Vol_Air_e,
   FractionMassiqueC, FractionMassiqueH, FractionMassiqueO, FractionMassiqueN, FractionMassiqueS, FractionMassiqueCl
 } from '../../A_Transverse_fonction/bilan_fct_FB';
 
@@ -278,21 +278,23 @@ function runIterativeCalc({
     const H_cendres = fh_MM_kW(Temp_fumee_voute_C, Masse_mineral_kg_h) || 0;
     const H_NET_OM = H_MV + H_MS + H_Evap;
 
-    const H_air_flu = cp_air(Temp_air_fluidisation_av_prechauffe_C) * Maire_sec_comb_tot + cp_dt_h2o(Temp_air_fluidisation_av_prechauffe_C) * Meau_air_comburant;
+    // Air et humidité : même loi NIST que les fumées (Hfvoute_kW)
+    const hAir = hAir_kW(false), hVapAir = hVap_kW(false);
+    const H_air_flu = hAir(Temp_air_fluidisation_av_prechauffe_C) * Maire_sec_comb_tot + hVapAir(Temp_air_fluidisation_av_prechauffe_C) * Meau_air_comburant;
 
     const Meau_air2 = Teneur_en_eau_kgH2O_kgAS * Masse_air_secondaire_kg_h;
-    const H_air2 = cp_air(Temp_air_secondaire_C) * Masse_air_secondaire_kg_h + cp_dt_h2o(Temp_air_secondaire_C) * Meau_air2;
+    const H_air2 = hAir(Temp_air_secondaire_C) * Masse_air_secondaire_kg_h + hVapAir(Temp_air_secondaire_C) * Meau_air2;
 
     const Meau_air3 = Teneur_en_eau_kgH2O_kgAS * Masse_air_tertiaire_kg_h;
-    const H_air3 = cp_air(Temp_air_tertiaire_C) * Masse_air_tertiaire_kg_h + cp_dt_h2o(Temp_air_tertiaire_C) * Meau_air3;
+    const H_air3 = hAir(Temp_air_tertiaire_C) * Masse_air_tertiaire_kg_h + hVapAir(Temp_air_tertiaire_C) * Meau_air3;
 
     const Pertes = ((PCI_OM_kcal_kgOM * BoueBrute_kg_h * (Pertes_thermiques_pourcent / 100)) / 3600) * cp_ref;
 
     const T_soufflante = Temp_air_fluidisation_av_prechauffe_C + 45;
 
     const Meau_balayage = Teneur_en_eau_kgH2O_kgAS * Maire_balayage;
-    const H_balayage = cp_air(T_soufflante) * Maire_balayage + cp_dt_h2o(T_soufflante) * Meau_balayage;
-    const H_air_soufflante = cp_air(T_soufflante) * Maire_sec_comb_tot + cp_dt_h2o(T_soufflante) * Meau_air_comburant;
+    const H_balayage = hAir(T_soufflante) * Maire_balayage + hVapAir(T_soufflante) * Meau_balayage;
+    const H_air_soufflante = hAir(T_soufflante) * Maire_sec_comb_tot + hVapAir(T_soufflante) * Meau_air_comburant;
 
     const Hf_voute = Hfvoute_kW(Temp_fumee_voute_C, FG_HCl, FG_CO2, FG_CO, FG_H2O, FG_H2, FG_O2exc, FG_N2, FG_SO2reel) || 0;
 

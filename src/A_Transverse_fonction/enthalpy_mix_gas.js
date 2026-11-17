@@ -1,6 +1,6 @@
 import {fh_CO2,fh_H2O, fh_O2,fh_N2,fh_AIR} from '../A_Transverse_fonction/enthalpy_gas';
 import {CpL_T, hL_T}  from '../A_Transverse_fonction/steam_table3.js';
-import { Lv } from '../A_Transverse_fonction/constantes';
+import { Lv, rho_air } from '../A_Transverse_fonction/constantes';
 
 
 // FONCTIONS UTILSEES POUR LE QUENCH
@@ -86,7 +86,7 @@ export const AIR_DILUTION_T = (t_air, tfum2, tfum1, m_CO2, m_H2O, M_N2, M_O2) =>
       }
   } while (Math.abs(q1 - q2) >= 0.1);
 
-  return qc/1.293;
+  return qc / rho_air;
 };
 
 export const TEMP_FUMEE_AIR_EXTRAIT = (qair_ext, t_air, t1, m_CO2, m_H2O, M_N2, M_O2) => {

@@ -7,6 +7,7 @@ import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './SCRUBBER_traduction';
 
 import { fmt } from '../../A_Transverse_fonction/formatNumber';
+import { molarMasses } from '../../A_Transverse_fonction/constantes';
 const FlueGasPollutantEmission = ({ innerData, setInnerData, currentLanguage = 'fr', nodeId }) => {
   // ============ ÉTATS PRINCIPAUX ============
   const initialEmissionsSCRUBBER = {
@@ -172,8 +173,8 @@ const FlueGasPollutantEmission = ({ innerData, setInnerData, currentLanguage = '
         Sb_As_Pb_Cr_Co_Cu_Mn_Ni_V: masses_pollutant_input.Sb_As_Pb_Cr_Co_Cu_Mn_Ni_V || 0,
       };
       
-      output.Cl = output.HCl * 35 / 36.5;
-      output.S = output.SO2 / 2;
+      output.Cl = output.HCl * molarMasses.Cl / molarMasses.HCl;
+      output.S = output.SO2 * molarMasses.S / molarMasses.SO2;
       
       return output;
     } catch (error) {

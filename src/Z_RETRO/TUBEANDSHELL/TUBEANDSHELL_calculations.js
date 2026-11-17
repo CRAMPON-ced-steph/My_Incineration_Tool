@@ -3,9 +3,9 @@ import { h_fumee, TEMP_FUMEE } from '../../A_Transverse_fonction/enthalpy_mix_ga
 import { fh_CO2, fh_H2O, fh_O2, fh_N2 } from '../../A_Transverse_fonction/enthalpy_gas';
 import { CpL_T } from '../../A_Transverse_fonction/steam_table3';
 import { cp_air_kWh_m3_degree, D_TLM, Fact_UA, Surface_echange } from '../../A_Transverse_fonction/bilan_fct_FB';
-import { Lv, cp_ref } from '../../A_Transverse_fonction/constantes';
+import { Lv, cp_ref, rho_air } from '../../A_Transverse_fonction/constantes';
 
-const rho_air      = 1.293;   // kg/Nm³
+// rho_air : constantes.js (air 21/79 en volume, 22,4 Nm³/kmol)
 const O2_mass_frac = 0.233;
 const N2_mass_frac = 0.767;
 const cp_eau       = cp_ref;  // kJ/(kg·°C)

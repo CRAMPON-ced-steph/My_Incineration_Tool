@@ -3,7 +3,7 @@
 // bilan_fct_FB.js - VERSION NETTOYÉE
 // ============================================
 
-import { fh_CO2, fh_O2, fh_CO, fh_HCl, fh_H2O, fh_H2, fh_SO2, fh_N2 } from "./enthalpy_gas";
+import { fh_CO2, fh_O2, fh_CO, fh_HCl, fh_H2O, fh_H2, fh_SO2, fh_N2, fh_AIR } from "./enthalpy_gas";
 import { molarMasses, T_ref } from "./constantes"
 
 // ============================================
@@ -144,6 +144,11 @@ export const cp_dt_so2 = (T) => {
   const cp = 0.164 * T + 0.000051 / 2 * T ** 2;
   return cp * 4.1868 / 3600;
 };
+
+// Enthalpie [kW par kg/h] de l'air sec et de la vapeur d'eau (humidité) entre 0 °C et T :
+// mode outil = NIST (enthalpy_gas.js, même loi que les fumées), mode « Pyrofluid d'origine » = Cp Pyrofluid.
+export const hAir_kW = (modeOrigine) => (modeOrigine ? cp_air : (T) => fh_AIR(T) / 3600);
+export const hVap_kW = (modeOrigine) => (modeOrigine ? cp_dt_h2o : (T) => fh_H2O(T) / 3600);
 
 export const CpL_T = (T) => {
   return 4.186 + 0.0005 * T;

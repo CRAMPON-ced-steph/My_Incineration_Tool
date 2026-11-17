@@ -1,4 +1,4 @@
-import { fh_CO2, fh_H2O, fh_O2, fh_N2} from '../../A_Transverse_fonction/enthalpy_gas';
+import { fh_CO2, fh_H2O, fh_O2, fh_N2, fh_AIR } from '../../A_Transverse_fonction/enthalpy_gas';
 import { h_fumee } from '../../A_Transverse_fonction/enthalpy_mix_gas';
 
 import { CO2_kg_m3, O2_kg_m3, N2_kg_m3, H2O_kg_m3, coeff_Nm3_to_m3 } from '../../A_Transverse_fonction/conv_calculation';
@@ -76,11 +76,11 @@ export const performCalculation_IACT = (
   const Delta_H_FG  = H_in_IACT - H_out_IACT;                    // kJ/h cédés par les fumées
   const Delta_H_air = Delta_H_FG * (Rendement_echange / 100);    // kJ/h transférés à l'air
 
-  // Débit d'air chauffé (cp_air moyen ≈ 1.005 kJ/kg·K)
-  const cp_air = 1.005; // kJ/(kg·K)
-  const Delta_T_air = T_air_chauffe - T_air_ambiant;
-  const Qm_air_kg_h = Delta_T_air > 0
-    ? Delta_H_air / (cp_air * Delta_T_air)
+  // Débit d'air chauffé : bilan enthalpique avec la même loi NIST que les fumées
+  // (avant : Cp constant 1,005 kJ/kg/K → débit surestimé de 1 à 3 %)
+  const Delta_h_air = fh_AIR(T_air_chauffe) - fh_AIR(T_air_ambiant); // kJ/kg
+  const Qm_air_kg_h = Delta_h_air > 0
+    ? Delta_H_air / Delta_h_air
     : 0;
   const Qv_air_Nm3_h = Qm_air_kg_h / rho_air;
 

@@ -4,12 +4,12 @@ import MassCalculator from '../../C_Components/Tableau_fumee_inverse';
 import TableGeneric from '../../C_Components/Tableau_generique';
 import { H2O_kg_m3, CO2_kg_m3, O2_kg_m3, N2_kg_m3 } from '../../A_Transverse_fonction/conv_calculation';
 import { h_fumee } from '../../A_Transverse_fonction/enthalpy_mix_gas';
+import { rho_air } from '../../A_Transverse_fonction/constantes';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './IACT_traduction';
 
 import { fmt } from '../../A_Transverse_fonction/formatNumber';
-// Densités air sec à 0°C, 1 atm [kg/Nm³]
-const rho_air = 1.293;
+// Air sec à 0 °C, 1 atm : rho_air (constantes.js, 21 % O2 / 79 % N2 en volume, 22,4 Nm³/kmol)
 const O2_mass_frac = 0.233;
 const N2_mass_frac = 0.767;
 
@@ -82,13 +82,11 @@ const IACTFlueGasParameters = ({ innerData, upstreamT_IN, upstreamFG_IN, upstrea
   const h_air_out_unit = h_fumee(T_air_out, 0, 0, m_N2_per_Nm3, m_O2_per_Nm3);
   const h_air_in_unit  = h_fumee(T_air_in,  0, 0, m_N2_per_Nm3, m_O2_per_Nm3);
 
-  // Débit d'air chauffé (cp_air moyen ≈ 1.005 kJ/kg·K)
-  const cp_air = 1.005; // kJ/(kg·K)
-  const Delta_T_air = T_air_out - T_air_in;
-  const Qm_air_kg_h = Delta_T_air > 0
-    ? Delta_H_air / (cp_air * Delta_T_air)
-    : 0;
-  const V_air_Nm3_h = Qm_air_kg_h / rho_air;
+  // Débit d'air chauffé : bilan enthalpique avec la même loi NIST que les fumées
+  // (avant : Cp constant 1,005 kJ/kg/K → débit surestimé de 1 à 3 %)
+  const Delta_h_air_Nm3 = h_air_out_unit - h_air_in_unit; // kJ/Nm³
+  const V_air_Nm3_h = Delta_h_air_Nm3 > 0 ? Delta_H_air / Delta_h_air_Nm3 : 0;
+  const Qm_air_kg_h = V_air_Nm3_h * rho_air;
 
 
 

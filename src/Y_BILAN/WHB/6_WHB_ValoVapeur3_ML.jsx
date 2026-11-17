@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { T_ref, cp_ref } from '../../A_Transverse_fonction/constantes';
+import { T_ref } from '../../A_Transverse_fonction/constantes';
+import { Tsat_p, h_pT, s_pT, h_ps, s_ph, T_ph, hL_p, hV_p, sV_p } from '../../A_Transverse_fonction/steam_table3';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar } from 'recharts';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './WHB_traduction';
@@ -12,7 +13,8 @@ const TurbineCalculator = ({ innerData, setInnerData, currentLanguage = 'fr' }) 
   const [parameters, setParameters] = useState({
     turbineType: 'contrepression',
     debitVapeur: innerData?.Q_steam_kg_h / 1000 || 1000,
-    pressionEntree: innerData?.Pression_vapeur_bar || 10,
+    // WHB : pression chaudière en bar relatifs → turbine en bar absolus
+    pressionEntree: innerData?.Pression_vapeur_bar > 0 ? innerData.Pression_vapeur_bar + 1 : 10,
     temperatureEntree: innerData?.Temperature_vapeur_C || 180,
     pressionSortie: 3,
     temperatureAmbiante: 25,
@@ -87,44 +89,33 @@ const TurbineCalculator = ({ innerData, setInnerData, currentLanguage = 'fr' }) 
     }
   };
 
+  // Propriétés de la vapeur : IAPWS-IF97 (steam_table3.js, mêmes tables que les
+  // autres onglets WHB). Pressions en bar absolus, T en °C, h en kJ/kg, s en kJ/kg/K.
+  // Si T ≤ Tsat, la vapeur d'entrée est prise saturée sèche.
   const calculerEnthalpieVapeur = (pression, temperature) => {
-    if (pression <= 0) return 0;
-    const Tsat = 100 + 28.96 * Math.log(pression);
-    const surchauffe = Math.max(0, temperature - Tsat);
-    const hfg = 2256.4 - 2.3 * (Tsat - 100);
-    const hf = cp_ref * Tsat;
-    const hg = hf + hfg;
-    const cpVapeur = 2.1;
-    const enthalpie = hg + cpVapeur * surchauffe;
-    return Math.max(enthalpie, 2500);
+    if (!(pression > 0)) return 0;
+    return temperature > Tsat_p(pression) ? h_pT(pression, temperature) : hV_p(pression);
   };
 
   const calculerEntropieVapeur = (pression, temperature) => {
-    if (pression <= 0) return 0;
-    const Tsat = 100 + 28.96 * Math.log(pression);
-    const surchauffe = Math.max(0, temperature - Tsat);
-    const sfg = 6.048 - 0.0157 * Tsat;
-    const sf = cp_ref * Math.log((T_ref + Tsat) / T_ref);
-    const sg = sf + sfg;
-    const cpVapeur = 2.1;
-    const entropie = sg + cpVapeur * Math.log((T_ref + temperature) / (T_ref + Tsat));
-    return entropie;
+    if (!(pression > 0)) return 0;
+    return temperature > Tsat_p(pression) ? s_pT(pression, temperature) : sV_p(pression);
   };
 
   const calculerEnthalpieIsentropique = (pressionSortie, entropieEntree) => {
-    if (pressionSortie <= 0) return 0;
-    const TsatSortie = 100 + 28.96 * Math.log(pressionSortie);
-    const hfSortie = cp_ref * TsatSortie;
-    const hfgSortie = 2256.4 - 2.3 * (TsatSortie - 100);
-    const sfSortie = cp_ref * Math.log((T_ref + TsatSortie) / T_ref);
-    const sfgSortie = 6.048 - 0.0157 * TsatSortie;
-    const titre = Math.min(1, Math.max(0, (entropieEntree - sfSortie) / sfgSortie));
-    return hfSortie + titre * hfgSortie;
+    if (!(pressionSortie > 0)) return 0;
+    return h_ps(pressionSortie, entropieEntree);
   };
 
   const calculerTemperatureSaturation = (pression) => {
-    if (pression <= 0) return 0;
-    return 100 + 28.96 * Math.log(pression);
+    if (!(pression > 0)) return 0;
+    return Tsat_p(pression);
+  };
+
+  // Titre vapeur à (P, h) : 0 = liquide saturé, 1 = vapeur saturée ou surchauffée
+  const calculerTitre = (pression, enthalpie) => {
+    const hl = hL_p(pression), hv = hV_p(pression);
+    return Math.min(1, Math.max(0, (enthalpie - hl) / (hv - hl)));
   };
 
   const calculerPerformances = () => {
@@ -160,7 +151,7 @@ const TurbineCalculator = ({ innerData, setInnerData, currentLanguage = 'fr' }) 
             niveau.enthalpie = calculerEnthalpieIsentropique(niveau.pression, s1);
             niveau.entropie = s1;
             niveau.surchauffe = 0;
-            niveau.titre = Math.min(1, Math.max(0, (niveau.enthalpie - cp_ref * niveau.temperatureSaturation) / (2256.4 - 2.3 * (niveau.temperatureSaturation - 100))));
+            niveau.titre = calculerTitre(niveau.pression, niveau.enthalpie);
           } else {
             niveau.enthalpie = calculerEnthalpieVapeur(niveau.pression, parameters.temperatureEntree);
             niveau.entropie = calculerEntropieVapeur(niveau.pression, parameters.temperatureEntree);
@@ -257,7 +248,7 @@ const TurbineCalculator = ({ innerData, setInnerData, currentLanguage = 'fr' }) 
         const travailSpecifiqueSoutirage = (enthalpieAvantDetente - hSoutirageReel) * (debitRestant / 100);
         travailSpecifiqueTotal += travailSpecifiqueSoutirage;
         
-        const temperatureSoutirage = calculerTemperatureSaturation(soutirage.pression);
+        const temperatureSoutirage = T_ph(soutirage.pression, hSoutirageReel); // température réelle (vapeur surchauffée ou Tsat si humide)
         
         soutirages.push({
           nom: soutirage.nom,
@@ -273,7 +264,7 @@ const TurbineCalculator = ({ innerData, setInnerData, currentLanguage = 'fr' }) 
         if (debitRestant < 0) debitRestant = 0;
         
         enthalpieAvantDetente = hSoutirageReel;
-        entropieAvantDetente = calculerEntropieVapeur(soutirage.pression, temperatureSoutirage);
+        entropieAvantDetente = s_ph(soutirage.pression, hSoutirageReel);
       }
 
       const h2s = calculerEnthalpieIsentropique(parameters.pressionSortie, entropieAvantDetente);

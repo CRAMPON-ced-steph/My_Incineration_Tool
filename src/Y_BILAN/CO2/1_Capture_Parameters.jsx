@@ -9,6 +9,7 @@ import { H2O_kg_m3, CO2_kg_m3, O2_kg_m3, N2_kg_m3, CO2_m3_kg, H2O_m3_kg, N2_m3_k
 import { TEMP_FUMEE_INC, Q_AIR_DILUTION } from '../../A_Transverse_fonction/enthalpy_mix_gas';
 
 import { fmt } from '../../A_Transverse_fonction/formatNumber';
+import { rho_air } from '../../A_Transverse_fonction/constantes';
 const CaptureParameters = ({ innerData, nodeId }) => {
   const [emissions, setEmissions] = useState(() => {
     const savedEmissions = localStorage.getItem(`emissions_CO2_${nodeId}`);
@@ -72,7 +73,7 @@ const CaptureParameters = ({ innerData, nodeId }) => {
   const Air_stoechio_kmole = (innerData.O2_stoechio_kmoles || 0) / 0.21;
   const Water_content_kg_Nm3 = calculateWaterContent(T_air, airRelativeMoisture);
   const Air_combustion_stoechio_sec_tot_Nm3_h = Air_stoechio_kmole * 22.4;
-  const Air_combustion_stoechio_sec_tot_kg_h = Air_combustion_stoechio_sec_tot_Nm3_h * 1.293;
+  const Air_combustion_stoechio_sec_tot_kg_h = Air_combustion_stoechio_sec_tot_Nm3_h * rho_air;
   const Air_combustion_stoechio_H2O_kg_h = Water_content_kg_Nm3 * Air_combustion_stoechio_sec_tot_Nm3_h;
   const Air_combustion_stoechio_O2_kg_h = 0.233 * Air_combustion_stoechio_sec_tot_kg_h;
   const Air_combustion_stoechio_N2_kg_h = (1 - 0.233) * Air_combustion_stoechio_sec_tot_kg_h;
@@ -82,14 +83,14 @@ const CaptureParameters = ({ innerData, nodeId }) => {
   const Air_combustion_stoechio_O2_Nm3_h = O2_kg_m3(Air_combustion_stoechio_O2_kg_h);
   const Air_combustion_stoechio_N2_Nm3_h = N2_kg_m3(Air_combustion_stoechio_N2_kg_h);
   const Air_combustion_stoechio_humide_tot_Nm3_h = Air_combustion_stoechio_sec_tot_Nm3_h * Air_factor + Air_combustion_stoechio_H2O_Nm3_h;
-  const Air_combustion_stoechio_humide_tot_kg_h = Air_combustion_stoechio_humide_tot_Nm3_h * 1.293 + Air_combustion_stoechio_H2O_kg_h;
+  const Air_combustion_stoechio_humide_tot_kg_h = Air_combustion_stoechio_humide_tot_Nm3_h * rho_air + Air_combustion_stoechio_H2O_kg_h;
 
   const masse_dechets = innerData.masse;
   const cvw_kJ_kg = innerData.cvw_kJ_kg;
 
   let FG_CO2_stoechio_Nm3_h = innerData.Cmoles * 22.4;
   let FG_H2O_stoechio_Nm3_h = (innerData.Hmoles - innerData.Clmoles + innerData.masse_eau_input / 18) * 22.4 + Air_combustion_stoechio_H2O_kg_h * 22.4 / 18;
-  let FG_O2_stoechio_Nm3_h = (Air_factor - 1) * 0.21 * Air_combustion_stoechio_sec_tot_kg_h;
+  let FG_O2_stoechio_Nm3_h = (Air_factor - 1) * 0.21 * Air_combustion_stoechio_sec_tot_Nm3_h; // Nm³ (avant : kg/h pris pour des Nm³/h)
   let FG_N2_stoechio_Nm3_h = innerData.Nmoles * 22.4 + Air_stoechio_kmole * 0.79 * 22.4 * Air_factor;
   let FG_CO2_stoechio_kg_h = CO2_m3_kg(FG_CO2_stoechio_Nm3_h);
   let FG_H2O_stoechio_kg_h = H2O_m3_kg(FG_H2O_stoechio_Nm3_h);
@@ -111,7 +112,7 @@ const CaptureParameters = ({ innerData, nodeId }) => {
     Air_comb_sec_tot_kg_h = Air_adia_sec_tot_kg_h + Air_combustion_stoechio_sec_tot_kg_h;
   }
 
-  const Air_adia_sec_tot_m3_h = Air_adia_sec_tot_kg_h / 1.293;
+  const Air_adia_sec_tot_m3_h = Air_adia_sec_tot_kg_h / rho_air;
   const Air_adia_H2O_kg_h = Air_adia_sec_tot_m3_h * Water_content_kg_Nm3;
   const Air_adia_O2_kg_h = Air_adia_sec_tot_kg_h * 0.233;
   const Air_adia_N2_kg_h = Air_adia_sec_tot_kg_h * (1 - 0.233);
