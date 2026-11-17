@@ -16,7 +16,7 @@ const useTranslation = (currentLanguage = 'fr') => {
 
 
 import {
-  cp_dt_h2o, fh_MS_kW, fh_MM_kW, Hfvoute_kW, TempSortieFumees,
+  cp_dt_h2o, fh_MS_kW, fh_MM_kW, Hfvoute_kW, TempSortieFumees, H_Fumees,
   Masse_Air_Instrumentation,
   MoleNOx, Mole_CO, Mole_H2, cp_air, Masse_Air_Comb_gaz_Func, MasseAir_e, Vol_Air_e,
   FractionMassiqueC, FractionMassiqueH, FractionMassiqueO, FractionMassiqueN, FractionMassiqueS, FractionMassiqueCl
@@ -111,6 +111,20 @@ function o2VolToO2Mass(o2Vol) {
 // CALCUL ITÉRATIF — FONCTION PURE
 // ============================================================
 
+// ============================================================
+// MODE « CALCUL PYROFLUID D'ORIGINE » (ClassCalcFour.vb)
+//   - enthalpie des fumées par les Cp de Pyrofluid (CalculQConsFumees : 0,226 T + 93e-6 T²/2 pour CO2, etc.)
+//   - chaleur latente de l'eau 596,8 kcal/kg (CalculQapport : CpEau × T − 596,8)
+// Hors mode d'origine : corrélations de l'outil (enthalpy_gas.js) et 2 501,6 kJ/kg (597,5 kcal/kg).
+// ============================================================
+const LATENTE_OUTIL_kJ_kg = 2501.6;
+const LATENTE_PYROFLUID_kJ_kg = 596.8 * 4.1868;
+const latenteEau = (modeOrigine) => (modeOrigine ? LATENTE_PYROFLUID_kJ_kg : LATENTE_OUTIL_kJ_kg);
+// Même ordre d'arguments que Hfvoute_kW
+const hFumeesKW = (modeOrigine) => (modeOrigine
+  ? (T, hcl, co2, co, h2o, h2, o2, n2, so2) => H_Fumees(co, co2, h2o, h2, n2, o2, so2, hcl, T)
+  : Hfvoute_kW);
+
 function runIterativeCalc({
   composition, sludgeC, sludgeH, sludgeO, sludgeN, sludgeS, sludgeCl,
   Exces_air_lit, Exces_air_combustible,
@@ -126,7 +140,10 @@ function runIterativeCalc({
   airComposition,
   forceGazZero = false,
   O2_pct_vol = 21,
+  modeOrigine = false,
 }) {
+  const LATENTE = latenteEau(modeOrigine);
+  const hFum = hFumeesKW(modeOrigine);
   const MAX_ITER = forceGazZero ? 1 : 50;
   const TOLERANCE = 0.01;
   let Masse_gaz_kg_h = 0;
@@ -320,8 +337,8 @@ function runIterativeCalc({
 
     const H_MV = (PCI_boue_kcal_kgMV * Masse_volatile_kg_h * cp_ref) / 3600;
     const H_MS = fh_MS_kW(Temp_boue_entree_C, Masse_seche_kg_h) || 0;
-    const H_Evap = (Masse_eau_kg_h * (cp_ref * Temp_boue_entree_C - 2501.6)) / 3600;
-    const H_Evap_add = (eau_add_kg_h * (cp_ref * 15 - 2501.6)) / 3600;
+    const H_Evap = (Masse_eau_kg_h * (cp_ref * Temp_boue_entree_C - LATENTE)) / 3600;
+    const H_Evap_add = (eau_add_kg_h * (cp_ref * 15 - LATENTE)) / 3600;
     const H_MM = fh_MM_kW(Temp_fumee_voute_C, Masse_mineral_kg_h) || 0;
     const H_NET_BOUE = H_MV + H_MS + H_Evap;
 
@@ -341,14 +358,16 @@ function runIterativeCalc({
     const H_balayage = cp_air(T_soufflante) * Maire_balayage + cp_dt_h2o(T_soufflante) * Meau_balayage;
     const H_air_soufflante = cp_air(T_soufflante) * Maire_sec_comb_tot + cp_dt_h2o(T_soufflante) * Meau_air_comburant;
 
-    const Hf_voute = Hfvoute_kW(Temp_fumee_voute_C, FG_HCl, FG_CO2, FG_CO, FG_H2O, FG_H2, FG_O2exc, FG_N2, FG_SO2reel) || 0;
+    const Hf_voute = hFum(Temp_fumee_voute_C, FG_HCl, FG_CO2, FG_CO, FG_H2O, FG_H2, FG_O2exc, FG_N2, FG_SO2reel) || 0;
 
     const Tair_prech = Tair_ap_prechauffe_C;
     const H_air_prech = cp_air(Tair_prech) * Maire_sec_comb_tot + cp_dt_h2o(Tair_prech) * (Maire_sec_comb_tot * Teneur_en_eau_kgH2O_kgAS);
 
     const hTarget = Hf_voute - (H_air_prech - H_air_soufflante) / Rdt_HX;
-    const Tf_voute_ap_HX_C = TempSortieFumees(FG_CO, FG_CO2, FG_H2O, FG_H2, FG_N2, FG_O2exc, FG_SO2reel, FG_HCl, hTarget) || 0;
-    const Hf_voute_HX = Hfvoute_kW(Tf_voute_ap_HX_C, FG_HCl, FG_CO2, FG_CO, FG_H2O, FG_H2, FG_O2exc, FG_N2, FG_SO2reel) || 0;
+    const Tf_voute_ap_HX_C = (modeOrigine
+      ? bissection((T) => hFum(T, FG_HCl, FG_CO2, FG_CO, FG_H2O, FG_H2, FG_O2exc, FG_N2, FG_SO2reel) - hTarget, -50, Temp_fumee_voute_C)
+      : TempSortieFumees(FG_CO, FG_CO2, FG_H2O, FG_H2, FG_N2, FG_O2exc, FG_SO2reel, FG_HCl, hTarget)) || 0;
+    const Hf_voute_HX = hFum(Tf_voute_ap_HX_C, FG_HCl, FG_CO2, FG_CO, FG_H2O, FG_H2, FG_O2exc, FG_N2, FG_SO2reel) || 0;
 
     const PCI_gaz_kWh_Nm3 = (PCI_combustible_kcal_kg * cp_ref) / 3600;
     // Liquid fuels (FIOUL) have density in kg/m³ (>100), not kg/Nm³ like gases.
@@ -582,7 +601,7 @@ function computeEquilibre(args, eauAuto) {
 
     // Température d'équilibre du freeboard : fumées + cendres + pertes + imbrûlés = apports
     out.T_freeboard_eq_C = bissection((T) =>
-      Hfvoute_kW(T, r0.FG_kg_h_HCl, r0.FG_kg_h_CO2, r0.FG_kg_h_CO, r0.FG_kg_h_H2O, r0.FG_kg_h_H2, r0.FG_kg_h_O2exces, r0.FG_kg_h_N2, r0.FG_kg_h_SO2reel)
+      hFumeesKW(args.modeOrigine)(T, r0.FG_kg_h_HCl, r0.FG_kg_h_CO2, r0.FG_kg_h_CO, r0.FG_kg_h_H2O, r0.FG_kg_h_H2, r0.FG_kg_h_O2exces, r0.FG_kg_h_N2, r0.FG_kg_h_SO2reel)
       + fh_MM_kW(T, args.Masse_mineral_kg_h) + r0.Pertes_thermiques_kW + r0.H_imbrule_kW - r0.H_in, 0, 3000);
 
     // Température d'air de fluidisation qui équilibre le bilan sans appoint
@@ -595,14 +614,14 @@ function computeEquilibre(args, eauAuto) {
 
     // Siccité d'équilibre : eau à retirer (déficit) ou à ajouter (excédent) pour annuler le bilan
     const hVap = cp_dt_h2o(Tv) * 3600; // kJ/kg, vapeur de 0 °C à T voûte
-    const denomBoue = (2501.6 - cp_ref * args.Temp_boue_entree_C) + hVap;
+    const denomBoue = (latenteEau(args.modeOrigine) - cp_ref * args.Temp_boue_entree_C) + hVap;
     const eauEq = denomBoue > 0 ? (bilan * 3600) / denomBoue : 0;
     const eauTot = args.Masse_seche_kg_h + args.Masse_eau_kg_h + eauEq;
     if (eauTot > 0) out.Siccite_eq_pct = Math.min(100, (args.Masse_seche_kg_h / eauTot) * 100);
 
     // Eau de refroidissement (15 °C) nécessaire quand le bilan est excédentaire
     if (eauAuto && bilan > 0) {
-      const denomEau = (2501.6 - cp_ref * 15) + hVap;
+      const denomEau = (latenteEau(args.modeOrigine) - cp_ref * 15) + hVap;
       let extra = (bilan * 3600) / denomEau;
       for (let i = 0; i < 4; i++) {
         const r = runIterativeCalc({ ...args, forceGazZero: true, eau_add_kg_h: (args.eau_add_kg_h || 0) + extra });
@@ -635,6 +654,8 @@ const CombustionTab = ({ innerData = {}, onInnerDataChange, onResultsChange, cur
   const [showDetailedBilan, setShowDetailedBilan] = useState(false);
   const [useGazAppoint, setUseGazAppoint] = useState(true);
   const [eauAuto, setEauAuto] = useState(() => lsGet(`eauAuto_FB_${nodeId}`, true));
+  const [modeOrigine, setModeOrigine] = useState(() => lsGet(`modeOrigine_FB_${nodeId}`, false));
+  useEffect(() => { lsSet(`modeOrigine_FB_${nodeId}`, modeOrigine); }, [modeOrigine]);
   useEffect(() => { lsSet(`eauAuto_FB_${nodeId}`, eauAuto); }, [eauAuto]);
   const [fuelStd, setFuelStd] = useState(() => lsGet(`fuelStd_FB_${nodeId}`, true));
   const [customFuelComp, setCustomFuelComp] = useState(() => {
@@ -740,7 +761,8 @@ const CombustionTab = ({ innerData = {}, onInnerDataChange, onResultsChange, cur
         airComposition,
         forceGazZero: !useGazAppoint,
         O2_pct_vol: emissions.O2_pct_air_combustion ?? DEFAULT_EMISSIONS.O2_pct_air_combustion,
-  }), [emissions, thermalParams, composition, airComposition, useGazAppoint,
+        modeOrigine,
+  }), [emissions, thermalParams, composition, airComposition, useGazAppoint, modeOrigine,
     innerData.C_percent, innerData.H_percent, innerData.O_percent,
     innerData.N_percent, innerData.S_percent, innerData.Cl_percent,
     innerData.MS_pourcent, innerData.MV_pourcent, innerData.BoueBrute_kg_h]);
@@ -797,6 +819,7 @@ const CombustionTab = ({ innerData = {}, onInnerDataChange, onResultsChange, cur
     innerData.H_imbrule_kW = results.H_imbrule_kW || 0;
     innerData.H_air_balayage_kW = results.H_air_balayage_instrumentation_kW || 0;
     innerData.H_air_secondaire_kW = results.H_air_secondaire_kW || 0;
+    innerData.FB_modeOrigine = !!modeOrigine;
     innerData.H_air_tertiaire_kW = results.H_air_tertiaire_kW || 0;
     innerData.H_air_soufflante_kW = results.H_air_soufflante_kW || 0;
     innerData.Meau_air_comburant = results.Meau_air_comburant || 0;
@@ -986,6 +1009,18 @@ const CombustionTab = ({ innerData = {}, onInnerDataChange, onResultsChange, cur
   // ============================================================
   return (
     <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '20px' }}>
+
+      {/* ═══ MODE DE CALCUL ═══ */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '10px', marginBottom: '12px' }}>
+        {modeOrigine && <span style={{ fontSize: '12px', color: '#92400e' }}>{t('FB_origin_mode_note')}</span>}
+        <button
+          onClick={() => setModeOrigine((v) => !v)}
+          title={t('FB_origin_mode_hint')}
+          style={{ padding: '6px 12px', background: modeOrigine ? '#b45309' : '#e5e7eb', color: modeOrigine ? 'white' : '#374151', border: 'none', borderRadius: 4, cursor: 'pointer', fontSize: 12, fontWeight: 600 }}
+        >
+          {modeOrigine ? t("Calcul Pyrofluid d'origine : ACTIF") : t("Calcul Pyrofluid d'origine")}
+        </button>
+      </div>
 
       {/* ═══ COMBUSTIBLE ═══ */}
       <div style={card}>
@@ -1920,7 +1955,7 @@ const CombustionTab = ({ innerData = {}, onInnerDataChange, onResultsChange, cur
                     { label: t('Efficacité [%]'),                  vals: [null, null, null, null, null, null, null, null, null, null, null, null, null, thermalParams.Rdt_HX * 100, null, null] },
                     { label: t('Énergie cédée par les fumées [kWh]'), vals: [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null] },
                     { label: t('Énergie transmise [kWh]'),         vals: [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null] },
-                    { label: t('Enthalpie [kWh]'),                 vals: [(emissions.Masse_volatile_kg_h * emissions.PCI_boue_kcal_kgMV * cp_ref) / 3600, fh_MS_kW(thermalParams.Temp_boue_entree_C, emissions.Masse_seche_kg_h), (emissions.Masse_eau_kg_h * (cp_ref * thermalParams.Temp_boue_entree_C - 2501.6)) / 3600, results.H_matiere_minerale_kW, results.H_NETTE_BOUE_kW, results.H_air_fluidisation_av_prechauffe_kW, results.H_air_secondaire_kW, results.H_air_tertiaire_kW, results.H_gaz_inter, results.Pertes_thermiques_kW, results.H_air_balayage_instrumentation_kW, results.Hair_ap_prechauffage_kW, results.H_air_soufflante_kW, results.Hf_voute_kW, results.Hf_voute_ap_HX_kW, results.H_imbrule_kW] },
+                    { label: t('Enthalpie [kWh]'),                 vals: [(emissions.Masse_volatile_kg_h * emissions.PCI_boue_kcal_kgMV * cp_ref) / 3600, fh_MS_kW(thermalParams.Temp_boue_entree_C, emissions.Masse_seche_kg_h), results.H_Evap_boue_entree_kW, results.H_matiere_minerale_kW, results.H_NETTE_BOUE_kW, results.H_air_fluidisation_av_prechauffe_kW, results.H_air_secondaire_kW, results.H_air_tertiaire_kW, results.H_gaz_inter, results.Pertes_thermiques_kW, results.H_air_balayage_instrumentation_kW, results.Hair_ap_prechauffage_kW, results.H_air_soufflante_kW, results.Hf_voute_kW, results.Hf_voute_ap_HX_kW, results.H_imbrule_kW] },
                   ].map((row, ri) => (
                     <tr key={ri} style={{ backgroundColor: ri % 2 === 0 ? '#FAFAFA' : '#fff' }}>
                       <td style={{ ...TD, fontWeight: 'bold', textAlign: 'left', position: 'sticky', left: 0, backgroundColor: ri % 2 === 0 ? '#FAFAFA' : '#fff', zIndex: 1 }}>{row.label}</td>
