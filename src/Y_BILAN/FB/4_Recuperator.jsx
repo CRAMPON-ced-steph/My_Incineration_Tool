@@ -4,7 +4,7 @@ import { fmt } from '../../A_Transverse_fonction/formatNumber';
 import {
   calculDebitPT, D_TLM,
   Coef_Hext, Coef_Hint, Fact_U, Fact_U_Encrasse, Fact_A, DP_RecupAir,
-  cp_air, cp_dt_h2o,
+  hAir_kW, hVap_kW,
 } from '../../A_Transverse_fonction/bilan_fct_FB';
 
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
@@ -67,9 +67,11 @@ const Recuperateur = ({ innerData = {}, combustionResults = {}, currentLanguage 
   const Meau_air_comburant       = innerData?.Meau_air_comburant       ?? 0;
 
   // Col. 9 bilan énergétique détaillé — calculé localement (indépendant du montage de CombustionTab)
+  // Même loi d'enthalpie que CombustionTab (NIST, ou Cp Pyrofluid en mode d'origine)
+  const modeOrigine = !!innerData?.FB_modeOrigine;
   const H_air_soufflante_kW =
-    cp_air(Temp_air_soufflante_C) * Masse_air_sec_combustion_kg_h
-    + cp_dt_h2o(Temp_air_soufflante_C) * Meau_air_comburant;
+    hAir_kW(modeOrigine)(Temp_air_soufflante_C) * Masse_air_sec_combustion_kg_h
+    + hVap_kW(modeOrigine)(Temp_air_soufflante_C) * Meau_air_comburant;
 
   // ============================================================
   // CALCUL PRINCIPAL - DESIGN RÉCUPÉRATEUR
@@ -162,7 +164,7 @@ const Recuperateur = ({ innerData = {}, combustionResults = {}, currentLanguage 
   const Q_air_ventilateur_m3_h = calculDebitPT(Q_air_pulser_Nm3_h, P_cote_air_entree_mmCE, Temp_air_soufflante_C);
   const Puissance_elec_ventilateur_kW =
     freeParams.Rendement_ventilateur > 0
-      ? ((Q_air_ventilateur_m3_h / 3600) * P_cote_air_entree_mmCE * 9.8 )/ freeParams.Rendement_ventilateur / 1000
+      ? ((Q_air_ventilateur_m3_h / 3600) * P_cote_air_entree_mmCE * 9.81)/ freeParams.Rendement_ventilateur / 1000
       : 0;
 
   // ============================================================

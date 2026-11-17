@@ -3,6 +3,7 @@ import PollutantCalculator from '../C_Components/Tableau_polluants';
 import { R_1, R_2, R_3 } from '../A_Transverse_fonction/FGT_fct';
 import TableGeneric from '../C_Components/Tableau_generique';
 import { fmt } from '../A_Transverse_fonction/formatNumber';
+import { molarMasses } from '../A_Transverse_fonction/constantes';
 
 const FGT = ({ masses, innerData,Debit_fumees_sec_Nm3_h,  O2_mesure,O2_ref }) => {
 
@@ -240,8 +241,8 @@ const FGT = ({ masses, innerData,Debit_fumees_sec_Nm3_h,  O2_mesure,O2_ref }) =>
     Sb_As_Pb_Cr_Co_Cu_Mn_Ni_V:  Residus_tot,//masses.Sb_As_Pb_Cr_Co_Cu_Mn_Ni_V || 0,
   };
 
-  masses_pollutant_output.Cl = masses_pollutant_output.HCl * 35 / 36;
-  masses_pollutant_output.S = masses_pollutant_output.SO2 / 2;
+  masses_pollutant_output.Cl = masses_pollutant_output.HCl * molarMasses.Cl / molarMasses.HCl;
+  masses_pollutant_output.S = masses_pollutant_output.SO2 * molarMasses.S / molarMasses.SO2;
 
 
 

@@ -1,4 +1,4 @@
-import { T_ref, Lv } from "./constantes";
+import { T_ref, Lv, cp_ref } from "./constantes";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Enthalpies sensibles des gaz — NIST Chemistry WebBook, équation de Shomate
@@ -211,19 +211,19 @@ export const fs_AIR = (T) => {
 
 export const fh_CaO = (T) => {
   T += T_ref;
-  const result = 4.186 * (10 * T + 0.00484 * T * T / 2 + 108000 / T - 3305.96) / 56;
+  const result = cp_ref * (10 * T + 0.00484 * T * T / 2 + 108000 / T - 3305.96) / 56;
   return result;
 };
 
 export const fs_CaO = (T) => {
   T += T_ref;
-  const result = 4.186 * (10 * Math.log(T) + 0.00484 * T + 108000 / (T * T * 2) - 58.1406) / 56;
+  const result = cp_ref * (10 * Math.log(T) + 0.00484 * T + 108000 / (T * T * 2) - 58.1406) / 56;
   return result;
 };
 
 export const fh_CaCO3 = (T) => {
   T += T_ref;
-  const result = 4.186 * (19.68 * T + 0.01189 * T * T / 2 + 307600 / T - 6942.45) / 100;
+  const result = cp_ref * (19.68 * T + 0.01189 * T * T / 2 + 307600 / T - 6942.45) / 100;
   return result;
 };
 
@@ -231,20 +231,20 @@ export const fh_CaCO3 = (T) => {
 export const fs_CaCO3 = (T) => {
   T += T_ref;
   // Commenté dans l'original, décommenté ici :
-   const result = 4.186 * (19.68 * Math.log(T) + 0.01189 * T + 307600 / (T * T * 2) - 115.7) / 100;
+   const result = cp_ref * (19.68 * Math.log(T) + 0.01189 * T + 307600 / (T * T * 2) - 115.7) / 100;
    return result;
 };
 
 export const fh_MgO = (T) => {
   T += T_ref;
-  const result = 4.186 * (10.86 * T + 0.001197 * T * T / 2 + 208700 / T - 3773.85) / 40.3;
+  const result = cp_ref * (10.86 * T + 0.001197 * T * T / 2 + 208700 / T - 3773.85) / 40.3;
   return result;
 };
 
 export const fs_MgO = (T) => {
   T += T_ref;
   // Commenté dans l'original, décommenté ici :
-   const result = 4.186 * (10.86 * Math.log(T) + 0.001197 * T + 208700 / (T * T * 2) - 62.6458) / 40.3;
+   const result = cp_ref * (10.86 * Math.log(T) + 0.001197 * T + 208700 / (T * T * 2) - 62.6458) / 40.3;
   return result;
 };
 
@@ -263,14 +263,14 @@ export const fs_MgCO3 = (T) => {
 
 export const fh_C = (T) => {
   T += T_ref;
-  const result = 4.186 * (2.673 * T + 0.002617 * T * T / 2 + 116900 / T - 1255.45) / 12;
+  const result = cp_ref * (2.673 * T + 0.002617 * T * T / 2 + 116900 / T - 1255.45) / 12;
 
   return result;
 };
 
 export const fh_Al2O3 = (T) => {
   T += T_ref;
-  const result = 4.186 * (22.08 * T + 0.08971 * T * T / 2 + 522500 / T - 11281) / 102;
+  const result = cp_ref * (22.08 * T + 0.08971 * T * T / 2 + 522500 / T - 11281) / 102;
 
   return result;
 };
@@ -368,7 +368,7 @@ export const fh_CH4 = (T) => {
   const d = 0.000000002703;
   const e = -1740.48;
   T += T_ref;
-  const result = (A * T + B * T * T / 2 + C * T * T * T / 3 + d * T * T * T * T / 4 + e) * 4.186 / 16;
+  const result = (A * T + B * T * T / 2 + C * T * T * T / 3 + d * T * T * T * T / 4 + e) * cp_ref / 16;
   T -= T_ref;
   return result;
 };
@@ -380,7 +380,7 @@ export const fh_C2H2 = (T) => {
   const d = 0.000000003373;
   const e = -2509.12;
   T += T_ref;
-  const result = (A * T + B * T * T / 2 + C * T * T * T / 3 + d * T * T * T * T / 4 + e) * 4.186 / 26;
+  const result = (A * T + B * T * T / 2 + C * T * T * T / 3 + d * T * T * T * T / 4 + e) * cp_ref / 26;
   T -= T_ref;
   return result;
 };
@@ -392,7 +392,7 @@ export const fh_C2H4 = (T) => {
   const d = 0.000000004192;
   const e = -1512.43;
   T += T_ref;
-  const result = (A * T + B * T * T / 2 + C * T * T * T / 3 + d * T * T * T * T / 4 + e) * 4.186 / 28;
+  const result = (A * T + B * T * T / 2 + C * T * T * T / 3 + d * T * T * T * T / 4 + e) * cp_ref / 28;
   T -= T_ref;
   return result;
 };
@@ -404,7 +404,7 @@ export const fh_C2H6 = (T) => {
   const d = 0.000000002081;
   const e = -1828.46;
   T += T_ref;
-  const result = (A * T + B * T * T / 2 + C * T * T * T / 3 + d * T * T * T * T / 4 + e) * 4.186 / 30;
+  const result = (A * T + B * T * T / 2 + C * T * T * T / 3 + d * T * T * T * T / 4 + e) * cp_ref / 30;
   T -= T_ref;
   return result;
 };

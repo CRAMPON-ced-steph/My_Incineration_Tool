@@ -568,3 +568,13 @@ Doit être l'**inverse cohérent** de `option_T` :
 `constantes.js` : `Lv = 597.5 * cp_ref` = 2 501,6 kJ/kg (chaleur latente à 0 °C ; avant 590 kcal/kg, valeur vers 13 °C, −1,2 %). Référence de toutes les enthalpies d'eau : liquide à 0 °C → vapeur à 0 °C (`Lv`) → vapeur chauffée de 0 °C à T (`fh_H2O`). Les valeurs écrites en dur (2501.6 dans FB/GF/TflammeAdia, 540 × 4.1868 dans `h_fumee` et `Tableau_fumee_inverse`) ont été remplacées par `Lv`.
 - Ne pas utiliser 540 kcal/kg (latente à 100 °C) avec `fh_H2O`, qui part de 0 °C.
 - Exceptions volontaires : 597 kcal/kg dans les onglets Design quench/saturateur/tour de lavage (formules Pyrofluid d'origine) et 596,8 kcal/kg du mode « Calcul Pyrofluid d'origine » de FB.
+
+### Cohérence des propriétés physiques (2026-11-17)
+
+- **Turbine WHB** (`Y_BILAN/WHB/6_WHB_ValoVapeur3_ML.jsx`) : propriétés de la vapeur par IAPWS-IF97 (`steam_table3.js`), pressions en **bar absolus** (la pression chaudière WHB, en bar relatifs, est convertie +1 à l'initialisation). Après un soutirage, l'état réel (P, h) est conservé (`s_ph`, `T_ph`). Ne pas revenir aux corrélations approchées (Tsat −44 °C à 40 bar, détente à condensation −26 %).
+- **Air FB / GF** : `hAir_kW(modeOrigine)` et `hVap_kW(modeOrigine)` (`bilan_fct_FB.jsx`) — NIST en mode outil, Cp Pyrofluid en mode « Calcul Pyrofluid d'origine ». GF n'a pas de mode d'origine → NIST. `4_Recuperator.jsx` suit `innerData.FB_modeOrigine`.
+- **IACT** (Bilan et Retro) : débit d'air par bilan enthalpique NIST (plus de Cp constant 1,005).
+- **Masse volumique de l'air** : `rho_air` (constantes.js, air O2/N2 21/79 à 22,4 Nm³/kmol) pour les nœuds qui modélisent l'air en 0,233/0,767 (RK, CO2, AIRINJECTION, TUBEANDSHELL, `Q_AIR_DILUTION`). **FB et GF gardent 1,293** : cohérent avec `Vol_Air_e` (air VB avec argon, ≈ 1,293 à 21 % O2).
+- **Cl / S** dans les onglets polluants : `HCl × M_Cl / M_HCl` et `SO2 × M_S / M_SO2` (molarMasses). DeNOx non modifié (choix de Cédric).
+- **RK / CO2** : O2 en excès des fumées stœchiométriques calculé en Nm³ (avant : kg/h pris pour des Nm³/h).
+- **DeNOx** : réchauffage (TflammeAdia, mélange par moyenne volumique) volontairement laissé tel quel — ne pas modifier.

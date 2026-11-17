@@ -1,10 +1,11 @@
 import {fh_CO2,fh_H2O, fh_O2,fh_N2,fh_AIR} from '../A_Transverse_fonction/enthalpy_gas';
+import { cp_ref } from './constantes';
 
 export const H_in_systemB = (Mass_kg_h, cvw_kj_kg, M_dry_air_kg_h, T_air, M_steam_water_kg_h, T_water, T_waste, Head_los) => {
   const a = Mass_kg_h * cvw_kj_kg;
   const b = M_dry_air_kg_h * fh_AIR(T_air);
   const c = M_steam_water_kg_h * fh_H2O(T_water);
-  const d = Mass_kg_h * 0.25 * 4.186 * T_waste;
+  const d = Mass_kg_h * 0.25 * cp_ref * T_waste;
   
   return a + b + c + d;
 };
@@ -14,7 +15,7 @@ export const H_in_systemA = (Mass_kg_h, cvw_kj_kg, M_dry_air_kg_h, T_air, M_stea
   const a = Mass_kg_h * cvw_kj_kg;
   const b = M_dry_air_kg_h * ((1 - poucentage_prechauffe) * fh_AIR(T_air) + poucentage_prechauffe * fh_AIR(Tair_prechauffe));
   const c = M_steam_water_kg_h * fh_H2O(T_water);
-  const d = Mass_kg_h * 0.25 * 4.186 * T_waste;
+  const d = Mass_kg_h * 0.25 * cp_ref * T_waste;
   
   return (a + b + c + d) * (1 - Head_los / 100);
 };
@@ -24,8 +25,8 @@ export const H_in_system = (Mass_kg_h, cvw_kj_kg, M_dry_air_kg_h, T_air, M_steam
   const a = Mass_kg_h * cvw_kj_kg;
   const b = M_dry_air_kg_h * fh_AIR(T_air);
   const c = M_steam_water_kg_h * fh_H2O(T_water);
-  const d = Mass_kg_h * 0.25 * 4.186 * T_waste;
-  const e = Mass_kg_h * 0.25 * 4.186 * Tf_init;
+  const d = Mass_kg_h * 0.25 * cp_ref * T_waste;
+  const e = Mass_kg_h * 0.25 * cp_ref * Tf_init;
   
   // Pertes par les imbrules
   const PCI_imb_kj_kg = 33000;

@@ -7,6 +7,7 @@ import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './REACTOR_traduction';
 
 import { fmt } from '../../A_Transverse_fonction/formatNumber';
+import { molarMasses } from '../../A_Transverse_fonction/constantes';
 const FlueGasPollutantEmission = ({ innerData, currentLanguage = 'fr', nodeId }) => {
   const initialEmissions = {
     'Fly ashes content [g/Nm3]': 0,
@@ -136,8 +137,8 @@ const FlueGasPollutantEmission = ({ innerData, currentLanguage = 'fr', nodeId })
     Sb_As_Pb_Cr_Co_Cu_Mn_Ni_V: masses_pollutant_input.Sb_As_Pb_Cr_Co_Cu_Mn_Ni_V || 0,
   };
 
-  masses_pollutant_output.Cl = masses_pollutant_output.HCl * 35 / 36.5;
-  masses_pollutant_output.S = masses_pollutant_output.SO2 / 2;
+  masses_pollutant_output.Cl = masses_pollutant_output.HCl * molarMasses.Cl / molarMasses.HCl;
+  masses_pollutant_output.S = masses_pollutant_output.SO2 * molarMasses.S / molarMasses.SO2;
 
   // Calculate ash masses
   let DryBottomAsh_kg_h = 0;

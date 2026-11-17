@@ -9,6 +9,7 @@ import { translations } from './AIRINJECTION_traduction';
 import '../../index.css';
 
 import { fmt } from '../../A_Transverse_fonction/formatNumber';
+import { rho_air } from '../../A_Transverse_fonction/constantes';
 
 const AIRINJECTIONFlueGasParameters = ({ innerData, nodeId, currentLanguage = 'fr' }) => {
   const initialEmissions_AIRINJECTION = {
@@ -89,7 +90,7 @@ const AIRINJECTIONFlueGasParameters = ({ innerData, nodeId, currentLanguage = 'f
   // Fraction molaire H₂O dans l'air humide : r = (ω·M_air/M_H2O) / (1 + ω·M_air/M_H2O)
   const omega_air      = 0.008;
   const r_H2O_air      = (omega_air * 29 / 18) / (1 + omega_air * 29 / 18);
-  const V_air_dry_Nm3_h = Q_air_sec_kg_h > 0 ? Q_air_sec_kg_h / 1.293 : 0;
+  const V_air_dry_Nm3_h = Q_air_sec_kg_h > 0 ? Q_air_sec_kg_h / rho_air : 0;
   const V_air_H2O_Nm3_h = V_air_dry_Nm3_h * r_H2O_air / (1 - r_H2O_air);
   const V_air_cooling   = V_air_dry_Nm3_h + V_air_H2O_Nm3_h;
 

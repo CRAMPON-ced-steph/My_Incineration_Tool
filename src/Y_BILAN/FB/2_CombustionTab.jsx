@@ -16,9 +16,9 @@ const useTranslation = (currentLanguage = 'fr') => {
 
 
 import {
-  cp_dt_h2o, fh_MS_kW, fh_MM_kW, Hfvoute_kW, H_Fumees,
+  hAir_kW, hVap_kW, fh_MS_kW, fh_MM_kW, Hfvoute_kW, H_Fumees,
   Masse_Air_Instrumentation,
-  MoleNOx, Mole_CO, Mole_H2, cp_air, Masse_Air_Comb_gaz_Func, MasseAir_e, Vol_Air_e,
+  MoleNOx, Mole_CO, Mole_H2, Masse_Air_Comb_gaz_Func, MasseAir_e, Vol_Air_e,
   FractionMassiqueC, FractionMassiqueH, FractionMassiqueO, FractionMassiqueN, FractionMassiqueS, FractionMassiqueCl
 } from '../../A_Transverse_fonction/bilan_fct_FB';
 
@@ -115,7 +115,8 @@ function o2VolToO2Mass(o2Vol) {
 // MODE « CALCUL PYROFLUID D'ORIGINE » (ClassCalcFour.vb)
 //   - enthalpie des fumées par les Cp de Pyrofluid (CalculQConsFumees : 0,226 T + 93e-6 T²/2 pour CO2, etc.)
 //   - chaleur latente de l'eau 596,8 kcal/kg (CalculQapport : CpEau × T − 596,8)
-// Hors mode d'origine : corrélations de l'outil (enthalpy_gas.js) et 2 501,6 kJ/kg (597,5 kcal/kg).
+//   - air et humidité de l'air par les mêmes Cp Pyrofluid (cp_air, cp_dt_h2o)
+// Hors mode d'origine : corrélations NIST de l'outil (enthalpy_gas.js) pour fumées, air et vapeur, et 2 501,6 kJ/kg (597,5 kcal/kg).
 // ============================================================
 const LATENTE_OUTIL_kJ_kg = Lv; // 2 501,6 kJ/kg (constantes.js)
 const LATENTE_PYROFLUID_kJ_kg = 596.8 * 4.1868;
@@ -144,6 +145,8 @@ function runIterativeCalc({
 }) {
   const LATENTE = latenteEau(modeOrigine);
   const hFum = hFumeesKW(modeOrigine);
+  const hAir = hAir_kW(modeOrigine);      // air sec
+  const hVapAir = hVap_kW(modeOrigine);   // humidité de l'air
   const MAX_ITER = forceGazZero ? 1 : 50;
   const TOLERANCE = 0.01;
   let Masse_gaz_kg_h = 0;
@@ -342,26 +345,26 @@ function runIterativeCalc({
     const H_MM = fh_MM_kW(Temp_fumee_voute_C, Masse_mineral_kg_h) || 0;
     const H_NET_BOUE = H_MV + H_MS + H_Evap;
 
-    const H_air_flu = cp_air(Temp_air_fluidisation_av_prechauffe_C) * Maire_sec_comb_tot + cp_dt_h2o(Temp_air_fluidisation_av_prechauffe_C) * Meau_air_comburant;
+    const H_air_flu = hAir(Temp_air_fluidisation_av_prechauffe_C) * Maire_sec_comb_tot + hVapAir(Temp_air_fluidisation_av_prechauffe_C) * Meau_air_comburant;
 
     const Meau_air2 = Teneur_en_eau_kgH2O_kgAS * Masse_air_secondaire_kg_h;
-    const H_air2 = cp_air(Temp_air_secondaire_C) * Masse_air_secondaire_kg_h + cp_dt_h2o(Temp_air_secondaire_C) * Meau_air2;
+    const H_air2 = hAir(Temp_air_secondaire_C) * Masse_air_secondaire_kg_h + hVapAir(Temp_air_secondaire_C) * Meau_air2;
 
     const Meau_air3 = Teneur_en_eau_kgH2O_kgAS * Masse_air_tertiaire_kg_h;
-    const H_air3 = cp_air(Temp_air_tertiaire_C) * Masse_air_tertiaire_kg_h + cp_dt_h2o(Temp_air_tertiaire_C) * Meau_air3;
+    const H_air3 = hAir(Temp_air_tertiaire_C) * Masse_air_tertiaire_kg_h + hVapAir(Temp_air_tertiaire_C) * Meau_air3;
 
     const Pertes_boue = ((PCI_boue_kcal_kgMV * Masse_volatile_kg_h * pertesFrac) / 3600) * cp_ref;
 
     const T_soufflante = Temp_air_fluidisation_av_prechauffe_C + 45;
 
     const Meau_balayage = Teneur_en_eau_kgH2O_kgAS * Maire_balayage;
-    const H_balayage = cp_air(T_soufflante) * Maire_balayage + cp_dt_h2o(T_soufflante) * Meau_balayage;
-    const H_air_soufflante = cp_air(T_soufflante) * Maire_sec_comb_tot + cp_dt_h2o(T_soufflante) * Meau_air_comburant;
+    const H_balayage = hAir(T_soufflante) * Maire_balayage + hVapAir(T_soufflante) * Meau_balayage;
+    const H_air_soufflante = hAir(T_soufflante) * Maire_sec_comb_tot + hVapAir(T_soufflante) * Meau_air_comburant;
 
     const Hf_voute = hFum(Temp_fumee_voute_C, FG_HCl, FG_CO2, FG_CO, FG_H2O, FG_H2, FG_O2exc, FG_N2, FG_SO2reel) || 0;
 
     const Tair_prech = Tair_ap_prechauffe_C;
-    const H_air_prech = cp_air(Tair_prech) * Maire_sec_comb_tot + cp_dt_h2o(Tair_prech) * (Maire_sec_comb_tot * Teneur_en_eau_kgH2O_kgAS);
+    const H_air_prech = hAir(Tair_prech) * Maire_sec_comb_tot + hVapAir(Tair_prech) * (Maire_sec_comb_tot * Teneur_en_eau_kgH2O_kgAS);
 
     const hTarget = Hf_voute - (H_air_prech - H_air_soufflante) / Rdt_HX;
     // Inversion avec la même loi d'enthalpie que celle qui a donné hTarget
@@ -609,11 +612,12 @@ function computeEquilibre(args, eauAuto) {
     const hum = args.Teneur_en_eau_kgH2O_kgAS || 0;
     const cibleAir = (r0.Hair_ap_prechauffage_kW || 0) - bilan;
     if (Mair > 0 && cibleAir > 0) {
-      out.T_air_eq_C = bissection((T) => cp_air(T) * Mair + cp_dt_h2o(T) * Mair * hum - cibleAir, 0, 3000);
+      const hAirEq = hAir_kW(args.modeOrigine), hVapEq = hVap_kW(args.modeOrigine);
+      out.T_air_eq_C = bissection((T) => hAirEq(T) * Mair + hVapEq(T) * Mair * hum - cibleAir, 0, 3000);
     }
 
     // Siccité d'équilibre : eau à retirer (déficit) ou à ajouter (excédent) pour annuler le bilan
-    const hVap = cp_dt_h2o(Tv) * 3600; // kJ/kg, vapeur de 0 °C à T voûte
+    const hVap = hVap_kW(args.modeOrigine)(Tv) * 3600; // kJ/kg, vapeur de 0 °C à T voûte
     const denomBoue = (latenteEau(args.modeOrigine) - cp_ref * args.Temp_boue_entree_C) + hVap;
     const eauEq = denomBoue > 0 ? (bilan * 3600) / denomBoue : 0;
     const eauTot = args.Masse_seche_kg_h + args.Masse_eau_kg_h + eauEq;

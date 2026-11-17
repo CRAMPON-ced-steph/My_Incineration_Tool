@@ -9,7 +9,7 @@ import { cp_air_kWh_m3_degree, D_TLM, Fact_UA, Surface_echange } from '../../../
 import { fmt } from '../../../A_Transverse_fonction/formatNumber';
 import { makeT } from '../../../F_Gestion_Langues/localT';
 import { translations } from './TubeShell_traduction';
-import { cp_ref } from '../../../A_Transverse_fonction/constantes';
+import { cp_ref, rho_air } from '../../../A_Transverse_fonction/constantes';
 const getStorageKey = (nodeId) => `TUBEANDSHELL_params_${nodeId}`;
 
 const DEFAULT = {
@@ -25,7 +25,7 @@ const DEFAULT = {
   Encrassement: 25,
 };
 
-const rho_air     = 1.293;
+// rho_air : constantes.js (air 21/79 en volume, 22,4 Nm³/kmol)
 const O2_mass_frac = 0.233;
 const N2_mass_frac = 0.767;
 const cp_eau      = cp_ref;
