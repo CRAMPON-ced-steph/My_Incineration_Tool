@@ -82,3 +82,30 @@ Exemple : 3 t/h de déchets conditionnés, Cl 3 %, inertes 15 %, sortie 900 °C.
 - [ ] `O2_calcule` transmis en % (FB et GF en fraction 0-1) ; le quench devine l'unité.
 - [ ] Valeurs par défaut : part d'air préchauffé 0 au démarrage mais 20 % après réinitialisation ; débits de déchets par défaut de 1 à 8 kg/h.
 - [ ] Mode Retro (`src/Z_RETRO/RK`) non audité.
+
+---
+
+## Autres équipements (`src/Y_BILAN`) — audit du 17/11/2026
+
+Test : chaque page Bilan ouverte avec un même flux amont (14 200 kg/h de fumées à 220 °C), tous les onglets parcourus, données envoyées.
+
+### Transmission et stabilité
+- [ ] **Résultats non transmis à l'aval** : BHF, électrofiltre, cyclone, réacteur, tour de refroidissement et laveur renvoient `T_OUT` et `FG_OUT_kg_h` reçus de l'amont (jamais mis à jour). Leurs températures de sortie, entrées d'air et eau injectée ne sont pas transmises. Laveur : `T_scrubber_out` / `FG_scrubber_out_kg_h` sont calculés mais lus par aucun nœud → ventilateur et cheminée calculés avec les fumées d'entrée du laveur.
+- [ ] **Boucles de rendu infinies à l'ouverture de l'onglet Design** (la page ne se stabilise jamais) : chaudière, quench simple, injection d'eau, électrofiltre, réacteur, cyclone, tour de refroidissement. Cause : effet qui appelle `setInnerData` et dépend de `innerData` ou d'une fonction de traduction `t` recréée à chaque rendu (même défaut que celui déjà corrigé dans le Design du four rotatif).
+- [ ] **DeNOx : l'onglet OPEX plante** (page blanche) après passage par Design : `consoElec1`, `consoElec2`, `Conso_Ammonia_kg` écrits en texte (`toFixed`) → `toPrecision` sur une chaîne dans `OpexDashboard`. (Hors calcul de réchauffage, laissé tel quel.)
+- [ ] **Nœud CO₂ non implémenté** : onglets 2 à 6 vides ; l'onglet 1 est une copie des fumées du four rotatif et envoie T = 900 °C et des débits nuls en aval.
+
+### Calculs
+- [ ] **Eau injectée comptée deux fois** (`Qeau_added_to_be_at_T`, `enthalpy_mix_gas.js`) : la fonction additionne l'eau trouvée par itération et celle du bilan d'énergie. 220 → 150 °C : 921 kg/h au lieu de 483 (×1,9) ; 900 → 200 °C : 16 800 au lieu de 12 200 (+38 %). Utilisée par quench, quench simple, saturateur, injection d'eau, tour de refroidissement, laveur, électrofiltre, cyclone, réacteur, DeNOx.
+- [ ] **Électrofiltre, cyclone, réacteur** : la baisse de température est obtenue par injection d'eau (même fonction) → eau fictive ; T sortie par défaut 400 °C quelle que soit l'entrée → si l'entrée est plus froide, débit d'eau négatif.
+- [ ] **Entrées d'air parasites** (13 nœuds du modèle commun) : Nm³/h pris pour des kg/h (`O2 = 0,21 × V`, `N2 = 0,79 × V`) → masse d'air ajoutée −22 % (1 000 kg au lieu de 1 288 kg pour 1 000 Nm³/h) ; température de mélange par moyenne pondérée des volumes.
+- [ ] **Ventilateur de tirage** (`1_IDFAN_Flue_gas1_ML.jsx`) : arguments inversés `coeff_Nm3_to_m3(T_IN, 0)` → débit réel ≈ débit normal → puissances aéraulique et électrique sous-estimées d'environ 42 % à 200 °C. Cp constants (N2 1,15) au lieu des enthalpies NIST.
+- [ ] **Pertes thermiques en % de l'enthalpie totale**, chaleur latente de l'eau des fumées incluse (modèle commun, chaudière) : à 220 °C, 2 % = 55 kW au lieu de 20 kW (×2,7) ; à 900 °C ×1,4.
+- [ ] **Injection d'air** : T sortie par défaut 400 °C transmise même si l'entrée est plus froide (le gaz « monte » de 220 à 400 °C sans énergie) ; entrée `FG_IN` figée à la première ouverture (un changement amont n'est plus pris en compte) ; humidité de l'air ajoutée sans son énergie.
+- [ ] **Échangeur tubes-calandre** : T sortie par défaut = T entrée − 200 (220 → 20 °C) ; pas de point de rosée ni de condensation : sous ≈ 55 °C, l'eau reste vapeur et la chaleur de condensation n'est pas comptée.
+- [ ] **Mélangeur (SEP21)** : température de mélange = moyenne pondérée des masses au lieu d'un bilan d'enthalpie.
+- [ ] **Chaudière** : purge non comptée dans le bilan (vapeur surestimée ≈ 0,5 % pour 2 % de purge).
+
+### Non couvert
+- [ ] Mode Retro (`src/Z_RETRO`) de ces équipements.
+- [ ] Détail des onglets Polluants, Design et OPEX (seuls la stabilité et les points ci-dessus ont été vérifiés).
