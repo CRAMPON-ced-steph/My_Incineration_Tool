@@ -16,7 +16,7 @@ const useTranslation = (currentLanguage = 'fr') => {
 
 
 import {
-  cp_dt_h2o, fh_MS_kW, fh_MM_kW, Hfvoute_kW, TempSortieFumees, H_Fumees,
+  cp_dt_h2o, fh_MS_kW, fh_MM_kW, Hfvoute_kW, H_Fumees,
   Masse_Air_Instrumentation,
   MoleNOx, Mole_CO, Mole_H2, cp_air, Masse_Air_Comb_gaz_Func, MasseAir_e, Vol_Air_e,
   FractionMassiqueC, FractionMassiqueH, FractionMassiqueO, FractionMassiqueN, FractionMassiqueS, FractionMassiqueCl
@@ -364,9 +364,9 @@ function runIterativeCalc({
     const H_air_prech = cp_air(Tair_prech) * Maire_sec_comb_tot + cp_dt_h2o(Tair_prech) * (Maire_sec_comb_tot * Teneur_en_eau_kgH2O_kgAS);
 
     const hTarget = Hf_voute - (H_air_prech - H_air_soufflante) / Rdt_HX;
-    const Tf_voute_ap_HX_C = (modeOrigine
-      ? bissection((T) => hFum(T, FG_HCl, FG_CO2, FG_CO, FG_H2O, FG_H2, FG_O2exc, FG_N2, FG_SO2reel) - hTarget, -50, Temp_fumee_voute_C)
-      : TempSortieFumees(FG_CO, FG_CO2, FG_H2O, FG_H2, FG_N2, FG_O2exc, FG_SO2reel, FG_HCl, hTarget)) || 0;
+    // Inversion avec la même loi d'enthalpie que celle qui a donné hTarget
+    // (outil : NIST ; mode d'origine : polynômes Pyrofluid).
+    const Tf_voute_ap_HX_C = bissection((T) => hFum(T, FG_HCl, FG_CO2, FG_CO, FG_H2O, FG_H2, FG_O2exc, FG_N2, FG_SO2reel) - hTarget, -50, Temp_fumee_voute_C) || 0;
     const Hf_voute_HX = hFum(Tf_voute_ap_HX_C, FG_HCl, FG_CO2, FG_CO, FG_H2O, FG_H2, FG_O2exc, FG_N2, FG_SO2reel) || 0;
 
     const PCI_gaz_kWh_Nm3 = (PCI_combustible_kcal_kg * cp_ref) / 3600;
