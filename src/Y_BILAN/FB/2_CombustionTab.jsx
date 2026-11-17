@@ -48,6 +48,22 @@ const FUEL_PROPERTIES = {
   FIOUL: { density: 850, pci: 10223, C_percent: 86.0, H_percent: 13.6, O_percent: 0.1, N_percent: 0.1, S_percent: 0.2, Cl_percent: 0 },
 };
 
+// PCI d'un combustible à partir de sa composition massique (C, H, O, N, S, Cl en %) :
+//   PCS de Dulong [kcal/kg] = 81 C + 290 (H − O/8) + 25 S, sur la composition ramenée à 100 %,
+//   puis PCI = PCS − eau formée (9 H/100 kg/kg) × chaleur latente à 0 °C (Lv, 597,5 kcal/kg).
+// Contrôle : gaz naturel de la table → 11 460 kcal/kg × 0,774 = 8 870 kcal/Nm³ (table : 8 875).
+// Limite connue de Dulong : sous-estime les gaz riches en O lié au carbone (biogaz ≈ −6 %).
+const pciDulong_kcal_kg = (comp) => {
+  const v = (x) => Number(x) || 0;
+  const [C0, H0, O0, N0, S0, Cl0] = ['C_percent', 'H_percent', 'O_percent', 'N_percent', 'S_percent', 'Cl_percent'].map((k) => v(comp?.[k]));
+  const tot = C0 + H0 + O0 + N0 + S0 + Cl0;
+  if (!(tot > 0)) return 0;
+  const k = 100 / tot;
+  const C = C0 * k, H = H0 * k, O = O0 * k, S = S0 * k;
+  const pcs = 81 * C + 290 * (H - O / 8) + 25 * S;
+  return Math.max(0, pcs - (9 * H / 100) * (Lv / cp_ref));
+};
+
 const DEFAULT_AIR_COMP_ROW = { CO2_pct: 0, H2O_pct: 0, O2_pct: 23.14, N2_pct: 76.86, SO2_pct: 0, Cl_pct: 0 };
 
 const DEFAULT_AIR_COMPOSITION = {
@@ -677,18 +693,23 @@ const CombustionTab = ({ innerData = {}, onInnerDataChange, onResultsChange, cur
   useEffect(() => { lsSet(`fuelStd_FB_${nodeId}`, fuelStd); }, [fuelStd]);
   useEffect(() => { lsSet(`customFuelComp_FB_${nodeId}`, customFuelComp); }, [customFuelComp]);
 
-  // Recalcul PCI via Dulong quand la composition custom change, restaure le PCI std sinon
+  // Composition personnalisée : PCI par Dulong, dans l'unité attendue par le bilan
+  // (kcal/Nm³ pour un gaz, kcal/kg pour un liquide — même règle densité > 100 que runIterativeCalc).
   useEffect(() => {
-    if (!fuelStd) {
-      const { C_percent: C, H_percent: H, O_percent: O, S_percent: S } = customFuelComp;
-      const pci = Math.max(0, 81 * C + 290 * (H - O / 8) + 25 * S);
-      setEmissions(prev => ({ ...prev, PCI_combustible: Math.round(pci) }));
-    } else {
-      setEmissions(prev => {
-        const p = FUEL_PROPERTIES[prev.type_energy] || FUEL_PROPERTIES.GAZ;
-        return { ...prev, PCI_combustible: p.pci, densite_combustible: p.density };
-      });
-    }
+    if (fuelStd) return;
+    const pciKg = pciDulong_kcal_kg(customFuelComp);
+    const dens = Number(emissions.densite_combustible) || 0;
+    const pci = dens > 100 ? pciKg : pciKg * dens;
+    setEmissions(prev => ({ ...prev, PCI_combustible: Math.round(pci) }));
+  }, [customFuelComp, fuelStd, emissions.densite_combustible]);
+
+  // Retour au combustible standard : PCI et densité de la table
+  useEffect(() => {
+    if (!fuelStd) return;
+    setEmissions(prev => {
+      const p = FUEL_PROPERTIES[prev.type_energy] || FUEL_PROPERTIES.GAZ;
+      return { ...prev, PCI_combustible: p.pci, densite_combustible: p.density };
+    });
   }, [customFuelComp, fuelStd]);
 
   // Impose O2% massique sec (dérivé de O2% volumique sec) dans les 3 premiers flux d'air
