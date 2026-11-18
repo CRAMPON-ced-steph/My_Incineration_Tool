@@ -68,7 +68,21 @@ export const translations = {
     noDataToDisplay: 'Aucune donnée à afficher (toutes les valeurs sont à 0)',
     hourly: 'Horaire',
     annual: 'Annuel',
-    export: 'Export'
+    export: 'Export',
+    // — Rapport OPEX / saisies (2026-11-18) —
+    editedValueHint: 'Valeur saisie dans l\'onglet OPEX : elle n\'est plus mise à jour par le calcul',
+    restoreCalculated: 'Revenir à la valeur calculée',
+    opexNotAvailable: 'Coûts OPEX non disponibles',
+    hourlyCost: 'Coût horaire',
+    annualCost: 'Coût annuel',
+    totalCost: 'Total coût',
+    totalCO2: 'Total CO₂',
+    item: 'Poste',
+    unitPrice: 'Prix unitaire',
+    editedValueNote: '✎ : valeur saisie dans l\'onglet OPEX',
+    hoursPerYear: 'h/an',
+    otherRows: 'Autres (lignes ajoutées)',
+    opexSource: 'Valeurs de l\'onglet OPEX du nœud'
   },
 
   en: {
@@ -138,7 +152,21 @@ export const translations = {
     noDataToDisplay: 'No data to display (all values are 0)',
     hourly: 'Hourly',
     annual: 'Annual',
-    export: 'Export'
+    export: 'Export',
+    // — Rapport OPEX / saisies (2026-11-18) —
+    editedValueHint: 'Value entered in the OPEX tab: it is no longer updated by the calculation',
+    restoreCalculated: 'Restore calculated value',
+    opexNotAvailable: 'OPEX costs not available',
+    hourlyCost: 'Hourly cost',
+    annualCost: 'Annual cost',
+    totalCost: 'Total cost',
+    totalCO2: 'Total CO₂',
+    item: 'Item',
+    unitPrice: 'Unit price',
+    editedValueNote: '✎: value entered in the OPEX tab',
+    hoursPerYear: 'h/yr',
+    otherRows: 'Other (added rows)',
+    opexSource: 'Values from the node\'s OPEX tab'
   },
 
   de: {
@@ -208,7 +236,21 @@ export const translations = {
     noDataToDisplay: 'Keine Daten zum Anzeigen (alle Werte sind 0)',
     hourly: 'Stündlich',
     annual: 'Jährlich',
-    export: 'Exportieren'
+    export: 'Exportieren',
+    // — Rapport OPEX / saisies (2026-11-18) —
+    editedValueHint: 'Im OPEX-Reiter eingegebener Wert: wird von der Berechnung nicht mehr aktualisiert',
+    restoreCalculated: 'Berechneten Wert wiederherstellen',
+    opexNotAvailable: 'OPEX-Kosten nicht verfügbar',
+    hourlyCost: 'Stündliche Kosten',
+    annualCost: 'Jährliche Kosten',
+    totalCost: 'Gesamtkosten',
+    totalCO2: 'CO₂ gesamt',
+    item: 'Posten',
+    unitPrice: 'Einheitspreis',
+    editedValueNote: '✎: im OPEX-Reiter eingegebener Wert',
+    hoursPerYear: 'h/Jahr',
+    otherRows: 'Sonstiges (hinzugefügte Zeilen)',
+    opexSource: 'Werte aus dem OPEX-Reiter des Knotens'
   },
 
   es: {
@@ -278,7 +320,21 @@ export const translations = {
     noDataToDisplay: 'Sin datos para mostrar (todos los valores son 0)',
     hourly: 'Por Hora',
     annual: 'Anual',
-    export: 'Exportar'
+    export: 'Exportar',
+    // — Rapport OPEX / saisies (2026-11-18) —
+    editedValueHint: 'Valor introducido en la pestaña OPEX: el cálculo ya no lo actualiza',
+    restoreCalculated: 'Restablecer el valor calculado',
+    opexNotAvailable: 'Costes OPEX no disponibles',
+    hourlyCost: 'Coste horario',
+    annualCost: 'Coste anual',
+    totalCost: 'Coste total',
+    totalCO2: 'CO₂ total',
+    item: 'Partida',
+    unitPrice: 'Precio unitario',
+    editedValueNote: '✎: valor introducido en la pestaña OPEX',
+    hoursPerYear: 'h/año',
+    otherRows: 'Otros (filas añadidas)',
+    opexSource: 'Valores de la pestaña OPEX del nodo'
   },
 
   it: {
@@ -348,7 +404,21 @@ export const translations = {
     noDataToDisplay: 'Nessun dato da visualizzare (tutti i valori sono 0)',
     hourly: 'Orario',
     annual: 'Annuale',
-    export: 'Esporta'
+    export: 'Esporta',
+    // — Rapport OPEX / saisies (2026-11-18) —
+    editedValueHint: 'Valore inserito nella scheda OPEX: non viene più aggiornato dal calcolo',
+    restoreCalculated: 'Ripristina il valore calcolato',
+    opexNotAvailable: 'Costi OPEX non disponibili',
+    hourlyCost: 'Costo orario',
+    annualCost: 'Costo annuo',
+    totalCost: 'Costo totale',
+    totalCO2: 'CO₂ totale',
+    item: 'Voce',
+    unitPrice: 'Prezzo unitario',
+    editedValueNote: '✎: valore inserito nella scheda OPEX',
+    hoursPerYear: 'h/anno',
+    otherRows: 'Altro (righe aggiunte)',
+    opexSource: 'Valori della scheda OPEX del nodo'
   },
 
   pt: {
@@ -418,7 +488,21 @@ export const translations = {
     noDataToDisplay: 'Nenhum dado a exibir (todos os valores são 0)',
     hourly: 'Por Hora',
     annual: 'Anual',
-    export: 'Exportar'
+    export: 'Exportar',
+    // — Rapport OPEX / saisies (2026-11-18) —
+    editedValueHint: 'Valor introduzido no separador OPEX: já não é atualizado pelo cálculo',
+    restoreCalculated: 'Repor o valor calculado',
+    opexNotAvailable: 'Custos OPEX não disponíveis',
+    hourlyCost: 'Custo horário',
+    annualCost: 'Custo anual',
+    totalCost: 'Custo total',
+    totalCO2: 'CO₂ total',
+    item: 'Item',
+    unitPrice: 'Preço unitário',
+    editedValueNote: '✎: valor introduzido no separador OPEX',
+    hoursPerYear: 'h/ano',
+    otherRows: 'Outros (linhas adicionadas)',
+    opexSource: 'Valores do separador OPEX do nó'
   },
 
   ru: {
@@ -488,7 +572,21 @@ export const translations = {
     noDataToDisplay: 'Нет данных для отображения (все значения равны 0)',
     hourly: 'Почасово',
     annual: 'Годовой',
-    export: 'Экспорт'
+    export: 'Экспорт',
+    // — Rapport OPEX / saisies (2026-11-18) —
+    editedValueHint: 'Значение введено во вкладке OPEX: расчёт его больше не обновляет',
+    restoreCalculated: 'Вернуть расчётное значение',
+    opexNotAvailable: 'Затраты OPEX недоступны',
+    hourlyCost: 'Затраты в час',
+    annualCost: 'Затраты в год',
+    totalCost: 'Итого затраты',
+    totalCO2: 'Итого CO₂',
+    item: 'Статья',
+    unitPrice: 'Цена за единицу',
+    editedValueNote: '✎: значение введено во вкладке OPEX',
+    hoursPerYear: 'ч/год',
+    otherRows: 'Прочее (добавленные строки)',
+    opexSource: 'Значения из вкладки OPEX узла'
   },
 
   zh: {
@@ -558,7 +656,21 @@ export const translations = {
     noDataToDisplay: '没有数据要显示（所有值均为0）',
     hourly: '小时',
     annual: '年度',
-    export: '导出'
+    export: '导出',
+    // — Rapport OPEX / saisies (2026-11-18) —
+    editedValueHint: '在 OPEX 选项卡中输入的值：计算不再更新该值',
+    restoreCalculated: '恢复计算值',
+    opexNotAvailable: 'OPEX 成本不可用',
+    hourlyCost: '每小时成本',
+    annualCost: '年度成本',
+    totalCost: '总成本',
+    totalCO2: 'CO₂ 总计',
+    item: '项目',
+    unitPrice: '单价',
+    editedValueNote: '✎：在 OPEX 选项卡中输入的值',
+    hoursPerYear: '小时/年',
+    otherRows: '其他（新增行）',
+    opexSource: '节点 OPEX 选项卡中的值'
   },
 
   ja: {
@@ -628,7 +740,21 @@ export const translations = {
     noDataToDisplay: '表示するデータなし（すべての値は0）',
     hourly: '時間',
     annual: '年間',
-    export: 'エクスポート'
+    export: 'エクスポート',
+    // — Rapport OPEX / saisies (2026-11-18) —
+    editedValueHint: 'OPEXタブで入力した値：計算では更新されません',
+    restoreCalculated: '計算値に戻す',
+    opexNotAvailable: 'OPEXコストはありません',
+    hourlyCost: '時間当たりコスト',
+    annualCost: '年間コスト',
+    totalCost: '総コスト',
+    totalCO2: 'CO₂合計',
+    item: '項目',
+    unitPrice: '単価',
+    editedValueNote: '✎：OPEXタブで入力した値',
+    hoursPerYear: '時間/年',
+    otherRows: 'その他（追加行）',
+    opexSource: 'ノードのOPEXタブの値'
   },
 
   ar: {
@@ -698,6 +824,20 @@ export const translations = {
     noDataToDisplay: 'لا توجد بيانات للعرض (جميع القيم هي 0)',
     hourly: 'بالساعة',
     annual: 'سنوي',
-    export: 'تصدير'
+    export: 'تصدير',
+    // — Rapport OPEX / saisies (2026-11-18) —
+    editedValueHint: 'قيمة مُدخلة في علامة تبويب OPEX: لم يعد الحساب يحدّثها',
+    restoreCalculated: 'استعادة القيمة المحسوبة',
+    opexNotAvailable: 'تكاليف OPEX غير متاحة',
+    hourlyCost: 'التكلفة بالساعة',
+    annualCost: 'التكلفة السنوية',
+    totalCost: 'إجمالي التكلفة',
+    totalCO2: 'إجمالي CO₂',
+    item: 'البند',
+    unitPrice: 'سعر الوحدة',
+    editedValueNote: '✎: قيمة مُدخلة في علامة تبويب OPEX',
+    hoursPerYear: 'ساعة/سنة',
+    otherRows: 'أخرى (صفوف مضافة)',
+    opexSource: 'قيم علامة تبويب OPEX للعقدة'
   }
 };

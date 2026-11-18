@@ -5,7 +5,7 @@ Chiffres obtenus avec les valeurs par défaut de l'outil, sauf mention contraire
 
 ## Ordre de correction proposé
 
-1. **Autres équipements — transmission et stabilité** : résultats non transmis à l'aval, boucles de rendu infinies des onglets Design, plantage OPEX DeNOx.
+1. **Autres équipements — transmission et stabilité** : résultats non transmis à l'aval, boucles de rendu infinies des onglets Design.
 2. **Eau injectée comptée deux fois** (`Qeau_added_to_be_at_T`) : touche dix équipements.
 3. **GF — bilan et rapport** : base de la composition (décision à prendre), chaleur latente comptée deux fois, clé du rapport.
 4. **RK — bilan énergie et facteur d'air** (décision à prendre sur l'eau de l'extracteur).
@@ -101,8 +101,8 @@ Test : chaque page Bilan ouverte avec un même flux amont (14 200 kg/h de fumée
 
 ### Transmission et stabilité
 - [ ] **Résultats non transmis à l'aval** : BHF, électrofiltre, cyclone, réacteur, tour de refroidissement et laveur renvoient `T_OUT` et `FG_OUT_kg_h` reçus de l'amont (jamais mis à jour). Leurs températures de sortie, entrées d'air et eau injectée ne sont pas transmises. Laveur : `T_scrubber_out` / `FG_scrubber_out_kg_h` sont calculés mais lus par aucun nœud → ventilateur et cheminée calculés avec les fumées d'entrée du laveur.
-- [ ] **Boucles de rendu infinies à l'ouverture de l'onglet Design** (la page ne se stabilise jamais) : chaudière, quench simple, injection d'eau, électrofiltre, réacteur, cyclone, tour de refroidissement. Cause : effet qui appelle `setInnerData` et dépend de `innerData` ou d'une fonction de traduction `t` recréée à chaque rendu (même défaut que celui déjà corrigé dans le Design du four rotatif).
-- [ ] **DeNOx : l'onglet OPEX plante** (page blanche) après passage par Design : `consoElec1`, `consoElec2`, `Conso_Ammonia_kg` écrits en texte (`toFixed`) → `toPrecision` sur une chaîne dans `OpexDashboard`. (Hors calcul de réchauffage, laissé tel quel.)
+- [ ] **Boucles de rendu infinies à l'ouverture de l'onglet Design** (la page ne se stabilise jamais) : chaudière, quench simple, injection d'eau, électrofiltre, réacteur, cyclone, tour de refroidissement. Le BHF avait le même défaut quand l'onglet Polluants n'avait pas été ouvert avant Design : corrigé le 18/11/2026. Cause : effet qui appelle `setInnerData` et dépend de `innerData` ou d'une fonction de traduction `t` recréée à chaque rendu (même défaut que celui déjà corrigé dans le Design du four rotatif).
+- [x] **DeNOx : l'onglet OPEX plante** (corrigé le 18/11/2026 : valeurs écrites en nombres, lecture tolérante dans l'onglet OPEX) (page blanche) après passage par Design : `consoElec1`, `consoElec2`, `Conso_Ammonia_kg` écrits en texte (`toFixed`) → `toPrecision` sur une chaîne dans `OpexDashboard`. (Hors calcul de réchauffage, laissé tel quel.)
 - [ ] **Nœud CO₂ non implémenté** : onglets 2 à 6 vides ; l'onglet 1 est une copie des fumées du four rotatif et envoie T = 900 °C et des débits nuls en aval.
 
 ### Calculs
@@ -122,22 +122,28 @@ Test : chaque page Bilan ouverte avec un même flux amont (14 200 kg/h de fumée
 
 ---
 
-## Onglets OPEX → onglets Rapport (vérification du 18/11/2026)
+## Onglets OPEX → onglets Rapport (vérification et corrections du 18/11/2026)
 
-Les rapports recalculent l'OPEX à partir des valeurs calculées (`innerData`), pas à partir du tableau affiché dans l'onglet OPEX (`OpexDashboard.jsx`).
+Corrigé : l'onglet OPEX est la source unique. Les rapports (section OPEX de chaque équipement et synthèse OPEX du rapport global) relisent les tableaux de l'onglet OPEX du nœud (`G_Graphiques/Dashboard/opexTableau.js`, `D_BILAN_Rapports/OpexRapport.jsx`).
 
 ### Tous les équipements
-- [ ] **Modifications faites dans l'onglet OPEX non reprises dans le rapport** : cellules modifiées et lignes ajoutées restent dans l'état de l'onglet (localStorage) ; le tableau de bord ne renvoie à `innerData` que des totaux (`activeNodes_*`). De plus, une cellule calculée modifiée est écrasée dès que le calcul est mis à jour (`mergeComputedRows`).
-- [ ] **Mémoire de l'onglet OPEX par type et non par nœud** : clé `opexDashboard_${equipmentType}` → deux nœuds du même type (ex. deux BHF) partagent les mêmes lignes modifiées (convention `_${nodeId}` non appliquée).
-- [ ] **Arrondi** : l'onglet OPEX arrondit chaque valeur à 2 chiffres significatifs avant de calculer les coûts, le rapport utilise la valeur exacte (petits écarts là où l'onglet Design n'arrondit pas déjà, ex. eau du quench).
+- [x] **Modifications faites dans l'onglet OPEX non reprises dans le rapport** : les valeurs saisies sont marquées (fond jaune, ✎ dans le rapport), conservées quand le calcul change (bouton ↺ pour revenir au calcul) ; lignes ajoutées et supprimées conservées ; coûts et CO₂ recalculés à partir des tableaux affichés.
+- [x] **Mémoire de l'onglet OPEX par type et non par nœud** : clé `opexDashboard_<TYPE>_<nodeId>` + copie `opexTableau_<TYPE>_<nodeId>` dans les données du nœud (projet JSON rechargé sur un autre poste). L'ancienne clé par type est relue une fois (lignes ajoutées conservées).
+- [x] **Arrondi** : plus d'arrondi à 2 chiffres significatifs avant le calcul des coûts ; seul l'affichage est arrondi.
+- [x] **Consommations du nœud amont recopiées dans le nœud aval** (trouvé pendant la correction) : à l'envoi, `Main_FLOW` recopiait toutes les clés du nœud amont (`consoElec*`, `Conso_*`, gaz, transport…) dans le nœud aval → l'OPEX et le rapport du nœud aval affichaient aussi celles de l'amont, et la synthèse globale les comptait plusieurs fois. Ces clés ne sont plus transmises (`sansClesOpex`).
+- [x] **FB / GF** : l'envoi ne transmettait aucune clé OPEX → section OPEX vide dans le rapport global et totaux absents du panneau OPEX. Corrigé.
+- [x] **Totaux du panneau OPEX global** (`activeNodes_*`) : toujours en valeurs horaires (avant : horaires ou annuels selon le bouton de l'onglet).
 
-### Écarts par équipement
-- [ ] **Charbon actif (CAP)** : compté dans les rapports (coût et CO₂ de transport) mais absent de l'onglet OPEX (pas de ligne CAP, exclu de `cout_reactifs`) → BHF : totaux différents entre OPEX et rapport.
-- [ ] **Quench, quench simple, saturateur, injection d'eau** : eau adoucie et eau de rivière (selon le type d'eau choisi dans Design) écrites mais non lues par le rapport → coût de l'eau absent du rapport.
-- [ ] **Réacteur** : CaO et Ca(OH)₂ humide absents du rapport.
-- [ ] **Électrofiltre** : CaCO₃, CaO, NaOH absents du rapport.
-- [ ] **Chaudière** : pas de section transport dans le rapport → coût et CO₂ du transport des cendres de chaudière (`cout_transport_boiler_ash`, `CO2_transport_boiler_ash`) absents.
-- [ ] **DeNOx** : `consoElec1`, `consoElec2`, `Conso_Ammonia_kg` écrits en texte (`toFixed`) → l'onglet OPEX plante et le rapport additionne des chaînes (total électricité et coûts faux / NaN).
+### Écarts par équipement (tous corrigés par la source unique)
+- [x] **Charbon actif (CAP)** : ligne ajoutée dans l'onglet OPEX (coût et CO₂ de transport).
+- [x] **Quench, quench simple, saturateur, injection d'eau** : eau adoucie et eau de rivière reprises.
+- [x] **Réacteur** : CaO et Ca(OH)₂ humide repris.
+- [x] **Électrofiltre** : CaCO₃, CaO, NaOH repris.
+- [x] **Chaudière** : transport des cendres repris ; eau alimentaire comptée en eau déminéralisée (`Conso_EauDemin_m3`, comme l'ancien rapport).
+- [x] **DeNOx** : valeurs écrites en nombres.
+- [x] **Ventilateur** : l'ancien rapport ne comptait que l'eau potable.
 
-### Cohérents
-FB, GF, RK, injection d'air, cyclone, tour de refroidissement, ventilateur, laveur, cheminée, IACT (mêmes clés et mêmes formules de coût). Tubes-calandre : pas d'OPEX.
+### Restant
+- [ ] **Chaudière** et **électrofiltre** : pas d'onglet OPEX (chaudière : `5_WHB_Opex.jsx` / `OpexDashboard_WHB.jsx` non branchés ; électrofiltre : onglet commenté). Le rapport utilise les valeurs calculées, sans saisie possible.
+- [ ] **Valeurs fictives écrites par certains Design** : tour de refroidissement (cendres 1 kg/h et transport 90 €/h et 90 kg CO₂/h pour chaque type de cendre), injection d'air (cendres de chaudière 1 kg/h). Elles apparaissent dans l'OPEX.
+- [ ] **Projets existants** : un nœud aval peut encore contenir des consommations recopiées de l'amont (clés que son Design n'écrit pas). Les vérifier dans son onglet OPEX (supprimer la ligne ou remettre 0).

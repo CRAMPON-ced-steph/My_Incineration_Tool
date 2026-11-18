@@ -5,7 +5,7 @@ import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './COOLINGTOWER_traduction';
 
 
-const COOLINGTOWERopex = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
+const COOLINGTOWERopex = ({ innerData, setInnerData, currentLanguage = 'fr', nodeId }) => {
 
   const languageCode = getLanguageCode(currentLanguage);
   const t = (key) => {
@@ -17,6 +17,7 @@ const COOLINGTOWERopex = ({ innerData, setInnerData, currentLanguage = 'fr' }) =
       innerData={innerData} 
       setInnerData={setInnerData} 
       currentLanguage={currentLanguage}
+      nodeId={nodeId}
     />
   );
 };

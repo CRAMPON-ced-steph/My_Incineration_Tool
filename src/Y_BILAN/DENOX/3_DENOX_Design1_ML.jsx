@@ -271,11 +271,11 @@ const DENOXDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
       setInnerData(prevData => ({
         ...prevData,
         P_out_mmCE: pressionSortie,
-        consoElec1: consoElec1.toFixed(2),
-        consoElec2: consoElec2.toFixed(2),
+        consoElec1: Math.round(consoElec1 * 100) / 100,
+        consoElec2: Math.round(consoElec2 * 100) / 100,
         labelElec1: 'Ventilateur SCR',
         labelElec2: 'Pompe NH₃',
-        Conso_Ammonia_kg: consoAmmoniaque.toFixed(2),
+        Conso_Ammonia_kg: Math.round((parseFloat(consoAmmoniaque) || 0) * 100) / 100,
         conso_air_co_N_m3: 0,
       }));
     }

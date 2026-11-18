@@ -2,9 +2,9 @@ import React from 'react';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { makeReportT } from '../../D_BILAN_Rapports/report_traduction';
 import { translations } from './IACT_traduction';
-import { getOpexData } from '../../A_Transverse_fonction/opexDataService';
 import { CO2_kg_m3, H2O_kg_m3, O2_kg_m3, N2_kg_m3 } from '../../A_Transverse_fonction/conv_calculation';
 import { fmt } from '../../A_Transverse_fonction/formatNumber';
+import OpexRapport from '../../D_BILAN_Rapports/OpexRapport';
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
@@ -86,106 +86,11 @@ const ElecTable = ({ rows, t }) => (
 
 // ─── OPEX cost calculation ────────────────────────────────────────────────────
 
-const computeOpexCosts = (innerData) => {
-  const {
-    purchaseElectricityPrice = 0, ratioElec = 0, availability = 8000,
-    currency = '€', airConsumptionPrice = 0, powerRatio = 0,
-    waterPrices = {}, reagentsTypes = {}, gasTypes = {}, fuelTypes = {},
-  } = getOpexData();
-  const d = innerData || {};
-
-  const elecRows = [
-    { label: d.labelElec1 || 'Poste 1', kW: d.consoElec1 || 0 },
-    { label: d.labelElec2 || 'Poste 2', kW: d.consoElec2 || 0 },
-    { label: d.labelElec3 || 'Poste 3', kW: d.consoElec3 || 0 },
-    { label: d.labelElec4 || 'Poste 4', kW: d.consoElec4 || 0 },
-    { label: d.labelElec5 || 'Poste 5', kW: d.consoElec5 || 0 },
-    { label: d.labelElec6 || 'Poste 6', kW: d.consoElec6 || 0 },
-  ].filter(r => r.kW > 0);
-  const totalElec_kW = elecRows.reduce((s, r) => s + r.kW, 0);
-  const coutElec = (totalElec_kW / 1000) * purchaseElectricityPrice;
-  const co2Elec = (ratioElec * totalElec_kW) / 1000;
-
-  const conso_air = d.conso_air_co_N_m3 || 0;
-  const coutAir = (conso_air / 1000) * airConsumptionPrice;
-  const co2Air = (conso_air * powerRatio * ratioElec) / 1000;
-
-  const totalCout_h = coutElec + coutAir;
-  const totalCout_an = totalCout_h * availability;
-  const totalCO2_kgh = co2Elec + co2Air;
-
-  return {
-    elecRows, totalElec_kW, coutElec, co2Elec,
-    conso_air, coutAir, co2Air,
-    totalCout_h, totalCout_an, totalCO2_kgh,
-    currency, availability,
-  };
-};
-
 // ─── OPEX display section ─────────────────────────────────────────────────────
-
-const OpexCostSection = ({ opex, t, tr = k => k }) => {
-  const {
-    elecRows, totalElec_kW, coutElec, co2Elec,
-    conso_air, coutAir, co2Air,
-    totalCout_h, totalCout_an, totalCO2_kgh,
-    currency, availability,
-  } = opex;
-
-  if (totalElec_kW === 0 && coutAir === 0) {
-    return <p style={{ color: '#999', fontSize: 12, padding: '10px 14px' }}>{t('OPEX non disponibles')}</p>;
-  }
-
-  return (
-    <div>
-      <div style={{ ...styles.subSection, paddingBottom: 4 }}>
-        <div style={styles.tagRow}>
-          {[
-            { label: `${t('Électricité')} [${currency}/h]`, val: coutElec, color: '#4a90e2' },
-            { label: `${t('Air comprimé')} [${currency}/h]`, val: coutAir, color: '#17a2b8' },
-          ].map(({ label, val, color }) => (
-            <div key={label} style={{ ...styles.tag, borderLeft: `4px solid ${color}`, minWidth: 140 }}>
-              <span style={styles.tagLabel}>{label}</span>
-              <span style={{ ...styles.tagValue, color }}>{fmt(val, 2)}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-      <div style={styles.twoCol}>
-        <div style={{ ...styles.subSection, background: '#f0f5ff', margin: 8, borderRadius: 6 }}>
-          <h3 style={{ ...styles.subTitle, color: '#1a3a6b', fontSize: 14 }}>{t('Total coût')}</h3>
-          <KV label={`${t('Coût horaire')} [${currency}/h]`} value={fmt(totalCout_h, 2)} />
-          <KV label={`${t('Coût annuel')} (${availability}h) [${currency}${tr('perYear')}]`} value={fmt(totalCout_an, 0)} />
-        </div>
-        <div style={{ ...styles.subSection, background: '#f5f0ff', margin: 8, borderRadius: 6 }}>
-          <h3 style={{ ...styles.subTitle, color: '#6a1a6b', fontSize: 14 }}>{t('Total CO₂')}</h3>
-          <KV label={`${t('CO₂ électricité')} [kg/h]`} value={fmt(co2Elec, 3)} />
-          <KV label={`${t('CO₂ air comprimé')} [kg/h]`} value={fmt(co2Air, 3)} />
-          <KV label={`${t('Total CO₂')} [kg/h]`} value={fmt(totalCO2_kgh, 2)} />
-        </div>
-      </div>
-      {elecRows.length > 0 && (
-        <div style={styles.subSection}>
-          <h3 style={styles.subTitle}>{t('Électricité — détail')}</h3>
-          <table style={styles.table}>
-            <thead><tr><th style={styles.th}>{t('Poste')}</th><th style={styles.th}>kW</th><th style={styles.th}>{`${currency}/h`}</th></tr></thead>
-            <tbody>
-              {elecRows.map(r => {
-                const { purchaseElectricityPrice = 0 } = getOpexData();
-                return <tr key={r.label}><td style={styles.tdLabel}>{r.label}</td><td style={styles.td}>{fmt(r.kW)}</td><td style={styles.td}>{fmt((r.kW / 1000) * purchaseElectricityPrice, 2)}</td></tr>;
-              })}
-              <tr style={{ fontWeight: 'bold', background: '#eaf0fb' }}><td style={styles.tdLabel}>{t('Total')}</td><td style={styles.td}>{fmt(totalElec_kW)}</td><td style={styles.td}>{fmt(coutElec, 2)}</td></tr>
-            </tbody>
-          </table>
-        </div>
-      )}
-    </div>
-  );
-};
 
 // ─── Main component ───────────────────────────────────────────────────────────
 
-const IACT_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
+const IACT_Report = ({ innerData = {}, currentLanguage = 'fr', nodeId }) => {
   const languageCode = getLanguageCode(currentLanguage);
   const tr = makeReportT(currentLanguage);
   const t = (key) => translations[languageCode]?.[key] || translations['fr']?.[key] || key;
@@ -229,8 +134,6 @@ const IACT_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
     { label: innerData.labelElec5 || `${t('Poste')} 5`, value: innerData.consoElec5 },
     { label: innerData.labelElec6 || `${t('Poste')} 6`, value: innerData.consoElec6 },
   ].filter(r => r.value !== undefined && parseFloat(r.value) > 0);
-
-  const opex = computeOpexCosts(innerData);
 
   return (
     <div style={styles.container}>
@@ -290,7 +193,7 @@ const IACT_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
       </Section>
 
       <Section title={`4. ${t('OPEX — Coûts')}`}>
-        <OpexCostSection opex={opex} t={t} tr={tr} />
+        <OpexRapport innerData={innerData} equipmentType="IACT" nodeId={nodeId} currentLanguage={currentLanguage} />
       </Section>
 
       <div style={styles.footer}>{t('Rapport généré automatiquement')} — {new Date().toLocaleDateString()}</div>
