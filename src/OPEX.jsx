@@ -936,7 +936,7 @@ const OPEX_form = ({ onClose, currentLanguage = 'fr' }) => {
               <div style={styles.subSection}>
                 <h3 style={styles.subTitle}>Chaux éteinte - Ca(OH)₂</h3>
                 <div style={getFormGridStyle()}>
-                  <InputField label={t.cost || "Coût"} unit="[€/kg]" value={reagentsTypes.CaOH2.cost} onChange={(e) => handleReagentChange('CaOH2', 'cost', e.target.value)} />
+                  <InputField label={t.cost || "Coût"} unit="[€/t]" value={reagentsTypes.CaOH2.cost} onChange={(e) => handleReagentChange('CaOH2', 'cost', e.target.value)} />
                   <InputField label={t.Purity || "Pureté"} unit="[%]" value={reagentsTypes.CaOH2.Purity} onChange={(e) => handleReagentChange('CaOH2', 'Purity', e.target.value)} />
                   <InputField label={t.co2Emission || "Émission CO2"} unit="[kgCO2/kg]" value={reagentsTypes.CaOH2.CO2emission} onChange={(e) => handleReagentChange('CaOH2', 'CO2emission', e.target.value)} />
                   <InputField label={t.truckType || "Camion"} unit="[T]" value={reagentsTypes.CaOH2.truckType} onChange={(e) => handleReagentChange('CaOH2', 'truckType', e.target.value)} />
@@ -949,7 +949,7 @@ const OPEX_form = ({ onClose, currentLanguage = 'fr' }) => {
               <div style={styles.subSection}>
                 <h3 style={styles.subTitle}>Chaux vive - CaO</h3>
                 <div style={getFormGridStyle()}>
-                  <InputField label={t.cost || "Coût"} unit="[€/kg]" value={reagentsTypes.CaO.cost} onChange={(e) => handleReagentChange('CaO', 'cost', e.target.value)} />
+                  <InputField label={t.cost || "Coût"} unit="[€/t]" value={reagentsTypes.CaO.cost} onChange={(e) => handleReagentChange('CaO', 'cost', e.target.value)} />
                   <InputField label={t.Purity || "Pureté"} unit="[%]" value={reagentsTypes.CaO.Purity} onChange={(e) => handleReagentChange('CaO', 'Purity', e.target.value)} />
                   <InputField label={t.co2Emission || "Émission CO2"} unit="[kgCO2/kg]" value={reagentsTypes.CaO.CO2emission} onChange={(e) => handleReagentChange('CaO', 'CO2emission', e.target.value)} />
                   <InputField label={t.truckType || "Camion"} unit="[T]" value={reagentsTypes.CaO.truckType} onChange={(e) => handleReagentChange('CaO', 'truckType', e.target.value)} />
@@ -962,7 +962,7 @@ const OPEX_form = ({ onClose, currentLanguage = 'fr' }) => {
               <div style={styles.subSection}>
                 <h3 style={styles.subTitle}>Carbonate de calcium - CaCO₃</h3>
                 <div style={getFormGridStyle()}>
-                  <InputField label={t.cost || "Coût"} unit="[€/kg]" value={reagentsTypes.CaCO3.cost} onChange={(e) => handleReagentChange('CaCO3', 'cost', e.target.value)} />
+                  <InputField label={t.cost || "Coût"} unit="[€/t]" value={reagentsTypes.CaCO3.cost} onChange={(e) => handleReagentChange('CaCO3', 'cost', e.target.value)} />
                   <InputField label={t.Purity || "Pureté"} unit="[%]" value={reagentsTypes.CaCO3.Purity} onChange={(e) => handleReagentChange('CaCO3', 'Purity', e.target.value)} />
                   <InputField label={t.co2Emission || "Émission CO2"} unit="[kgCO2/kg]" value={reagentsTypes.CaCO3.CO2emission} onChange={(e) => handleReagentChange('CaCO3', 'CO2emission', e.target.value)} />
                   <InputField label={t.truckType || "Camion"} unit="[T]" value={reagentsTypes.CaCO3.truckType} onChange={(e) => handleReagentChange('CaCO3', 'truckType', e.target.value)} />
@@ -976,7 +976,7 @@ const OPEX_form = ({ onClose, currentLanguage = 'fr' }) => {
                 <div key={reagentKey} style={styles.subSection}>
                   <h3 style={styles.subTitle}>{t[reagentKey] || reagentKey}</h3>
                   <div style={getFormGridStyle()}>
-                    <InputField label={t.cost || "Coût"} unit="[€/kg]" value={reagentData.cost} onChange={(e) => handleReagentChange(reagentKey, 'cost', e.target.value)} />
+                    <InputField label={t.cost || "Coût"} unit="[€/t]" value={reagentData.cost} onChange={(e) => handleReagentChange(reagentKey, 'cost', e.target.value)} />
                     <InputField label={t.Purity || "Pureté"} unit="[%]" value={reagentData.Purity} onChange={(e) => handleReagentChange(reagentKey, 'Purity', e.target.value)} />
                     <InputField label={t.co2Emission || "Émission CO2"} unit="[kgCO2/kg]" value={reagentData.CO2emission} onChange={(e) => handleReagentChange(reagentKey, 'CO2emission', e.target.value)} />
                     <InputField label={t.truckType || "Camion"} unit="[T]" value={reagentData.truckType} onChange={(e) => handleReagentChange(reagentKey, 'truckType', e.target.value)} />

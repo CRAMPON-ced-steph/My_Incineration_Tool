@@ -608,6 +608,8 @@ Doit être l'**inverse cohérent** de `option_T` :
 - **Transport des résidus** : `A_Transverse_fonction/transport_residus.js` (`coutTransportResidus_h`, `rotationsCamion_an`) — coût = rotations (t/h ÷ charge utile 15/20/25 t) × distance × 2 (aller-retour) × prix €/km. Utilisé par les Design BHF, électrofiltre, chaudière, four rotatif, réacteur. Ne plus écrire « prix × distance » en €/h.
 - **CO2 de l'air comprimé** : pas de ligne CO2 « air comprimé » dans l'onglet OPEX ; le CO2 vient de la ligne d'électricité du compresseur écrite par le Design (clé `row3` du tableau CO2 laissée libre).
 
+- **Prix des réactifs en €/t** (`reagentsTypes[*].cost`) : tout le code fait kg/h ÷ 1000 × prix. `migrerPrixReactifs()` (appelée par `writeDefaultsToStorage` au démarrage) convertit une seule fois les anciennes valeurs en €/kg (< 10 → × 1000), drapeau `opex_reagentsCostUnit = 'EUR_t'`.
+
 ### Points ouverts
 
 Les anomalies relevées mais non corrigées (GF, RK) sont listées dans `a_faire.md` à la racine du dépôt. Cocher / retirer une ligne une fois corrigée.

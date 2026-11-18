@@ -51,16 +51,17 @@ const GFCalcOpex = ({ innerData, innerDataTick, setInnerData }) => {
     const conso_gaz_Process_MW = toSignificantFigures(innerData.conso_gaz_Process_MW ?? 0);
     const conso_fuel_MW        = toSignificantFigures(innerData.conso_fuel_MW        ?? 0);
 
-    const conso_incineration_ash_kg_h = toSignificantFigures(1);
+    // Cendres du four : pas encore calculées → 0 (avant : 1 kg/h, 1 €/h et 1 kg CO2/h fictifs)
+    const conso_incineration_ash_kg_h = 0;
     const conso_boiler_ash_kg_h = toSignificantFigures(0);
     const conso_fly_ash_kg_h = toSignificantFigures(0);
 
-    const CO2_transport_incineratino_ash = toSignificantFigures(1);
+    const CO2_transport_incineratino_ash = 0;
     const CO2_transport_boiler_ash = toSignificantFigures(0);
     const CO2_transport_fly_ash = toSignificantFigures(0);
     const CO2_transport_reactifs = toSignificantFigures(conso_reactifs.CO2_transport ?? 0);
 
-    const cout_transport_incineratino_ash = toSignificantFigures(1);
+    const cout_transport_incineratino_ash = 0;
     const cout_transport_boiler_ash = toSignificantFigures(0);
     const cout_transport_fly_ash = toSignificantFigures(0);
     // Pas de coût de transport des réactifs calculé : Conso_reactifs.cout est le coût
