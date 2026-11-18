@@ -11,6 +11,7 @@ export const translations = {
   // FRANÇAIS
   // ============================================================
   fr: {
+    "Pyrofluid : 22 par défaut, 30 au plus": "Pyrofluid : 22 par défaut, 30 au plus",
     "Nombre de trous par tuyère": "Nombre de trous par tuyère",
     "Calculé": "Calculé",
     "Vide : calculé à partir de la vitesse tuyère cible": "Vide : calculé à partir de la vitesse tuyère cible",
@@ -727,6 +728,7 @@ export const translations = {
   // ENGLISH
   // ============================================================
   en: {
+    "Pyrofluid : 22 par défaut, 30 au plus": "Pyrofluid: 22 by default, 30 maximum",
     "Nombre de trous par tuyère": "Number of holes per nozzle",
     "Calculé": "Calculated",
     "Vide : calculé à partir de la vitesse tuyère cible": "Empty: calculated from the target nozzle velocity",
@@ -1443,6 +1445,7 @@ export const translations = {
   // ESPAÑOL
   // ============================================================
   es: {
+    "Pyrofluid : 22 par défaut, 30 au plus": "Pyrofluid: 22 por defecto, 30 como máximo",
     "Nombre de trous par tuyère": "Número de orificios por tobera",
     "Calculé": "Calculado",
     "Vide : calculé à partir de la vitesse tuyère cible": "Vacío: calculado a partir de la velocidad objetivo de las toberas",
@@ -2041,6 +2044,7 @@ export const translations = {
   // DEUTSCH
   // ============================================================
   de: {
+    "Pyrofluid : 22 par défaut, 30 au plus": "Pyrofluid: Standard 22, höchstens 30",
     "Nombre de trous par tuyère": "Anzahl der Löcher pro Düse",
     "Calculé": "Berechnet",
     "Vide : calculé à partir de la vitesse tuyère cible": "Leer: aus der Soll-Düsengeschwindigkeit berechnet",
@@ -2639,6 +2643,7 @@ export const translations = {
   // ITALIANO
   // ============================================================
   it: {
+    "Pyrofluid : 22 par défaut, 30 au plus": "Pyrofluid: 22 predefinito, massimo 30",
     "Nombre de trous par tuyère": "Numero di fori per ugello",
     "Calculé": "Calcolato",
     "Vide : calculé à partir de la vitesse tuyère cible": "Vuoto: calcolato dalla velocità obiettivo degli ugelli",
@@ -3237,6 +3242,7 @@ export const translations = {
   // PORTUGUÊS
   // ============================================================
   pt: {
+    "Pyrofluid : 22 par défaut, 30 au plus": "Pyrofluid: 22 por defeito, 30 no máximo",
     "Nombre de trous par tuyère": "Número de furos por tubeira",
     "Calculé": "Calculado",
     "Vide : calculé à partir de la vitesse tuyère cible": "Vazio: calculado a partir da velocidade alvo das tubeiras",
@@ -3835,6 +3841,7 @@ export const translations = {
   // 中文 (CHINESE SIMPLIFIED)
   // ============================================================
   zh: {
+    "Pyrofluid : 22 par défaut, 30 au plus": "Pyrofluid：默认22，最多30",
     "Nombre de trous par tuyère": "每个风帽的孔数",
     "Calculé": "计算值",
     "Vide : calculé à partir de la vitesse tuyère cible": "留空：按目标风帽速度计算",
@@ -4433,6 +4440,7 @@ export const translations = {
   // 日本語 (JAPANESE)
   // ============================================================
   ja: {
+    "Pyrofluid : 22 par défaut, 30 au plus": "Pyrofluid：既定値22、最大30",
     "Nombre de trous par tuyère": "ノズル1本あたりの穴数",
     "Calculé": "計算値",
     "Vide : calculé à partir de la vitesse tuyère cible": "空欄：目標ノズル速度から計算",
@@ -5031,6 +5039,7 @@ export const translations = {
   // РУССКИЙ (RUSSIAN)
   // ============================================================
   ru: {
+    "Pyrofluid : 22 par défaut, 30 au plus": "Pyrofluid: по умолчанию 22, не более 30",
     "Nombre de trous par tuyère": "Число отверстий на сопло",
     "Calculé": "Расчётное",
     "Vide : calculé à partir de la vitesse tuyère cible": "Пусто: рассчитывается по целевой скорости в соплах",
@@ -5629,6 +5638,7 @@ export const translations = {
   // العربية (ARABIC)
   // ============================================================
   ar: {
+    "Pyrofluid : 22 par défaut, 30 au plus": "Pyrofluid: ‏22 افتراضيًا، 30 كحد أقصى",
     "Nombre de trous par tuyère": "عدد الثقوب لكل فوهة",
     "Calculé": "محسوب",
     "Vide : calculé à partir de la vitesse tuyère cible": "فارغ: يُحسب من سرعة الفوهة المستهدفة",

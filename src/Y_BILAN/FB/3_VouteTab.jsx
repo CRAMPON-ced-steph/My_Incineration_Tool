@@ -56,7 +56,8 @@ const HORS_STD = 'HORS_STD';
 // Plage de vitesse de fluidisation à la voûte [m/s] (alerte + recherche automatique)
 const VITESSE_VOUTE_MIN = 0.9;
 const VITESSE_VOUTE_MAX = 1.1;
-const NB_TROUS_MAX = 30; // plafond Pyrofluid (ClassDimFourVoute.CalculNbretrous)
+const NB_TROUS_MAX = 30; // plafond Pyrofluid (ClassDimFourVoute.CalculNbretrous, saisie refusée au-delà)
+const NB_TROUS_DEFAUT = 22; // valeur par défaut Pyrofluid (ClassDimFourVoute.remplissagge : NbreDeTrous = 22)
 
 // Order from smallest to largest for auto-size search
 const REACTEUR_AUTO_ORDER = ['R28', 'R36', 'R43', 'R50', 'R56', 'R63', 'R67', 'R72', 'R80', 'R85', 'R90'];
@@ -96,9 +97,10 @@ function computeCalculs(params) {
 
   const PressionVouteDefaut_mmCe = Number(params.PressionVouteDefaut_mmCe) || 2000;
   const DiametreTrous_mm = Number(params.DiametreTrous_mm) || 5;
-  // Nombre de trous par tuyère imposé (comme la saisie de Pyrofluid) ; vide ou 0 = calculé
-  // à partir de la vitesse tuyère cible. Imposé, il fixe la vitesse réelle des tuyères.
-  const NbTrousImpose = Math.max(0, Math.round(Number(params.NbTrousImpose) || 0));
+  // Nombre de trous par tuyère imposé (comme la saisie de Pyrofluid, 22 par défaut, 30 au plus) ;
+  // vide ou 0 = calculé à partir de la vitesse tuyère cible. Imposé, il fixe la vitesse réelle des tuyères.
+  const NbTrousImpose = Math.min(NB_TROUS_MAX, Math.max(0, Math.round(Number(
+    params.NbTrousImpose === undefined ? NB_TROUS_DEFAUT : params.NbTrousImpose) || 0)));
   const nbTrous = (surfaceCible_m2) => (NbTrousImpose > 0
     ? NbTrousImpose
     : Math.min(NB_TROUS_MAX, Math.ceil((4 * surfaceCible_m2) / (Math.PI * Math.pow(DiametreTrous_mm / 1000, 2)))));
@@ -220,7 +222,8 @@ const DimensionnementTab = ({ innerData = {}, innerDataTick, onDataChange, curre
     Modele: innerData?.Modele ?? 'R36',
     DiametreVouteKey: innerData?.DiametreVouteKey ?? '2.258',
     DiametreTrous_mm: innerData?.DiametreTrous_mm?.toString() ?? '5',
-    NbTrousImpose: innerData?.NbTrousImpose ? String(innerData.NbTrousImpose) : '',
+    // Jamais réglé → 22 (Pyrofluid) ; vidé par l'utilisateur ('') → calculé
+    NbTrousImpose: innerData?.NbTrousImpose === undefined ? String(NB_TROUS_DEFAUT) : String(innerData.NbTrousImpose ?? ''),
     TempNiveauVoute_C: innerData?.TempNiveauVoute_C?.toString() ?? '720',
     NeutralisationCentre: innerData?.NeutralisationCentre ?? false,
     DiametreFreeboardCustom_m: innerData?.DiametreFreeboardCustom_m?.toString() ?? '3.8',
@@ -639,6 +642,7 @@ const DimensionnementTab = ({ innerData = {}, innerDataTick, onDataChange, curre
             <input
               type="number"
               min="0"
+              max={NB_TROUS_MAX}
               step="1"
               value={parametres.NbTrousImpose}
               placeholder={calculsComplets ? `${t('Calculé')} : ${calculsComplets.NbTrousCalcule}` : t('Calculé')}
@@ -646,7 +650,7 @@ const DimensionnementTab = ({ innerData = {}, innerDataTick, onDataChange, curre
               style={inputStyle}
             />
             <div style={{ fontSize: '11px', color: '#6b7280', marginTop: '4px' }}>
-              {t('Vide : calculé à partir de la vitesse tuyère cible')}
+              {t('Vide : calculé à partir de la vitesse tuyère cible')} · {t('Pyrofluid : 22 par défaut, 30 au plus')}
             </div>
           </div>
           {[
