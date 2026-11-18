@@ -27,7 +27,8 @@ import { performCalculation_WHB_option_T_O2 } from './WHB/WHB_calculation_option
 import { performCalculation_WHB_option_Qeau_Qair } from './WHB/WHB_calculation_option3';
 import { performCalculation_WHB_option_Qeau_O2 } from './WHB/WHB_calculation_option4';
 import { performCalculation_IACT } from './IACT/IACT_calculations';
-import { performCalculation_WATERCOOLER, lireParamsRetro as lireParams_WATERCOOLER } from './WATERCOOLER/WATERCOOLER_calculations';
+import { performCalculation_WATERCOOLER, lireParamsRetro_WATERCOOLER } from './WATERCOOLER/WATERCOOLER_calculations';
+import { performCalculation_AIRCOOLER, lireParamsRetro_AIRCOOLER } from './AIRCOOLER/AIRCOOLER_calculations';
 import { performCalculation_RK } from './RK/RK_calculations1';
 import { performCalculation_RK_with_WHB } from './RK/RK_calculations2';
 import { performCalculation_FB_MS } from './FB/FB_calculation_MS';
@@ -277,10 +278,15 @@ export const batchCalcMap = {
     );
   },
 
-  // Économiseur fumées / eau : paramètres en un seul objet JSON (params_retro_WATERCOOLER_<nodeId>)
+  // Économiseurs fumées / eau et fumées / air : paramètres en un seul objet JSON
+  // (params_retro_WATERCOOLER_<nodeId>, params_retro_AIRCOOLER_<nodeId>)
   'Cooling_HX_eau': (nodeData, nodeId) => {
     if (!nodeData?.result?.dataFlow) return null;
-    return performCalculation_WATERCOOLER(nodeData, lireParams_WATERCOOLER(nodeId));
+    return performCalculation_WATERCOOLER(nodeData, lireParamsRetro_WATERCOOLER(nodeId));
+  },
+  'Cooling_HX_air': (nodeData, nodeId) => {
+    if (!nodeData?.result?.dataFlow) return null;
+    return performCalculation_AIRCOOLER(nodeData, lireParamsRetro_AIRCOOLER(nodeId));
   },
 
   'RK+SCC': (nodeData, nodeId) => {

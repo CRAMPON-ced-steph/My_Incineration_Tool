@@ -1,10 +1,13 @@
-// Onglet « Design » de l'économiseur : surface d'échange (Pyrofluid ClassEconomiseur) et pompe.
+// Onglet « Design » des économiseurs (eau / air) : surface d'échange (Pyrofluid ClassEconomiseur)
+// et auxiliaire du circuit de fluide (pompe pour l'eau, ventilateur pour l'air).
 import React from 'react';
 import TableGeneric from '../../../C_Components/Tableau_generique';
 import { fmt } from '../../../A_Transverse_fonction/formatNumber';
-import { ChampNumerique, Messages, styles } from './WATERCOOLER_ui';
+import { AUXILIAIRE, FLUIDE } from './economiseur_calculs';
+import { ChampNumerique, Messages, styles } from './economiseur_ui';
 
-const WATERCOOLERDesign = ({ params, setParam, res, t }) => {
+const EconomiseurDesign = ({ params, setParam, res, t }) => {
+  const aux = AUXILIAIRE[res.fluide];
   const echange = [
     { text: t('nbEchangeurs'), value: fmt(res.nbEchangeurs, 0) },
     { text: t('PuissanceEchangeur'), value: fmt(res.Q_fumees_ech_kcal_h, 0) },
@@ -14,11 +17,11 @@ const WATERCOOLERDesign = ({ params, setParam, res, t }) => {
     { text: t('U_SI'), value: fmt(res.U_W_m2_K, 1) },
     { text: t('SurfaceEch'), value: fmt(res.S_ech_m2, 1) },
     { text: t('SurfaceTot'), value: fmt(res.S_tot_m2, 1) },
-    { text: t('PeauSat'), value: fmt(res.P_eau_bar, 2) },
+    ...(res.fluide === FLUIDE.EAU ? [{ text: t('PeauSat'), value: fmt(res.P_eau_bar, 2) }] : []),
   ];
-  const pompe = [
-    { text: t('DebitEauTotM3'), value: fmt(res.Qv_eau_tot_m3_h, 2) },
-    { text: t('PuissancePompe'), value: fmt(res.Puissance_pompe_kW, 2) },
+  const auxiliaire = [
+    { text: t('DebitFluideTotM3'), value: fmt(res.Qv_fluide_tot_m3_h, 2) },
+    { text: t('auxPuissance'), value: fmt(res.Puissance_aux_kW, 2) },
   ];
 
   return (
@@ -32,15 +35,15 @@ const WATERCOOLERDesign = ({ params, setParam, res, t }) => {
       <Messages erreurs={res.erreurs} alertes={[]} t={t} />
       <TableGeneric elements={echange} />
 
-      <h3>{t('pompeCirculation')}</h3>
+      <h3>{t('auxTitre')}</h3>
       <div style={styles.bloc}>
-        <ChampNumerique label={t('DPpompe')} value={params.DP_pompe_bar} onChange={(v) => setParam('DP_pompe_bar', v)} />
-        <ChampNumerique label={t('RdtPompe')} value={params.Rdt_pompe_pct} onChange={(v) => setParam('Rdt_pompe_pct', v)} />
-        <p style={styles.note}>{t('notePompe')}</p>
+        <ChampNumerique label={t('auxDP')} value={params[aux.cleDP]} onChange={(v) => setParam(aux.cleDP, v)} />
+        <ChampNumerique label={t('auxRdt')} value={params[aux.cleRdt]} onChange={(v) => setParam(aux.cleRdt, v)} />
+        <p style={styles.note}>{t('noteAux')}</p>
       </div>
-      <TableGeneric elements={pompe} />
+      <TableGeneric elements={auxiliaire} />
     </div>
   );
 };
 
-export default WATERCOOLERDesign;
+export default EconomiseurDesign;

@@ -5,6 +5,7 @@ import { getLanguageCode } from '../F_Gestion_Langues/Fonction_Traduction';
 
 export const reportTranslations = {
   fr: {
+    "retroTitleAIRCOOLER": "Échangeur fumées / air — Rétro-calcul",
     "retroTitleWATERCOOLER": "Économiseur fumées / eau — Rétro-calcul",
     "hxAirOutPressMmCE": "Pression sortie HX air [mmCE]",
     "hxSizingMode": "Type de dimensionnement",
@@ -351,6 +352,7 @@ export const reportTranslations = {
   },
 
   en: {
+    "retroTitleAIRCOOLER": "Flue gas / air heat exchanger — Retro-calculation",
     "retroTitleWATERCOOLER": "Flue gas / water economizer — Retro-calculation",
     "hxAirOutPressMmCE": "HX air outlet pressure [mmCE]",
     "hxSizingMode": "Sizing basis",
@@ -697,6 +699,7 @@ export const reportTranslations = {
   },
 
   es: {
+    "retroTitleAIRCOOLER": "Intercambiador humos / aire — Retrocálculo",
     "retroTitleWATERCOOLER": "Economizador humos / agua — Retrocálculo",
     "hxAirOutPressMmCE": "Presión de salida del aire del HX [mmCA]",
     "hxSizingMode": "Base de dimensionamiento",
@@ -924,6 +927,7 @@ export const reportTranslations = {
   },
 
   de: {
+    "retroTitleAIRCOOLER": "Rauchgas/Luft-Wärmetauscher — Rückwärtsberechnung",
     "retroTitleWATERCOOLER": "Rauchgas/Wasser-Economiser — Rückwärtsberechnung",
     "hxAirOutPressMmCE": "Luftaustrittsdruck WT [mmWS]",
     "hxSizingMode": "Auslegungsbasis",
@@ -1151,6 +1155,7 @@ export const reportTranslations = {
   },
 
   it: {
+    "retroTitleAIRCOOLER": "Scambiatore fumi / aria — Retrocalcolo",
     "retroTitleWATERCOOLER": "Economizzatore fumi / acqua — Retrocalcolo",
     "hxAirOutPressMmCE": "Pressione uscita aria HX [mmCA]",
     "hxSizingMode": "Base di dimensionamento",
@@ -1378,6 +1383,7 @@ export const reportTranslations = {
   },
 
   pt: {
+    "retroTitleAIRCOOLER": "Permutador fumos / ar — Retrocálculo",
     "retroTitleWATERCOOLER": "Economizador fumos / água — Retrocálculo",
     "hxAirOutPressMmCE": "Pressão de saída do ar do HX [mmCA]",
     "hxSizingMode": "Base de dimensionamento",
@@ -1605,6 +1611,7 @@ export const reportTranslations = {
   },
 
   ru: {
+    "retroTitleAIRCOOLER": "Теплообменник газы / воздух — Обратный расчёт",
     "retroTitleWATERCOOLER": "Экономайзер газы / вода — Обратный расчёт",
     "hxAirOutPressMmCE": "Давление воздуха на выходе ТО [мм вод. ст.]",
     "hxSizingMode": "Основа расчёта",
@@ -1832,6 +1839,7 @@ export const reportTranslations = {
   },
 
   ja: {
+    "retroTitleAIRCOOLER": "排ガス／空気熱交換器 — 逆算",
     "retroTitleWATERCOOLER": "排ガス／水エコノマイザー — 逆算",
     "hxAirOutPressMmCE": "HX空気出口圧力 [mmAq]",
     "hxSizingMode": "設計基準",
@@ -2059,6 +2067,7 @@ export const reportTranslations = {
   },
 
   zh: {
+    "retroTitleAIRCOOLER": "烟气/空气换热器 — 反算",
     "retroTitleWATERCOOLER": "烟气/水省煤器 — 反算",
     "hxAirOutPressMmCE": "换热器空气出口压力 [mmH₂O]",
     "hxSizingMode": "选型基准",
@@ -2286,6 +2295,7 @@ export const reportTranslations = {
   },
 
   ar: {
+    "retroTitleAIRCOOLER": "مبادل الغازات / الهواء — حساب عكسي",
     "retroTitleWATERCOOLER": "مقتصد الغازات / الماء — حساب عكسي",
     "hxAirOutPressMmCE": "ضغط خروج المبادل جهة الهواء [mmH₂O]",
     "hxSizingMode": "أساس التحجيم",

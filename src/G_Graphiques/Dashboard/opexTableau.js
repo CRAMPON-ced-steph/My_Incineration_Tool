@@ -40,7 +40,7 @@ export const configOpex = (equipmentType, equipmentConfig = {}) => ({
 });
 
 // Label du nœud React Flow → type d'équipement de l'onglet OPEX (null : pas d'OPEX).
-const TYPE_PAR_LABEL = { 'RK+SCC': 'RK', HX_TubeAndShell: null, Cooling_HX_eau: 'WATERCOOLER' };
+const TYPE_PAR_LABEL = { 'RK+SCC': 'RK', HX_TubeAndShell: null, Cooling_HX_eau: 'WATERCOOLER', Cooling_HX_air: 'AIRCOOLER' };
 export const typeOpexDuLabel = (label) =>
   (Object.prototype.hasOwnProperty.call(TYPE_PAR_LABEL, label) ? TYPE_PAR_LABEL[label] : label);
 

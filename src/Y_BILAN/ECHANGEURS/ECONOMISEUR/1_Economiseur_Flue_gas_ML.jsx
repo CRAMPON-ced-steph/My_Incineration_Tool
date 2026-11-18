@@ -1,22 +1,22 @@
-// Onglet « Gaz » de l'économiseur : options de calcul Pyrofluid et bilan thermique fumées / eau.
+// Onglet « Gaz » des économiseurs (eau / air) : options de calcul Pyrofluid et bilan thermique.
 import React from 'react';
 import MassCalculator from '../../../C_Components/Tableau_fumee_inverse';
 import TableGeneric from '../../../C_Components/Tableau_generique';
 import { fmt } from '../../../A_Transverse_fonction/formatNumber';
-import { CALCUL, OPTIONS_BILAN } from './WATERCOOLER_calculs';
-import { ChoixBoutons, ChampNumerique, LigneChoix, Messages, styles } from './WATERCOOLER_ui';
+import { CALCUL, FLUIDE, OPTIONS_BILAN } from './economiseur_calculs';
+import { ChoixBoutons, ChampNumerique, LigneChoix, Messages, styles } from './economiseur_ui';
 
 // Champs saisis ; celui que l'option choisie calcule devient une valeur calculée.
 const CHAMPS = [
   { cle: 'T_fumees_sortie_C', label: 'TfumeesSortie', calcul: CALCUL.T_FUMEES_SORTIE, res: 'T_fumees_sortie_C', dec: 1 },
-  { cle: 'T_eau_entree_C', label: 'TeauEntree', calcul: CALCUL.T_EAU_ENTREE, res: 'T_eau_entree_C', dec: 1 },
-  { cle: 'T_eau_sortie_C', label: 'TeauSortie', calcul: CALCUL.T_EAU_SORTIE, res: 'T_eau_sortie_C', dec: 1 },
-  { cle: 'Debit_eau_kg_h', label: 'DebitEauEch', calcul: CALCUL.DEBIT_EAU, res: 'Debit_eau_ech_kg_h', dec: 0 },
+  { cle: 'T_fluide_entree_C', label: 'TfluideEntree', calcul: CALCUL.T_FLUIDE_ENTREE, res: 'T_fluide_entree_C', dec: 1 },
+  { cle: 'T_fluide_sortie_C', label: 'TfluideSortie', calcul: CALCUL.T_FLUIDE_SORTIE, res: 'T_fluide_sortie_C', dec: 1 },
+  { cle: 'Debit_fluide_kg_h', label: 'DebitFluideEch', calcul: CALCUL.DEBIT_FLUIDE, res: 'Debit_fluide_ech_kg_h', dec: 0 },
   { cle: 'Rdt_pct', label: 'Rdt' },
   { cle: 'PDC_fumees_mmCE', label: 'PDCfumees' },
 ];
 
-const WATERCOOLERFlueGas = ({ params, setParam, resetParams, res, amont, innerData, t }) => {
+const EconomiseurFlueGas = ({ params, setParam, resetParams, res, amont, innerData, t }) => {
   const T_OUT = innerData?.T_OUT;
   const FG_OUT = innerData?.FG_OUT_kg_h || {};
 
@@ -29,15 +29,18 @@ const WATERCOOLERFlueGas = ({ params, setParam, resetParams, res, amont, innerDa
     setParam('calcul', option);
   };
 
+  const eau = res.fluide === FLUIDE.EAU;
   const elements = [
     { text: t('PuissanceFumees'), value: fmt(res.Q_fumees_kW, 1) },
     { text: t('PuissanceFumeesKcal'), value: fmt(res.Q_fumees_kcal_h, 0) },
-    { text: t('PuissanceEau'), value: fmt(res.Q_eau_kW, 1) },
+    { text: t('PuissanceFluide'), value: fmt(res.Q_fluide_kW, 1) },
     { text: t('CpMoyen'), value: fmt(res.Cp_fumees_moy_kcal_kg_C, 4) },
-    { text: t('DebitEauEch'), value: fmt(res.Debit_eau_ech_kg_h, 0) },
-    { text: t('DebitEauTot'), value: fmt(res.Debit_eau_tot_kg_h, 0) },
-    { text: t('DebitEauTotM3'), value: fmt(res.Qv_eau_tot_m3_h, 2) },
-    { text: t('PeauSat'), value: fmt(res.P_eau_bar, 2) },
+    { text: t('DebitFluideEch'), value: fmt(res.Debit_fluide_ech_kg_h, 0) },
+    { text: t('DebitFluideTot'), value: fmt(res.Debit_fluide_tot_kg_h, 0) },
+    { text: t('DebitFluideTotM3'), value: fmt(res.Qv_fluide_tot_m3_h, eau ? 2 : 0) },
+    eau
+      ? { text: t('PeauSat'), value: fmt(res.P_eau_bar, 2) }
+      : { text: t('DebitFluideTotNm3'), value: fmt(res.Qn_fluide_tot_Nm3_h, 0) },
     { text: t('QnHumide'), value: fmt(res.FG_Nm3_h?.wet, 0) },
     { text: t('QnSec'), value: fmt(res.FG_Nm3_h?.dry, 0) },
     { text: t('QvEntree'), value: fmt(res.Q_FG_entree_m3_h, 0) },
@@ -108,4 +111,4 @@ const WATERCOOLERFlueGas = ({ params, setParam, resetParams, res, amont, innerDa
   );
 };
 
-export default WATERCOOLERFlueGas;
+export default EconomiseurFlueGas;
