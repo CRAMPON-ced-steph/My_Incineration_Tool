@@ -5,6 +5,7 @@ import { getLanguageCode } from '../F_Gestion_Langues/Fonction_Traduction';
 
 export const reportTranslations = {
   fr: {
+    "hxAirOutPressMmCE": "Pression sortie HX air [mmCE]",
     "hxSizingMode": "Type de dimensionnement",
     "hxOnePerFurnace": "Un échangeur par four",
     "hxOneForAll": "Un échangeur pour l'ensemble des fours",
@@ -349,6 +350,7 @@ export const reportTranslations = {
   },
 
   en: {
+    "hxAirOutPressMmCE": "HX air outlet pressure [mmCE]",
     "hxSizingMode": "Sizing basis",
     "hxOnePerFurnace": "One exchanger per furnace",
     "hxOneForAll": "One exchanger for all furnaces",
@@ -693,6 +695,7 @@ export const reportTranslations = {
   },
 
   es: {
+    "hxAirOutPressMmCE": "Presión de salida del aire del HX [mmCA]",
     "hxSizingMode": "Base de dimensionamiento",
     "hxOnePerFurnace": "Un intercambiador por horno",
     "hxOneForAll": "Un intercambiador para todos los hornos",
@@ -918,6 +921,7 @@ export const reportTranslations = {
   },
 
   de: {
+    "hxAirOutPressMmCE": "Luftaustrittsdruck WT [mmWS]",
     "hxSizingMode": "Auslegungsbasis",
     "hxOnePerFurnace": "Ein Wärmetauscher pro Ofen",
     "hxOneForAll": "Ein Wärmetauscher für alle Öfen",
@@ -1143,6 +1147,7 @@ export const reportTranslations = {
   },
 
   it: {
+    "hxAirOutPressMmCE": "Pressione uscita aria HX [mmCA]",
     "hxSizingMode": "Base di dimensionamento",
     "hxOnePerFurnace": "Uno scambiatore per forno",
     "hxOneForAll": "Uno scambiatore per tutti i forni",
@@ -1368,6 +1373,7 @@ export const reportTranslations = {
   },
 
   pt: {
+    "hxAirOutPressMmCE": "Pressão de saída do ar do HX [mmCA]",
     "hxSizingMode": "Base de dimensionamento",
     "hxOnePerFurnace": "Um permutador por forno",
     "hxOneForAll": "Um permutador para todos os fornos",
@@ -1593,6 +1599,7 @@ export const reportTranslations = {
   },
 
   ru: {
+    "hxAirOutPressMmCE": "Давление воздуха на выходе ТО [мм вод. ст.]",
     "hxSizingMode": "Основа расчёта",
     "hxOnePerFurnace": "Один теплообменник на печь",
     "hxOneForAll": "Один теплообменник на все печи",
@@ -1818,6 +1825,7 @@ export const reportTranslations = {
   },
 
   ja: {
+    "hxAirOutPressMmCE": "HX空気出口圧力 [mmAq]",
     "hxSizingMode": "設計基準",
     "hxOnePerFurnace": "炉ごとに熱交換器1基",
     "hxOneForAll": "全炉で熱交換器1基",
@@ -2043,6 +2051,7 @@ export const reportTranslations = {
   },
 
   zh: {
+    "hxAirOutPressMmCE": "换热器空气出口压力 [mmH₂O]",
     "hxSizingMode": "选型基准",
     "hxOnePerFurnace": "每台焚烧炉一台换热器",
     "hxOneForAll": "所有焚烧炉共用一台换热器",
@@ -2268,6 +2277,7 @@ export const reportTranslations = {
   },
 
   ar: {
+    "hxAirOutPressMmCE": "ضغط خروج المبادل جهة الهواء [mmH₂O]",
     "hxSizingMode": "أساس التحجيم",
     "hxOnePerFurnace": "مبادل لكل فرن",
     "hxOneForAll": "مبادل واحد لجميع الأفران",

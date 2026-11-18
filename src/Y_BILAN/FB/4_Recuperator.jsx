@@ -270,6 +270,7 @@ const Recuperateur = ({ innerData = {}, combustionResults = {}, currentLanguage 
     // HX côté air — débits et pressions
     innerData.PDC_HX_cote_air_mmCE   = PDC_HX_cote_air_mmCE;
     innerData.P_cote_air_entree_mmCE = P_cote_air_entree_mmCE;
+    innerData.P_cote_air_sortie_mmCE = P_cote_air_sortie_mmCE;
     innerData.Q_air_entree_HX_m3_h   = Q_air_entree_HX_m3_h;
     innerData.Q_air_sortie_HX_m3_h   = Q_air_sortie_HX_m3_h;
     innerData.Q_Air_dry_m3_h         = Q_air_sortie_HX_m3_h;
@@ -289,7 +290,7 @@ const Recuperateur = ({ innerData = {}, combustionResults = {}, currentLanguage 
     innerData.NbreDePass_HX               = NbreDePass;
     innerData.Encrassement_HX_pourcent    = freeParams.Encrassement_pourcent;
     onInnerDataChange?.();
-  }, [innerData, P_freeboard_mmCE, PDC_ligne_air_mmCE,
+  }, [innerData, P_freeboard_mmCE, PDC_ligne_air_mmCE, P_cote_air_sortie_mmCE,
     Q_FG_wet_entree_m3_h, P_sortie_HX_fg_mmCE, Q_FG_wet_sortie_m3_h,
     PDC_HX_cote_air_mmCE, P_cote_air_entree_mmCE, Q_air_entree_HX_m3_h,
     Q_air_sortie_HX_m3_h, H_air_soufflante_tot_kW, Q_air_pulser_Nm3_h,
