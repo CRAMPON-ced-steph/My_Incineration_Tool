@@ -45,17 +45,19 @@ export const DEFAULT_OPEX_DATA = {
     MDO: { liquid: 1.1,  co2Emission: 3.86 },
     HFO: { liquid: 0.70, co2Emission: 3.64 },
   },
+  // Prix d'achat des réactifs en €/t (le calcul fait kg/h ÷ 1000 × prix).
+  // Jusqu'au 18/11/2026 les valeurs par défaut étaient saisies en €/kg : voir migrerPrixReactifs().
   reagentsTypes: {
-    CaOH2:      { cost: 0.1,  Purity: 90,  CO2emission: 0.846, truckType: 25, distance: 30, co2PerTKm: 0.119, co2PerTrip: 3.57 },
-    CaO:        { cost: 0.1,  Purity: 95,  CO2emission: 1.11,  truckType: 25, distance: 30, co2PerTKm: 0.119, co2PerTrip: 3.57 },
-    CaCO3:      { cost: 0.1,  Purity: 95,  CO2emission: 0.76,  truckType: 25, distance: 30, co2PerTKm: 0.119, co2PerTrip: 3.57 },
-    HCO3:       { cost: 1,    Purity: 100, CO2emission: 1.166, truckType: 25, distance: 30, co2PerTKm: 0.119, co2PerTrip: 3.57 },
-    NaOH:       { cost: 0.3,  Purity: 100, CO2emission: 1.174, truckType: 25, distance: 30, co2PerTKm: 0.119, co2PerTrip: 3.57 },
-    NaOHCO3:    { cost: 200,  Purity: 100, CO2emission: 0.76,  truckType: 25, distance: 30, co2PerTKm: 0.119, co2PerTrip: 3.57 },
-    NH3:        { cost: 0.05, Purity: 95,  CO2emission: 2.11,  truckType: 25, distance: 30, co2PerTKm: 0.119, co2PerTrip: 3.57 },
-    Urea:       { cost: 0.05, Purity: 95,  CO2emission: 0.76,  truckType: 25, distance: 30, co2PerTKm: 0.119, co2PerTrip: 3.57 },
-    NaBr_CaBr2: { cost: 1,    Purity: 52,  CO2emission: 0.76,  truckType: 25, distance: 30, co2PerTKm: 0.119, co2PerTrip: 3.57 },
-    CAP:        { cost: 1,    Purity: 100, CO2emission: 0.99,  truckType: 25, distance: 30, co2PerTKm: 0.119, co2PerTrip: 3.57 },
+    CaOH2:      { cost: 100,   Purity: 90,  CO2emission: 0.846, truckType: 25, distance: 30, co2PerTKm: 0.119, co2PerTrip: 3.57 },
+    CaO:        { cost: 100,   Purity: 95,  CO2emission: 1.11,  truckType: 25, distance: 30, co2PerTKm: 0.119, co2PerTrip: 3.57 },
+    CaCO3:      { cost: 100,   Purity: 95,  CO2emission: 0.76,  truckType: 25, distance: 30, co2PerTKm: 0.119, co2PerTrip: 3.57 },
+    HCO3:       { cost: 1000,  Purity: 100, CO2emission: 1.166, truckType: 25, distance: 30, co2PerTKm: 0.119, co2PerTrip: 3.57 },
+    NaOH:       { cost: 300,   Purity: 100, CO2emission: 1.174, truckType: 25, distance: 30, co2PerTKm: 0.119, co2PerTrip: 3.57 },
+    NaOHCO3:    { cost: 200,   Purity: 100, CO2emission: 0.76,  truckType: 25, distance: 30, co2PerTKm: 0.119, co2PerTrip: 3.57 },
+    NH3:        { cost: 50,    Purity: 95,  CO2emission: 2.11,  truckType: 25, distance: 30, co2PerTKm: 0.119, co2PerTrip: 3.57 },
+    Urea:       { cost: 50,    Purity: 95,  CO2emission: 0.76,  truckType: 25, distance: 30, co2PerTKm: 0.119, co2PerTrip: 3.57 },
+    NaBr_CaBr2: { cost: 1000,  Purity: 52,  CO2emission: 0.76,  truckType: 25, distance: 30, co2PerTKm: 0.119, co2PerTrip: 3.57 },
+    CAP:        { cost: 1000,  Purity: 100, CO2emission: 0.99,  truckType: 25, distance: 30, co2PerTKm: 0.119, co2PerTrip: 3.57 },
   },
 
   // Section 6: Steam
@@ -85,8 +87,31 @@ export const DEFAULT_OPEX_DATA = {
 
 // --- localStorage helpers ---
 
+// Prix des réactifs : passage des €/kg aux €/t (une seule fois).
+// Un prix d'achat de réactif inférieur à 10 €/t n'est pas plausible : c'est une
+// valeur saisie en €/kg (ancien libellé de l'onglet OPEX), multipliée par 1000.
+const CLE_UNITE_REACTIFS = 'opex_reagentsCostUnit';
+export const migrerPrixReactifs = () => {
+  try {
+    if (localStorage.getItem(CLE_UNITE_REACTIFS) === 'EUR_t') return;
+    const brut = localStorage.getItem('opex_reagentsTypes');
+    if (brut && brut !== 'null' && brut !== 'undefined') {
+      const reactifs = JSON.parse(brut);
+      Object.values(reactifs || {}).forEach((r) => {
+        const c = parseFloat(r?.cost);
+        if (r && Number.isFinite(c) && c > 0 && c < 10) r.cost = Math.round(c * 1000 * 1000) / 1000;
+      });
+      localStorage.setItem('opex_reagentsTypes', JSON.stringify(reactifs));
+    }
+    localStorage.setItem(CLE_UNITE_REACTIFS, 'EUR_t');
+  } catch (e) {
+    console.warn('Migration des prix des réactifs impossible :', e);
+  }
+};
+
 // Writes default values to localStorage (opex_ prefix) only if not already set.
 export const writeDefaultsToStorage = () => {
+  migrerPrixReactifs();
   Object.entries(DEFAULT_OPEX_DATA).forEach(([key, value]) => {
     const storageKey = `opex_${key}`;
     const existing = localStorage.getItem(storageKey);
