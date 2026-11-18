@@ -11,6 +11,9 @@ export const translations = {
   // FRANÇAIS
   // ============================================================
   fr: {
+    "PDC ligne échangeur → boîte à vent (mmCE)": "PDC ligne échangeur → boîte à vent (mmCE)",
+    "Pression air sortie échangeur (mmCE)": "Pression air sortie échangeur (mmCE)",
+    "Températures incompatibles : l'air doit sortir plus chaud qu'il n'entre, et rester plus froid que les fumées aux deux extrémités.": "Températures incompatibles : l'air doit sortir plus chaud qu'il n'entre, et rester plus froid que les fumées aux deux extrémités.",
     "Configuration de l'échangeur": "Configuration de l'échangeur",
     "Un échangeur pour l'ensemble des fours": "Un échangeur pour l'ensemble des fours",
     "Un échangeur par four": "Un échangeur par four",
@@ -721,6 +724,9 @@ export const translations = {
   // ENGLISH
   // ============================================================
   en: {
+    "PDC ligne échangeur → boîte à vent (mmCE)": "Pressure drop exchanger → windbox line (mmWC)",
+    "Pression air sortie échangeur (mmCE)": "Air pressure at exchanger outlet (mmWC)",
+    "Températures incompatibles : l'air doit sortir plus chaud qu'il n'entre, et rester plus froid que les fumées aux deux extrémités.": "Incompatible temperatures: the air must leave hotter than it enters and stay colder than the flue gas at both ends.",
     "Configuration de l'échangeur": "Heat exchanger configuration",
     "Un échangeur pour l'ensemble des fours": "One exchanger for all furnaces",
     "Un échangeur par four": "One exchanger per furnace",
@@ -1431,6 +1437,9 @@ export const translations = {
   // ESPAÑOL
   // ============================================================
   es: {
+    "PDC ligne échangeur → boîte à vent (mmCE)": "Pérdida de carga línea intercambiador → caja de viento (mmCA)",
+    "Pression air sortie échangeur (mmCE)": "Presión del aire a la salida del intercambiador (mmCA)",
+    "Températures incompatibles : l'air doit sortir plus chaud qu'il n'entre, et rester plus froid que les fumées aux deux extrémités.": "Temperaturas incompatibles: el aire debe salir más caliente de lo que entra y permanecer más frío que los humos en ambos extremos.",
     "Configuration de l'échangeur": "Configuración del intercambiador",
     "Un échangeur pour l'ensemble des fours": "Un intercambiador para todos los hornos",
     "Un échangeur par four": "Un intercambiador por horno",
@@ -2023,6 +2032,9 @@ export const translations = {
   // DEUTSCH
   // ============================================================
   de: {
+    "PDC ligne échangeur → boîte à vent (mmCE)": "Druckverlust Leitung Wärmetauscher → Windkasten (mmWS)",
+    "Pression air sortie échangeur (mmCE)": "Luftdruck am Wärmetauscheraustritt (mmWS)",
+    "Températures incompatibles : l'air doit sortir plus chaud qu'il n'entre, et rester plus froid que les fumées aux deux extrémités.": "Unverträgliche Temperaturen: Die Luft muss wärmer austreten als eintreten und an beiden Enden kälter als das Rauchgas bleiben.",
     "Configuration de l'échangeur": "Wärmetauscher-Konfiguration",
     "Un échangeur pour l'ensemble des fours": "Ein Wärmetauscher für alle Öfen",
     "Un échangeur par four": "Ein Wärmetauscher pro Ofen",
@@ -2615,6 +2627,9 @@ export const translations = {
   // ITALIANO
   // ============================================================
   it: {
+    "PDC ligne échangeur → boîte à vent (mmCE)": "Perdita di carico linea scambiatore → cassa d'aria (mmCA)",
+    "Pression air sortie échangeur (mmCE)": "Pressione aria in uscita scambiatore (mmCA)",
+    "Températures incompatibles : l'air doit sortir plus chaud qu'il n'entre, et rester plus froid que les fumées aux deux extrémités.": "Temperature incompatibili: l'aria deve uscire più calda di come entra e restare più fredda dei fumi a entrambe le estremità.",
     "Configuration de l'échangeur": "Configurazione dello scambiatore",
     "Un échangeur pour l'ensemble des fours": "Uno scambiatore per tutti i forni",
     "Un échangeur par four": "Uno scambiatore per forno",
@@ -3207,6 +3222,9 @@ export const translations = {
   // PORTUGUÊS
   // ============================================================
   pt: {
+    "PDC ligne échangeur → boîte à vent (mmCE)": "Perda de carga linha permutador → caixa de vento (mmCA)",
+    "Pression air sortie échangeur (mmCE)": "Pressão do ar à saída do permutador (mmCA)",
+    "Températures incompatibles : l'air doit sortir plus chaud qu'il n'entre, et rester plus froid que les fumées aux deux extrémités.": "Temperaturas incompatíveis: o ar deve sair mais quente do que entra e permanecer mais frio do que os fumos nas duas extremidades.",
     "Configuration de l'échangeur": "Configuração do permutador",
     "Un échangeur pour l'ensemble des fours": "Um permutador para todos os fornos",
     "Un échangeur par four": "Um permutador por forno",
@@ -3799,6 +3817,9 @@ export const translations = {
   // 中文 (CHINESE SIMPLIFIED)
   // ============================================================
   zh: {
+    "PDC ligne échangeur → boîte à vent (mmCE)": "换热器→风箱管线压降 (mmH₂O)",
+    "Pression air sortie échangeur (mmCE)": "换热器出口空气压力 (mmH₂O)",
+    "Températures incompatibles : l'air doit sortir plus chaud qu'il n'entre, et rester plus froid que les fumées aux deux extrémités.": "温度不兼容：空气出口温度须高于入口，且两端均须低于烟气温度。",
     "Configuration de l'échangeur": "换热器配置",
     "Un échangeur pour l'ensemble des fours": "所有焚烧炉共用一台换热器",
     "Un échangeur par four": "每台焚烧炉一台换热器",
@@ -4391,6 +4412,9 @@ export const translations = {
   // 日本語 (JAPANESE)
   // ============================================================
   ja: {
+    "PDC ligne échangeur → boîte à vent (mmCE)": "熱交換器→風箱ラインの圧力損失 (mmAq)",
+    "Pression air sortie échangeur (mmCE)": "熱交換器出口の空気圧 (mmAq)",
+    "Températures incompatibles : l'air doit sortir plus chaud qu'il n'entre, et rester plus froid que les fumées aux deux extrémités.": "温度が不整合です：空気は入口より高温で出て、両端で排ガスより低温である必要があります。",
     "Configuration de l'échangeur": "熱交換器の構成",
     "Un échangeur pour l'ensemble des fours": "全炉で熱交換器1基",
     "Un échangeur par four": "炉ごとに熱交換器1基",
@@ -4983,6 +5007,9 @@ export const translations = {
   // РУССКИЙ (RUSSIAN)
   // ============================================================
   ru: {
+    "PDC ligne échangeur → boîte à vent (mmCE)": "Потери давления в линии теплообменник → воздушная камера (мм вод. ст.)",
+    "Pression air sortie échangeur (mmCE)": "Давление воздуха на выходе теплообменника (мм вод. ст.)",
+    "Températures incompatibles : l'air doit sortir plus chaud qu'il n'entre, et rester plus froid que les fumées aux deux extrémités.": "Несовместимые температуры: воздух должен выходить горячее, чем входит, и оставаться холоднее дымовых газов на обоих концах.",
     "Configuration de l'échangeur": "Конфигурация теплообменника",
     "Un échangeur pour l'ensemble des fours": "Один теплообменник на все печи",
     "Un échangeur par four": "Один теплообменник на печь",
@@ -5575,6 +5602,9 @@ export const translations = {
   // العربية (ARABIC)
   // ============================================================
   ar: {
+    "PDC ligne échangeur → boîte à vent (mmCE)": "فقد الضغط في خط المبادل ← صندوق الهواء (mmCE)",
+    "Pression air sortie échangeur (mmCE)": "ضغط الهواء عند مخرج المبادل (mmCE)",
+    "Températures incompatibles : l'air doit sortir plus chaud qu'il n'entre, et rester plus froid que les fumées aux deux extrémités.": "درجات حرارة غير متوافقة: يجب أن يخرج الهواء أسخن مما دخل وأن يبقى أبرد من غازات المداخن عند الطرفين.",
     "Configuration de l'échangeur": "تكوين المبادل الحراري",
     "Un échangeur pour l'ensemble des fours": "مبادل واحد لجميع الأفران",
     "Un échangeur par four": "مبادل لكل فرن",

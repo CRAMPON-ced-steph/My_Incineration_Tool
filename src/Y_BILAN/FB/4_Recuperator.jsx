@@ -6,6 +6,7 @@ import {
   Coef_Hext, Coef_Hint, Fact_U, Fact_U_Encrasse, Fact_A, DP_RecupAir,
   hAir_kW, hVap_kW,
 } from '../../A_Transverse_fonction/bilan_fct_FB';
+import { cp_ref } from '../../A_Transverse_fonction/constantes';
 
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './FB_traduction';
@@ -19,7 +20,11 @@ const useTranslation = (currentLanguage = 'fr') => {
 
 // _version 2 (18/11/2026) : encrassement 25 % et rendement 95 % par défaut (valeurs Pyrofluid),
 // choix 2 / 3 passes, air secondaire + tertiaire au ventilateur, un échangeur global ou par four.
-const VERSION_FREE_PARAMS = 2;
+// _version 3 (18/11/2026) : PDC côté fumées 40 mmCE (Pyrofluid), ligne échangeur → boîte à vent saisissable.
+const VERSION_FREE_PARAMS = 3;
+
+// 1 kW = 3600 / 4,1868 kcal/h : UA doit être dans l'unité de U (kcal/h·m²·°C) pour donner des m²
+const KCAL_H_PAR_KW = 3600 / cp_ref;
 const DEFAULT_FREE_PARAMS = {
   _version: VERSION_FREE_PARAMS,
   Encrassement_pourcent: 25,
@@ -28,8 +33,8 @@ const DEFAULT_FREE_PARAMS = {
   PDC_echangeur_air_mmCE: 0,
   PDC_recuperateur_fumees_mmCE: 40,
   vitesse_air_m_s: 25,
-  PDC_reseau_sortie_entree_boite_mmCe: 50,
-  PDC_HX_FG_mmCE: 50,
+  PDC_reseau_sortie_entree_boite_mmCe: 50, // ligne échangeur → boîte à vent (Pyrofluid : 50)
+  PDC_HX_FG_mmCE: 40,                      // PDC côté fumées dans le récupérateur (Pyrofluid : 40)
   Rendement_ventilateur: 0.7,
   NbreDePass: 2,                 // Pyrofluid : 2 ou 3 passes
   airSecTertVentilateur: false,  // false = Pyrofluid (air de combustion + instrumentation)
@@ -42,7 +47,9 @@ const lireFreeParams = (cle) => {
     if (!saved || typeof saved !== 'object') return DEFAULT_FREE_PARAMS;
     // Avant la version 2, l'encrassement n'était pas saisissable : la valeur
     // enregistrée était l'ancienne valeur par défaut (10 %) → on prend 25 %.
-    if (!(saved._version >= VERSION_FREE_PARAMS)) delete saved.Encrassement_pourcent;
+    if (!(saved._version >= 2)) delete saved.Encrassement_pourcent;
+    // Avant la version 3, 50 mmCE était la valeur par défaut de la PDC côté fumées (Pyrofluid : 40).
+    if (!(saved._version >= 3) && Number(saved.PDC_HX_FG_mmCE) === 50) delete saved.PDC_HX_FG_mmCE;
     return { ...DEFAULT_FREE_PARAMS, ...saved, _version: VERSION_FREE_PARAMS };
   } catch { return DEFAULT_FREE_PARAMS; }
 };
@@ -89,12 +96,13 @@ const Recuperateur = ({ innerData = {}, combustionResults = {}, currentLanguage 
   // ── Entrées fumées depuis CombustionTab (par échangeur) ──
   const T_entree_fumee_C = innerData?.Temp_fumee_voute_C ?? 870;
   const Q_FG_wet_Nm3_h   = (innerData?.FG_wet_Nm3_h ?? 5280) * f;
-  const P_freeboard_mmCE  = innerData?.P_freeboard ?? 89;
+  // Pression du freeboard calculée par l'onglet Voûte (89 mmCE tant qu'il n'a pas été calculé)
+  const P_freeboard_mmCE  = innerData?.PressionFreeboard ?? innerData?.Pression_Freeboard ?? 89;
   const H_fumees_in_kW    = (innerData?.Hf_voute_kW ?? 0) * f;
-  const rho_FG            = innerData?.Rho_FG_kg_Nm3 ?? 1.1;
+  // Débit réel des fumées à l'entrée (T et P du freeboard) — sert aussi à la section calandre
+  const Q_FG_wet_entree_m3_h = calculDebitPT(Q_FG_wet_Nm3_h, P_freeboard_mmCE, T_entree_fumee_C);
 
   // ── Entrées air depuis CombustionTab (par échangeur) ──
-  const T_air_entree_C               = innerData?.Temp_air_fluidisation_av_prechauffe_C ?? 0;
   const Q_Air_dry_Nm3_h              = (innerData?.Q_air_comb_tot_Nm3_h ?? 0) * f;
   const Masse_air_sec_combustion_kg_h = innerData?.Masse_air_sec_combustion_tot_kg_h ?? 0;
 
@@ -109,6 +117,7 @@ const Recuperateur = ({ innerData = {}, combustionResults = {}, currentLanguage 
   const Temp_air_soufflante_C    = innerData?.Temp_air_soufflante_C   ?? 60;
   const Tair_ap_prechauffe_C     = innerData?.Tair_ap_prechauffe_C    ?? 0;
   const P_voute_defaut_mmCE      = innerData?.PressionVouteDefaut_mmCe ?? 2000;
+  const PDC_ligne_air_mmCE       = Number(freeParams.PDC_reseau_sortie_entree_boite_mmCe) || 0;
   const Hair_ap_prechauffage_kW  = (innerData?.Hair_ap_prechauffage_kW ?? 0) * f;
   const Meau_air_comburant       = innerData?.Meau_air_comburant       ?? 0;
 
@@ -130,34 +139,38 @@ const Recuperateur = ({ innerData = {}, combustionResults = {}, currentLanguage 
       // ÉTAPE 1 : TEMPÉRATURE FUMÉES SORTIE HX — reprise du bilan CombustionTab (col. 11)
       const T_fumee_sortie_HX_C = Tf_voute_ap_HX_C;
 
-      // CHALEUR ÉCHANGÉE — déduite des enthalpies CombustionTab
+      // CHALEUR ÉCHANGÉE — déduite des enthalpies CombustionTab (= chaleur air / rendement)
       const H_apporte_par_fumee_kW = H_fumees_in_kW - Hf_voute_ap_HX_kW;
 
-      // ÉTAPE 2 : TEMPÉRATURES AIR
-      const T_sortie_air_C    = T_air_entree_C + 100; // estimation initiale (non itérée)
-      const T_air_entree_HX_C = T_air_entree_C + 45;  // +45°C apport soufflante
+      // ÉTAPE 2 : TEMPÉRATURES AIR (Pyrofluid) — entrée = sortie soufflante (T air + 45 °C),
+      // sortie = air préchauffé envoyé à la boîte à vent
+      const T_air_entree_HX_C = Temp_air_soufflante_C;
+      const T_sortie_air_C    = Tair_ap_prechauffe_C;
 
-      // ÉTAPE 3 : DTLM ET UA
-      const DTLM       = D_TLM(T_fumee_sortie_HX_C, T_entree_fumee_C, T_sortie_air_C, T_air_entree_HX_C);
-      const Facteur_UA = DTLM > 0 ? (H_apporte_par_fumee_kW / DTLM) * 1000 : 0; // W/K
+      // ÉTAPE 3 : DTLM (contre-courant, F = 1) ET UA
+      const dT_froid = T_fumee_sortie_HX_C - T_air_entree_HX_C;
+      const dT_chaud = T_entree_fumee_C - T_sortie_air_C;
+      const temperaturesValides = dT_froid > 0 && dT_chaud > 0 && T_sortie_air_C > T_air_entree_HX_C;
+      const DTLM = !temperaturesValides ? 0
+        : Math.abs(dT_froid - dT_chaud) < 1e-9 ? dT_froid
+        : D_TLM(T_fumee_sortie_HX_C, T_entree_fumee_C, T_sortie_air_C, T_air_entree_HX_C);
+      const Facteur_UA  = DTLM > 0 ? (H_apporte_par_fumee_kW / DTLM) * 1000 : 0;           // W/K (affichage)
+      const UA_kcal_h_K = DTLM > 0 ? (H_apporte_par_fumee_kW * KCAL_H_PAR_KW) / DTLM : 0;  // unité de U
 
-      // ÉTAPE 5 : COEFFICIENTS DE TRANSFERT THERMIQUE
-      const Coeff_Hext              = Coef_Hext(freeParams.vitesse_des_fumees_m_s);
-      const Section_calandre_m2     = (Q_FG_wet_Nm3_h * rho_FG) / 3600 / freeParams.vitesse_des_fumees_m_s;
+      // ÉTAPE 5 : COEFFICIENTS DE TRANSFERT THERMIQUE (kcal/h·m²·°C)
+      const v_fumees                = freeParams.vitesse_des_fumees_m_s;
+      const Coeff_Hext              = Coef_Hext(v_fumees);
+      // Section calandre : débit réel des fumées au freeboard / vitesse (Pyrofluid : DEBREELVOLFUMFOUR)
+      const Section_calandre_m2     = v_fumees > 0 ? Q_FG_wet_entree_m3_h / 3600 / v_fumees : 0;
       const coeff_Hint              = Coef_Hint(freeParams.vitesse_air_m_s);
       const coeff_U_propre_kcal_m2_h = Fact_U(Coeff_Hext, coeff_Hint);
       const FactUEncrasse           = Fact_U_Encrasse(coeff_U_propre_kcal_m2_h, freeParams.Encrassement_pourcent / 100);
-      const S_echange_m2            = Fact_A(Facteur_UA, FactUEncrasse);
-
-      // ÉTAPE 6 : DÉBIT RÉEL AIR ET PRESSION SORTIE HX
-      const P_sortie_HX_mmCE = 2000 + freeParams.PDC_echangeur_air_mmCE;
-      const Q_Air_dry_m3_h   = calculDebitPT(Q_Air_dry_Nm3_h, P_sortie_HX_mmCE, T_sortie_air_C);
+      const S_echange_m2            = FactUEncrasse > 0 ? Fact_A(UA_kcal_h_K, FactUEncrasse) : 0;
 
       return {
         T_fumee_sortie_HX_C,
         T_sortie_air_C,
-        P_sortie_HX_mmCE,
-        Q_Air_dry_m3_h,
+        temperaturesValides,
         DTLM,
         Facteur_UA,
         Coeff_Hext,
@@ -171,37 +184,38 @@ const Recuperateur = ({ innerData = {}, combustionResults = {}, currentLanguage 
       return {};
     }
   }, [
-    T_entree_fumee_C, Q_FG_wet_Nm3_h, H_fumees_in_kW, Hf_voute_ap_HX_kW,
-    Tf_voute_ap_HX_C, rho_FG, T_air_entree_C, Q_Air_dry_Nm3_h, freeParams,
+    T_entree_fumee_C, Q_FG_wet_entree_m3_h, H_fumees_in_kW, Hf_voute_ap_HX_kW,
+    Tf_voute_ap_HX_C, Temp_air_soufflante_C, Tair_ap_prechauffe_C, freeParams,
   ]);
 
   // ============================================================
-  // MISE À JOUR innerData AVEC RÉSULTATS
-  // ============================================================
-
-  // ============================================================
-  // DÉBITS AFFICHÉS DANS LES CARTES HX
+  // DÉBITS ET PRESSIONS AFFICHÉS DANS LES CARTES HX
   // ============================================================
 
   // Côté fumées
-  const Q_FG_wet_entree_m3_h = calculDebitPT(Q_FG_wet_Nm3_h, P_freeboard_mmCE, T_entree_fumee_C);
   const P_sortie_HX_fg_mmCE  = P_freeboard_mmCE - freeParams.PDC_HX_FG_mmCE;
   const Q_FG_wet_sortie_m3_h = calculDebitPT(Q_FG_wet_Nm3_h, P_sortie_HX_fg_mmCE, Tf_voute_ap_HX_C);
 
-  // Côté air
-  const P_cote_air_sortie_mmCE = P_voute_defaut_mmCE;
+  // Côté air (Pyrofluid) : sortie échangeur = P voûte + ligne échangeur → boîte à vent
+  const P_cote_air_sortie_mmCE = P_voute_defaut_mmCE + PDC_ligne_air_mmCE;
   const Q_air_sortie_HX_m3_h   = calculDebitPT(Q_Air_dry_Nm3_h, P_cote_air_sortie_mmCE, Tair_ap_prechauffe_C);
 
+  // Perte de charge dans les tubes : DP_RecupAir attend le débit d'air en Nm³/h
+  // (il le ramène lui-même à la pression et à la température moyennes de l'air)
   const T_air_moyen_HX_C = (Tair_ap_prechauffe_C + Temp_air_soufflante_C) / 2;
-  const PDC_HX_cote_air_mmCE = DP_RecupAir(
-    P_voute_defaut_mmCE,
-    Q_air_sortie_HX_m3_h,
-    T_air_moyen_HX_C,
-    freeParams.vitesse_air_m_s,
-    NbreDePass,
-    designRecup.S_echange_m2 ?? 0
-  );
+  const PDC_HX_cote_air_mmCE = (Q_Air_dry_Nm3_h > 0 && (designRecup.S_echange_m2 ?? 0) > 0 && freeParams.vitesse_air_m_s > 0)
+    ? DP_RecupAir(
+      P_voute_defaut_mmCE,
+      Q_Air_dry_Nm3_h,
+      T_air_moyen_HX_C,
+      freeParams.vitesse_air_m_s,
+      NbreDePass,
+      designRecup.S_echange_m2,
+      PDC_ligne_air_mmCE
+    )
+    : 0;
 
+  // Pression soufflante = P voûte + ligne + PDC échangeur côté air
   const P_cote_air_entree_mmCE = P_cote_air_sortie_mmCE + PDC_HX_cote_air_mmCE;
   const Q_air_entree_HX_m3_h   = calculDebitPT(Q_Air_dry_Nm3_h, P_cote_air_entree_mmCE, Temp_air_soufflante_C);
 
@@ -234,8 +248,6 @@ const Recuperateur = ({ innerData = {}, combustionResults = {}, currentLanguage 
     if (!innerData || Object.keys(designRecup).length === 0) return;
     // Résultats dimensionnement échangeur
     innerData.T_fumee_sortie_HX_C    = designRecup.T_fumee_sortie_HX_C    ?? 0;
-    innerData.P_sortie_HX_mmCE       = designRecup.P_sortie_HX_mmCE       ?? 0;
-    innerData.Q_Air_dry_m3_h         = designRecup.Q_Air_dry_m3_h         ?? 0;
     innerData.T_sortie_air_C         = designRecup.T_sortie_air_C         ?? 0;
     innerData.S_echange_m2           = designRecup.S_echange_m2           ?? 0;
     innerData.DTLM_HX                = designRecup.DTLM                   ?? 0;
@@ -249,14 +261,19 @@ const Recuperateur = ({ innerData = {}, combustionResults = {}, currentLanguage 
   useEffect(() => {
     if (!innerData) return;
     // HX côté fumées — débits et pressions
+    innerData.P_freeboard            = P_freeboard_mmCE;
     innerData.Q_FG_wet_entree_m3_h   = Q_FG_wet_entree_m3_h;
     innerData.P_sortie_HX_fg_mmCE    = P_sortie_HX_fg_mmCE;
+    // Pression des fumées en sortie d'échangeur : envoyée à l'aval (P_out_mmCE)
+    innerData.P_sortie_HX_mmCE       = P_sortie_HX_fg_mmCE;
     innerData.Q_FG_wet_sortie_m3_h   = Q_FG_wet_sortie_m3_h;
     // HX côté air — débits et pressions
     innerData.PDC_HX_cote_air_mmCE   = PDC_HX_cote_air_mmCE;
     innerData.P_cote_air_entree_mmCE = P_cote_air_entree_mmCE;
     innerData.Q_air_entree_HX_m3_h   = Q_air_entree_HX_m3_h;
     innerData.Q_air_sortie_HX_m3_h   = Q_air_sortie_HX_m3_h;
+    innerData.Q_Air_dry_m3_h         = Q_air_sortie_HX_m3_h;
+    innerData.PDC_ligne_air_HX_mmCE  = PDC_ligne_air_mmCE;
     innerData.H_air_soufflante_kW    = H_air_soufflante_tot_kW; // ensemble des fours
     // Ventilateur (débits par ventilateur, puissance totale pour l'OPEX)
     innerData.Q_air_pulser_Nm3_h          = Q_air_pulser_Nm3_h;
@@ -272,7 +289,7 @@ const Recuperateur = ({ innerData = {}, combustionResults = {}, currentLanguage 
     innerData.NbreDePass_HX               = NbreDePass;
     innerData.Encrassement_HX_pourcent    = freeParams.Encrassement_pourcent;
     onInnerDataChange?.();
-  }, [innerData,
+  }, [innerData, P_freeboard_mmCE, PDC_ligne_air_mmCE,
     Q_FG_wet_entree_m3_h, P_sortie_HX_fg_mmCE, Q_FG_wet_sortie_m3_h,
     PDC_HX_cote_air_mmCE, P_cote_air_entree_mmCE, Q_air_entree_HX_m3_h,
     Q_air_sortie_HX_m3_h, H_air_soufflante_tot_kW, Q_air_pulser_Nm3_h,
@@ -459,7 +476,7 @@ const Recuperateur = ({ innerData = {}, combustionResults = {}, currentLanguage 
               <input type="text" value={`${fmt(PDC_HX_cote_air_mmCE, 1)} mmCE`} readOnly style={readOnlyStyle} />
             </div>
             <div>
-              <label style={labelStyle}>P côté air entrée = P voûte + PDC_HX (mmCE)</label>
+              <label style={labelStyle}>P côté air entrée = P voûte + PDC ligne + PDC_HX (mmCE)</label>
               <input type="text" value={`${fmt(P_cote_air_entree_mmCE, 0)} mmCE`} readOnly style={readOnlyStyle} />
             </div>
             <div>
@@ -486,8 +503,15 @@ const Recuperateur = ({ innerData = {}, combustionResults = {}, currentLanguage 
               <label style={labelStyle}>{t('Pression niveau Voûte par Défaut [mmCE]') || 'Pression niveau Voûte par Défaut [mmCE]'}</label>
               <input type="text" value={`${fmt(P_voute_defaut_mmCE, 0)} mmCE`} readOnly style={readOnlyStyle} />
             </div>
-            <div style={{ height: '55px' }} />
-            <div style={{ height: '55px' }} />
+            <div>
+              <label style={labelStyle}>{t('PDC ligne échangeur → boîte à vent (mmCE)')}</label>
+              <input type="number" step="1" value={freeParams.PDC_reseau_sortie_entree_boite_mmCe}
+                onChange={(e) => handleFreeParamChange('PDC_reseau_sortie_entree_boite_mmCe', e.target.value)} style={inputStyle} />
+            </div>
+            <div>
+              <label style={labelStyle}>{t('Pression air sortie échangeur (mmCE)')}</label>
+              <input type="text" value={`${fmt(P_cote_air_sortie_mmCE, 0)} mmCE`} readOnly style={readOnlyStyle} />
+            </div>
             <div>
               <label style={labelStyle}>{t("Débit air en sortie de l'échangeur [m3/h]") || "Débit air en sortie de l'échangeur [m3/h]"}</label>
               <input type="text" value={`${fmt(Q_air_sortie_HX_m3_h, 0)} m³/h`} readOnly style={readOnlyStyle} />
@@ -562,6 +586,11 @@ const Recuperateur = ({ innerData = {}, combustionResults = {}, currentLanguage 
       {hasResults && (
         <div style={cardStyle}>
           <h2 style={cardTitle}>📊 {t("Dimensionnement de l'échangeur") || "Dimensionnement de l'échangeur"}</h2>
+          {!designRecup.temperaturesValides && (
+            <div style={{ marginBottom: '15px', padding: '10px', borderRadius: '4px', backgroundColor: '#ffebee', color: '#c62828', fontSize: '13px' }}>
+              {t("Températures incompatibles : l'air doit sortir plus chaud qu'il n'entre, et rester plus froid que les fumées aux deux extrémités.")}
+            </div>
+          )}
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '40px' }}>
 

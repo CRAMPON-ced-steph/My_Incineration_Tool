@@ -413,7 +413,8 @@ export const Tair_fluide_FB = (H1, H2, H3, rdt, masse_sec, masse_humide) =>{
   return Tair_fluide_FB;
 }
 
-export const DP_RecupAir = (Pvoute, Volairtot, TempAirMoy, VitesseAir, Npasse, Fact_A) => {
+// Volairtot en Nm³/h ; dpLigne = PDC de la ligne échangeur → boîte à vent (Pyrofluid : 50 mmCE)
+export const DP_RecupAir = (Pvoute, Volairtot, TempAirMoy, VitesseAir, Npasse, Fact_A, dpLigne = 50) => {
   let dpRecupAir = 400;
   let dpRecupAir1;
 
@@ -424,7 +425,7 @@ export const DP_RecupAir = (Pvoute, Volairtot, TempAirMoy, VitesseAir, Npasse, F
       dpRecupAir1 = dpRecupAir;
 
       // Calculs intermédiaires
-      const pressionMoyAir = Pvoute + 50 + (dpRecupAir1 / 2);
+      const pressionMoyAir = Pvoute + dpLigne + (dpRecupAir1 / 2);
       
       // Note: calculDebitPT doit être définie ou importée
       const debitAirTMoy = calculDebitPT(Volairtot, pressionMoyAir, TempAirMoy);
