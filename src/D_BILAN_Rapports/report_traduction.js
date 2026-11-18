@@ -5,6 +5,7 @@ import { getLanguageCode } from '../F_Gestion_Langues/Fonction_Traduction';
 
 export const reportTranslations = {
   fr: {
+    "retroTitleWATERCOOLER": "Économiseur fumées / eau — Rétro-calcul",
     "hxAirOutPressMmCE": "Pression sortie HX air [mmCE]",
     "hxSizingMode": "Type de dimensionnement",
     "hxOnePerFurnace": "Un échangeur par four",
@@ -350,6 +351,7 @@ export const reportTranslations = {
   },
 
   en: {
+    "retroTitleWATERCOOLER": "Flue gas / water economizer — Retro-calculation",
     "hxAirOutPressMmCE": "HX air outlet pressure [mmCE]",
     "hxSizingMode": "Sizing basis",
     "hxOnePerFurnace": "One exchanger per furnace",
@@ -695,6 +697,7 @@ export const reportTranslations = {
   },
 
   es: {
+    "retroTitleWATERCOOLER": "Economizador humos / agua — Retrocálculo",
     "hxAirOutPressMmCE": "Presión de salida del aire del HX [mmCA]",
     "hxSizingMode": "Base de dimensionamiento",
     "hxOnePerFurnace": "Un intercambiador por horno",
@@ -921,6 +924,7 @@ export const reportTranslations = {
   },
 
   de: {
+    "retroTitleWATERCOOLER": "Rauchgas/Wasser-Economiser — Rückwärtsberechnung",
     "hxAirOutPressMmCE": "Luftaustrittsdruck WT [mmWS]",
     "hxSizingMode": "Auslegungsbasis",
     "hxOnePerFurnace": "Ein Wärmetauscher pro Ofen",
@@ -1147,6 +1151,7 @@ export const reportTranslations = {
   },
 
   it: {
+    "retroTitleWATERCOOLER": "Economizzatore fumi / acqua — Retrocalcolo",
     "hxAirOutPressMmCE": "Pressione uscita aria HX [mmCA]",
     "hxSizingMode": "Base di dimensionamento",
     "hxOnePerFurnace": "Uno scambiatore per forno",
@@ -1373,6 +1378,7 @@ export const reportTranslations = {
   },
 
   pt: {
+    "retroTitleWATERCOOLER": "Economizador fumos / água — Retrocálculo",
     "hxAirOutPressMmCE": "Pressão de saída do ar do HX [mmCA]",
     "hxSizingMode": "Base de dimensionamento",
     "hxOnePerFurnace": "Um permutador por forno",
@@ -1599,6 +1605,7 @@ export const reportTranslations = {
   },
 
   ru: {
+    "retroTitleWATERCOOLER": "Экономайзер газы / вода — Обратный расчёт",
     "hxAirOutPressMmCE": "Давление воздуха на выходе ТО [мм вод. ст.]",
     "hxSizingMode": "Основа расчёта",
     "hxOnePerFurnace": "Один теплообменник на печь",
@@ -1825,6 +1832,7 @@ export const reportTranslations = {
   },
 
   ja: {
+    "retroTitleWATERCOOLER": "排ガス／水エコノマイザー — 逆算",
     "hxAirOutPressMmCE": "HX空気出口圧力 [mmAq]",
     "hxSizingMode": "設計基準",
     "hxOnePerFurnace": "炉ごとに熱交換器1基",
@@ -2051,6 +2059,7 @@ export const reportTranslations = {
   },
 
   zh: {
+    "retroTitleWATERCOOLER": "烟气/水省煤器 — 反算",
     "hxAirOutPressMmCE": "换热器空气出口压力 [mmH₂O]",
     "hxSizingMode": "选型基准",
     "hxOnePerFurnace": "每台焚烧炉一台换热器",
@@ -2277,6 +2286,7 @@ export const reportTranslations = {
   },
 
   ar: {
+    "retroTitleWATERCOOLER": "مقتصد الغازات / الماء — حساب عكسي",
     "hxAirOutPressMmCE": "ضغط خروج المبادل جهة الهواء [mmH₂O]",
     "hxSizingMode": "أساس التحجيم",
     "hxOnePerFurnace": "مبادل لكل فرن",

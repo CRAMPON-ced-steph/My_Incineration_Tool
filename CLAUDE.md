@@ -485,6 +485,7 @@ Raisons :
 
 - `Y_BILAN/ECHANGEURS/AIRCOOLER/` and `Y_BILAN/ECHANGEURS/WATERCOOLER/` deleted (replaced by TUBEANDSHELL).
 - Imports/exports removed from `RetroAndBilanComponents.jsx` and `Main_FLOW.jsx`.
+- 2026-11-18 : `WATERCOOLER` recréé comme **économiseur fumées / eau** (nœud `Cooling_HX_eau`, voir section dédiée plus bas). `AIRCOOLER` reste supprimé.
 
 ---
 
@@ -627,3 +628,15 @@ Doit être l'**inverse cohérent** de `option_T` :
 ### Points ouverts
 
 Les anomalies relevées mais non corrigées (GF, RK) sont listées dans `a_faire.md` à la racine du dépôt. Cocher / retirer une ligne une fois corrigée.
+
+### Économiseur fumées / eau — nœud `Cooling_HX_eau` (2026-11-18)
+
+- Reprise de Pyrofluid `ClassEconomiseur.vb` + `Economiseur.vb` (dossier « 04 Refroidissement Fumées », bloc 4-1), **fluide eau uniquement** (l'option air de Pyrofluid relève de `Cooling_HX_air`). Fichiers : `Y_BILAN/ECHANGEURS/WATERCOOLER/` (onglets Gaz → Polluants → Design → OPEX → Rapport, calculs purs `WATERCOOLER_calculs.js`, composants d'affichage `WATERCOOLER_ui.jsx`, traductions 10 langues) et `Z_RETRO/WATERCOOLER/` (onglet Retro, `WATERCOOLER_calculations.js`, rapport ; traductions réexportées du Bilan).
+- Options Pyrofluid (`calcul`) : T° entrée eau, T° sortie eau, T° sortie fumées, **débit d'eau (défaut)** ; en Retro, « T° entrée fumées » remplace « T° sortie fumées » (imposée par l'aval). En changeant d'option, la valeur calculée devient la donnée (comme Pyrofluid).
+- Calculs : Q fumées = H(T entrée) − H(T sortie) ; Q eau = Rdt × Q fumées ; DTml contre-courant avec les 5 contrôles Pyrofluid (pas de surface si l'un échoue, dont T sortie fumées > T sortie eau) ; F = 1 ; UA = Q fumées / DTml ; S = UA / U / 1,25 × (1 + encrassement) ; U = 66 kcal/h/m²/°C (Lagny), Rdt 95 %, encrassement 25 %, ΔP fumées 60 mmCE ; pression d'eau = saturation à T sortie eau. Alertes Pyrofluid : T sortie fumées < 125 °C ou > 300 °C, Rdt hors 70–100 %, encrassement hors 20–35 %.
+- Propriétés : mode outil = NIST (`h_fumee`) + IAPWS (`hL_T`, `psat_T`) ; mode « Calcul Pyrofluid d'origine » = `H_Fumees` (Cp Pyrofluid), Cp eau 1 kcal/kg/°C, Antoine de Pyrofluid.
+- Un économiseur par four par défaut (Pyrofluid divise par `NombreFour`, repris de l'amont) ou un pour l'ensemble ; le débit d'eau saisi est **par échangeur**.
+- Pas de captation : polluants et résidus transmis tels quels. OPEX : pompe de circulation (absente de Pyrofluid : débit × hauteur 2 bar / rendement 70 %, 0 pour l'ignorer), `typeOpexDuLabel('Cooling_HX_eau') = 'WATERCOOLER'`.
+- Paramètres et résultat tenus dans `WATERCOOLERMainPage` (partagés par les onglets, sortie indépendante de l'onglet ouvert). L'entrée amont est mémorisée à l'envoi (`amont_WATERCOOLER_<nodeId>`) et relue à la réouverture tant que l'amont n'a pas renvoyé de nouvelles T / P (sinon le nœud relirait sa propre sortie comme entrée).
+- localStorage : `params_WATERCOOLER_<nodeId>`, `emissions2_WATERCOOLER_<nodeId>` (Bilan), `params_retro_WATERCOOLER_<nodeId>`, `calculationResult_WATERCOOLER_<nodeId>` (Retro, lus par `batchCalculators.js`).
+- Valence 450 kg MS/h (563 → 220 °C, eau 160 → 180 °C), mode d'origine : Q fumées 785 195 kcal/h (Pyrofluid 785 145), débit d'eau 37 297 kg/h (37 294), DTml 174,2 °C (174,1), S 68,3 m² (68,3), P eau 10,07 bar (10,1), débit fumées sortie ≈ 11 548 m³/h (11 545). Mode outil : Q +0,9 %, débit d'eau −3,5 % (Cp réel de l'eau ≈ 4,4 kJ/kg/K à 170 °C).
