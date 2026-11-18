@@ -6,7 +6,7 @@ import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './SCRUBBER_traduction';
 
 
-const SCRUBBERopex = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
+const SCRUBBERopex = ({ innerData, setInnerData, currentLanguage = 'fr', nodeId }) => {
 
   const languageCode = getLanguageCode(currentLanguage);
   const t = (key) => {
@@ -20,6 +20,7 @@ const SCRUBBERopex = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
       innerData={innerData} 
       setInnerData={setInnerData} 
       currentLanguage={currentLanguage}
+      nodeId={nodeId}
     />
   );
 };

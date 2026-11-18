@@ -2,6 +2,7 @@ import React, { useRef, useState } from 'react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { getOpexData } from '../A_Transverse_fonction/opexDataService';
+import { opexDuNoeud, typeOpexDuLabel, valeurLigne, totalLignesManuelles } from '../G_Graphiques/Dashboard/opexTableau';
 
 import RK_Report from '../Y_BILAN/RK/RK_Report';
 import GF_Report from '../Y_BILAN/GF/GF_Report';
@@ -91,70 +92,36 @@ import { getLanguageCode } from '../F_Gestion_Langues/Fonction_Traduction';
 // ─── OPEX Summary Section ─────────────────────────────────────────────────────
 
 const OpexSummarySection = ({ nodes, tr }) => {
-  const {
-    purchaseElectricityPrice,
-    availability,
-    currency,
-    waterPrices,
-    reagentsTypes,
-    gasTypes,
-    fuelTypes,
-    airConsumptionPrice,
-  } = getOpexData();
+  const { purchaseElectricityPrice, availability, currency } = getOpexData();
 
-  const sum = (field) =>
-    nodes.reduce((s, n) => s + (parseFloat(n.data?.result?.[field]) || 0), 0);
+  // Somme, nœud par nœud, des tableaux de coût de l'onglet OPEX (mêmes valeurs
+  // que la section OPEX de chaque rapport d'équipement).
+  const somme = { elec: 0, gaz: 0, air: 0, eau: 0, reactifs: 0, transport: 0, autres: 0 };
+  nodes.forEach((n) => {
+    const type = typeOpexDuLabel(n.data?.label);
+    if (!type) return;
+    const opex = opexDuNoeud(n.data?.result || {}, type, n.id);
+    somme.elec += valeurLigne(opex, 'cout', 'row1');
+    somme.gaz += valeurLigne(opex, 'cout', 'row2');
+    somme.air += valeurLigne(opex, 'cout', 'row3');
+    somme.eau += valeurLigne(opex, 'cout', 'row4');
+    somme.reactifs += valeurLigne(opex, 'cout', 'row5');
+    somme.transport += valeurLigne(opex, 'cout', 'row6') + valeurLigne(opex, 'cout', 'row7');
+    somme.autres += totalLignesManuelles(opex, 'cout');
+  });
 
-  // ── Aggregate consumptions ──
-  const consoElec_kW =
-    [1, 2, 3, 4, 5, 6, 7, 8].reduce((s, i) => s + sum(`consoElec${i}`), 0);
-
-  const conso_air_Nm3h = sum('conso_air_co_N_m3');
-
-  const cout_eau =
-    sum('Conso_EauPotable_m3')       * (waterPrices?.potable       || 0) +
-    sum('Conso_EauRefroidissement_m3')* (waterPrices?.cooling       || 0) +
-    sum('Conso_EauDemin_m3')          * (waterPrices?.demineralized || 0) +
-    sum('Conso_EauRiviere_m3')        * (waterPrices?.river         || 0) +
-    sum('Conso_EauAdoucie_m3')        * (waterPrices?.soft          || 0);
-
-  const cout_reactifs =
-    (sum('Conso_CaCO3_kg')     / 1000) * (reagentsTypes?.CaCO3?.cost      || 0) +
-    (sum('Conso_CaO_kg')       / 1000) * (reagentsTypes?.CaO?.cost        || 0) +
-    (sum('Conso_CaOH2_dry_kg') / 1000) * (reagentsTypes?.CaOH2?.cost      || 0) +
-    (sum('Conso_CaOH2_wet_kg') / 1000) * (reagentsTypes?.CaOH2?.cost      || 0) +
-    (sum('Conso_NaOH_kg')      / 1000) * (reagentsTypes?.NaOH?.cost       || 0) +
-    (sum('Conso_NaOHCO3_kg')   / 1000) * (reagentsTypes?.NaOHCO3?.cost    || 0) +
-    (sum('Conso_Ammonia_kg')   / 1000) * (reagentsTypes?.NH3?.cost        || 0) +
-    (sum('Conso_CAP_kg')       / 1000) * (reagentsTypes?.CAP?.cost        || 0) +
-    (sum('Conso_NaBrCaBr2_kg') / 1000) * (reagentsTypes?.NaBr_CaBr2?.cost || 0);
-
-  const cout_gaz =
-    sum('conso_gaz_H_MW')      * (gasTypes?.naturalGasH?.molecule || 0) +
-    sum('conso_gaz_L_MW')      * (gasTypes?.naturalGasL?.molecule || 0) +
-    sum('conso_gaz_Process_MW')* (gasTypes?.processGas?.molecule  || 0);
-
-  const cout_fuel = sum('conso_fuel_MW') * (fuelTypes?.FOD?.liquid || 0);
-
-  const cout_elec  = (consoElec_kW / 1000) * (purchaseElectricityPrice || 0);
-  const cout_air   = (conso_air_Nm3h / 1000) * (airConsumptionPrice || 0);
-  const cout_transport =
-    sum('cout_transport_reactifs') +
-    sum('cout_transport_incineratino_ash') +
-    sum('cout_transport_boiler_ash') +
-    sum('cout_transport_fly_ash');
-
-  const total_h  = cout_elec + cout_air + cout_eau + cout_reactifs + cout_gaz + cout_fuel + cout_transport;
+  const total_h  = Object.values(somme).reduce((s, v) => s + v, 0);
   const total_an = total_h * (availability || 8760);
   const curr     = currency || '€';
 
   const rows = [
-    { label: tr('electricity'),       hourly: cout_elec,              bg: '#edf4ff' },
-    { label: tr('compressedAir'),     hourly: cout_air,               bg: '#fff'    },
-    { label: tr('water'),             hourly: cout_eau,               bg: '#edf4ff' },
-    { label: tr('chemicalReagents'),  hourly: cout_reactifs,          bg: '#fff'    },
-    { label: tr('gasFuel'),           hourly: cout_gaz + cout_fuel,   bg: '#edf4ff' },
-    { label: tr('transportResidues'), hourly: cout_transport,         bg: '#fff'    },
+    { label: tr('electricity'),       hourly: somme.elec,      bg: '#edf4ff' },
+    { label: tr('compressedAir'),     hourly: somme.air,       bg: '#fff'    },
+    { label: tr('water'),             hourly: somme.eau,       bg: '#edf4ff' },
+    { label: tr('chemicalReagents'),  hourly: somme.reactifs,  bg: '#fff'    },
+    { label: tr('gasFuel'),           hourly: somme.gaz,       bg: '#edf4ff' },
+    { label: tr('transportResidues'), hourly: somme.transport, bg: '#fff'    },
+    ...(somme.autres !== 0 ? [{ label: tr('otherCostsAdded'), hourly: somme.autres, bg: '#edf4ff' }] : []),
   ];
 
   return (
@@ -489,7 +456,7 @@ const GlobalReport = ({ nodes, edges, onClose, currentLanguage }) => {
                           {node.data.title && <span style={styles.equipTitle}> — {node.data.title}</span>}
                         </div>
                         <div data-pdf-blocks-parent>
-                          <Component innerData={node.data.result || {}} currentLanguage={currentLanguage} />
+                          <Component innerData={node.data.result || {}} currentLanguage={currentLanguage} nodeId={node.id} />
                         </div>
                       </div>
                     );

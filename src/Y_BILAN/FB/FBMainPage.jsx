@@ -15,6 +15,7 @@ import FBCalcOpex from './5_1_FB_calcul_Opex';
 
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './FB_traduction';
+import { estCleOpexNoeud } from '../../G_Graphiques/Dashboard/opexTableau';
 
 const FBMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLanguage = 'fr', nodeId }) => {
   // ============================================================
@@ -49,6 +50,8 @@ const FBMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
       ...(r.PollutantOutput       ? { Poutput: r.PollutantOutput }                          : {}),
       ...(r.PollutantInput        ? { PInput: r.PollutantInput }                            : {}),
       ...(r.Residus               ? { Residus: r.Residus }                                  : {}),
+      // Tableaux de l'onglet OPEX (projet rechargé sans localStorage)
+      ...Object.fromEntries(Object.entries(r).filter(([k]) => k.startsWith('opexTableau_'))),
     };
   }
 
@@ -101,6 +104,9 @@ const FBMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
       // ✅ DONNÉES COHÉRENTES
       const dataToSend = {
         result: {
+          // === OPEX (onglet OPEX : consommations, tableaux saisis, totaux) ===
+          ...Object.fromEntries(Object.entries(innerDataRef.current).filter(([k]) => estCleOpexNoeud(k))),
+
           // === COMBUSTION (depuis CombustionTab) ===
           FG_OUT_kg_h: innerDataRef.current['FG_OUT_kg_h'] || {
             CO2: 0,

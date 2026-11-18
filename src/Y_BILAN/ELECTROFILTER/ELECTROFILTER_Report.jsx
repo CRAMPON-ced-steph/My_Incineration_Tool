@@ -1,10 +1,10 @@
 import React from 'react';
-import { getOpexData } from '../../A_Transverse_fonction/opexDataService';
 import { CO2_kg_m3, H2O_kg_m3, O2_kg_m3, N2_kg_m3 } from '../../A_Transverse_fonction/conv_calculation';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { makeReportT } from '../../D_BILAN_Rapports/report_traduction';
 import { translations } from './ELECTROFILTER_traduction';
 import { fmt } from '../../A_Transverse_fonction/formatNumber';
+import OpexRapport from '../../D_BILAN_Rapports/OpexRapport';
 const Section = ({ title, children }) => <div style={styles.section}><h2 style={styles.sectionTitle}>{title}</h2>{children}</div>;
 const SubSection = ({ title, children }) => <div style={styles.subSection}>{title && <h3 style={styles.subTitle}>{title}</h3>}{children}</div>;
 const KV = ({ label, value, unit = '' }) => <div style={styles.kvRow}><span style={styles.kvLabel}>{label}</span><span style={styles.kvValue}>{value}{unit ? <span style={styles.kvUnit}> {unit}</span> : null}</span></div>;
@@ -34,70 +34,7 @@ const ElecTable = ({ rows, t }) => (
   </table>
 );
 
-const computeOpexCosts = (innerData, tr = (k) => k) => {
-  const { purchaseElectricityPrice = 0, ratioElec = 0, availability = 8000, currency = '€', airConsumptionPrice = 0, powerRatio = 0, waterPrices = {}, reagentsTypes = {}, gasTypes = {}, fuelTypes = {} } = getOpexData();
-  const d = innerData || {};
-  const elecRows = [1,2,3,4,5,6,7,8].map(i => ({ label: d[`labelElec${i}`] || `Poste ${i}`, kW: d[`consoElec${i}`] || 0 })).filter(r => r.kW > 0);
-  const totalElec_kW = elecRows.reduce((s, r) => s + r.kW, 0);
-  const coutElec = (totalElec_kW / 1000) * purchaseElectricityPrice;
-  const co2Elec = (ratioElec * totalElec_kW) / 1000;
-  const conso_air = d.conso_air_co_N_m3 || 0;
-  const coutAir = (conso_air / 1000) * airConsumptionPrice;
-  const co2Air = (conso_air * powerRatio * ratioElec) / 1000;
-  const eauRows = [
-    { label: tr("waterPotable"), m3h: d.Conso_EauPotable_m3 || 0, prix: waterPrices?.potable || 0 },
-    { label: tr("waterDemin"), m3h: d.Conso_EauDemin_m3 || 0, prix: waterPrices?.demineralized || 0 },
-  ].filter(r => r.m3h > 0);
-  const coutEau = eauRows.reduce((s, r) => s + r.m3h * r.prix, 0);
-  const reactifRows = [
-    { label: 'CAP', kgh: d.Conso_CAP_kg || 0, prix: reagentsTypes?.CAP?.cost || 0, co2T: reagentsTypes?.CAP?.co2PerTrip || 0 },
-    { label: 'NaHCO₃', kgh: d.Conso_NaOHCO3_kg || 0, prix: reagentsTypes?.NaOHCO3?.cost || 0, co2T: reagentsTypes?.NaOHCO3?.co2PerTrip || 0 },
-  ].filter(r => r.kgh > 0);
-  const coutReactifs = reactifRows.reduce((s, r) => s + (r.kgh / 1000) * r.prix, 0);
-  const co2TransportReactifs = reactifRows.reduce((s, r) => s + (r.kgh / 1000) * r.co2T, 0);
-  const energieRows = [
-    { label: tr("gasHighValue"), MW: d.conso_gaz_H_MW || 0, prix: gasTypes?.naturalGasH?.molecule || 0, co2e: gasTypes?.naturalGasH?.co2Emission || 0 },
-  ].filter(r => r.MW > 0);
-  const coutEnergie = energieRows.reduce((s, r) => s + r.MW * r.prix, 0);
-  const co2Energie = energieRows.reduce((s, r) => s + r.MW * r.co2e, 0);
-  const coutTransportResidus = d.cout_transport_fly_ash || 0;
-  const co2TransportResidus = d.CO2_transport_fly_ash || 0;
-  const coutTransportReactifs = d.cout_transport_reactifs || 0;
-  const totalCout_h = coutElec + coutAir + coutEau + coutReactifs + coutEnergie + coutTransportResidus + coutTransportReactifs;
-  const totalCout_an = totalCout_h * availability;
-  const totalCO2_kgh = co2Elec + co2Air + co2Energie + co2TransportReactifs + co2TransportResidus;
-  return { elecRows, totalElec_kW, coutElec, co2Elec, coutAir, co2Air, eauRows, coutEau, reactifRows, coutReactifs, co2TransportReactifs, energieRows, coutEnergie, co2Energie, coutTransportResidus, co2TransportResidus, coutTransportReactifs, totalCout_h, totalCout_an, totalCO2_kgh, currency, availability };
-};
-
-const OpexSummary = ({ opex, t }) => {
-  const { totalElec_kW, coutElec, co2Elec, coutAir, co2Air, coutEau, coutReactifs, co2TransportReactifs, coutEnergie, co2Energie, coutTransportResidus, co2TransportResidus, coutTransportReactifs, totalCout_h, totalCout_an, totalCO2_kgh, currency, availability } = opex;
-  if (totalElec_kW === 0 && coutEnergie === 0 && coutEau === 0) return <p style={{ color: '#999', fontSize: 12, padding: '10px 14px' }}>{t('Coûts OPEX non disponibles — ouvrir l\'onglet Design.')}</p>;
-  return (
-    <div>
-      <div style={styles.subSection}>
-        <div style={styles.tagRow}>
-          {[{ label: `${t('Électricité')} [${currency}/h]`, val: coutElec, color: '#4a90e2' }, { label: `${t('Eau')} [${currency}/h]`, val: coutEau, color: '#2ecc71' }, { label: `${t('Réactifs')} [${currency}/h]`, val: coutReactifs, color: '#e74c3c' }, { label: `${t('Énergie')} [${currency}/h]`, val: coutEnergie, color: '#f39c12' }].map(({ label, val, color }) => (
-            <div key={label} style={{ ...styles.tag, borderLeft: `4px solid ${color}`, minWidth: 130 }}><span style={styles.tagLabel}>{label}</span><span style={{ ...styles.tagValue, color }}>{fmt(val, 2)}</span></div>
-          ))}
-        </div>
-      </div>
-      <div style={styles.twoCol}>
-        <div style={{ ...styles.subSection, background: '#f0f5ff', margin: 8, borderRadius: 6 }}>
-          <h3 style={{ ...styles.subTitle, color: '#1a3a6b', fontSize: 14 }}>{t('Total coût')}</h3>
-          <KV label={`${t('Coût horaire')} [${currency}/h]`} value={fmt(totalCout_h, 2)} />
-          <KV label={`${t('Coût annuel')} (${availability}h) [${currency}/${t('an')}]`} value={fmt(totalCout_an, 0)} />
-        </div>
-        <div style={{ ...styles.subSection, background: '#f5f0ff', margin: 8, borderRadius: 6 }}>
-          <h3 style={{ ...styles.subTitle, color: '#6a1a6b', fontSize: 14 }}>{t('Total CO₂ [kg/h]')}</h3>
-          <KV label={t('CO₂ électricité')} value={fmt(co2Elec, 3)} />
-          <KV label={t('Total CO₂')} value={fmt(totalCO2_kgh, 2)} />
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const ELECTROFILTER_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
+const ELECTROFILTER_Report = ({ innerData = {}, currentLanguage = 'fr', nodeId }) => {
   const languageCode = getLanguageCode(currentLanguage);
   const tr = makeReportT(currentLanguage);
   const t = (key) => translations[languageCode]?.[key] || translations['fr']?.[key] || key;
@@ -114,7 +51,6 @@ const ELECTROFILTER_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
   const Poutput = innerData.Poutput || {};
   const Residus = innerData.Residus || {};
   const elecRows = [1,2,3,4,5,6,7,8].map(i => ({ label: innerData[`labelElec${i}`] || `Poste ${i}`, value: innerData[`consoElec${i}`] })).filter(r => parseFloat(r.value) > 0);
-  const opex = computeOpexCosts(innerData, tr);
 
   return (
     <div style={styles.container}>
@@ -150,7 +86,7 @@ const ELECTROFILTER_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
         </SubSection>
       </Section>
 
-      <Section title={t('4. OPEX — Coûts horaires')}><OpexSummary opex={opex} t={t} /></Section>
+      <Section title={t('4. OPEX — Coûts horaires')}><OpexRapport innerData={innerData} equipmentType="ELECTROFILTER" nodeId={nodeId} currentLanguage={currentLanguage} /></Section>
       <div style={styles.footer}>{t('Rapport généré automatiquement')} — {new Date().toLocaleDateString()}</div>
     </div>
   );

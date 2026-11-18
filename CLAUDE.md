@@ -591,6 +591,17 @@ Doit être l'**inverse cohérent** de `option_T` :
 - **Design** : vitesse des fumées dans le four en m³/h réels à `T_OUT` (`coeff_Nm3_to_m3`). Le taux de remplissage (Freeman) était déjà correct (×100).
 - **OPEX** : l'onglet Design écrit déjà consoElec1-8, gaz, air comprimé, eau, réactifs, cendres dans innerData. `RKMainPage.jsx` le garde monté en arrière-plan (invisible) pour que l'OPEX et le rapport soient alimentés sans ouvrir l'onglet Design.
 
+### OPEX — onglet OPEX = source unique des rapports (2026-11-18)
+
+- `G_Graphiques/Dashboard/opexTableau.js` : fonctions pures. `calculerOpex(innerData, { sauve, config, t })` construit les six tableaux (élec, eau, réactifs avec CAP, énergie, CO2, coût) : lignes calculées depuis `innerData` + saisies de l'onglet. Les lignes de coût et de CO2 sont recalculées à partir des tableaux de consommation affichés. `opexDuNoeud(innerData, type, nodeId, t)` = état affiché dans l'onglet OPEX du nœud.
+- Saisies : `valeurFixee` / `libelleFixe` (la ligne n'est plus mise à jour par le calcul ; bouton ↺ pour revenir), lignes `manuelle` (clé `row<horodatage>`), lignes calculées supprimées dans `supprimees`. Aucun arrondi avant calcul.
+- Persistance par nœud : localStorage `opexDashboard_<TYPE>_<nodeId>` (lu en premier), copie `innerData['opexTableau_<TYPE>_<nodeId>']` (voyage avec le projet JSON), puis ancienne clé `opexDashboard_<TYPE>` (migration).
+- `OpexDashboard.jsx` (onglet) et `D_BILAN_Rapports/OpexRapport.jsx` (section OPEX de tous les `*_Report.jsx`) utilisent ce module ; la synthèse OPEX de `GlobalReport.jsx` additionne les tableaux de coût des nœuds (`typeOpexDuLabel` : `RK+SCC` → `RK`). Les wrappers `*_Opex.jsx` et les rapports reçoivent `nodeId`.
+- `activeNodes_*` (panneau OPEX de `Main_FLOW`) : toujours horaires.
+- **Clés OPEX propres au nœud** (`estCleOpexNoeud` : `consoElec*`, `labelElec*`, `Conso_*`, `conso_gaz/fuel/air/…`, `CO2_transport_*`, `cout_transport_*`, `activeNodes_*`, `opexTableau_*`) : `Main_FLOW.onSendData` ne les recopie plus dans le nœud aval (`sansClesOpex`). FB et GF les ajoutent explicitement à leur envoi (liste blanche).
+- Nouvel équipement : écrire les clés standard dans `innerData` (nombres, pas `toFixed`), passer `nodeId` à l'onglet OPEX et au rapport, mettre `<OpexRapport innerData equipmentType nodeId currentLanguage />` dans la section OPEX du rapport. Ne pas recréer de calcul de coût dans le rapport.
+- `OpexDashboard_WHB.jsx` / `5_WHB_Opex.jsx` : non branchés (code mort).
+
 ### Points ouverts
 
 Les anomalies relevées mais non corrigées (GF, RK) sont listées dans `a_faire.md` à la racine du dépôt. Cocher / retirer une ligne une fois corrigée.

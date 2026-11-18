@@ -68,6 +68,11 @@ const ParameterInput = ({ translationKey, value, onChange, type = 'number', opti
   );
 };
 
+
+const CONSO_REACTIFS_VIDE = {
+  CaCO3: 0, CaO: 0, CaOH2wet: 0, CaOH2dry: 0, NaOH: 0, NaOHCO3: 0,
+  Ammonia: 0, NaBrCaBr2: 0, CAP: 0, cout: 0, CO2_transport: 0,
+};
 const BHFDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
   const getInitialValue = (paramName, defaultValue) => {
     return innerData?.[paramName] !== undefined ? innerData[paramName] : defaultValue;
@@ -189,10 +194,9 @@ const BHFDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
     }
   };
 
-  const consommation_reactifs = innerData?.Conso_reactifs || {
-    CaCO3: 0, CaO: 0, CaOH2wet: 0, CaOH2dry: 0, NaOH: 0, NaOHCO3: 0,
-    Ammonia: 0, NaBrCaBr2: 0, CAP: 0, cout: 0, CO2_transport: 0,
-  };
+  // Repli constant (module) : un nouvel objet à chaque rendu relançait l'effet
+  // ci-dessous en boucle quand l'onglet Polluants n'avait pas encore été ouvert.
+  const consommation_reactifs = innerData?.Conso_reactifs || CONSO_REACTIFS_VIDE;
 
   useEffect(() => {
     if (setInnerData && typeof setInnerData === 'function') {

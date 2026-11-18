@@ -1,10 +1,10 @@
 import React from 'react';
-import { getOpexData } from '../../A_Transverse_fonction/opexDataService';
 import { CO2_kg_m3, H2O_kg_m3, O2_kg_m3, N2_kg_m3 } from '../../A_Transverse_fonction/conv_calculation';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { makeReportT } from '../../D_BILAN_Rapports/report_traduction';
 import { translations } from './IDFAN_traduction';
 import { fmt } from '../../A_Transverse_fonction/formatNumber';
+import OpexRapport from '../../D_BILAN_Rapports/OpexRapport';
 const Section = ({ title, children }) => <div style={styles.section}><h2 style={styles.sectionTitle}>{title}</h2>{children}</div>;
 const SubSection = ({ title, children }) => <div style={styles.subSection}>{title && <h3 style={styles.subTitle}>{title}</h3>}{children}</div>;
 const KV = ({ label, value, unit = '' }) => <div style={styles.kvRow}><span style={styles.kvLabel}>{label}</span><span style={styles.kvValue}>{value}{unit ? <span style={styles.kvUnit}> {unit}</span> : null}</span></div>;
@@ -24,27 +24,7 @@ const PollutantTable = ({ masses = {} }) => {
   return <table style={styles.table}><thead><tr>{keys.map(k => <th key={k} style={styles.th}>{k}</th>)}</tr></thead><tbody><tr>{keys.map(k => <td key={k} style={styles.td}>{fmt(masses[k], 4)}</td>)}</tr></tbody></table>;
 };
 
-const computeOpexCosts = (innerData, tr = (k) => k) => {
-  const { purchaseElectricityPrice = 0, ratioElec = 0, availability = 8000, currency = '€', airConsumptionPrice = 0, powerRatio = 0, waterPrices = {} } = getOpexData();
-  const d = innerData || {};
-  const elecRows = [1,2,3,4,5,6,7,8].map(i => ({ label: d[`labelElec${i}`] || `Poste ${i}`, kW: d[`consoElec${i}`] || 0 })).filter(r => r.kW > 0);
-  const totalElec_kW = elecRows.reduce((s, r) => s + r.kW, 0);
-  const coutElec = (totalElec_kW / 1000) * purchaseElectricityPrice;
-  const co2Elec = (ratioElec * totalElec_kW) / 1000;
-  const conso_air = d.conso_air_co_N_m3 || 0;
-  const coutAir = (conso_air / 1000) * airConsumptionPrice;
-  const co2Air = (conso_air * powerRatio * ratioElec) / 1000;
-  const eauRows = [
-    { label: tr("waterPotable"), m3h: d.Conso_EauPotable_m3 || 0, prix: waterPrices?.potable || 0 },
-  ].filter(r => r.m3h > 0);
-  const coutEau = eauRows.reduce((s, r) => s + r.m3h * r.prix, 0);
-  const totalCout_h = coutElec + coutAir + coutEau;
-  const totalCout_an = totalCout_h * availability;
-  const totalCO2_kgh = co2Elec + co2Air;
-  return { totalElec_kW, coutElec, co2Elec, coutAir, co2Air, eauRows, coutEau, totalCout_h, totalCout_an, totalCO2_kgh, currency, availability };
-};
-
-const IDFAN_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
+const IDFAN_Report = ({ innerData = {}, currentLanguage = 'fr', nodeId }) => {
   const languageCode = getLanguageCode(currentLanguage);
   const tr = makeReportT(currentLanguage);
   const t = (key) => translations[languageCode]?.[key] || translations['fr']?.[key] || key;
@@ -58,7 +38,6 @@ const IDFAN_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
   const FG_wet_total = (FG_OUT_kg_h.CO2 || 0) + (FG_OUT_kg_h.H2O || 0) + (FG_OUT_kg_h.O2 || 0) + (FG_OUT_kg_h.N2 || 0);
   const PInput = innerData.PInput || {};
   const Poutput = innerData.Poutput || {};
-  const opex = computeOpexCosts(innerData, tr);
 
   return (
     <div style={styles.container}>
@@ -85,31 +64,7 @@ const IDFAN_Report = ({ innerData = {}, currentLanguage = 'fr' }) => {
       </Section>
 
       <Section title={`3. ${t('opexHourlyCosts')}`}>
-        {opex.totalElec_kW === 0 && opex.coutEau === 0
-          ? <p style={{ color: '#999', fontSize: 12, padding: '10px 14px' }}>{t('noOpexData')}</p>
-          : (
-            <div>
-              <div style={styles.subSection}>
-                <div style={styles.tagRow}>
-                  <div style={{ ...styles.tag, borderLeft: '4px solid #4a90e2', minWidth: 130 }}><span style={styles.tagLabel}>{`${t('electricityTag')} [${opex.currency}/h]`}</span><span style={{ ...styles.tagValue, color: '#4a90e2' }}>{fmt(opex.coutElec, 2)}</span></div>
-                  <div style={{ ...styles.tag, borderLeft: '4px solid #17a2b8', minWidth: 130 }}><span style={styles.tagLabel}>{`${t('airTag')} [${opex.currency}/h]`}</span><span style={{ ...styles.tagValue, color: '#17a2b8' }}>{fmt(opex.coutAir, 2)}</span></div>
-                </div>
-              </div>
-              <div style={styles.twoCol}>
-                <div style={{ ...styles.subSection, background: '#f0f5ff', margin: 8, borderRadius: 6 }}>
-                  <h3 style={{ ...styles.subTitle, color: '#1a3a6b', fontSize: 14 }}>{t('totalCost')}</h3>
-                  <KV label={`${t('hourlyCost')} [${opex.currency}/h]`} value={fmt(opex.totalCout_h, 2)} />
-                  <KV label={`${t('annualCost')} (${opex.availability}h) [${opex.currency}${tr('perYear')}]`} value={fmt(opex.totalCout_an, 0)} />
-                </div>
-                <div style={{ ...styles.subSection, background: '#f5f0ff', margin: 8, borderRadius: 6 }}>
-                  <h3 style={{ ...styles.subTitle, color: '#6a1a6b', fontSize: 14 }}>{t('totalCO2')}</h3>
-                  <KV label={t('co2Electricity')} value={fmt(opex.co2Elec, 3)} />
-                  <KV label={t('totalCO2label')} value={fmt(opex.totalCO2_kgh, 2)} />
-                </div>
-              </div>
-            </div>
-          )
-        }
+        <OpexRapport innerData={innerData} equipmentType="IDFAN" nodeId={nodeId} currentLanguage={currentLanguage} />
       </Section>
 
       <div style={styles.footer}>{t('autoReport')} — {new Date().toLocaleDateString()}</div>

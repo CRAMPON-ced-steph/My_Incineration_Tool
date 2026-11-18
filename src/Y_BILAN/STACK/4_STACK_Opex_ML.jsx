@@ -4,7 +4,7 @@ import OpexDashboard from '../../G_Graphiques/Dashboard/OpexDashboard';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './STACK_traduction';
 
-const STACKopex = ({ innerData, setInnerData,currentLanguage = 'fr' }) => {
+const STACKopex = ({ innerData, setInnerData,currentLanguage = 'fr', nodeId }) => {
 
   const languageCode = getLanguageCode(currentLanguage);
   const t = (key) => {
@@ -17,6 +17,7 @@ const STACKopex = ({ innerData, setInnerData,currentLanguage = 'fr' }) => {
       innerData={innerData} 
       setInnerData={setInnerData} 
       currentLanguage={currentLanguage}
+      nodeId={nodeId}
     />
   );
 };

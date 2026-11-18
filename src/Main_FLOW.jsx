@@ -37,6 +37,7 @@ import GlobalRetroReport from './D_BILAN_Rapports/GlobalRetroReport';
 import { batchCalcMap } from './Z_RETRO/batchCalculators';
 import { BATCH_CALC_RESULT_EVENT } from './C_Components/useBatchCalcResult';
 import CustomNode from './C_Components/CustomNode';
+import { sansClesOpex } from './G_Graphiques/Dashboard/opexTableau';
 
 const initialNodes = [];
 const initialEdges = [];
@@ -407,7 +408,10 @@ function Flow({
                 v === null || v === undefined ||
                 (typeof v === 'object' && !Array.isArray(v) && Object.keys(v).length === 0) ||
                 (Array.isArray(v) && v.length === 0);
-              const upstream = data.result || {};
+              // Les consommations OPEX (consoElec*, Conso_*, opexTableau_*…) sont propres au
+              // nœud émetteur : on ne les recopie pas dans le nœud aval (sinon l'OPEX et le
+              // rapport du nœud aval affichent celles du nœud amont).
+              const upstream = sansClesOpex(data.result || {});
               const downstream = node.data.result || {};
               const merged = { ...downstream, ...upstream };
               for (const key of Object.keys(upstream)) {
