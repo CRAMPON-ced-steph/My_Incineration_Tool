@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import React, { useState, useCallback, useEffect, useRef } from 'react';
+import React, { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import {ReactFlow, Controls, Background, Panel, useNodesState, useEdgesState, addEdge, getIncomers, getOutgoers, getConnectedEdges, useReactFlow} from '@xyflow/react';
 import { Eraser } from './C_Components/EraserTool/Eraser';
 import '@xyflow/react/dist/style.css';
@@ -42,6 +42,7 @@ import { batchCalcMap } from './Z_RETRO/batchCalculators';
 import { BATCH_CALC_RESULT_EVENT } from './C_Components/useBatchCalcResult';
 import CustomNode from './C_Components/CustomNode';
 import { sansClesOpex } from './G_Graphiques/Dashboard/opexTableau';
+import { estVide, ajouterEntree, donneesAvecEntree } from './C_Components/entreeNoeud';
 
 const initialNodes = [];
 const initialEdges = [];
@@ -410,10 +411,6 @@ function Flow({
               // own valid data when upstream provides empty ({}, [], null, undefined).
               // This prevents navigating through an uncalculated node from wiping
               // previously computed results anywhere in the chain.
-              const isEmpty = (v) =>
-                v === null || v === undefined ||
-                (typeof v === 'object' && !Array.isArray(v) && Object.keys(v).length === 0) ||
-                (Array.isArray(v) && v.length === 0);
               // Les consommations OPEX (consoElec*, Conso_*, opexTableau_*…) sont propres au
               // nœud émetteur : on ne les recopie pas dans le nœud aval (sinon l'OPEX et le
               // rapport du nœud aval affichent celles du nœud amont).
@@ -421,13 +418,15 @@ function Flow({
               const downstream = node.data.result || {};
               const merged = { ...downstream, ...upstream };
               for (const key of Object.keys(upstream)) {
-                if (isEmpty(upstream[key]) && !isEmpty(downstream[key])) {
+                if (estVide(upstream[key]) && !estVide(downstream[key])) {
                   merged[key] = downstream[key];
                 }
               }
+              // La sortie reçue est aussi mémorisée comme entrée du nœud cible : à sa
+              // réouverture, il la relit au lieu de sa propre sortie (entreeNoeud.js).
               return {
                 ...node,
-                data: { ...node.data, result: merged },
+                data: ajouterEntree({ ...node.data, result: merged }, selectedNode.id, upstream),
               };
             })
           );
@@ -473,6 +472,7 @@ function Flow({
   // receive the result so the next batch node has fresh input when its turn arrives.
   const propagateResultUpstream = useCallback((startNodeId, result, allEdges, allNodes) => {
     const toUpdate = new Set();
+    const emetteur = {}; // voisin dont chaque nœud reçoit le résultat (entrée mémorisée)
     const queue = [startNodeId];
     while (queue.length > 0) {
       const currentId = queue.shift();
@@ -483,6 +483,7 @@ function Flow({
       for (const upId of upstreamIds) {
         if (toUpdate.has(upId)) continue;
         toUpdate.add(upId);
+        emetteur[upId] = currentId;
         const upNode = allNodes.find(n => n.id === upId);
         // If this upstream node is NOT a batch node, keep traversing through it
         if (upNode && !batchCalcMap[upNode.data.label]) {
@@ -492,7 +493,7 @@ function Flow({
     }
     return allNodes.map(n => {
       if (n.id === startNodeId) return { ...n, data: { ...n.data, result, isActive: true } };
-      if (toUpdate.has(n.id)) return { ...n, data: { ...n.data, result } };
+      if (toUpdate.has(n.id)) return { ...n, data: ajouterEntree({ ...n.data, result }, emetteur[n.id], result) };
       return n;
     });
   }, []);
@@ -591,6 +592,14 @@ function Flow({
     setTimeout(() => setBatchFinishedMsg(false), 3000);
   }, [nodes, edges, mode, getTopologicalOrder, setNodes, propagateResultUpstream]);
 
+  // Données du nœud ouvert : son résultat + l'entrée reçue de son voisin amont (sinon, après un
+  // premier « Retour au schéma », le nœud relirait sa propre sortie comme entrée). Mémoïsé :
+  // les Parameter_Tab Retro recalculent à chaque changement de nodeData.
+  const nodeDataSelection = useMemo(
+    () => (selectedNode ? donneesAvecEntree(selectedNode.data, selectedNode.id, edges, mode) : null),
+    [selectedNode, edges, mode]
+  );
+
   const renderParameterTab = () => {
     if (!selectedNode) return null;
 
@@ -648,7 +657,7 @@ function Flow({
         key={selectedNode.id}
         nodeId={selectedNode.id}
         title={selectedNode.data.label}
-        nodeData={selectedNode.data}
+        nodeData={nodeDataSelection}
         onSendData={onSendData}
         onGoBack={() => setSelectedNode(null)}
         onClose={() => setSelectedNode(null)}

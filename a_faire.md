@@ -201,3 +201,7 @@ Bilan FB + onglet HX, P freeboard imposée à −3 mmCE (valeur du rapport), ren
 ### Mineur
 - [ ] Pas de contrôle « T air entrée + 45 < T air préchauffé » (Pyrofluid bloque le calcul) ; Cp moyen des fumées non affiché.
 - [ ] Puissance électrique du ventilateur : ajout de l'outil (absente de `ClassRecuperateur`).
+
+## Chaîne des pressions (relevé le 18/11/2026, non corrigé)
+- [ ] **Bilan, pression de sortie écrite seulement par l'onglet Design** : ÉLECTROFILTRE envoie `P_OUT = innerData.P_out_mmCE`, calculé uniquement dans l'onglet Design → `undefined` si l'onglet n'a pas été ouvert ; QUENCH envoie `P_out_mmCE || 0` → pression remise à 0. Les nœuds aval repartent alors de 0 mmCE. À vérifier sur les autres équipements dont la perte de charge est dans le Design.
+- [ ] **Retro, signe de la perte de charge** : en remontant, la pression amont devrait être P aval **+** PDC (DENOX, QUENCH, WATER_INJECTION, économiseurs) ; IACT (`IACT_calculations.js`) et SCRUBBER (`SCRUBBER_calculations3.js`) font P aval **−** PDC.

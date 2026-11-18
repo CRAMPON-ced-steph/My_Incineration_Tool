@@ -10,20 +10,16 @@ import { CO2_kg_m3, H2O_kg_m3, O2_kg_m3, N2_kg_m3, coeff_Nm3_to_m3 } from '../..
 
 const FG_DEFAUT = { CO2: 1, H2O: 1, O2: 1, N2: 1 };
 const cleParams = (code, nodeId) => `params_${code}_${nodeId}`;
-const cleAmont = (code, nodeId) => `amont_${code}_${nodeId}`;
 
 const nombre = (v, d = 0) => {
   const n = typeof v === 'number' ? v : parseFloat(String(v ?? '').replace(',', '.'));
   return Number.isFinite(n) ? n : d;
 };
 
-// Conditions d'entrée = sortie du nœud amont. Après « Back to Flow », le résultat du nœud devient
-// sa propre sortie : on relit alors l'entrée mémorisée à l'envoi, tant que le nœud amont n'a pas
-// renvoyé de nouvelles valeurs (T et P de sortie inchangées).
-const lireAmont = (result, code, nodeId) => {
+// Conditions d'entrée = sortie du nœud amont (Main_FLOW superpose l'entrée reçue au résultat du
+// nœud à chaque ouverture : C_Components/entreeNoeud.js).
+const lireAmont = (result) => {
   const r = result || {};
-  const memo = r[cleAmont(code, nodeId)];
-  if (memo?.entree && r.T_OUT === memo.T_emise && r.P_OUT === memo.P_emise) return memo.entree;
   return {
     T_IN: nombre(r.T_OUT, 300),
     FG_IN: r.FG_OUT_kg_h || FG_DEFAUT,
@@ -50,7 +46,7 @@ const EconomiseurMainPage = ({ nodeData, onSendData, onGoBack, currentLanguage =
   );
 
   const [innerData, setInnerData] = useState(nodeData?.result || {});
-  const [amont] = useState(() => lireAmont(nodeData?.result, code, nodeId));
+  const [amont] = useState(() => lireAmont(nodeData?.result));
 
   // ─── Paramètres (localStorage par nœud) ───
   const [params, setParams] = useState(() => chargerParams(code, fluide, nodeId));
@@ -154,7 +150,6 @@ const EconomiseurMainPage = ({ nodeData, onSendData, onGoBack, currentLanguage =
         MasseDechet: innerData.MasseDechet || 0,
         T_OUT,
         P_OUT: P_out_mmCE,
-        [cleAmont(code, nodeId)]: { entree: amont, T_emise: T_OUT, P_emise: P_out_mmCE },
         activeNodes_Elec: innerData.activeNodes_Elec || [],
         activeNodes_Eau: innerData.activeNodes_Eau || [],
         activeNodes_Reactifs: innerData.activeNodes_Reactifs || [],
