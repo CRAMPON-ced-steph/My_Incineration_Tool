@@ -180,6 +180,12 @@ Conforme : Hext, Hint, U propre, U encrassé = U / (1 + encrassement), F = 1, ch
 - [x] **PDC fumées dans le HX** (corrigé : 40 mmCE par défaut ; un ancien réglage à 50 passe à 40) : 50 mmCE par défaut (Pyrofluid 40) ; `PDC_recuperateur_fumees_mmCE` (40), `PDC_carneau_mmCE`, `PDC_echangeur_air_mmCE` ne servent pas ou presque.
 - [ ] **P voûte** : l'outil prend la pression par défaut saisie (2 000) ; Pyrofluid lit `PressionVoute` du nœud four (vérifier dans `ClassDimFourVoute` si c'est la valeur calculée).
 
+### Validation sur le cas Valence 450 kg MS/h (rapport Pyrofluid V4.5 du 13/09/2024, 18/11/2026)
+Bilan FB + onglet HX, P freeboard imposée à −3 mmCE (valeur du rapport), rendement 95 %, encrassement 25 %, 2 passes.
+- Mode « Calcul Pyrofluid d'origine » : écart ≤ 0,1 % sur T fumées sortie (562,7 / 563 °C), puissances (726 879 / 726 582 kcal/h), DTml (386,7 / 386,6), Hext, Hint, U, section calandre (0,460), surface (60,5 / 60,5 m²), pressions air (2 429 / 2 432 et 2 050 mmCE) et fumées (−43 mmCE).
+- Mode outil (NIST) : écarts de 0,2 à 0,9 % (T fumées sortie 565 °C, surface 60,4 m²).
+- [ ] **Débits d'air +1,3 %** (décision à prendre) : l'outil prend le débit d'air **humide** (4 229 Nm³/h, soufflante 4 325), Pyrofluid le débit **sec** (4 174 Nm³/h, soufflante 4 268 — « débit air soufflante sec »). Conséquence : PDC côté tube −0,7 % (379 au lieu de 382 mmCE).
+
 ### Décisions prises (18/11/2026, appliquées)
 - [x] Valeurs par défaut : rendement 95 % (onglet Combustion) et encrassement 25 %, désormais saisissable dans l'onglet HX. Les anciens réglages HX (encrassement 10 %, non saisissable) passent à 25 % ; un rendement déjà enregistré dans l'onglet Combustion est conservé.
 - [x] Nombre de passes : choix 2 ou 3 (perte de charge côté air).

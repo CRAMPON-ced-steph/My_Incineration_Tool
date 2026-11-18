@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# copie de test de 2_CombustionTab (scripts de validation)
+src/Y_BILAN/FB/__c.jsx
