@@ -178,7 +178,7 @@ Conforme : Hext, Hint, U propre, U encrassé = U / (1 + encrassement), F = 1, ch
 - [x] **Pression des fumées transmise à l'aval** (corrigé : P freeboard − PDC côté fumées) : `P_sortie_HX_mmCE` = 2 000 mmCE (pression côté air) est envoyée en `P_out_mmCE` / `P_OUT` ; la chaudière et l'électrofiltre partent de 2 000 mmCE (débits réels aval −15 %). Pyrofluid transmet la pression du freeboard.
 - [x] **Ligne récupérateur → four (50 mmCE) absente** (corrigé : saisissable, 50 par défaut) : Pyrofluid prend pression soufflante = P voûte + DP HX + 50 et débit d'air sortie HX à P voûte + 50. Le champ `PDC_reseau_sortie_entree_boite_mmCe` (50) existe mais n'est pas utilisé.
 - [x] **PDC fumées dans le HX** (corrigé : 40 mmCE par défaut ; un ancien réglage à 50 passe à 40) : 50 mmCE par défaut (Pyrofluid 40) ; `PDC_recuperateur_fumees_mmCE` (40), `PDC_carneau_mmCE`, `PDC_echangeur_air_mmCE` ne servent pas ou presque.
-- [ ] **P voûte** : l'outil prend la pression par défaut saisie (2 000) ; Pyrofluid lit `PressionVoute` du nœud four (vérifier dans `ClassDimFourVoute` si c'est la valeur calculée).
+- [x] **P voûte** (vérifié le 18/11/2026 dans `ClassDimFourVoute.vb`) : `PressionVoute` est la valeur **saisie** (2 000 mmCE par défaut), jamais recalculée ; la classe en déduit P freeboard = P voûte − PDC tuyères − 1 500 (lit) − 50. Le récupérateur lit cette valeur saisie, comme l'outil (`PressionVouteDefaut_mmCe` de l'onglet Voûte). La pression après tuyères (P voûte − PDC tuyères) ne concerne pas l'échangeur. Pas d'écart.
 
 ### Validation sur le cas Valence 450 kg MS/h (rapport Pyrofluid V4.5 du 13/09/2024, 18/11/2026)
 Bilan FB + onglet HX, P freeboard imposée à −3 mmCE (valeur du rapport), rendement 95 %, encrassement 25 %, 2 passes.
