@@ -11,6 +11,9 @@ export const translations = {
   // FRANÇAIS
   // ============================================================
   fr: {
+    "Nombre de trous par tuyère": "Nombre de trous par tuyère",
+    "Calculé": "Calculé",
+    "Vide : calculé à partir de la vitesse tuyère cible": "Vide : calculé à partir de la vitesse tuyère cible",
     "PDC ligne échangeur → boîte à vent (mmCE)": "PDC ligne échangeur → boîte à vent (mmCE)",
     "Pression air sortie échangeur (mmCE)": "Pression air sortie échangeur (mmCE)",
     "Températures incompatibles : l'air doit sortir plus chaud qu'il n'entre, et rester plus froid que les fumées aux deux extrémités.": "Températures incompatibles : l'air doit sortir plus chaud qu'il n'entre, et rester plus froid que les fumées aux deux extrémités.",
@@ -724,6 +727,9 @@ export const translations = {
   // ENGLISH
   // ============================================================
   en: {
+    "Nombre de trous par tuyère": "Number of holes per nozzle",
+    "Calculé": "Calculated",
+    "Vide : calculé à partir de la vitesse tuyère cible": "Empty: calculated from the target nozzle velocity",
     "PDC ligne échangeur → boîte à vent (mmCE)": "Pressure drop exchanger → windbox line (mmWC)",
     "Pression air sortie échangeur (mmCE)": "Air pressure at exchanger outlet (mmWC)",
     "Températures incompatibles : l'air doit sortir plus chaud qu'il n'entre, et rester plus froid que les fumées aux deux extrémités.": "Incompatible temperatures: the air must leave hotter than it enters and stay colder than the flue gas at both ends.",
@@ -1437,6 +1443,9 @@ export const translations = {
   // ESPAÑOL
   // ============================================================
   es: {
+    "Nombre de trous par tuyère": "Número de orificios por tobera",
+    "Calculé": "Calculado",
+    "Vide : calculé à partir de la vitesse tuyère cible": "Vacío: calculado a partir de la velocidad objetivo de las toberas",
     "PDC ligne échangeur → boîte à vent (mmCE)": "Pérdida de carga línea intercambiador → caja de viento (mmCA)",
     "Pression air sortie échangeur (mmCE)": "Presión del aire a la salida del intercambiador (mmCA)",
     "Températures incompatibles : l'air doit sortir plus chaud qu'il n'entre, et rester plus froid que les fumées aux deux extrémités.": "Temperaturas incompatibles: el aire debe salir más caliente de lo que entra y permanecer más frío que los humos en ambos extremos.",
@@ -2032,6 +2041,9 @@ export const translations = {
   // DEUTSCH
   // ============================================================
   de: {
+    "Nombre de trous par tuyère": "Anzahl der Löcher pro Düse",
+    "Calculé": "Berechnet",
+    "Vide : calculé à partir de la vitesse tuyère cible": "Leer: aus der Soll-Düsengeschwindigkeit berechnet",
     "PDC ligne échangeur → boîte à vent (mmCE)": "Druckverlust Leitung Wärmetauscher → Windkasten (mmWS)",
     "Pression air sortie échangeur (mmCE)": "Luftdruck am Wärmetauscheraustritt (mmWS)",
     "Températures incompatibles : l'air doit sortir plus chaud qu'il n'entre, et rester plus froid que les fumées aux deux extrémités.": "Unverträgliche Temperaturen: Die Luft muss wärmer austreten als eintreten und an beiden Enden kälter als das Rauchgas bleiben.",
@@ -2627,6 +2639,9 @@ export const translations = {
   // ITALIANO
   // ============================================================
   it: {
+    "Nombre de trous par tuyère": "Numero di fori per ugello",
+    "Calculé": "Calcolato",
+    "Vide : calculé à partir de la vitesse tuyère cible": "Vuoto: calcolato dalla velocità obiettivo degli ugelli",
     "PDC ligne échangeur → boîte à vent (mmCE)": "Perdita di carico linea scambiatore → cassa d'aria (mmCA)",
     "Pression air sortie échangeur (mmCE)": "Pressione aria in uscita scambiatore (mmCA)",
     "Températures incompatibles : l'air doit sortir plus chaud qu'il n'entre, et rester plus froid que les fumées aux deux extrémités.": "Temperature incompatibili: l'aria deve uscire più calda di come entra e restare più fredda dei fumi a entrambe le estremità.",
@@ -3222,6 +3237,9 @@ export const translations = {
   // PORTUGUÊS
   // ============================================================
   pt: {
+    "Nombre de trous par tuyère": "Número de furos por tubeira",
+    "Calculé": "Calculado",
+    "Vide : calculé à partir de la vitesse tuyère cible": "Vazio: calculado a partir da velocidade alvo das tubeiras",
     "PDC ligne échangeur → boîte à vent (mmCE)": "Perda de carga linha permutador → caixa de vento (mmCA)",
     "Pression air sortie échangeur (mmCE)": "Pressão do ar à saída do permutador (mmCA)",
     "Températures incompatibles : l'air doit sortir plus chaud qu'il n'entre, et rester plus froid que les fumées aux deux extrémités.": "Temperaturas incompatíveis: o ar deve sair mais quente do que entra e permanecer mais frio do que os fumos nas duas extremidades.",
@@ -3817,6 +3835,9 @@ export const translations = {
   // 中文 (CHINESE SIMPLIFIED)
   // ============================================================
   zh: {
+    "Nombre de trous par tuyère": "每个风帽的孔数",
+    "Calculé": "计算值",
+    "Vide : calculé à partir de la vitesse tuyère cible": "留空：按目标风帽速度计算",
     "PDC ligne échangeur → boîte à vent (mmCE)": "换热器→风箱管线压降 (mmH₂O)",
     "Pression air sortie échangeur (mmCE)": "换热器出口空气压力 (mmH₂O)",
     "Températures incompatibles : l'air doit sortir plus chaud qu'il n'entre, et rester plus froid que les fumées aux deux extrémités.": "温度不兼容：空气出口温度须高于入口，且两端均须低于烟气温度。",
@@ -4412,6 +4433,9 @@ export const translations = {
   // 日本語 (JAPANESE)
   // ============================================================
   ja: {
+    "Nombre de trous par tuyère": "ノズル1本あたりの穴数",
+    "Calculé": "計算値",
+    "Vide : calculé à partir de la vitesse tuyère cible": "空欄：目標ノズル速度から計算",
     "PDC ligne échangeur → boîte à vent (mmCE)": "熱交換器→風箱ラインの圧力損失 (mmAq)",
     "Pression air sortie échangeur (mmCE)": "熱交換器出口の空気圧 (mmAq)",
     "Températures incompatibles : l'air doit sortir plus chaud qu'il n'entre, et rester plus froid que les fumées aux deux extrémités.": "温度が不整合です：空気は入口より高温で出て、両端で排ガスより低温である必要があります。",
@@ -5007,6 +5031,9 @@ export const translations = {
   // РУССКИЙ (RUSSIAN)
   // ============================================================
   ru: {
+    "Nombre de trous par tuyère": "Число отверстий на сопло",
+    "Calculé": "Расчётное",
+    "Vide : calculé à partir de la vitesse tuyère cible": "Пусто: рассчитывается по целевой скорости в соплах",
     "PDC ligne échangeur → boîte à vent (mmCE)": "Потери давления в линии теплообменник → воздушная камера (мм вод. ст.)",
     "Pression air sortie échangeur (mmCE)": "Давление воздуха на выходе теплообменника (мм вод. ст.)",
     "Températures incompatibles : l'air doit sortir plus chaud qu'il n'entre, et rester plus froid que les fumées aux deux extrémités.": "Несовместимые температуры: воздух должен выходить горячее, чем входит, и оставаться холоднее дымовых газов на обоих концах.",
@@ -5602,6 +5629,9 @@ export const translations = {
   // العربية (ARABIC)
   // ============================================================
   ar: {
+    "Nombre de trous par tuyère": "عدد الثقوب لكل فوهة",
+    "Calculé": "محسوب",
+    "Vide : calculé à partir de la vitesse tuyère cible": "فارغ: يُحسب من سرعة الفوهة المستهدفة",
     "PDC ligne échangeur → boîte à vent (mmCE)": "فقد الضغط في خط المبادل ← صندوق الهواء (mmCE)",
     "Pression air sortie échangeur (mmCE)": "ضغط الهواء عند مخرج المبادل (mmCE)",
     "Températures incompatibles : l'air doit sortir plus chaud qu'il n'entre, et rester plus froid que les fumées aux deux extrémités.": "درجات حرارة غير متوافقة: يجب أن يخرج الهواء أسخن مما دخل وأن يبقى أبرد من غازات المداخن عند الطرفين.",

@@ -619,6 +619,11 @@ Doit être l'**inverse cohérent** de `option_T` :
 - Mode par four : `HX_facteur` = 1 / nombre de fours. Les grandeurs extensives de l'onglet HX et de la section HX du rapport sont pour **un** échangeur ; `H_air_soufflante_kW` reste le total (clé partagée avec l'onglet Combustion) ; `Puissance_elec_ventilateur_kW` = total de tous les ventilateurs (OPEX), `Puissance_elec_ventilateur_unitaire_kW` = un ventilateur.
 - L'onglet Combustion écrit `Vair_instru_tot_Nm3_h`, `Vair_sec_tot_Nm3_h`, `Vair_tert_tot_Nm3_h` pour le débit du ventilateur.
 
+### FB — onglet Voûte : nombre de trous par tuyère (2026-11-18)
+
+- Paramètre `NbTrousImpose` (« Nombre de trous par tuyère ») : vide = calculé à partir de la vitesse tuyère cible (arrondi au supérieur, plafond 30) ; saisi = imposé (comme la saisie de Pyrofluid), il fixe la vitesse réelle des tuyères, donc la PDC tuyères et la pression du freeboard reprise par l'onglet HX. `NbTrousCalcule` = valeur qu'on aurait sans imposition (affichée en indication).
+- Valence : 16 trous de 6 mm imposés → 99,9 m/s, PDC tuyères 453 mmCE, P freeboard −3 mmCE (mode d'origine), comme le rapport Pyrofluid.
+
 ### Points ouverts
 
 Les anomalies relevées mais non corrigées (GF, RK) sont listées dans `a_faire.md` à la racine du dépôt. Cocher / retirer une ligne une fois corrigée.
