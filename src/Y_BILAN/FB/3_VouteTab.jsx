@@ -58,6 +58,9 @@ const VITESSE_VOUTE_MIN = 0.9;
 const VITESSE_VOUTE_MAX = 1.1;
 const NB_TROUS_MAX = 30; // plafond Pyrofluid (ClassDimFourVoute.CalculNbretrous, saisie refusée au-delà)
 const NB_TROUS_DEFAUT = 22; // valeur par défaut Pyrofluid (ClassDimFourVoute.remplissagge : NbreDeTrous = 22)
+// Comme Pyrofluid (TailleFourVoute : ListeDiametreVoute_SelectedIndexChanged, NbreFours_LostFocus),
+// changer la voûte ou le nombre de fours recalcule le nombre de trous par tuyère (CalculNbretrous).
+const CLES_RECALCUL_TROUS = ['DiametreVouteKey', 'DiametreVouteCustom_m', 'NombreFour'];
 
 // Order from smallest to largest for auto-size search
 const REACTEUR_AUTO_ORDER = ['R28', 'R36', 'R43', 'R50', 'R56', 'R63', 'R67', 'R72', 'R80', 'R85', 'R90'];
@@ -290,18 +293,21 @@ const DimensionnementTab = ({ innerData = {}, innerDataTick, onDataChange, curre
         const defaultVoute = REACTEUR_DEFAULT_VOUTE[modele];
         if (!defaultVoute) continue;
 
+        // Nouvelle voûte / nouveau nombre de fours : nombre de trous recalculé (comme Pyrofluid)
+        const testParams = { ...baseParams, NombreFour: String(n), Modele: modele, DiametreVouteKey: defaultVoute, NbTrousImpose: '' };
+        const result = computeCalculs(testParams);
+
         setParametres(prev => ({
           ...prev,
           NombreFour: String(n),
           Modele: modele,
           DiametreVouteKey: defaultVoute,
+          ...(result && result.NbTrousCalcule > 0 ? { NbTrousImpose: String(result.NbTrousCalcule) } : {}),
         }));
 
         await new Promise(r => setTimeout(r, 70));
         if (autoSizeCancelRef.current) return;
 
-        const testParams = { ...baseParams, NombreFour: String(n), Modele: modele, DiametreVouteKey: defaultVoute };
-        const result = computeCalculs(testParams);
         if (!result) continue;
 
         const chargeEau = result.SurfaceVoute_m2 > 0
@@ -337,7 +343,14 @@ const DimensionnementTab = ({ innerData = {}, innerDataTick, onDataChange, curre
   }, [autoSizeSearching, autoSizeActive, runAutoSize]);
 
   const handleParametreChange = useCallback((key, value) => {
-    setParametres((prev) => ({ ...prev, [key]: value }));
+    setParametres((prev) => {
+      const next = { ...prev, [key]: value };
+      if (CLES_RECALCUL_TROUS.includes(key)) {
+        const r = computeCalculs({ ...next, NbTrousImpose: '' });
+        if (r && r.NbTrousCalcule > 0) next.NbTrousImpose = String(r.NbTrousCalcule);
+      }
+      return next;
+    });
     if (key === 'NombreFour' || key === 'Modele' || key === 'DiametreVouteKey') {
       autoSizeCancelRef.current = true;
       setAutoSizeSearching(false);
@@ -650,7 +663,7 @@ const DimensionnementTab = ({ innerData = {}, innerDataTick, onDataChange, curre
               style={inputStyle}
             />
             <div style={{ fontSize: '11px', color: '#6b7280', marginTop: '4px' }}>
-              {t('Vide : calculé à partir de la vitesse tuyère cible')} · {t('Pyrofluid : 22 par défaut, 30 au plus')}
+              {t('Vide : calculé à partir de la vitesse tuyère cible')} · {t('Pyrofluid : 22 par défaut, 30 au plus')} · {t('Recalculé quand on change la voûte ou le nombre de fours')}
             </div>
           </div>
           {[

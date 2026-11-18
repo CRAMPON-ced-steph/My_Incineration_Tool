@@ -11,6 +11,7 @@ export const translations = {
   // FRANÇAIS
   // ============================================================
   fr: {
+    "Recalculé quand on change la voûte ou le nombre de fours": "Recalculé quand on change la voûte ou le nombre de fours",
     "Pyrofluid : 22 par défaut, 30 au plus": "Pyrofluid : 22 par défaut, 30 au plus",
     "Nombre de trous par tuyère": "Nombre de trous par tuyère",
     "Calculé": "Calculé",
@@ -728,6 +729,7 @@ export const translations = {
   // ENGLISH
   // ============================================================
   en: {
+    "Recalculé quand on change la voûte ou le nombre de fours": "Recalculated when the dome or the number of furnaces changes",
     "Pyrofluid : 22 par défaut, 30 au plus": "Pyrofluid: 22 by default, 30 maximum",
     "Nombre de trous par tuyère": "Number of holes per nozzle",
     "Calculé": "Calculated",
@@ -1445,6 +1447,7 @@ export const translations = {
   // ESPAÑOL
   // ============================================================
   es: {
+    "Recalculé quand on change la voûte ou le nombre de fours": "Se recalcula al cambiar la bóveda o el número de hornos",
     "Pyrofluid : 22 par défaut, 30 au plus": "Pyrofluid: 22 por defecto, 30 como máximo",
     "Nombre de trous par tuyère": "Número de orificios por tobera",
     "Calculé": "Calculado",
@@ -2044,6 +2047,7 @@ export const translations = {
   // DEUTSCH
   // ============================================================
   de: {
+    "Recalculé quand on change la voûte ou le nombre de fours": "Wird bei Änderung des Düsenbodens oder der Ofenanzahl neu berechnet",
     "Pyrofluid : 22 par défaut, 30 au plus": "Pyrofluid: Standard 22, höchstens 30",
     "Nombre de trous par tuyère": "Anzahl der Löcher pro Düse",
     "Calculé": "Berechnet",
@@ -2643,6 +2647,7 @@ export const translations = {
   // ITALIANO
   // ============================================================
   it: {
+    "Recalculé quand on change la voûte ou le nombre de fours": "Ricalcolato quando si cambia la volta o il numero di forni",
     "Pyrofluid : 22 par défaut, 30 au plus": "Pyrofluid: 22 predefinito, massimo 30",
     "Nombre de trous par tuyère": "Numero di fori per ugello",
     "Calculé": "Calcolato",
@@ -3242,6 +3247,7 @@ export const translations = {
   // PORTUGUÊS
   // ============================================================
   pt: {
+    "Recalculé quand on change la voûte ou le nombre de fours": "Recalculado ao mudar a abóbada ou o número de fornos",
     "Pyrofluid : 22 par défaut, 30 au plus": "Pyrofluid: 22 por defeito, 30 no máximo",
     "Nombre de trous par tuyère": "Número de furos por tubeira",
     "Calculé": "Calculado",
@@ -3841,6 +3847,7 @@ export const translations = {
   // 中文 (CHINESE SIMPLIFIED)
   // ============================================================
   zh: {
+    "Recalculé quand on change la voûte ou le nombre de fours": "更换布风板或焚烧炉数量时重新计算",
     "Pyrofluid : 22 par défaut, 30 au plus": "Pyrofluid：默认22，最多30",
     "Nombre de trous par tuyère": "每个风帽的孔数",
     "Calculé": "计算值",
@@ -4440,6 +4447,7 @@ export const translations = {
   // 日本語 (JAPANESE)
   // ============================================================
   ja: {
+    "Recalculé quand on change la voûte ou le nombre de fours": "ドーム（風箱天板）または炉数を変更すると再計算",
     "Pyrofluid : 22 par défaut, 30 au plus": "Pyrofluid：既定値22、最大30",
     "Nombre de trous par tuyère": "ノズル1本あたりの穴数",
     "Calculé": "計算値",
@@ -5039,6 +5047,7 @@ export const translations = {
   // РУССКИЙ (RUSSIAN)
   // ============================================================
   ru: {
+    "Recalculé quand on change la voûte ou le nombre de fours": "Пересчитывается при изменении свода или числа печей",
     "Pyrofluid : 22 par défaut, 30 au plus": "Pyrofluid: по умолчанию 22, не более 30",
     "Nombre de trous par tuyère": "Число отверстий на сопло",
     "Calculé": "Расчётное",
@@ -5638,6 +5647,7 @@ export const translations = {
   // العربية (ARABIC)
   // ============================================================
   ar: {
+    "Recalculé quand on change la voûte ou le nombre de fours": "يُعاد حسابه عند تغيير القبة أو عدد الأفران",
     "Pyrofluid : 22 par défaut, 30 au plus": "Pyrofluid: ‏22 افتراضيًا، 30 كحد أقصى",
     "Nombre de trous par tuyère": "عدد الثقوب لكل فوهة",
     "Calculé": "محسوب",
