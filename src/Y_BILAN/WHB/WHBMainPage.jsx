@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import ContenuOnglets from '../../C_Components/ContenuOnglets';
 import WHB_Parameters from './1_WHB_Parameters_ML';
 import WHBFlueGasParameters from './2_WHB_Flue_gas_ML';
 import WHBFlueGasPollutantEmission from './3_WHB_Pollutant_Emission_ML';
@@ -99,7 +100,7 @@ const WHBMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLa
       ),
     },
     {
-      name: 'opex',
+      affichage: true, name: 'opex',
       label: t('opex'),
       content: (
         <WHBOpex
@@ -111,7 +112,7 @@ const WHBMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLa
       ),
     },
     {
-      name: 'rapport',
+      affichage: true, name: 'rapport',
       label: t('rapport'),
       content: <WHB_Report innerData={innerData} currentLanguage={currentLanguage} nodeId={nodeId} />,
     },
@@ -119,10 +120,6 @@ const WHBMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLa
 
   const [activeTab, setActiveTab] = useState(tabs[0].name);
 
-  const renderTabContent = () => {
-    const active = tabs.find((tab) => tab.name === activeTab);
-    return active ? active.content : null;
-  };
 
   const sendAllData = () => {
     onSendData({
@@ -238,7 +235,7 @@ const WHBMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLa
           minHeight: '500px'
         }}
       >
-        {renderTabContent()}
+        <ContenuOnglets tabs={tabs} actif={activeTab} />
       </div>
     </div>
   );

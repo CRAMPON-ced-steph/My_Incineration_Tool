@@ -4,7 +4,8 @@ import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './RK_traduction';
 
 import { cp_ref } from '../../A_Transverse_fonction/constantes';
-const CombustionParameters = ({ innerData, currentLanguage = 'fr', nodeId }) => {
+import useSyncInnerData from '../../C_Components/useSyncInnerData';
+const CombustionParameters = ({ setInnerData, currentLanguage = 'fr', nodeId }) => {
   // Get translations
   const languageCode = getLanguageCode(currentLanguage);
   const t = (key) => translations[languageCode]?.[key] || translations['fr']?.[key] || key;
@@ -269,26 +270,28 @@ const CombustionParameters = ({ innerData, currentLanguage = 'fr', nodeId }) => 
       return rows2;
     }
   });
-  const [totalMasse, setTotalMasse] = useState(rows2);
-  const [C_moles, setCmoles] = useState(rows2);
-  const [H_moles, setHmoles] = useState(rows2);
-  const [O_moles, setOmoles] = useState(rows2);
-  const [N_moles, setNmoles] = useState(rows2);
-  const [S_moles, setSmoles] = useState(rows2);
-  const [Cl_moles, setClmoles] = useState(rows2);
+  // Totaux numériques (0 avant le premier calcul ; avant : le tableau rows2, recopié tel quel
+  // dans innerData.masse… et affiché par l'onglet Polluants → « Objects are not valid as a React child »)
+  const [totalMasse, setTotalMasse] = useState(0);
+  const [C_moles, setCmoles] = useState(0);
+  const [H_moles, setHmoles] = useState(0);
+  const [O_moles, setOmoles] = useState(0);
+  const [N_moles, setNmoles] = useState(0);
+  const [S_moles, setSmoles] = useState(0);
+  const [Cl_moles, setClmoles] = useState(0);
 
-  const [C_kg_h, set_C_kg_h] = useState(rows2);
-  const [H_kg_h, set_H_kg_h] = useState(rows2);
-  const [O_kg_h, set_O_kg_h] = useState(rows2);
-  const [N_kg_h, set_N_kg_h] = useState(rows2);
-  const [S_kg_h, set_S_kg_h] = useState(rows2);
-  const [Cl_kg_h, set_Cl_kg_h] = useState(rows2);
+  const [C_kg_h, set_C_kg_h] = useState(0);
+  const [H_kg_h, set_H_kg_h] = useState(0);
+  const [O_kg_h, set_O_kg_h] = useState(0);
+  const [N_kg_h, set_N_kg_h] = useState(0);
+  const [S_kg_h, set_S_kg_h] = useState(0);
+  const [Cl_kg_h, set_Cl_kg_h] = useState(0);
 
-  const [Comb_kg_h, set_Comb_kg_h] = useState(rows2);
-  const [Water_kg_h, set_Water_kg_h] = useState(rows2);
-  const [Inert_kg_h, set_Inert_kg_h] = useState(rows2);
+  const [Comb_kg_h, set_Comb_kg_h] = useState(0);
+  const [Water_kg_h, set_Water_kg_h] = useState(0);
+  const [Inert_kg_h, set_Inert_kg_h] = useState(0);
 
-  const [Masse_H2O_comb_input, setH2OmasseCombInput] = useState(rows2);
+  const [Masse_H2O_comb_input, setH2OmasseCombInput] = useState(0);
 
   const updateSecondTable = () => {
     const updatedRows2 = [...parameters2];
@@ -429,40 +432,35 @@ const CombustionParameters = ({ innerData, currentLanguage = 'fr', nodeId }) => 
     saveToLocalStorage(updatedRows);
   }, [parameters]);
   
-  useEffect(() => {
-    updateInnerData();
-  }, [parameters, parameters2]);
-
-  const updateInnerData = () => {
-    innerData['O2_stoechio_kmoles'] = parameters2[4].data['Masse totale [kg/h]'] || 0;
-    innerData['H2O_stoechio_kmoles'] = parameters2[5].data['Masse totale [kg/h]'] || 0;
-    innerData['cv_kJ_kg'] = parameters2[2].data['Comb CV tot [kJ/kg]'] || 0;
-    innerData['cvw_kJ_kg'] = parameters2[2].data['Waste CV tot [kJ/kg]'] || 0;
-    innerData['cvw_kcal_kg'] = parameters2[2].data['Waste CV tot [kcal/kg]'] || 0;
-    innerData['masse'] = totalMasse;
-    innerData['masse_eau_input'] =Masse_H2O_comb_input;
-
-    innerData['Cmoles'] = C_moles ;
-    innerData['Hmoles'] = H_moles ;
-    innerData['Omoles'] = O_moles ;
-    innerData['Nmoles'] = N_moles ;
-    innerData['Smoles'] = S_moles ;
-    innerData['Clmoles'] = Cl_moles ;
-
-    innerData['Cmass'] = C_kg_h ;
-    innerData['Hmass'] = H_kg_h ;
-    innerData['Omass'] = O_kg_h ;
-    innerData['Nmass'] = N_kg_h ;
-    innerData['Smass'] = S_kg_h ;
-    innerData['Clmass'] = Cl_kg_h ;
-
-    innerData['Combmass'] = Comb_kg_h ;
-    innerData['Watermass'] = Water_kg_h ;
-    innerData['Inertmass'] = Inert_kg_h ;
-
-    innerData['masse_solides']      = parameters[5]?.data['Masse [kg/h]'] || 0;
-    innerData['masse_conditionnee'] = parameters[3]?.data['Masse [kg/h]'] || 0;
-  };
+  // Résultats de la combustion vers innerData. L'écriture passe par setInnerData (et non
+  // plus par une mutation dans un effet) : les onglets Gaz, Polluants et Design, montés en
+  // arrière-plan, sont ainsi recalculés dès que la combustion a convergé.
+  useSyncInnerData(setInnerData, {
+    O2_stoechio_kmoles: parameters2[4]?.data['Masse totale [kg/h]'] || 0,
+    H2O_stoechio_kmoles: parameters2[5]?.data['Masse totale [kg/h]'] || 0,
+    cv_kJ_kg: parameters2[2]?.data['Comb CV tot [kJ/kg]'] || 0,
+    cvw_kJ_kg: parameters2[2]?.data['Waste CV tot [kJ/kg]'] || 0,
+    cvw_kcal_kg: parameters2[2]?.data['Waste CV tot [kcal/kg]'] || 0,
+    masse: totalMasse,
+    masse_eau_input: Masse_H2O_comb_input,
+    Cmoles: C_moles,
+    Hmoles: H_moles,
+    Omoles: O_moles,
+    Nmoles: N_moles,
+    Smoles: S_moles,
+    Clmoles: Cl_moles,
+    Cmass: C_kg_h,
+    Hmass: H_kg_h,
+    Omass: O_kg_h,
+    Nmass: N_kg_h,
+    Smass: S_kg_h,
+    Clmass: Cl_kg_h,
+    Combmass: Comb_kg_h,
+    Watermass: Water_kg_h,
+    Inertmass: Inert_kg_h,
+    masse_solides: parameters[5]?.data['Masse [kg/h]'] || 0,
+    masse_conditionnee: parameters[3]?.data['Masse [kg/h]'] || 0,
+  });
   
   const updateCell = (rowIndex, column, value) => {
     if (column === 'Masse [kg/h]') {

@@ -590,7 +590,7 @@ Doit être l'**inverse cohérent** de `option_T` :
 - **Chlore** : un atome de Cl lie un atome de H (HCl). Coefficient O2 stœchiométrique du Cl = **−0,25** kmol O2/kmol Cl (avant −0,5) ; eau stœchiométrique = H2 − **Cl/2** (avant H2 − Cl) dans `1_CombustionParameters1.jsx`, `2_Flue_gas1.jsx` et la copie `Y_BILAN/CO2/1_Capture_Parameters.jsx`.
 - **Polluants** (`3_Pollutant_Emission1.jsx`) : replis `?? 0` au lieu de `|| 1` (plus de Cl, S, inertes fantômes à 1 kg/h). `Tableau_polluants.jsx` renvoie 0 (et non Infinity) si le débit sec est nul.
 - **Design** : vitesse des fumées dans le four en m³/h réels à `T_OUT` (`coeff_Nm3_to_m3`). Le taux de remplissage (Freeman) était déjà correct (×100).
-- **OPEX** : l'onglet Design écrit déjà consoElec1-8, gaz, air comprimé, eau, réactifs, cendres dans innerData. `RKMainPage.jsx` le garde monté en arrière-plan (invisible) pour que l'OPEX et le rapport soient alimentés sans ouvrir l'onglet Design.
+- **OPEX** : l'onglet Design écrit déjà consoElec1-8, gaz, air comprimé, eau, réactifs, cendres dans innerData. Comme tous les onglets de calcul, il reste monté en arrière-plan (voir « Calcul des onglets sans les ouvrir »), donc l'OPEX et le rapport sont alimentés sans ouvrir l'onglet Design.
 
 ### OPEX — onglet OPEX = source unique des rapports (2026-11-18)
 
@@ -650,4 +650,17 @@ Les anomalies relevées mais non corrigées (GF, RK) sont listées dans `a_faire
 - `nodeDataSelection` est mémoïsé sur `[selectedNode, edges, mode]` : les Parameter_Tab Retro recalculent à chaque changement de `nodeData` (ne pas recréer l'objet à chaque rendu, sinon boucle d'envoi).
 - Les composants reçoivent une copie : les mutations de `innerData` ne modifient plus le `data.result` stocké du nœud ; seul l'envoi (« Retour au schéma ») l'enregistre.
 - Projets enregistrés avant la correction : `entrees` absent → ancien comportement jusqu'à ce que le nœud amont renvoie ses résultats une fois.
+
+### Calcul des onglets sans les ouvrir — `ContenuOnglets` (2026-11-18)
+
+- **Problème corrigé (mode Bilan, tous les équipements)** : seul l'onglet affiché était monté. Un onglet jamais ouvert ne calculait rien, donc « Retour au schéma » envoyait des données incomplètes (ex. pression de sortie de l'électrofiltre et du quench, calculée dans l'onglet Design : `undefined` ou 0 si le Design n'avait pas été ouvert).
+- `C_Components/ContenuOnglets.jsx` : à l'ouverture du nœud, **tous les onglets de calcul sont montés** (cachés en `display: none` sauf l'onglet actif) ; les onglets d'affichage marqués `affichage: true` (OPEX, Rapport) ne sont montés que lorsqu'ils sont affichés. Utilisé par les MainPage de tous les équipements Bilan (FB et GF via `renderOnglet(name)`). Nouvel équipement : `affichage: true` sur les onglets OPEX et Rapport, puis `<ContenuOnglets tabs={tabs} actif={activeTab} />` (pages à index : `actif={tabs[activeTabIndex]?.name}`).
+- Vérifié sur les 23 équipements Bilan (jsdom) : sortie envoyée sans ouvrir aucun onglet = sortie de l'ancien code après ouverture de tous les onglets dans l'ordre ; aucun rendu en boucle.
+- **Règles pour un onglet de calcul** (il est monté en même temps que les onglets amont, qui peuvent finir de calculer après lui) :
+  - Un effet qui écrit dans `innerData` doit dépendre de **toutes** les valeurs qu'il écrit : utiliser `useSyncInnerData(setInnerData, payload)` (`C_Components/useSyncInnerData.js`, dépendance = contenu sérialisé, écriture seulement s'il a changé). Appliqué aux onglets Polluants FB et GF (avant : dépendances partielles → polluants restés à 0).
+  - Ne pas muter `innerData` dans un effet sans prévenir : les autres onglets ne sont pas re-rendus. Passer par `useSyncInnerData` (onglet Combustion RK).
+  - Un paramètre initialisé depuis `innerData` au montage (`useState(() => innerData.X)`) ne voit pas une valeur calculée ensuite par un autre onglet : le faire suivre la valeur amont (dernière valeur appliquée dans un `useRef` + effet), une saisie manuelle restant en place tant que l'amont ne change pas. Appliqué à la tour de lavage SCRUBBER (`CHAMPS_FLUX`, `_flux` : fumées, SO2, HCl, T, données du quench) et au Design DENOX (débit de gaz après réchauffage).
+  - Dans les dépendances d'effet, `t` doit être stable (`useCallback` sur `languageCode`) et les fonctions passées en `setInnerData` aussi (pas de flèche en ligne) ; sinon boucle de rendu, car l'onglet reste monté. Corrigé : Design AIRINJECTION, WATER_INJECTION, QUENCHsimple, CYCLONE, `Laveur_basique` ; gardes `lastSync` (JSON) dans les Design REACTOR et BHF ; FB / GF : `setInnerDataForCalcOpex` stable pour les onglets Polluants et OPEX.
+  - États initiaux du type affiché : onglet Combustion RK, `useState(0)` (et non `useState(rows2)`, qui faisait planter l'onglet Polluants : « Objects are not valid as a React child »).
+- **Pression d'entrée** : les équipements aval lisent leur pression d'entrée dans `P_OUT`. FB n'envoyait que `P_out_mmCE` → l'aval repartait de 0 mmCE. FB envoie maintenant aussi `P_OUT` (= `P_sortie_HX_mmCE`).
 

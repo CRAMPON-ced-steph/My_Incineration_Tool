@@ -1,4 +1,5 @@
 import React, { useState, useRef, useCallback, useMemo } from 'react';
+import ContenuOnglets from '../../C_Components/ContenuOnglets';
 import BouesTab from './1_BouesTab';
 import CombustionTab from './2_CombustionTab';
 import FB_Report from './FB_Report';
@@ -66,6 +67,9 @@ const FBMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
     setInnerDataTick((t) => t + 1);
   }, []);
 
+  // Mise à jour partagée de innerDataRef — fonction STABLE (useCallback) : passée aux onglets
+  // Polluant et OPEX, dont l'effet d'écriture dépend de setInnerData. Une fonction recréée à
+  // chaque rendu relançait cet effet en boucle (rendu infini dès l'ouverture de l'onglet).
   const setInnerDataForCalcOpex = useCallback((updater) => {
     const newVal = typeof updater === 'function' ? updater(innerDataRef.current) : updater;
     Object.assign(innerDataRef.current, newVal);
@@ -136,8 +140,10 @@ const FBMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
           // ✅ Température fumées sortie HX
           T_OUT: innerDataRef.current['T_fumee_sortie_HX_C'] ?? 0,
 
-          // ✅ Pression sortie HX (depuis onglet Recuperateur)
+          // ✅ Pression sortie HX (depuis onglet Recuperateur). P_OUT = clé lue comme pression
+          // d'entrée par les équipements aval (électrofiltre, quench, filtre à manches…).
           P_out_mmCE: innerDataRef.current['P_sortie_HX_mmCE'] ?? 0,
+          P_OUT: innerDataRef.current['P_sortie_HX_mmCE'] ?? 0,
 
           // === POLLUANT (depuis Pollutant_Emission) ===
           PollutantInput: innerDataRef.current['PInput'] || {},
@@ -369,8 +375,9 @@ const FBMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
   // RENDER TAB CONTENT
   // ============================================================
 
-  const renderTabContent = () => {
-    switch (activeTab) {
+  // Contenu d'un onglet ; tous les onglets de calcul restent montés (ContenuOnglets)
+  const renderOnglet = (name) => {
+    switch (name) {
       case 'boues':
         return (
           <BouesTab
@@ -396,11 +403,7 @@ const FBMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
         return (
           <Pollutant
             innerData={innerDataRef.current}
-            setInnerData={(updater) => {
-              const newVal = typeof updater === 'function' ? updater(innerDataRef.current) : updater;
-              Object.assign(innerDataRef.current, newVal);
-              notifyInnerDataChanged();
-            }}
+            setInnerData={setInnerDataForCalcOpex}
             onInnerDataChange={notifyInnerDataChanged}
             currentLanguage={currentLanguage}
             nodeId={nodeId}
@@ -444,11 +447,7 @@ const FBMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
           <FBopex
             innerData={innerDataRef.current}
             innerDataTick={innerDataTick}
-            setInnerData={(updater) => {
-              const newVal = typeof updater === 'function' ? updater(innerDataRef.current) : updater;
-              Object.assign(innerDataRef.current, newVal);
-              notifyInnerDataChanged();
-            }}
+            setInnerData={setInnerDataForCalcOpex}
             currentLanguage={currentLanguage}
             nodeId={nodeId}
           />
@@ -594,7 +593,10 @@ const FBMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
           margin: '0 20px 20px 20px',
         }}
       >
-        {renderTabContent()}
+        <ContenuOnglets
+          tabs={tabs.map((tab) => ({ ...tab, content: renderOnglet(tab.name), affichage: tab.name === 'opex' || tab.name === 'rapport' }))}
+          actif={activeTab}
+        />
       </div>
 
       {/* ════════════════════════════════════════ FOOTER ════════════════════════════════════════ */}

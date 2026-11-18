@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import ContenuOnglets from '../../C_Components/ContenuOnglets';
 import SCRUBBERFlueGasParameters from './2_SCRUBBER_Flue_gas_ML';
 import SCRUBBERFlueGasPollutantEmission from './3_SCRUBBER_Pollutant_Emission_ML';
 import TourLavageCalculator from './4_SCRUBBER_TourLavage';
@@ -39,18 +40,15 @@ const SCRUBBERMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, curr
       content: <TourLavageCalculator innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} nodeId={nodeId} />
     },
     {
-      name: t('Opex'),
+      affichage: true, name: t('Opex'),
       content: <SCRUBBEROpex innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} nodeId={nodeId} />
     },
     {
-      name: t('rapport'),
+      affichage: true, name: t('rapport'),
       content: <SCRUBBER_Report innerData={innerData} currentLanguage={currentLanguage} nodeId={nodeId} />
     },
   ];
 
-  const renderTabContent = () => {
-    return tabs[activeTab]?.content || null;
-  };
 
   const sendAllData = () => {
     onSendData({
@@ -140,7 +138,7 @@ const SCRUBBERMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, curr
       <div
         style={{ padding: '20px', background: '#f9f9f9', borderRadius: '8px' }}
       >
-        {renderTabContent()}
+        <ContenuOnglets tabs={tabs} actif={activeTab} />
       </div>
     </div>
   );

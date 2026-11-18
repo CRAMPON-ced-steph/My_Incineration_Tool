@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types */
 import React, { useState, useRef } from 'react';
+import ContenuOnglets from '../../C_Components/ContenuOnglets';
 import IACTFlueGasParameters from './1_IACT_Flue_gas_ML';
 import IACT_Report from './IACT_Report';
 import '../../index.css';
@@ -33,17 +34,13 @@ const IACTMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentL
       />
     },
     {
-      name: 'Rapport',
+      affichage: true, name: 'Rapport',
       content: <IACT_Report innerData={innerData} currentLanguage={currentLanguage} nodeId={nodeId} />
     },
   ];
 
   const [activeTab, setActiveTab] = useState(tabs[0].name);
 
-  const renderTabContent = () => {
-    const active = tabs.find((tab) => tab.name === activeTab);
-    return active ? active.content : null;
-  };
 
   const sendAllData = () => {
     const upstream = nodeData?.result || {};
@@ -131,7 +128,7 @@ const IACTMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentL
       <div
         style={{ padding: '20px', background: '#f9f9f9', borderRadius: '8px' }}
       >
-        {renderTabContent()}
+        <ContenuOnglets tabs={tabs} actif={activeTab} />
       </div>
     </div>
   );

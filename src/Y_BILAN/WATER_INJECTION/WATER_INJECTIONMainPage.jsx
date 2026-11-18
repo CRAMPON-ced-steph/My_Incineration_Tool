@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import ContenuOnglets from '../../C_Components/ContenuOnglets';
 import WATER_INJECTIONFlueGasParameters from './2_WATER_INJECTION_Flue_gas_ML';
 import WATER_INJECTIONFlueGasPollutantEmission from './3_WATER_INJECTION_Pollutant_Emission_ML';
 import WATER_INJECTIONDesign from './4_WATER_INJECTION_Design1_ML';
@@ -61,21 +62,17 @@ const WATER_INJECTIONMainPage = ({ nodeData, title, onSendData, onClose, onGoBac
       content: <WATER_INJECTIONDesign innerData={innerData} setInnerData={setInnerData} upstreamT_IN={T_IN_upstream} currentLanguage={currentLanguage} nodeId={nodeId} />
     },
     {
-      name: t('Opex'),
+      affichage: true, name: t('Opex'),
       content: <WATER_INJECTIONOpex innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} nodeId={nodeId} />
     },
     {
-      name: 'Rapport',
+      affichage: true, name: 'Rapport',
       content: <WATER_INJECTION_Report innerData={innerData} nodeId={nodeId} currentLanguage={currentLanguage} />
     },
   ];
 
   const [activeTab, setActiveTab] = useState(tabs[0].name);
 
-  const renderTabContent = () => {
-    const active = tabs.find((tab) => tab.name === activeTab);
-    return active ? active.content : null;
-  };
 
   const sendAllData = () => {
     onSendData({
@@ -161,7 +158,7 @@ const WATER_INJECTIONMainPage = ({ nodeData, title, onSendData, onClose, onGoBac
       <div
         style={{ padding: '20px', background: '#f9f9f9', borderRadius: '8px' }}
       >
-        {renderTabContent()}
+        <ContenuOnglets tabs={tabs} actif={activeTab} />
       </div>
     </div>
   );

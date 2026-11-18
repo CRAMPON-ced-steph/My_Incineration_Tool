@@ -18,6 +18,12 @@ const VM = 22.4; // Nm3/kmol (valeur legacy)
 
 // Diamètres standards & débits d'arrosage associés (m3/h) — legacy
 const DIAM_STD = [1.2, 1.5, 1.8, 2.0, 2.2, 2.5, 2.8];
+
+// Champs de la tour repris du flux amont. Ils suivent le flux : quand l'amont change
+// (autre onglet recalculé, nœud amont renvoyé), ils sont rechargés ; une saisie manuelle
+// reste en place tant que le flux amont ne change pas. `_flux` = flux appliqué en dernier.
+const CHAMPS_FLUX = ['mCO2', 'mH2O', 'mN2', 'mO2', 'mSO2', 'mHCl', 'tempFumees', 'pTotal', 'tsQuench', 'roEpureeQuench'];
+const fluxDe = (d) => Object.fromEntries(CHAMPS_FLUX.map((k) => [k, d[k]]));
 const DEBIT_STD = [25, 40, 60, 70, 80, 100, 120];
 
 // ===== FONCTIONS THERMODYNAMIQUES (simplifiées / issues du legacy) =====
@@ -515,17 +521,18 @@ const TourLavageCalculator = ({ innerData = {}, setInnerData, currentLanguage = 
     localStorage.setItem(`tourLavage_${nodeId}`, JSON.stringify(inp));
   }, [inp, nodeId]);
 
+  // Flux amont courant : rechargé dans la tour dès qu'il change (voir CHAMPS_FLUX).
+  const flux = useMemo(() => fluxDe(defaultsFromNode()), [defaultsFromNode]);
+  const signatureFlux = JSON.stringify(flux);
+  useEffect(() => {
+    setInp((s) => (s._flux === signatureFlux ? s : { ...s, ...flux, _flux: signatureFlux }));
+  }, [signatureFlux]);
+
   const set = useCallback((k) => (v) => setInp((s) => ({ ...s, [k]: v })), []);
   const setNum = useCallback((k) => (v) => setInp((s) => ({ ...s, [k]: parseValue(v) })), []);
 
   const rechargerDepuisFlux = () => {
-    const d = defaultsFromNode();
-    setInp((s) => ({
-      ...s,
-      mCO2: d.mCO2, mH2O: d.mH2O, mN2: d.mN2, mO2: d.mO2,
-      mSO2: d.mSO2, mHCl: d.mHCl, tempFumees: d.tempFumees,
-      pTotal: d.pTotal, tsQuench: d.tsQuench, roEpureeQuench: d.roEpureeQuench,
-    }));
+    setInp((s) => ({ ...s, ...flux, _flux: signatureFlux }));
   };
 
   const clearMemory = () => {

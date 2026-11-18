@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import ContenuOnglets from '../../C_Components/ContenuOnglets';
 import DENOXFlueGasParameters from './1_DENOX_Flue_gas_ML';
 import DENOXFlueGasPollutantEmission from './2_DENOX_Pollutant_Emission_ML';
 import DENOXDesign from './3_DENOX_Design1_ML';
@@ -36,18 +37,15 @@ const DENOXMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, current
       content: <DENOXDesign innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} nodeId={nodeId} />
     },
     {
-      name: t('Opex'),
+      affichage: true, name: t('Opex'),
       content: <DENOXOpex innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} nodeId={nodeId} />
     },
     {
-      name: t('Rapport'),
+      affichage: true, name: t('Rapport'),
       content: <DENOX_Report innerData={innerData} currentLanguage={currentLanguage} nodeId={nodeId} />
     },
   ];
 
-  const renderTabContent = () => {
-    return tabs[activeTab]?.content || null;
-  };
 
   const sendAllData = () => {
     onSendData({
@@ -135,7 +133,7 @@ const DENOXMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, current
       <div
         style={{ padding: '20px', background: '#f9f9f9', borderRadius: '8px' }}
       >
-        {renderTabContent()}
+        <ContenuOnglets tabs={tabs} actif={activeTab} />
       </div>
     </div>
   );

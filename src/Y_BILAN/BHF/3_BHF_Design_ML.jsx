@@ -201,6 +201,9 @@ const BHFDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
   // ci-dessous en boucle quand l'onglet Polluants n'avait pas encore été ouvert.
   const consommation_reactifs = innerData?.Conso_reactifs || CONSO_REACTIFS_VIDE;
 
+  // Garde lastSync : l'onglet Polluants (monté en même temps) réécrit Conso_reactifs à chaque
+  // rendu (nouvel objet) ; sans comparaison du contenu, l'effet se relançait en boucle.
+  const lastSync = useRef('');
   useEffect(() => {
     if (setInnerData && typeof setInnerData === 'function') {
       const toSignificantFigures = (value, figures = 2) => {
@@ -208,8 +211,7 @@ const BHFDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
         return parseFloat(value.toPrecision(figures));
       };
 
-      setInnerData(prevData => ({
-        ...prevData,
+      const payload = {
         P_out_mmCE,
         consoElec1: toSignificantFigures(Conso_elec_vis_transport_kW),
         consoElec2: toSignificantFigures(Conso_elec_air_co_kW),
@@ -229,7 +231,11 @@ const BHFDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
         conso_fly_ash_kg_h: toSignificantFigures(cendres_kg_h),
         CO2_transport_fly_ash: toSignificantFigures(CO2_transport_total),
         cout_transport_fly_ash: toSignificantFigures(cout_transport_total),
-      }));
+      };
+      const json = JSON.stringify(payload);
+      if (json === lastSync.current) return;
+      lastSync.current = json;
+      setInnerData(prevData => ({ ...prevData, ...payload }));
     }
   }, [Conso_elec_vis_transport_kW, Conso_elec_air_co_kW, conso_air_co_Nm3_h,
       pression_air_comprime_bar, cout_transport_total, CO2_transport_total,
