@@ -7,6 +7,7 @@ import '../../../index.css';
 import { getLanguageCode } from '../../../F_Gestion_Langues/Fonction_Traduction';
 import { calculEconomiseur, PARAMS_DEFAUT, AUXILIAIRE, migrerParams } from './economiseur_calculs';
 import { CO2_kg_m3, H2O_kg_m3, O2_kg_m3, N2_kg_m3, coeff_Nm3_to_m3 } from '../../../A_Transverse_fonction/conv_calculation';
+import { useEnvoiAuto } from '../../../C_Components/envoiAuto';
 
 const FG_DEFAUT = { CO2: 1, H2O: 1, O2: 1, N2: 1 };
 const cleParams = (code, nodeId) => `params_${code}_${nodeId}`;
@@ -159,6 +160,9 @@ const EconomiseurMainPage = ({ nodeData, onSendData, onGoBack, currentLanguage =
       },
     });
   };
+
+  // Calc. All du mode Bilan : envoi déclenché sans ouvrir le nœud (C_Components/envoiAuto.js)
+  useEnvoiAuto(sendAllData);
 
   return (
     <div className="cadre_pour_onglet_principal">

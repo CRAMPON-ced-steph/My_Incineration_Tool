@@ -619,11 +619,14 @@ const WHBDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
     document.body.removeChild(link);
   };
 
+  // Perte de charge côté fumées de la chaudière (saisie, 100 mmCE par défaut) ; conservée dans
+  // innerData (PDC_WHB_mmCE) pour être relue à la réouverture et voyager avec le projet.
   const [PDC_calcul, setPDC_calcul] = useState({
-    'PDC [mmCE]': getInitialValue('PDC_mmCE', 0),
+    'PDC [mmCE]': getInitialValue('PDC_WHB_mmCE', 100),
   });
 
-  const P_in_mmCE = innerData?.P_OUT || 0;
+  // Pression : P sortie = P entrée (P_OUT du nœud amont) − perte de charge
+  const P_in_mmCE = parseFloat(innerData?.P_OUT) || 0;
   const PDC_mmCE = PDC_calcul['PDC [mmCE]'];
   const P_out_mmCE = P_in_mmCE - PDC_mmCE;
 
@@ -690,6 +693,8 @@ const WHBDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
   // OPEX sont remises à 0. La valorisation (électricité, vapeur vendue) est lue
   // par l'onglet OPEX dans les résultats de l'onglet Valorisation vapeur.
   const opexPayload = useMemo(() => ({
+    Pin_mmCE: P_in_mmCE,
+    PDC_WHB_mmCE: PDC_mmCE,
     P_out_mmCE,
     consoElec1: P_pompe_alim_kW,
     labelElec1: t('feedWaterPump'),
@@ -721,7 +726,7 @@ const WHBDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
     cout_transport_reactifs: 0,
     WHB_design_opex: { Hmt_bar: Hmt, Q_eau_alim_m3_h: Q_eau_m3_h, type_camion, distance_km },
   }), [
-    P_out_mmCE, P_pompe_alim_kW, Eau_demin_m3_h, Refidis_kg_h, CO2_transport_refidis, cout_transport_refidis,
+    P_in_mmCE, PDC_mmCE, P_out_mmCE, P_pompe_alim_kW, Eau_demin_m3_h, Refidis_kg_h, CO2_transport_refidis, cout_transport_refidis,
     reactifs.CaCO3, reactifs.CaO, reactifs.CaOH2dry, reactifs.CaOH2wet, reactifs.NaOH, reactifs.NaOHCO3,
     reactifs.Ammonia, reactifs.NaBrCaBr2, reactifs.CAP, Hmt, Q_eau_m3_h, t,
   ]);
@@ -1216,17 +1221,21 @@ const WHBDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
       <div style={styles.pdcSection}>
         <div style={styles.pdcTitle}>{t('aeraulicPressureLoss')}</div>
         <div style={styles.inputGroup}>
-          <span style={styles.label}>PDC [mmCE]</span>
+          <span style={styles.label}>{t('whbGasPressureDrop')}</span>
           <input
             type="number"
             value={PDC_calcul['PDC [mmCE]']}
-            onChange={(e) => handleParametresChange('PDC [mmCE]', parseFloat(e.target.value) || 0)}
+            onChange={(e) => handleParametresChange('PDC [mmCE]', Math.max(0, parseFloat(e.target.value) || 0))}
             style={styles.input}
           />
         </div>
         <div style={{marginTop: '10px', padding: '8px', backgroundColor: '#ffffff', border: '1px solid #e0e0e0'}}>
           <div style={{fontSize: '11px', fontWeight: 'bold', marginBottom: '4px', color: '#666666'}}>
             {t('aeraulicPressureLoss')}
+          </div>
+          <div style={{fontSize: '10px', display: 'flex', justifyContent: 'space-between', padding: '4px 0'}}>
+            <span>{t('pinMmce')}:</span>
+            <span style={{fontFamily: 'monospace', fontWeight: 'bold'}}>{formatNumber(P_in_mmCE)} mmCE</span>
           </div>
           <div style={{fontSize: '10px', display: 'flex', justifyContent: 'space-between', padding: '4px 0'}}>
             <span>{t('poutMmce')}:</span>

@@ -1,3 +1,5 @@
+import { sansClesOpex } from '../G_Graphiques/Dashboard/opexTableau';
+
 // ─── Entrée d'un nœud du schéma (sortie reçue de son voisin amont) ───────────
 //
 // Quand un nœud envoie ses résultats (« Retour au schéma »), Main_FLOW range sa SORTIE dans
@@ -40,4 +42,56 @@ export const donneesAvecEntree = (data, id, edges, mode) => {
     if (!estVide(valeur)) result[cle] = valeur;
   }
   return { ...data, result };
+};
+
+// ─── Envoi des résultats d'un nœud (« Retour au schéma » ou Calc. All) ───────
+//
+// Applique l'envoi du nœud `emetteurId` à la liste `nodes` et renvoie la nouvelle liste :
+// - le premier voisin aval (sens du calcul) reçoit la sortie fusionnée dans son data.result :
+//   l'amont l'emporte pour les valeurs non vides, l'aval garde ses valeurs quand l'amont envoie
+//   du vide ; les clés OPEX propres à l'émetteur ne sont pas recopiées (sansClesOpex) ; la
+//   sortie est aussi mémorisée comme entrée du voisin (data.entrees) ;
+// - l'émetteur garde sa sortie dans data.result (lue par les rapports), plus ses consommations.
+// Fonction pure : utilisée par Main_FLOW.onSendData et par le Calc. All du mode Bilan.
+export const appliquerEnvoi = (nodes, edges, mode, emetteurId, data) => {
+  const cible = nodes.find((node) => (mode === 'Bilan'
+    ? edges.some((e) => e.source === emetteurId && e.target === node.id)
+    : edges.some((e) => e.target === emetteurId && e.source === node.id)));
+  const resultat = data?.result || {};
+  const amont = sansClesOpex(resultat);
+
+  const premier = (cle, champ) => resultat?.[cle]?.[0]?.data?.[champ];
+  const conso = {
+    consommationElec: premier('activeNodes_Elec', 'consommationElec'),
+    consommationEau: premier('activeNodes_Eau', 'consommationEau'),
+    consommationReactifs: premier('activeNodes_Reactifs', 'consommationReactifs'),
+    consommationEnergie: premier('activeNodes_Energie', 'consommationEnergie'),
+    emissionsCO2: premier('activeNodes_CO2', 'emissionsCO2'),
+    cout: premier('activeNodes_cout', 'cout'),
+  };
+  const consoDefinies = Object.fromEntries(Object.entries(conso).filter(([, v]) => v !== undefined));
+
+  return nodes.map((node) => {
+    if (cible && node.id === cible.id) {
+      const aval = node.data.result || {};
+      const fusion = { ...aval, ...amont };
+      for (const cle of Object.keys(amont)) {
+        if (estVide(amont[cle]) && !estVide(aval[cle])) fusion[cle] = aval[cle];
+      }
+      return { ...node, data: ajouterEntree({ ...node.data, result: fusion }, emetteurId, amont) };
+    }
+    if (node.id === emetteurId) {
+      return {
+        ...node,
+        data: {
+          ...node.data,
+          result: { ...resultat },
+          ...(data?.inputData !== undefined && { inputData: data.inputData }),
+          ...consoDefinies,
+          isActive: true,
+        },
+      };
+    }
+    return node;
+  });
 };

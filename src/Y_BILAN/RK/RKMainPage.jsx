@@ -14,6 +14,7 @@ import '../../index.css';
 
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './RK_traduction';
+import { useEnvoiAuto } from '../../C_Components/envoiAuto';
 
 const RKMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLanguage = 'fr', nodeId }) => {
   const [innerData, setInnerData] = useState(nodeData.result || {});
@@ -140,6 +141,9 @@ const RKMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
       onGoBack(null);
     }
   };
+
+  // Calc. All du mode Bilan : envoi déclenché sans ouvrir le nœud (C_Components/envoiAuto.js)
+  useEnvoiAuto(sendAllData);
 
   return (
     <div className="cadre_pour_onglet_principal" style={{ maxWidth: '98vw' }}>

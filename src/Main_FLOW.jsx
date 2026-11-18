@@ -41,12 +41,68 @@ import GlobalRetroReport from './D_BILAN_Rapports/GlobalRetroReport';
 import { batchCalcMap } from './Z_RETRO/batchCalculators';
 import { BATCH_CALC_RESULT_EVENT } from './C_Components/useBatchCalcResult';
 import CustomNode from './C_Components/CustomNode';
-import { sansClesOpex } from './G_Graphiques/Dashboard/opexTableau';
-import { estVide, ajouterEntree, donneesAvecEntree } from './C_Components/entreeNoeud';
+import { ajouterEntree, donneesAvecEntree, appliquerEnvoi } from './C_Components/entreeNoeud';
+import CalculBilanCache from './C_Components/CalculBilanCache';
 
 const initialNodes = [];
 const initialEdges = [];
 const nodeTypes = { custom: CustomNode };
+
+// Composant ouvert pour chaque type de nœud, selon le mode. COMPOSANTS_BILAN sert aussi au
+// Calc. All du mode Bilan (chaque MainPage est montée en arrière-plan, voir CalculBilanCache).
+const COMPOSANTS_BILAN = {
+  'RK+SCC': RKMainPage,
+  FB: FBMainPage,
+  GF: GFMainPage,
+  WHB: WHBMainPage,
+  CO2: CO2MainPage,
+  QUENCH: QUENCHMainPage,
+  SATURATOR: SATURATORMainPage,
+  QUENCHsimple: QUENCHsimpleMainPage,
+  CYCLONE: CYCLONEMainPage,
+  AIRINJECTION: AIRINJECTIONMainPage,
+  SCRUBBER: SCRUBBERMainPage,
+  BHF: BHFMainPage,
+  IACT: IACTMainPage,
+  ELECTROFILTER: ELECTROFILTERMainPage,
+  DENOX: DENOXMainPage,
+  REACTOR: REACTORMainPage,
+  STACK: STACKMainPage,
+  IDFAN: IDFANMainPage,
+  COOLINGTOWER: COOLINGTOWERMainPage,
+  WATER_INJECTION: WATER_INJECTIONMainPage,
+  HX_TubeAndShell: TUBEANDSHELLMainPage,
+  Cooling_HX_eau: WATERCOOLERMainPage,
+  Cooling_HX_air: AIRCOOLERMainPage,
+  '2to1': SEP21MainPage,
+  '1to2': SEP12MainPage,
+};
+
+const COMPOSANTS_RETRO = {
+  'RK+SCC': RK_Parameter_Tab,
+  FB: FB_Parameter_Tab,
+  GF: GF_Parameter_Tab,
+  WHB: WHB_Parameter_Tab,
+  CO2: CO2_Parameter_Tab,
+  QUENCH: QUENCH_Parameter_Tab,
+  SATURATOR: QUENCH_Parameter_Tab,
+  QUENCHsimple: QUENCH_Parameter_Tab,
+  CYCLONE: CYCLONE_Parameter_Tab,
+  AIRINJECTION: AIRINJECTION_Parameter_Tab,
+  SCRUBBER: SCRUBBER_Parameter_Tab,
+  BHF: BHF_Parameter_Tab,
+  IACT: IACT_Parameter_Tab,
+  ELECTROFILTER: ELECTROFILTER_Parameter_Tab,
+  DENOX: DENOX_Parameter_Tab,
+  REACTOR: REACTOR_Parameter_Tab,
+  STACK: STACK_Parameter_Tab,
+  IDFAN: IDFAN_Parameter_Tab,
+  COOLINGTOWER: COOLINGTOWER_Parameter_Tab,
+  WATER_INJECTION: WATER_INJECTION_Parameter_Tab,
+  HX_TubeAndShell: TUBEANDSHELL_Parameter_Tab,
+  Cooling_HX_eau: WATERCOOLER_Parameter_Tab,
+  Cooling_HX_air: AIRCOOLER_Parameter_Tab,
+};
 
 const FURNACE_LABELS = ['RK+SCC', 'GF', 'FB'];
 
@@ -195,6 +251,9 @@ function Flow({
   const [batchDoneCount, setBatchDoneCount] = useState(0);
   const [batchTotalCount, setBatchTotalCount] = useState(0);
   const [batchFinishedMsg, setBatchFinishedMsg] = useState(false);
+  const [batchEchecs, setBatchEchecs] = useState(0);
+  // Calc. All du mode Bilan : nœud en cours de calcul en arrière-plan (CalculBilanCache)
+  const [tacheBilan, setTacheBilan] = useState(null);
 
   // Language management state
   const [currentLanguage, setCurrentLanguage] = useState(() => 
@@ -382,86 +441,19 @@ function Flow({
     return order;
   }, []);
 
-  // Refs vers les dernières valeurs de nodes/edges, pour que onSendData reste STABLE
-  // (ne pas dépendre de `nodes`/`edges`). Sinon onSendData se recrée à chaque setNodes,
-  // ce qui recrée handleSendData dans les Parameter_Tab Retro et provoque une boucle de
-  // recalcul (l'utilisateur se retrouve « bloqué » après un calcul).
-  const nodesRef = useRef(nodes);
-  nodesRef.current = nodes;
+  // Ref vers les derniers liens, pour que onSendData reste STABLE (ne pas dépendre de
+  // `nodes`/`edges`). Sinon onSendData se recrée à chaque setNodes, ce qui recrée
+  // handleSendData dans les Parameter_Tab Retro et provoque une boucle de recalcul
+  // (l'utilisateur se retrouve « bloqué » après un calcul).
   const edgesRef = useRef(edges);
   edgesRef.current = edges;
 
+  // Envoi des résultats du nœud ouvert (« Retour au schéma ») : voir appliquerEnvoi
+  // (entreeNoeud.js), partagé avec le Calc. All du mode Bilan.
   const onSendData = useCallback(
     (data) => {
-      if (selectedNode) {
-        const currentNodes = nodesRef.current;
-        const currentEdges = edgesRef.current;
-        const targetNode = currentNodes.find((node) =>
-          mode === 'Bilan'
-            ? currentEdges.some((edge) => edge.source === selectedNode.id && edge.target === node.id)
-            : currentEdges.some((edge) => edge.target === selectedNode.id && edge.source === node.id)
-        );
-  
-        // Mise à jour du nœud cible avec les résultats
-        if (targetNode) {
-          setNodes((prevNodes) =>
-            prevNodes.map((node) => {
-              if (node.id !== targetNode.id) return node;
-              // Merge strategy: upstream wins for non-empty values; downstream keeps its
-              // own valid data when upstream provides empty ({}, [], null, undefined).
-              // This prevents navigating through an uncalculated node from wiping
-              // previously computed results anywhere in the chain.
-              // Les consommations OPEX (consoElec*, Conso_*, opexTableau_*…) sont propres au
-              // nœud émetteur : on ne les recopie pas dans le nœud aval (sinon l'OPEX et le
-              // rapport du nœud aval affichent celles du nœud amont).
-              const upstream = sansClesOpex(data.result || {});
-              const downstream = node.data.result || {};
-              const merged = { ...downstream, ...upstream };
-              for (const key of Object.keys(upstream)) {
-                if (estVide(upstream[key]) && !estVide(downstream[key])) {
-                  merged[key] = downstream[key];
-                }
-              }
-              // La sortie reçue est aussi mémorisée comme entrée du nœud cible : à sa
-              // réouverture, il la relit au lieu de sa propre sortie (entreeNoeud.js).
-              return {
-                ...node,
-                data: ajouterEntree({ ...node.data, result: merged }, selectedNode.id, upstream),
-              };
-            })
-          );
-        }
-
-        // Mise à jour du nœud sélectionné avec result + consommationElec
-        const elecValue = data.result?.activeNodes_Elec?.[0]?.data?.consommationElec;
-        const eauValue = data.result?.activeNodes_Eau?.[0]?.data?.consommationEau;
-        const reactifsValue = data.result?.activeNodes_Reactifs?.[0]?.data?.consommationReactifs;
-        const energieValue = data.result?.activeNodes_Energie?.[0]?.data?.consommationEnergie;
-        const CO2Value = data.result?.activeNodes_CO2?.[0]?.data?.emissionsCO2;
-        const coutValue = data.result?.activeNodes_cout?.[0]?.data?.cout;
-
-        setNodes((prevNodes) =>
-          prevNodes.map((node) =>
-            node.id === selectedNode.id
-              ? {
-                  ...node,
-                  data: {
-                    ...node.data,
-                    result: { ...data.result },
-                    ...(data.inputData !== undefined && { inputData: data.inputData }),
-                    ...(elecValue !== undefined && { consommationElec: elecValue }),
-                    ...(eauValue !== undefined && { consommationEau: eauValue }),
-                    ...(reactifsValue !== undefined && { consommationReactifs: reactifsValue }),
-                    ...(energieValue !== undefined && { consommationEnergie: energieValue }),
-                    ...(CO2Value !== undefined && { emissionsCO2: CO2Value }),
-                    ...(coutValue !== undefined && { cout: coutValue }),
-                    isActive: true,
-                  },
-                }
-              : node
-          )
-        );
-      }
+      if (!selectedNode) return;
+      setNodes((prevNodes) => appliquerEnvoi(prevNodes, edgesRef.current, mode, selectedNode.id, data));
     },
     [selectedNode, mode, setNodes]
   );
@@ -498,6 +490,68 @@ function Flow({
     });
   }, []);
 
+  // Calc. All du mode Bilan : chaque nœud, du four vers la cheminée (ordre topologique), est
+  // calculé sans être ouvert. Sa MainPage est montée hors écran (CalculBilanCache) avec l'entrée
+  // reçue de l'amont ; quand ses onglets sont calculés, son envoi (« Retour au schéma ») est
+  // déclenché et appliqué comme un envoi manuel (appliquerEnvoi), puis on passe au suivant.
+  const handleCalculateAllBilan = useCallback(async () => {
+    if (mode !== 'Bilan') return;
+    if (batchCalcIndexRef.current >= 0) return; // déjà en cours
+    batchCalcIndexRef.current = 0; // verrou immédiat (double clic)
+
+    const currentEdges = edges;
+    const ordre = getTopologicalOrder(nodes, edges).filter((n) => COMPOSANTS_BILAN[n.data.label]);
+    if (ordre.length === 0) { batchCalcIndexRef.current = -1; return; }
+
+    setSelectedNode(null); // pas de calcul concurrent du même nœud (mêmes clés localStorage)
+    setBatchDoneCount(0);
+    setBatchTotalCount(ordre.length);
+    setBatchFinishedMsg(false);
+    setBatchEchecs(0);
+
+    let currentNodes = nodes;
+    let echecs = 0;
+    for (let i = 0; i < ordre.length; i++) {
+      batchCalcIndexRef.current = i;
+      setBatchCalcIndex(i);
+      const noeud = currentNodes.find((n) => n.id === ordre[i].id);
+      if (!noeud) continue;
+
+      let capture = null;
+      const data = await new Promise((resoudre) => {
+        setTacheBilan({
+          id: noeud.id,
+          label: noeud.data.label,
+          Component: COMPOSANTS_BILAN[noeud.data.label],
+          nodeData: donneesAvecEntree(noeud.data, noeud.id, currentEdges, 'Bilan'),
+          allNodes: currentNodes,
+          edges: currentEdges,
+          currentLanguage,
+          onSendData: (d) => { capture = d; },
+          capture: () => capture,
+          resoudre,
+        });
+      });
+      setTacheBilan(null);
+
+      if (data) {
+        currentNodes = appliquerEnvoi(currentNodes, currentEdges, 'Bilan', noeud.id, data);
+        setNodes(currentNodes);
+      } else {
+        echecs += 1;
+      }
+      setBatchDoneCount(i + 1);
+      // Démontage du nœud calculé avant le suivant
+      await new Promise((r) => setTimeout(r, 20));
+    }
+
+    batchCalcIndexRef.current = -1;
+    setBatchCalcIndex(-1);
+    setBatchEchecs(echecs);
+    setBatchFinishedMsg(true);
+    setTimeout(() => setBatchFinishedMsg(false), echecs ? 8000 : 3000);
+  }, [nodes, edges, mode, currentLanguage, getTopologicalOrder, setNodes]);
+
   // Batch calculation: direct async loop — calls calculation functions directly (no hidden components)
   const handleCalculateAll = useCallback(async () => {
     if (mode === 'Bilan') return;
@@ -512,6 +566,7 @@ function Flow({
     setBatchDoneCount(0);
     setBatchTotalCount(filtered.length);
     setBatchFinishedMsg(false);
+    setBatchEchecs(0);
 
     const currentEdges = edges;
     // Local snapshot: propagate results immediately without waiting for React state commits
@@ -603,51 +658,7 @@ function Flow({
   const renderParameterTab = () => {
     if (!selectedNode) return null;
 
-    const componentMap = {
-      ...(mode === 'Bilan' ? { 'RK+SCC': RKMainPage } : { 'RK+SCC': RK_Parameter_Tab }),
-      ...(mode === 'Bilan' ? { FB: FBMainPage } : { FB: FB_Parameter_Tab }),
-      ...(mode === 'Bilan' ? { GF: GFMainPage } : { GF: GF_Parameter_Tab }),
-      ...(mode === 'Bilan' ? { WHB: WHBMainPage } : { WHB: WHB_Parameter_Tab }),
-      ...(mode === 'Bilan' ? { CO2: CO2MainPage } : { CO2: CO2_Parameter_Tab }),
-      ...(mode === 'Bilan' ? { QUENCH: QUENCHMainPage } : { QUENCH: QUENCH_Parameter_Tab }),
-      ...(mode === 'Bilan' ? { SATURATOR: SATURATORMainPage } : { SATURATOR: QUENCH_Parameter_Tab }),
-      ...(mode === 'Bilan' ? { QUENCHsimple: QUENCHsimpleMainPage } : { QUENCHsimple: QUENCH_Parameter_Tab }),
-      ...(mode === 'Bilan' ? { CYCLONE: CYCLONEMainPage } : { CYCLONE: CYCLONE_Parameter_Tab }),
-      ...(mode === 'Bilan' ? { AIRINJECTION: AIRINJECTIONMainPage } : { AIRINJECTION: AIRINJECTION_Parameter_Tab }),
-      ...(mode === 'Bilan' ? { SCRUBBER: SCRUBBERMainPage } : { SCRUBBER: SCRUBBER_Parameter_Tab }),
-      ...(mode === 'Bilan' ? { BHF: BHFMainPage } : { BHF: BHF_Parameter_Tab }),
-      ...(mode === 'Bilan' ? { IACT: IACTMainPage } : { IACT: IACT_Parameter_Tab }),
-      ...(mode === 'Bilan' ? { ELECTROFILTER: ELECTROFILTERMainPage } : { ELECTROFILTER: ELECTROFILTER_Parameter_Tab }),
-      ...(mode === 'Bilan' ? { DENOX: DENOXMainPage } : { DENOX: DENOX_Parameter_Tab }),
-      ...(mode === 'Bilan' ? { REACTOR: REACTORMainPage } : { REACTOR: REACTOR_Parameter_Tab }),
-      ...(mode === 'Bilan' ? { STACK: STACKMainPage } : { STACK: STACK_Parameter_Tab }),
-      ...(mode === 'Bilan' ? { IDFAN: IDFANMainPage } : { IDFAN: IDFAN_Parameter_Tab }),
-      ...(mode === 'Bilan' ? { COOLINGTOWER: COOLINGTOWERMainPage } : { COOLINGTOWER: COOLINGTOWER_Parameter_Tab }),
-      ...(mode === 'Bilan' ? { WATER_INJECTION: WATER_INJECTIONMainPage } : { WATER_INJECTION: WATER_INJECTION_Parameter_Tab }),
-
-      /*
-      ...(mode === 'Bilan' ? { HX_TubeAndShell: TUBEANDSHELLMainPage } : { HX_TubeAndShell: TUBEANDSHELL_Parameter_Tab }),
-      
-      ...(mode === 'Bilan' ? { '2to1': SEP21MainPage } : { '2to1': SEP21_Parameter_Tab }),
-      ...(mode === 'Bilan' ? { '1to2': SEP12MainPage } : { '1to2': SEP12_Parameter_Tab }),
-*/
-
-
-      ...(mode === 'Bilan' ? { HX_TubeAndShell: TUBEANDSHELLMainPage } : { HX_TubeAndShell: TUBEANDSHELL_Parameter_Tab }),
-      ...(mode === 'Bilan' ? { Cooling_HX_eau: WATERCOOLERMainPage } : { Cooling_HX_eau: WATERCOOLER_Parameter_Tab }),
-      ...(mode === 'Bilan' ? { Cooling_HX_air: AIRCOOLERMainPage } : { Cooling_HX_air: AIRCOOLER_Parameter_Tab }),
-      
-      ...(mode === 'Bilan' ? { '2to1': SEP21MainPage } : {}),
-      ...(mode === 'Bilan' ? { '1to2': SEP12MainPage } : {}),
-
-
-
-
-
-
-
-
-    };
+    const componentMap = mode === 'Bilan' ? COMPOSANTS_BILAN : COMPOSANTS_RETRO;
 
     const Component = componentMap[selectedNode.data.label];
     if (!Component) return null;
@@ -857,28 +868,30 @@ function Flow({
             >
               🏷 Line Name
             </button>
-            {mode !== 'Bilan' && (
-              <>
-                <button
-                  className="reset-btn"
-                  onClick={handleCalculateAll}
-                  disabled={batchCalcIndex >= 0}
-                  title="Calculer et envoyer données de tous les nœuds (STACK → four)"
-                >
-                  {batchCalcIndex >= 0
-                    ? `⏳ ${batchDoneCount + 1}/${batchTotalCount}`
-                    : '⚙ Calc. All'}
-                </button>
-                {batchFinishedMsg && (
-                  <span style={{
-                    fontSize: '12px', fontWeight: 600, color: '#16a34a',
-                    background: '#dcfce7', border: '1px solid #86efac',
-                    borderRadius: 12, padding: '3px 10px', whiteSpace: 'nowrap',
-                  }}>
-                    ✓ {batchTotalCount} nœuds calculés
-                  </span>
-                )}
-              </>
+            <button
+              className="reset-btn"
+              onClick={mode === 'Bilan' ? handleCalculateAllBilan : handleCalculateAll}
+              disabled={batchCalcIndex >= 0}
+              title={mode === 'Bilan'
+                ? 'Calculer et envoyer les données de tous les nœuds sans les ouvrir (four → cheminée)'
+                : 'Calculer et envoyer données de tous les nœuds (STACK → four)'}
+            >
+              {batchCalcIndex >= 0
+                ? `⏳ ${batchDoneCount + 1}/${batchTotalCount}`
+                : '⚙ Calc. All'}
+            </button>
+            {batchFinishedMsg && (
+              <span style={{
+                fontSize: '12px', fontWeight: 600,
+                color: batchEchecs ? '#b45309' : '#16a34a',
+                background: batchEchecs ? '#fef3c7' : '#dcfce7',
+                border: `1px solid ${batchEchecs ? '#fcd34d' : '#86efac'}`,
+                borderRadius: 12, padding: '3px 10px', whiteSpace: 'nowrap',
+              }}>
+                {batchEchecs
+                  ? `⚠ ${batchTotalCount - batchEchecs}/${batchTotalCount} nœuds calculés (voir la console)`
+                  : `✓ ${batchTotalCount} nœuds calculés`}
+              </span>
             )}
           </Panel>
           {isEraserActive && <Eraser />}
@@ -905,6 +918,7 @@ function Flow({
       )}
       
       {renderParameterTab()}
+      {tacheBilan && <CalculBilanCache key={tacheBilan.id} tache={tacheBilan} />}
       
       {showAirParasite && (
         <AirParasiteDisplay

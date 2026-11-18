@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import ContenuOnglets from '../../C_Components/ContenuOnglets';
 import CaptureParameters from './1_Capture_Parameters';
+import { useEnvoiAuto } from '../../C_Components/envoiAuto';
 //import CaptureQuench from './2_Capture_Quench';
 //import CaptureAbsorption  from './3_Capture_Absorption';
 //import CaptureDesorption from './4_Capture_Desorption';
@@ -50,6 +51,9 @@ const CO2MainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLa
       alert('Cannot close this tab. Please close it manually.');
     }
   };
+
+  // Calc. All du mode Bilan : envoi déclenché sans ouvrir le nœud (C_Components/envoiAuto.js)
+  useEnvoiAuto(sendAllData);
 
   return (
     <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>

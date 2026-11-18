@@ -15,6 +15,7 @@ import GFCalcOpex from './5_1_GF_calcul_Opex';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './GF_traduction';
 import { estCleOpexNoeud } from '../../G_Graphiques/Dashboard/opexTableau';
+import { useEnvoiAuto } from '../../C_Components/envoiAuto';
 
 const GFMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLanguage = 'fr', nodeId }) => {
   // ============================================================
@@ -441,6 +442,9 @@ const GFMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
   // ============================================================
   // RENDER
   // ============================================================
+
+  // Calc. All du mode Bilan : envoi déclenché sans ouvrir le nœud (C_Components/envoiAuto.js)
+  useEnvoiAuto(sendAllData);
 
   return (
     <div className="container" style={{ padding: '0' }}>

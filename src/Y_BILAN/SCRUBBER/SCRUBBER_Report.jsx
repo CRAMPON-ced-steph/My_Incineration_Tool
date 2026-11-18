@@ -62,6 +62,9 @@ const SCRUBBER_Report = ({ innerData = {}, currentLanguage = 'fr', nodeId }) => 
             <KV label={t('wetFlowTotal')} value={fmt(FG_wet_total)} />
             <KV label={t('dryFlowNm3h')} value={fmt(FG_OUT_Nm3_h.dry, 0)} />
             <KV label={t('wetFlowNm3h')} value={fmt(FG_OUT_Nm3_h.wet, 0)} />
+            <KV label={t('TL_inlet_pressure')} value={fmt(innerData.Pin_mmCE, 0)} unit="mmCE" />
+            <KV label={t('TL_dp_used')} value={fmt(innerData.PDC_SCRUBBER_mmCE, 0)} unit="mmCE" />
+            <KV label={t('TL_outlet_pressure')} value={fmt(innerData.P_out_mmCE, 0)} unit="mmCE" />
           </SubSection>
           <SubSection title={t('outletGasComposition')}>
             <GasTable data={{ 'kg/h': FG_OUT_kg_h, 'Nm³/h': { CO2: FG_OUT_Nm3_h.CO2, H2O: FG_OUT_Nm3_h.H2O, O2: FG_OUT_Nm3_h.O2, N2: FG_OUT_Nm3_h.N2 } }} t={tr} />

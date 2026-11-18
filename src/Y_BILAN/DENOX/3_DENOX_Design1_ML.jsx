@@ -118,8 +118,11 @@ const DENOXDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
   const [parametresFAM, setParametresFAM] = useState({
     'Rendement de capture [%]': getInitialValue('Rendement_capture', 99.9),
     'Vitesse de filtration [m/h]': getInitialValue('Vitesse_filtration', 60),
-    'PDC [mmCE]': getInitialValue('PDC_mmCE', 200),
   });
+
+  // Perte de charge côté fumées : calculée selon la technologie (perteCharge) ou imposée
+  const [modePDC, setModePDC] = useState(() => getInitialValue('PDC_DENOX_mode', 'calculee'));
+  const [pdcImposee, setPdcImposee] = useState(() => getInitialValue('PDC_DENOX_impose_mmCE', 100));
 
   // Extraction des paramètres
   const debitGaz = parametresSCR['Débit de gaz [Nm³/h]'];
@@ -130,7 +133,6 @@ const DENOXDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
   const vitesseSuperficielle = parametresSCR['Vitesse superficielle [m/s]'];
   const Rdt_capture = parametresFAM['Rendement de capture [%]'];
   const Vitess_filtration = parametresFAM['Vitesse de filtration [m/h]'];
-  const PDC = parametresFAM['PDC [mmCE]'];
 
   // Calculs SCR de base
   const volumeCatalyseur = debitGaz / vitesseSpatiale;
@@ -139,7 +141,6 @@ const DENOXDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
   const consoAmmoniaque = (concNOxEntree * tauxReduction / 100 * debitGaz * 17) / (30.01 * 1000000);
   const Qv_m3_h = debitGaz * 1.2;
   const surfaceManches = Math.abs(Qv_m3_h / Vitess_filtration);
-  const pressionSortie = 30 - PDC;
 
   // Calcul de la perte de charge selon la technologie
   const calculerPerteCharge = () => {
@@ -159,7 +160,14 @@ const DENOXDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
     }
   };
 
-  const perteCharge = calculerPerteCharge();
+  const perteChargeEstimee = calculerPerteCharge(); // Pa, selon la technologie
+
+  // Pression : P sortie = P entrée (P_OUT du nœud amont) − perte de charge retenue
+  const PA_PAR_MMCE = 9.80665;
+  const PDC_mmCE = modePDC === 'imposee' ? (parseFloat(pdcImposee) || 0) : perteChargeEstimee / PA_PAR_MMCE;
+  const perteCharge = PDC_mmCE * PA_PAR_MMCE; // Pa, retenue (ventilateur, affichage)
+  const pressionEntree = parseFloat(innerData?.P_OUT) || 0;
+  const pressionSortie = pressionEntree - PDC_mmCE;
 
   // Dimensionnement spécifique par technologie
   const calculerDimensionnement = () => {
@@ -265,6 +273,8 @@ const DENOXDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
     { text: t('Consommation NH₃ [kg/h]'), value: fmt(consoAmmoniaque, 2) },
     { text: t('Perte de charge [Pa]'), value: fmt(perteCharge, 0) },
     { text: t('Surface des manches [m²]'), value: fmt(surfaceManches, 2) },
+    { text: t("Pression d'entrée [mmCE]"), value: fmt(pressionEntree, 2) },
+    { text: t('Perte de charge retenue [mmCE]'), value: fmt(PDC_mmCE, 1) },
     { text: t('Pression de sortie [mmCE]'), value: fmt(pressionSortie, 2) },
   ];
 
@@ -281,6 +291,10 @@ const DENOXDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
 
       setInnerData(prevData => ({
         ...prevData,
+        Pin_mmCE: pressionEntree,
+        PDC_DENOX_mode: modePDC,
+        PDC_DENOX_impose_mmCE: pdcImposee,
+        PDC_DENOX_mmCE: PDC_mmCE,
         P_out_mmCE: pressionSortie,
         consoElec1: Math.round(consoElec1 * 100) / 100,
         consoElec2: Math.round(consoElec2 * 100) / 100,
@@ -290,7 +304,7 @@ const DENOXDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
         conso_air_co_N_m3: 0,
       }));
     }
-  }, [perteCharge, debitGaz, consoAmmoniaque, pressionSortie, setInnerData]);
+  }, [perteCharge, debitGaz, consoAmmoniaque, pressionEntree, pressionSortie, modePDC, pdcImposee, PDC_mmCE, setInnerData]);
 
   return (
     <div className="cadre_pour_onglet">
@@ -341,6 +355,30 @@ const DENOXDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
             t={t}
           />
         ))}
+      </Section>
+
+      {/* Pression aéraulique : perte de charge calculée (technologie) ou imposée */}
+      <Section title={t('Pression aéraulique')} t={t}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <label style={{ flex: 1, minWidth: '200px', textAlign: 'right', fontWeight: '500', color: '#333' }}>
+            {t('Perte de charge DeNOx')}:
+          </label>
+          <select
+            value={modePDC}
+            onChange={(e) => setModePDC(e.target.value)}
+            style={{ flex: '0 0 150px', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
+          >
+            <option value="calculee">{t('Calculée (technologie)')}</option>
+            <option value="imposee">{t('Imposée')}</option>
+          </select>
+        </div>
+        <ParameterInput
+          translationKey="Perte de charge imposée [mmCE]"
+          value={pdcImposee}
+          onChange={(v) => setPdcImposee(Math.max(0, parseFloat(v) || 0))}
+          disabled={modePDC !== 'imposee'}
+          t={t}
+        />
       </Section>
 
       {/* Résultats généraux */}

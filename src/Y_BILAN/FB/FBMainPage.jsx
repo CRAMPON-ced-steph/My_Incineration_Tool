@@ -17,6 +17,7 @@ import FBCalcOpex from './5_1_FB_calcul_Opex';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './FB_traduction';
 import { estCleOpexNoeud } from '../../G_Graphiques/Dashboard/opexTableau';
+import { useEnvoiAuto } from '../../C_Components/envoiAuto';
 
 const FBMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLanguage = 'fr', nodeId }) => {
   // ============================================================
@@ -500,6 +501,9 @@ const FBMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
   // ============================================================
   // RENDER
   // ============================================================
+
+  // Calc. All du mode Bilan : envoi déclenché sans ouvrir le nœud (C_Components/envoiAuto.js)
+  useEnvoiAuto(sendAllData);
 
   return (
     <div className="container" style={{ padding: '0' }}>

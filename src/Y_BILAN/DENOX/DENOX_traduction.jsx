@@ -1,5 +1,12 @@
 export const translations = {
   fr: {
+    "Pression aéraulique": "Pression aéraulique",
+    "Perte de charge DeNOx": "Perte de charge DeNOx",
+    "Calculée (technologie)": "Calculée (technologie)",
+    "Imposée": "Imposée",
+    "Perte de charge imposée [mmCE]": "Perte de charge imposée [mmCE]",
+    "Pression d'entrée [mmCE]": "Pression d'entrée [mmCE]",
+    "Perte de charge retenue [mmCE]": "Perte de charge retenue [mmCE]",
     // — Ajouts audit i18n (2026-07) —
     "NH3 consumption [kg/h]": "Consommation NH₃ [kg/h]",
     "NOx input [mg/Nm3]": "NOx entrée [mg/Nm³]",
@@ -201,6 +208,13 @@ export const translations = {
     'Résultats': 'Résultats',
   },
   en: {
+    "Pression aéraulique": "Gas-side pressure",
+    "Perte de charge DeNOx": "DeNOx pressure drop",
+    "Calculée (technologie)": "Calculated (technology)",
+    "Imposée": "Imposed",
+    "Perte de charge imposée [mmCE]": "Imposed pressure drop [mmCE]",
+    "Pression d'entrée [mmCE]": "Inlet pressure [mmCE]",
+    "Perte de charge retenue [mmCE]": "Pressure drop used [mmCE]",
     // — Ajouts audit i18n (2026-07) —
     "Rapport": "Report",
     "NH3 consumption [kg/h]": "NH₃ consumption [kg/h]",
@@ -402,6 +416,13 @@ export const translations = {
     'Résultats': 'Results',
   },
   de: {
+    "Pression aéraulique": "Gasseitiger Druck",
+    "Perte de charge DeNOx": "Druckverlust DeNOx",
+    "Calculée (technologie)": "Berechnet (Technologie)",
+    "Imposée": "Vorgegeben",
+    "Perte de charge imposée [mmCE]": "Vorgegebener Druckverlust [mmCE]",
+    "Pression d'entrée [mmCE]": "Eintrittsdruck [mmCE]",
+    "Perte de charge retenue [mmCE]": "Verwendeter Druckverlust [mmCE]",
     // — Ajouts audit i18n (2026-07) —
     "Rapport": "Bericht",
     "NH3 consumption [kg/h]": "NH₃-Verbrauch [kg/h]",
@@ -603,6 +624,13 @@ export const translations = {
     'Résultats': 'Ergebnisse',
   },
   it: {
+    "Pression aéraulique": "Pressione lato fumi",
+    "Perte de charge DeNOx": "Perdita di carico DeNOx",
+    "Calculée (technologie)": "Calcolata (tecnologia)",
+    "Imposée": "Imposta",
+    "Perte de charge imposée [mmCE]": "Perdita di carico imposta [mmCE]",
+    "Pression d'entrée [mmCE]": "Pressione di ingresso [mmCE]",
+    "Perte de charge retenue [mmCE]": "Perdita di carico adottata [mmCE]",
     // — Ajouts audit i18n (2026-07) —
     "Rapport": "Rapporto",
     "NH3 consumption [kg/h]": "Consumo di NH₃ [kg/h]",
@@ -804,6 +832,13 @@ export const translations = {
     'Résultats': 'Risultati',
   },
   es: {
+    "Pression aéraulique": "Presión lado gases",
+    "Perte de charge DeNOx": "Pérdida de carga DeNOx",
+    "Calculée (technologie)": "Calculada (tecnología)",
+    "Imposée": "Impuesta",
+    "Perte de charge imposée [mmCE]": "Pérdida de carga impuesta [mmCE]",
+    "Pression d'entrée [mmCE]": "Presión de entrada [mmCE]",
+    "Perte de charge retenue [mmCE]": "Pérdida de carga adoptada [mmCE]",
     // — Ajouts audit i18n (2026-07) —
     "Rapport": "Informe",
     "NH3 consumption [kg/h]": "Consumo de NH₃ [kg/h]",
@@ -1005,6 +1040,13 @@ export const translations = {
     'Résultats': 'Resultados',
   },
   pt: {
+    "Pression aéraulique": "Pressão do lado dos gases",
+    "Perte de charge DeNOx": "Perda de carga DeNOx",
+    "Calculée (technologie)": "Calculada (tecnologia)",
+    "Imposée": "Imposta",
+    "Perte de charge imposée [mmCE]": "Perda de carga imposta [mmCE]",
+    "Pression d'entrée [mmCE]": "Pressão de entrada [mmCE]",
+    "Perte de charge retenue [mmCE]": "Perda de carga adotada [mmCE]",
     // — Ajouts audit i18n (2026-07) —
     "Rapport": "Relatório",
     "NH3 consumption [kg/h]": "Consumo de NH₃ [kg/h]",
@@ -1206,6 +1248,13 @@ export const translations = {
     'Résultats': 'Resultados',
   },
   zh: {
+    "Pression aéraulique": "烟气侧压力",
+    "Perte de charge DeNOx": "DeNOx 压降",
+    "Calculée (technologie)": "计算值（按技术）",
+    "Imposée": "指定值",
+    "Perte de charge imposée [mmCE]": "指定压降 [mmCE]",
+    "Pression d'entrée [mmCE]": "入口压力 [mmCE]",
+    "Perte de charge retenue [mmCE]": "采用压降 [mmCE]",
     // — Ajouts audit i18n (2026-07) —
     "Rapport": "报告",
     "NH3 consumption [kg/h]": "NH₃ 消耗 [kg/h]",
@@ -1407,6 +1456,13 @@ export const translations = {
     'Résultats': '结果',
   },
   ja: {
+    "Pression aéraulique": "排ガス側圧力",
+    "Perte de charge DeNOx": "DeNOx 圧力損失",
+    "Calculée (technologie)": "計算値（技術別）",
+    "Imposée": "指定値",
+    "Perte de charge imposée [mmCE]": "指定圧力損失 [mmCE]",
+    "Pression d'entrée [mmCE]": "入口圧力 [mmCE]",
+    "Perte de charge retenue [mmCE]": "採用圧力損失 [mmCE]",
     // — Ajouts audit i18n (2026-07) —
     "Rapport": "レポート",
     "NH3 consumption [kg/h]": "NH₃ 消費 [kg/h]",
@@ -1609,6 +1665,20 @@ export const translations = {
   },
 
   ru: {
+
+    "Pression aéraulique": "Давление по газовой стороне",
+
+    "Perte de charge DeNOx": "Потеря давления DeNOx",
+
+    "Calculée (technologie)": "Расчётная (по технологии)",
+
+    "Imposée": "Заданная",
+
+    "Perte de charge imposée [mmCE]": "Заданная потеря давления [mmCE]",
+
+    "Pression d'entrée [mmCE]": "Давление на входе [mmCE]",
+
+    "Perte de charge retenue [mmCE]": "Принятая потеря давления [mmCE]",
     // — Ajouts audit i18n (2026-07) —
     "Rapport": "Отчёт",
     "NH3 consumption [kg/h]": "Расход NH₃ [кг/ч]",
@@ -1810,6 +1880,13 @@ export const translations = {
     'Résultats': 'Результаты',
   },
   ar: {
+    "Pression aéraulique": "الضغط في جانب الغازات",
+    "Perte de charge DeNOx": "فقد الضغط في DeNOx",
+    "Calculée (technologie)": "محسوبة (حسب التقنية)",
+    "Imposée": "مفروضة",
+    "Perte de charge imposée [mmCE]": "فقد الضغط المفروض [mmCE]",
+    "Pression d'entrée [mmCE]": "ضغط الدخول [mmCE]",
+    "Perte de charge retenue [mmCE]": "فقد الضغط المعتمد [mmCE]",
     // — Ajouts audit i18n (2026-07) —
     "Rapport": "تقرير",
     "NH3 consumption [kg/h]": "استهلاك NH₃ [كغ/س]",
