@@ -648,7 +648,9 @@ const RKdesign = ({ innerData, setInnerData, currentLanguage = 'fr', nodeId }) =
       const cout_transport_incineratino_ash = toSignificantFigures(cout_transport_total);
       const cout_transport_boiler_ash = toSignificantFigures(0);
       const cout_transport_fly_ash = toSignificantFigures(0);
-      const cout_transport_reactifs = toSignificantFigures(consommation_reactifs.cout);
+      // Pas de coût de transport des réactifs calculé : Conso_reactifs.cout est le coût
+      // d'ACHAT, déjà compté par l'onglet OPEX à partir des Conso_*_kg (avant : compté deux fois).
+      const cout_transport_reactifs = 0;
 
       // Paramètres à sauvegarder pour la persistance
       const parametersToSave = {

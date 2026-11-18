@@ -63,7 +63,9 @@ const FBCalcOpex = ({ innerData, innerDataTick, setInnerData }) => {
     const cout_transport_incineratino_ash = toSignificantFigures(1);
     const cout_transport_boiler_ash = toSignificantFigures(0);
     const cout_transport_fly_ash = toSignificantFigures(0);
-    const cout_transport_reactifs = toSignificantFigures(conso_reactifs.cout ?? 0);
+    // Pas de coût de transport des réactifs calculé : Conso_reactifs.cout est le coût
+    // d'ACHAT, déjà compté par l'onglet OPEX à partir des Conso_*_kg (avant : compté deux fois).
+    const cout_transport_reactifs = 0;
 
     const newOutput = {
       consoElec1, consoElec2, consoElec3, consoElec4, consoElec5, consoElec6,
