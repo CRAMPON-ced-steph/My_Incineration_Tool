@@ -1,6 +1,9 @@
 // RK_traduction.js
 export const translations = {
   fr: {
+    "dr_co2TransportHoraire": "CO2 transport [kg/h]",
+    "dr_coutTransportHoraire": "Coût transport [€/h]",
+    "dr_rotationsCamion": "Rotations de camion [nb/an]",
     // — Tableau de combustion (lignes/colonnes, audit i18n 2026-07) —
     "Packed waste": "Déchets conditionnés",
     "Direct lines": "Lignes directes",
@@ -240,6 +243,9 @@ export const translations = {
   },
   
   en: {
+    "dr_co2TransportHoraire": "Transport CO2 [kg/h]",
+    "dr_coutTransportHoraire": "Transport cost [€/h]",
+    "dr_rotationsCamion": "Truck trips [no./yr]",
     // — Tableau de combustion (lignes/colonnes, audit i18n 2026-07) —
     "Packed waste": "Packed waste",
     "Direct lines": "Direct lines",
@@ -473,6 +479,9 @@ export const translations = {
   },
 
   es: {
+    "dr_co2TransportHoraire": "CO2 transporte [kg/h]",
+    "dr_coutTransportHoraire": "Coste transporte [€/h]",
+    "dr_rotationsCamion": "Viajes de camión [n.º/año]",
     // — Tableau de combustion (lignes/colonnes, audit i18n 2026-07) —
     "Packed waste": "Residuos embalados",
     "Direct lines": "Líneas directas",
@@ -700,6 +709,9 @@ export const translations = {
   },
 
   de: {
+    "dr_co2TransportHoraire": "Transport-CO2 [kg/h]",
+    "dr_coutTransportHoraire": "Transportkosten [€/h]",
+    "dr_rotationsCamion": "Lkw-Fahrten [Anz./Jahr]",
     // — Tableau de combustion (lignes/colonnes, audit i18n 2026-07) —
     "Packed waste": "Verpackte Abfälle",
     "Direct lines": "Direktleitungen",
@@ -927,6 +939,9 @@ export const translations = {
   },
 
   it: {
+    "dr_co2TransportHoraire": "CO2 trasporto [kg/h]",
+    "dr_coutTransportHoraire": "Costo trasporto [€/h]",
+    "dr_rotationsCamion": "Viaggi del camion [n./anno]",
     // — Tableau de combustion (lignes/colonnes, audit i18n 2026-07) —
     "Packed waste": "Rifiuti confezionati",
     "Direct lines": "Linee dirette",
@@ -1154,6 +1169,9 @@ export const translations = {
   },
 
   pt: {
+    "dr_co2TransportHoraire": "CO2 transporte [kg/h]",
+    "dr_coutTransportHoraire": "Custo transporte [€/h]",
+    "dr_rotationsCamion": "Viagens de camião [n.º/ano]",
     // — Tableau de combustion (lignes/colonnes, audit i18n 2026-07) —
     "Packed waste": "Resíduos embalados",
     "Direct lines": "Linhas diretas",
@@ -1381,6 +1399,9 @@ export const translations = {
   },
 
   ru: {
+    "dr_co2TransportHoraire": "CO2 транспорта [кг/ч]",
+    "dr_coutTransportHoraire": "Стоимость транспорта [€/ч]",
+    "dr_rotationsCamion": "Рейсы грузовика [шт./год]",
     // — Tableau de combustion (lignes/colonnes, audit i18n 2026-07) —
     "Packed waste": "Упакованные отходы",
     "Direct lines": "Прямые линии",
@@ -1608,6 +1629,9 @@ export const translations = {
   },
 
   ja: {
+    "dr_co2TransportHoraire": "輸送CO2 [kg/h]",
+    "dr_coutTransportHoraire": "輸送コスト [€/h]",
+    "dr_rotationsCamion": "トラック往復回数 [回/年]",
     // — Tableau de combustion (lignes/colonnes, audit i18n 2026-07) —
     "Packed waste": "梱包廃棄物",
     "Direct lines": "直接ライン",
@@ -1835,6 +1859,9 @@ export const translations = {
   },
 
   zh: {
+    "dr_co2TransportHoraire": "运输CO2 [kg/h]",
+    "dr_coutTransportHoraire": "运输成本 [€/h]",
+    "dr_rotationsCamion": "卡车往返次数 [次/年]",
     // — Tableau de combustion (lignes/colonnes, audit i18n 2026-07) —
     "Packed waste": "打包垃圾",
     "Direct lines": "直接进料管线",
@@ -2062,6 +2089,9 @@ export const translations = {
   },
 
   ar: {
+    "dr_co2TransportHoraire": "CO2 النقل [كغ/س]",
+    "dr_coutTransportHoraire": "تكلفة النقل [€/س]",
+    "dr_rotationsCamion": "رحلات الشاحنة [عدد/سنة]",
     // — Tableau de combustion (lignes/colonnes, audit i18n 2026-07) —
     "Packed waste": "نفايات معبأة",
     "Direct lines": "خطوط مباشرة",

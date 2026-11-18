@@ -1,6 +1,7 @@
 // WHB_traduction.js
 export const translations = {
   fr: {
+    "truckTrips": "Rotations de camion [nb/an]",
     "feedWaterPump": "Pompe alimentaire",
     "feedWaterPumpPower": "Puissance pompe alimentaire [kW]",
     "feedWaterPumpFlow": "Débit pompe alimentaire [m³/h]",
@@ -249,6 +250,7 @@ export const translations = {
   },
 
   en: {
+    "truckTrips": "Truck trips [no./yr]",
     "feedWaterPump": "Feedwater pump",
     "feedWaterPumpPower": "Feedwater pump power [kW]",
     "feedWaterPumpFlow": "Feedwater pump flow [m³/h]",
@@ -499,6 +501,7 @@ export const translations = {
 
 
   de: {
+    "truckTrips": "Lkw-Fahrten [Anz./Jahr]",
     "feedWaterPump": "Speisewasserpumpe",
     "feedWaterPumpPower": "Leistung Speisewasserpumpe [kW]",
     "feedWaterPumpFlow": "Förderstrom Speisewasserpumpe [m³/h]",
@@ -750,6 +753,7 @@ export const translations = {
 
 
   es: {
+    "truckTrips": "Viajes de camión [n.º/año]",
     "feedWaterPump": "Bomba de alimentación",
     "feedWaterPumpPower": "Potencia bomba de alimentación [kW]",
     "feedWaterPumpFlow": "Caudal bomba de alimentación [m³/h]",
@@ -998,6 +1002,7 @@ export const translations = {
   },
 
   it: {
+    "truckTrips": "Viaggi del camion [n./anno]",
     "feedWaterPump": "Pompa di alimento",
     "feedWaterPumpPower": "Potenza pompa di alimento [kW]",
     "feedWaterPumpFlow": "Portata pompa di alimento [m³/h]",
@@ -1247,6 +1252,7 @@ export const translations = {
 
 
   pt: {
+    "truckTrips": "Viagens de camião [n.º/ano]",
     "feedWaterPump": "Bomba de alimentação",
     "feedWaterPumpPower": "Potência da bomba de alimentação [kW]",
     "feedWaterPumpFlow": "Caudal da bomba de alimentação [m³/h]",
@@ -1496,6 +1502,7 @@ export const translations = {
 
 
   ru: {
+    "truckTrips": "Рейсы грузовика [шт./год]",
     "feedWaterPump": "Питательный насос",
     "feedWaterPumpPower": "Мощность питательного насоса [кВт]",
     "feedWaterPumpFlow": "Расход питательного насоса [м³/ч]",
@@ -1744,6 +1751,7 @@ export const translations = {
   },
 
   zh: {
+    "truckTrips": "卡车往返次数 [次/年]",
     "feedWaterPump": "给水泵",
     "feedWaterPumpPower": "给水泵功率 [kW]",
     "feedWaterPumpFlow": "给水泵流量 [m³/h]",
@@ -1990,6 +1998,7 @@ export const translations = {
   },
 
   ja: {
+    "truckTrips": "トラック往復回数 [回/年]",
     "feedWaterPump": "給水ポンプ",
     "feedWaterPumpPower": "給水ポンプ動力 [kW]",
     "feedWaterPumpFlow": "給水ポンプ流量 [m³/h]",
@@ -2236,6 +2245,7 @@ export const translations = {
   },
 
   ar: {
+    "truckTrips": "رحلات الشاحنة [عدد/سنة]",
     "feedWaterPump": "مضخة مياه التغذية",
     "feedWaterPumpPower": "قدرة مضخة مياه التغذية [كيلوواط]",
     "feedWaterPumpFlow": "تدفق مضخة مياه التغذية [م³/س]",

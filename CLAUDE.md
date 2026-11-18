@@ -605,6 +605,9 @@ Doit être l'**inverse cohérent** de `option_T` :
 - **Tour de refroidissement** : le Design écrit l'eau pulvérisée (`Q_eau_kg_h` de l'onglet Gaz) dans le type d'eau choisi et la pompe (débit × pression de pulvérisation / rendement) ; plus de valeurs fictives.
 - **Écriture OPEX depuis un Design** (tour, électrofiltre, chaudière, quench) : `t` en `useCallback`, charge utile en `useMemo`, garde `lastSync` (JSON) avant `setInnerData` — sinon boucle de rendu. Écrire **toutes** les clés OPEX standard (0 pour celles non consommées) pour effacer d'anciennes valeurs, sans arrondi.
 
+- **Transport des résidus** : `A_Transverse_fonction/transport_residus.js` (`coutTransportResidus_h`, `rotationsCamion_an`) — coût = rotations (t/h ÷ charge utile 15/20/25 t) × distance × 2 (aller-retour) × prix €/km. Utilisé par les Design BHF, électrofiltre, chaudière, four rotatif, réacteur. Ne plus écrire « prix × distance » en €/h.
+- **CO2 de l'air comprimé** : pas de ligne CO2 « air comprimé » dans l'onglet OPEX ; le CO2 vient de la ligne d'électricité du compresseur écrite par le Design (clé `row3` du tableau CO2 laissée libre).
+
 ### Points ouverts
 
 Les anomalies relevées mais non corrigées (GF, RK) sont listées dans `a_faire.md` à la racine du dépôt. Cocher / retirer une ligne une fois corrigée.

@@ -128,7 +128,6 @@ const lirePrix = () => {
     elec: lireNombre(o.purchaseElectricityPrice),       // devise/MWh
     ratioElec: lireNombre(o.ratioElec),                  // kg CO2/MWh
     air: lireNombre(o.airConsumptionPrice),              // devise/1000 Nm³
-    powerRatio: lireNombre(o.powerRatio),                // kWh/Nm³
     eau: o.waterPrices || {},
     reactifs: o.reagentsTypes || {},
     gaz: o.gasTypes || {},
@@ -221,10 +220,12 @@ const lignesCoutCo2 = (d, details, prix, t) => {
     { key: 'row6', label: t('transportReagents'), value: lireNombre(d.cout_transport_reactifs) },
     { key: 'row7', label: t('transportResiduesAsh'), value: residusCout },
   ];
+  // CO2 de l'air comprimé : seul celui de l'électricité du compresseur est compté
+  // (ligne d'électricité des onglets Design) ; plus de ligne « air comprimé »
+  // (doublon). Clé row3 laissée libre pour garder les clés row4/row5 saisies.
   const co2 = [
     { key: 'row1', label: t('consumptionElec'), value: somme(details.elec, 'co2kg') },
     { key: 'row2', label: t('consumptionGasFuel'), value: somme(details.energie, 'co2kg') },
-    { key: 'row3', label: t('consumptionCompressedAir'), value: (air * prix.powerRatio * prix.ratioElec) / 1000 },
     { key: 'row4', label: t('transportReagents'), value: somme(details.reactifs, 'co2kg') },
     { key: 'row5', label: t('transportResiduesAsh'), value: residusCo2 },
   ];

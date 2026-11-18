@@ -7,6 +7,7 @@ import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './BHF_traduction';
 
 import { fmt } from '../../A_Transverse_fonction/formatNumber';
+import { coutTransportResidus_h, rotationsCamion_an } from '../../A_Transverse_fonction/transport_residus';
 
 // ─── Composants UI au niveau module (références stables → pas de perte de focus) ───
 const Section = ({ title, results, children, t }) => (
@@ -159,15 +160,17 @@ const BHFDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
   }
 
   let CO2_transport_total = CO2_transport_kg_km * distance_km * (cendres_kg_h / 1000);
-  let cout_transport_total = cendres_kg_h === 0 ? 0 : cout_transport_euro_km * distance_km;
+  // Coût : rotations de camion (débit / charge utile) × aller-retour × distance × prix €/km
+  let cout_transport_total = coutTransportResidus_h(cendres_kg_h, distance_km, cout_transport_euro_km, type_camion);
 
   const elementsGeneric = [
     { text: t('Surface des manches [m²]'), value: fmt(surfaceManches, 2) },
     { text: t('Consommation air comprimé [Nm3/h]'), value: fmt(conso_air_co_Nm3_h, 2) },
     { text: t('Pression air comprimé [Bar]'), value: fmt(pression_air_comprime_bar, 1) },
     { text: t('Residus du BHF [kg/h]'), value: fmt(cendres_kg_h, 2) },
-    { text: t('CO2 transport total [kg]'), value: fmt(CO2_transport_total, 2) },
-    { text: t('Coût transport total [€]'), value: fmt(cout_transport_total, 2) },
+    { text: t('CO2 transport [kg/h]'), value: fmt(CO2_transport_total, 2) },
+    { text: t('Coût transport [€/h]'), value: fmt(cout_transport_total, 2) },
+    { text: t('Rotations de camion [nb/an]'), value: fmt(rotationsCamion_an(cendres_kg_h, type_camion), 1) },
   ];
 
   const handleParametresChange = (name, value) => {
@@ -291,8 +294,9 @@ const BHFDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
         { text: t('Residus du BHF [kg/h]'), value: fmt(cendres_kg_h, 2) },
         { text: t('Type de camion'), value: type_camion },
         { text: t('Distance [km]'), value: fmt(distance_km, 0) },
-        { text: t('CO2 transport total [kg]'), value: fmt(CO2_transport_total, 2) },
-        { text: t('Coût transport total [€]'), value: fmt(cout_transport_total, 2) },
+        { text: t('CO2 transport [kg/h]'), value: fmt(CO2_transport_total, 2) },
+        { text: t('Coût transport [€/h]'), value: fmt(cout_transport_total, 2) },
+    { text: t('Rotations de camion [nb/an]'), value: fmt(rotationsCamion_an(cendres_kg_h, type_camion), 1) },
       ]} t={t}>
         <ParameterInput translationKey="Type de camion" value={type_camion}
           onChange={(v) => handleParametresChange('Type de camion', v)}
