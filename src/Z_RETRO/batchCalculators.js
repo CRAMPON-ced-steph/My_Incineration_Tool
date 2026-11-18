@@ -26,6 +26,7 @@ import { performCalculation_WHB_option_T_Qair } from './WHB/WHB_calculation_opti
 import { performCalculation_WHB_option_T_O2 } from './WHB/WHB_calculation_option2';
 import { performCalculation_WHB_option_Qeau_Qair } from './WHB/WHB_calculation_option3';
 import { performCalculation_WHB_option_Qeau_O2 } from './WHB/WHB_calculation_option4';
+import { ajouterPressionWHB, PDC_WHB_DEFAUT_MMCE } from './WHB/WHB_pression';
 import { performCalculation_IACT } from './IACT/IACT_calculations';
 import { performCalculation_WATERCOOLER, lireParamsRetro_WATERCOOLER } from './WATERCOOLER/WATERCOOLER_calculations';
 import { performCalculation_AIRCOOLER, lireParamsRetro_AIRCOOLER } from './AIRCOOLER/AIRCOOLER_calculations';
@@ -257,13 +258,16 @@ export const batchCalcMap = {
 
     const params = [...base, lastTemp, lastAir];
 
+    let result;
     if (bilanType === 'TEMPERATURE_BALANCE' && bilanTypeAir === 'PARASITIC_AIR_FLOW')
-      return performCalculation_WHB_option_T_Qair(...params);
-    if (bilanType === 'TEMPERATURE_BALANCE' && bilanTypeAir === 'O2_MEASUREMENT')
-      return performCalculation_WHB_option_T_O2(...params);
-    if (bilanType === 'WATER_FLOW_BALANCE' && bilanTypeAir === 'PARASITIC_AIR_FLOW')
-      return performCalculation_WHB_option_Qeau_Qair(...params);
-    return performCalculation_WHB_option_Qeau_O2(...params);
+      result = performCalculation_WHB_option_T_Qair(...params);
+    else if (bilanType === 'TEMPERATURE_BALANCE' && bilanTypeAir === 'O2_MEASUREMENT')
+      result = performCalculation_WHB_option_T_O2(...params);
+    else if (bilanType === 'WATER_FLOW_BALANCE' && bilanTypeAir === 'PARASITIC_AIR_FLOW')
+      result = performCalculation_WHB_option_Qeau_Qair(...params);
+    else result = performCalculation_WHB_option_Qeau_O2(...params);
+    // Pression amont = pression aval + perte de charge côté fumées
+    return ajouterPressionWHB(result, nodeData, f(`PDC_mmCE_WHB_${nodeId}`, PDC_WHB_DEFAUT_MMCE));
   },
 
   'IACT': (nodeData, nodeId) => {

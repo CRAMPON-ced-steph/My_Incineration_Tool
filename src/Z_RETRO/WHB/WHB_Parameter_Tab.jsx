@@ -3,6 +3,7 @@ import { performCalculation_WHB_option_T_Qair } from './WHB_calculation_option1'
 import { performCalculation_WHB_option_T_O2 } from './WHB_calculation_option2';
 import { performCalculation_WHB_option_Qeau_Qair } from './WHB_calculation_option3';
 import { performCalculation_WHB_option_Qeau_O2 } from './WHB_calculation_option4';
+import { ajouterPressionWHB, PDC_WHB_DEFAUT_MMCE } from './WHB_pression';
 
 import InputField from '../../C_Components/input_retro';
 import ClearButton from '../../C_Components/Clear_Button';
@@ -46,6 +47,7 @@ const getStorageKeys = (nodeId) => ({
   T_AMONT_WHB: `T_amont_WHB_C_${nodeId}`,
   Q_EAU_ALIMENTATION: `Q_eau_alimentation_WHB_${nodeId}`,
   O2_MESURE: `O2_mesure_WHB_${nodeId}`,
+  PDC: `PDC_mmCE_WHB_${nodeId}`,
   BILAN_TYPE_VAPEUR: `bilanTypeVapeur_WHB_${nodeId}`,
   BILAN_TYPE: `WHB_bilanType_${nodeId}`,
   BILAN_TYPE_AIR: `bilanTypeAir_WHB_${nodeId}`,
@@ -65,6 +67,7 @@ const DEFAULT_VALUES = {
   T_amont_WHB_C: '950',
   Q_eau_alimentation: '0',
   O2_mesure: '0',
+  PDC_mmCE: PDC_WHB_DEFAUT_MMCE,
   bilanTypeVapeur: STEAM_TYPES.SATURATED,
   bilanType: BALANCE_TYPES.TEMPERATURE,
   bilanTypeAir: AIR_BALANCE_TYPES.PARASITIC_AIR
@@ -105,6 +108,10 @@ const WHB_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLangua
   );
   const [O2_mesure, setO2_mesure] = useState(() =>
     localStorage.getItem(STORAGE_KEYS.O2_MESURE) || nodeData?.result?.dataFlow?.O2_dry_pourcent || DEFAULT_VALUES.O2_mesure
+  );
+  // Perte de charge côté fumées : pression amont = pression aval + PDC (WHB_pression.js)
+  const [PDC_mmCE, setPDC_mmCE] = useState(() =>
+    localStorage.getItem(STORAGE_KEYS.PDC) || DEFAULT_VALUES.PDC_mmCE
   );
 
   // États pour les modes de calcul
@@ -173,6 +180,7 @@ const WHB_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLangua
           [STORAGE_KEYS.T_AMONT_WHB]: T_amont_WHB_C,
           [STORAGE_KEYS.Q_EAU_ALIMENTATION]: Q_eau_alimentation,
           [STORAGE_KEYS.O2_MESURE]: O2_mesure,
+          [STORAGE_KEYS.PDC]: PDC_mmCE,
           [STORAGE_KEYS.BILAN_TYPE_VAPEUR]: bilanTypeVapeur,
           [STORAGE_KEYS.BILAN_TYPE]: bilanType,
           [STORAGE_KEYS.BILAN_TYPE_AIR]: bilanTypeAir
@@ -190,7 +198,7 @@ const WHB_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLangua
   }, [
     T_eau_alimentation_C, Q_air_parasite_Nm3_h, Q_eau_purge_pourcent, T_air_exterieur_C,
     P_th_pourcent, P_vapeur_bar, T_vapeur, T_vapeur_surchauffee_C, T_amont_WHB_C,
-    Q_eau_alimentation, O2_mesure, bilanTypeVapeur, bilanType, bilanTypeAir
+    Q_eau_alimentation, O2_mesure, PDC_mmCE, bilanTypeVapeur, bilanType, bilanTypeAir
   ]);
 
   // Sauvegarde des résultats
@@ -217,7 +225,8 @@ const WHB_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLangua
       T_vapeur_surchauffee_C: parseFloat(T_vapeur_surchauffee_C),
       T_amont_WHB_C: parseFloat(T_amont_WHB_C),
       Q_eau_alimentation: parseFloat(Q_eau_alimentation),
-      O2_mesure: parseFloat(O2_mesure)
+      O2_mesure: parseFloat(O2_mesure),
+      PDC_mmCE: parseFloat(PDC_mmCE)
     };
 
     // Validation des valeurs numériques
@@ -237,12 +246,15 @@ const WHB_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLangua
     if (inputs.O2_mesure < 0 || inputs.O2_mesure > 21) {
       throw new Error(`${t.InvalidInput}: O2 percentage must be between 0-21%`);
     }
+    if (inputs.PDC_mmCE < 0) {
+      throw new Error(`${t.InvalidInput}: ${t.PDC_fumees} < 0`);
+    }
 
     return inputs;
   }, [
     T_eau_alimentation_C, Q_air_parasite_Nm3_h, Q_eau_purge_pourcent, T_air_exterieur_C,
     P_th_pourcent, P_vapeur_bar, T_vapeur, T_vapeur_surchauffee_C, T_amont_WHB_C,
-    Q_eau_alimentation, O2_mesure, t
+    Q_eau_alimentation, O2_mesure, PDC_mmCE, t
   ]);
 
   // Sélection de la fonction de calcul appropriée
@@ -305,11 +317,11 @@ const WHB_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLangua
       const calculationFunction = getCalculationFunction();
       const params = getCalculationParams(validatedInputs);
       
-      const result = calculationFunction(...params);
+      const result = ajouterPressionWHB(calculationFunction(...params), nodeData, validatedInputs.PDC_mmCE);
       
       setCalculationResult_WHB(result);
       hasCalculatedOnce.current = true;
-      onSendData({ result, inputData: { T_eau_alimentation_C, Q_air_parasite_Nm3_h, Q_eau_purge_pourcent, T_air_exterieur_C, P_th_pourcent, P_vapeur_bar, T_vapeur_surchauffee_C, T_amont_WHB_C, Q_eau_alimentation, O2_mesure, bilanTypeVapeur, bilanType, bilanTypeAir } });
+      onSendData({ result, inputData: { T_eau_alimentation_C, Q_air_parasite_Nm3_h, Q_eau_purge_pourcent, T_air_exterieur_C, P_th_pourcent, P_vapeur_bar, T_vapeur_surchauffee_C, T_amont_WHB_C, Q_eau_alimentation, O2_mesure, PDC_mmCE, bilanTypeVapeur, bilanType, bilanTypeAir } });
 
     } catch (error) {
       console.error('Erreur lors du calcul:', error);
@@ -363,6 +375,7 @@ const WHB_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLangua
       setT_amont_WHB_C(DEFAULT_VALUES.T_amont_WHB_C);
       setQ_eau_alimentation(DEFAULT_VALUES.Q_eau_alimentation);
       setO2_mesure(DEFAULT_VALUES.O2_mesure);
+      setPDC_mmCE(DEFAULT_VALUES.PDC_mmCE);
       setBilanTypeVapeur(DEFAULT_VALUES.bilanTypeVapeur);
       setBilanType(DEFAULT_VALUES.bilanType);
       setBilanTypeAir(DEFAULT_VALUES.bilanTypeAir);
@@ -447,6 +460,14 @@ const WHB_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLangua
           unit={`[${t.percent}]`} 
           value={P_th_pourcent} 
           onChange={createInputHandler(setP_th_pourcent, DEFAULT_VALUES.P_th_pourcent)}
+          disabled={isCalculating}
+        />
+        
+        <InputField 
+          label={t.PDC_fumees} 
+          unit="[mmCE]" 
+          value={PDC_mmCE} 
+          onChange={createInputHandler(setPDC_mmCE, DEFAULT_VALUES.PDC_mmCE)}
           disabled={isCalculating}
         />
         
@@ -588,7 +609,7 @@ const WHB_Parameter_Tab = ({ nodeData, title, onSendData, onClose, currentLangua
       {showReport && calculationResult_WHB && (
         <WHB_Retro_Rapport
           calculationResult={calculationResult_WHB}
-          inputParams={{ T_eau_alimentation_C, Q_air_parasite_Nm3_h, Q_eau_purge_pourcent, T_air_exterieur_C, P_th_pourcent, P_vapeur_bar, T_vapeur_surchauffee_C, T_amont_WHB_C, Q_eau_alimentation, O2_mesure, bilanTypeVapeur, bilanType, bilanTypeAir }}
+          inputParams={{ T_eau_alimentation_C, Q_air_parasite_Nm3_h, Q_eau_purge_pourcent, T_air_exterieur_C, P_th_pourcent, P_vapeur_bar, T_vapeur_surchauffee_C, T_amont_WHB_C, Q_eau_alimentation, O2_mesure, PDC_mmCE, bilanTypeVapeur, bilanType, bilanTypeAir }}
           onClose={() => setShowReport(false)}
         />
       )}

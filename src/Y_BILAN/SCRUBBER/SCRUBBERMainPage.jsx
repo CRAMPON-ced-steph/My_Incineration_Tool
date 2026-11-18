@@ -9,6 +9,7 @@ import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './SCRUBBER_traduction';
 import { tlTranslations } from './TourLavage_traduction';
 import '../../index.css';
+import { useEnvoiAuto } from '../../C_Components/envoiAuto';
 
 const SCRUBBERMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLanguage = 'fr', nodeId }) => {
   const languageCode = getLanguageCode(currentLanguage);
@@ -60,6 +61,8 @@ const SCRUBBERMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, curr
         PollutantOutput: innerData['Poutput'] || innerData['PollutantOutput'] || {},
         ResidusOutput: innerData['Residus'] || innerData['ResidusOutput'] || {},
         MasseDechet: innerData['masse'],
+        // Pression de sortie = P entrée − perte de charge de la tour (onglet Tour de lavage)
+        P_OUT: innerData['P_out_mmCE'] ?? innerData['P_OUT'],
         // Fumées épurées par la tour de lavage (vers le node aval)
         FG_scrubber_out_kg_h: innerData['FG_scrubber_out_kg_h'],
         T_scrubber_out: innerData['T_scrubber_out'],
@@ -72,6 +75,9 @@ const SCRUBBERMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, curr
       }
     });
   };
+
+  // Calc. All du mode Bilan : envoi déclenché sans ouvrir le nœud (C_Components/envoiAuto.js)
+  useEnvoiAuto(sendAllData);
 
   return (
     <div className="cadre_pour_onglet_principal">

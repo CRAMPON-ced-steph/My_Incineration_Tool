@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import SEP12FluegasSep from './SEP12_fluegas_sep';
 import { getLanguageCode } from '../../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './SEP12_traduction';
+import { useEnvoiAuto } from '../../../C_Components/envoiAuto';
 
 const SEP12MainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLanguage = 'fr', nodeId }) => {
 
@@ -57,6 +58,9 @@ const SEP12MainPage = ({ nodeData, title, onSendData, onClose, onGoBack, current
       onGoBack(null);
     }
   };
+
+  // Calc. All du mode Bilan : envoi déclenché sans ouvrir le nœud (C_Components/envoiAuto.js)
+  useEnvoiAuto(sendAllData);
 
   return (
     <div className="cadre_pour_onglet_principal">

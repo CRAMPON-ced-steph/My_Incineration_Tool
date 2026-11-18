@@ -6,6 +6,7 @@ import IACT_Report from './IACT_Report';
 import '../../index.css';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './IACT_traduction';
+import { useEnvoiAuto } from '../../C_Components/envoiAuto';
 
 const IACTMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLanguage = 'fr', nodeId }) => {
   const languageCode = getLanguageCode(currentLanguage);
@@ -62,6 +63,9 @@ const IACTMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentL
       }
     });
   };
+
+  // Calc. All du mode Bilan : envoi déclenché sans ouvrir le nœud (C_Components/envoiAuto.js)
+  useEnvoiAuto(sendAllData);
 
   return (
     <div className="cadre_pour_onglet_principal">

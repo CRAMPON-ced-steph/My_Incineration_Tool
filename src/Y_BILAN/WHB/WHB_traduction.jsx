@@ -1,6 +1,8 @@
 // WHB_traduction.js
 export const translations = {
   fr: {
+    "whbGasPressureDrop": "Perte de charge côté fumées [mmCE]",
+    "pinMmce": "Pression entrée [mmCE]",
     "truckTrips": "Rotations de camion [nb/an]",
     "feedWaterPump": "Pompe alimentaire",
     "feedWaterPumpPower": "Puissance pompe alimentaire [kW]",
@@ -250,6 +252,8 @@ export const translations = {
   },
 
   en: {
+    "whbGasPressureDrop": "Flue-gas side pressure drop [mmCE]",
+    "pinMmce": "Inlet Pressure [mmCE]",
     "truckTrips": "Truck trips [no./yr]",
     "feedWaterPump": "Feedwater pump",
     "feedWaterPumpPower": "Feedwater pump power [kW]",
@@ -501,6 +505,8 @@ export const translations = {
 
 
   de: {
+    "whbGasPressureDrop": "Rauchgasseitiger Druckverlust [mmCE]",
+    "pinMmce": "Eintrittsdruck [mmCE]",
     "truckTrips": "Lkw-Fahrten [Anz./Jahr]",
     "feedWaterPump": "Speisewasserpumpe",
     "feedWaterPumpPower": "Leistung Speisewasserpumpe [kW]",
@@ -753,6 +759,8 @@ export const translations = {
 
 
   es: {
+    "whbGasPressureDrop": "Pérdida de carga lado humos [mmCE]",
+    "pinMmce": "Presión de entrada [mmCE]",
     "truckTrips": "Viajes de camión [n.º/año]",
     "feedWaterPump": "Bomba de alimentación",
     "feedWaterPumpPower": "Potencia bomba de alimentación [kW]",
@@ -1002,6 +1010,8 @@ export const translations = {
   },
 
   it: {
+    "whbGasPressureDrop": "Perdita di carico lato fumi [mmCE]",
+    "pinMmce": "Pressione di ingresso [mmCE]",
     "truckTrips": "Viaggi del camion [n./anno]",
     "feedWaterPump": "Pompa di alimento",
     "feedWaterPumpPower": "Potenza pompa di alimento [kW]",
@@ -1252,6 +1262,8 @@ export const translations = {
 
 
   pt: {
+    "whbGasPressureDrop": "Perda de carga do lado dos fumos [mmCE]",
+    "pinMmce": "Pressão de entrada [mmCE]",
     "truckTrips": "Viagens de camião [n.º/ano]",
     "feedWaterPump": "Bomba de alimentação",
     "feedWaterPumpPower": "Potência da bomba de alimentação [kW]",
@@ -1502,6 +1514,8 @@ export const translations = {
 
 
   ru: {
+    "whbGasPressureDrop": "Потеря давления по газовой стороне [mmCE]",
+    "pinMmce": "Давление на входе [mmCE]",
     "truckTrips": "Рейсы грузовика [шт./год]",
     "feedWaterPump": "Питательный насос",
     "feedWaterPumpPower": "Мощность питательного насоса [кВт]",
@@ -1751,6 +1765,8 @@ export const translations = {
   },
 
   zh: {
+    "whbGasPressureDrop": "烟气侧压降 [mmCE]",
+    "pinMmce": "入口压力 [mmCE]",
     "truckTrips": "卡车往返次数 [次/年]",
     "feedWaterPump": "给水泵",
     "feedWaterPumpPower": "给水泵功率 [kW]",
@@ -1998,6 +2014,8 @@ export const translations = {
   },
 
   ja: {
+    "whbGasPressureDrop": "排ガス側圧力損失 [mmCE]",
+    "pinMmce": "入口圧力 [mmCE]",
     "truckTrips": "トラック往復回数 [回/年]",
     "feedWaterPump": "給水ポンプ",
     "feedWaterPumpPower": "給水ポンプ動力 [kW]",
@@ -2245,6 +2263,8 @@ export const translations = {
   },
 
   ar: {
+    "whbGasPressureDrop": "فقد الضغط في جانب غازات المداخن [mmCE]",
+    "pinMmce": "ضغط الدخول [mmCE]",
     "truckTrips": "رحلات الشاحنة [عدد/سنة]",
     "feedWaterPump": "مضخة مياه التغذية",
     "feedWaterPumpPower": "قدرة مضخة مياه التغذية [كيلوواط]",

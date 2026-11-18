@@ -11,6 +11,7 @@ import '../../index.css';
 
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './COOLINGTOWER_traduction';
+import { useEnvoiAuto } from '../../C_Components/envoiAuto';
 
 
 
@@ -63,6 +64,9 @@ const COOLINGTOWERMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, 
 
 
 //  const TEST = nodeData.innerData.FG_CO2_kg_h;
+  // Calc. All du mode Bilan : envoi déclenché sans ouvrir le nœud (C_Components/envoiAuto.js)
+  useEnvoiAuto(sendAllData);
+
   return (
 <div className="cadre_pour_onglet_principal">
       <div

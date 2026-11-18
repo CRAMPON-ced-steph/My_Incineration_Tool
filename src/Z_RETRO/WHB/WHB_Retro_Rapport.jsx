@@ -62,6 +62,10 @@ const WHB_Retro_Rapport = ({ calculationResult, inputParams, onClose }) => {
                   <KV label="T amont WHB" value={fmt(p.T_amont_WHB_C, 1)} unit="°C" />
                   <KV label="T air extérieur" value={fmt(p.T_air_exterieur_C, 1)} unit="°C" />
                   <KV label="Pertes thermiques" value={fmt(p.P_th_pourcent, 1)} unit="%" />
+                  <KV label="Perte de charge côté fumées" value={fmt(p.PDC_mmCE ?? calculationResult?.data_pression_WHB?.PDC_mmCE, 0)} unit="mmCE" />
+                  {calculationResult?.data_pression_WHB && (
+                    <KV label="Pression amont / aval" value={`${fmt(calculationResult.data_pression_WHB.P_amont_mmCE, 0)} / ${fmt(calculationResult.data_pression_WHB.P_aval_mmCE, 0)}`} unit="mmCE" />
+                  )}
                 </SubSection>
               </div>
             </Section>

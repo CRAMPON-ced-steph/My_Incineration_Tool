@@ -509,6 +509,8 @@ const TourLavageCalculator = ({ innerData = {}, setInnerData, currentLanguage = 
       sousRef: false, tempLiqRef: 20, tempSortieCond: 40,
       epaisDeves: 444,
       modeOrigine: false,
+      // Perte de charge côté fumées : calculée (garnissage + dévésiculeur) ou imposée
+      modePDC: 'calculee', pdcImposee: 100,
     };
   }, [innerData]);
 
@@ -545,6 +547,12 @@ const TourLavageCalculator = ({ innerData = {}, setInnerData, currentLanguage = 
 
   const r = useMemo(() => calculTour(inp), [inp]);
 
+  // ─── Pression : P sortie = P entrée (P_OUT du nœud amont) − perte de charge de la tour ───
+  const pdcCalculee = r ? (r.dPGarn || 0) + (r.dPDeves || 0) : 0;
+  const pdcTour = inp.modePDC === 'imposee' ? (parseFloat(inp.pdcImposee) || 0) : pdcCalculee;
+  const pressionEntree = parseFloat(innerData?.P_OUT) || 0;
+  const pressionSortie = pressionEntree - pdcTour;
+
   // ─── État de la liaison avec le quench amont ───
   const liaisonQuench = useMemo(() => {
     const Q = innerData?.FG_quench_out_kg_h;
@@ -579,6 +587,10 @@ const TourLavageCalculator = ({ innerData = {}, setInnerData, currentLanguage = 
         CO2: r.masAbs.CO2, H2O: r.masH2Os, O2: r.masAbs.O2, N2: r.masAbs.N2,
         SO2: r.masSO2s, HCl: r.masHCls,
       },
+      // Pression (envoyée à l'aval en P_OUT par SCRUBBERMainPage)
+      Pin_mmCE: pressionEntree,
+      PDC_SCRUBBER_mmCE: pdcTour,
+      P_out_mmCE: pressionSortie,
       // Résultats complets pour le rapport
       TL: r,
       TL_inputs: inp,
@@ -587,7 +599,7 @@ const TourLavageCalculator = ({ innerData = {}, setInnerData, currentLanguage = 
     if (json === lastSync.current) return;
     lastSync.current = json;
     setInnerData((prev) => ({ ...prev, ...payload }));
-  }, [r, inp, setInnerData]);
+  }, [r, inp, pressionEntree, pdcTour, pressionSortie, setInnerData]);
 
   const twoCol = { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, alignItems: 'start' };
 
@@ -732,6 +744,23 @@ const TourLavageCalculator = ({ innerData = {}, setInnerData, currentLanguage = 
                 <OutField label="TL_demister_dp" value={r.dPDeves} unit="mmCE" t={t} />
               </div>
             )}
+          </TLSection>
+
+          <TLSection title={t('TL_section_pressure')}>
+            <RadioRowField
+              label="TL_dp_mode"
+              options={[{ v: 'calculee', l: 'TL_dp_calculated' }, { v: 'imposee', l: 'TL_dp_imposed' }]}
+              value={inp.modePDC ?? 'calculee'}
+              onChange={set('modePDC')}
+              t={t}
+            />
+            <InField label="TL_dp_imposed_value" unit="mmCE" step="1" disabled={inp.modePDC !== 'imposee'} value={inp.pdcImposee ?? 100} onChange={setNum('pdcImposee')} t={t} />
+            <div style={{ marginTop: 8, paddingTop: 8, borderTop: '1px solid #ddd' }}>
+              <OutField label="TL_dp_computed" value={pdcCalculee} unit="mmCE" disabled={!r} t={t} />
+              <OutField label="TL_inlet_pressure" value={pressionEntree} unit="mmCE" t={t} />
+              <OutField label="TL_dp_used" value={pdcTour} unit="mmCE" t={t} />
+              <OutField label="TL_outlet_pressure" value={pressionSortie} unit="mmCE" t={t} />
+            </div>
           </TLSection>
         </div>
 

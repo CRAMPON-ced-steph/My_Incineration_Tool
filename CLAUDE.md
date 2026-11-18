@@ -82,7 +82,8 @@ Ajouter :
 
 #### 5. Enregistrer dans Main_FLOW.jsx
 - Ajouter `<NEW_EQ>_Parameter_Tab` et `<NEW_EQ>MainPage` dans l'import de RetroAndBilanComponents
-- Ajouter dans `componentMap` : `...(mode === 'Bilan' ? { <NEW_EQ>: <NEW_EQ>MainPage } : { <NEW_EQ>: <NEW_EQ>_Parameter_Tab })`
+- Ajouter `<NEW_EQ>: <NEW_EQ>MainPage` dans `COMPOSANTS_BILAN` et `<NEW_EQ>: <NEW_EQ>_Parameter_Tab` dans `COMPOSANTS_RETRO` (objets au niveau module, avant `FURNACE_LABELS`)
+- Dans la MainPage Bilan, garder la fonction d'envoi nommée `sendAllData` et appeler `useEnvoiAuto(sendAllData)` (import depuis `C_Components/envoiAuto`) juste avant le `return (` du composant : sans cela, le Calc. All du mode Bilan ignore le nœud
 
 #### 6. Ajouter dans SidebarV1.jsx
 Dans la section cible (ex. `Energy_recovery`), ajouter :
@@ -331,7 +332,7 @@ La règle `react/prop-types` est désactivée dans `eslint.config.js` (le projet
 
 ### Overview
 
-The **⚙ Calc. All** button (Retro mode only, `Main_FLOW.jsx`) triggers an automated sequential recalculation of every batch-calculable node on the canvas, in topological order from STACK to furnace. It replaces the previous approach of mounting hidden React components.
+The **⚙ Calc. All** button (`Main_FLOW.jsx`; Retro described here, Bilan in « Calc. All — mode Bilan » below) triggers an automated sequential recalculation of every batch-calculable node on the canvas, in topological order from STACK to furnace. It replaces the previous approach of mounting hidden React components.
 
 ### Files involved
 
@@ -663,4 +664,20 @@ Les anomalies relevées mais non corrigées (GF, RK) sont listées dans `a_faire
   - Dans les dépendances d'effet, `t` doit être stable (`useCallback` sur `languageCode`) et les fonctions passées en `setInnerData` aussi (pas de flèche en ligne) ; sinon boucle de rendu, car l'onglet reste monté. Corrigé : Design AIRINJECTION, WATER_INJECTION, QUENCHsimple, CYCLONE, `Laveur_basique` ; gardes `lastSync` (JSON) dans les Design REACTOR et BHF ; FB / GF : `setInnerDataForCalcOpex` stable pour les onglets Polluants et OPEX.
   - États initiaux du type affiché : onglet Combustion RK, `useState(0)` (et non `useState(rows2)`, qui faisait planter l'onglet Polluants : « Objects are not valid as a React child »).
 - **Pression d'entrée** : les équipements aval lisent leur pression d'entrée dans `P_OUT`. FB n'envoyait que `P_out_mmCE` → l'aval repartait de 0 mmCE. FB envoie maintenant aussi `P_OUT` (= `P_sortie_HX_mmCE`).
+
+### Calc. All — mode Bilan (2026-11-18)
+
+- Le bouton **⚙ Calc. All** est aussi actif en Bilan (`handleCalculateAllBilan`) : chaque nœud est calculé sans être ouvert, du four vers la cheminée (`getTopologicalOrder`), puis envoie ses résultats comme « Retour au schéma ».
+- Pas de fonctions de calcul pures en Bilan (les calculs sont dans les onglets) : la MainPage du nœud est montée **hors écran** par `C_Components/CalculBilanCache.jsx` (tous ses onglets de calcul sont montés grâce à `ContenuOnglets`), avec l'entrée reçue de l'amont (`donneesAvecEntree`). Quand plus rien ne bouge (ni rendu de la MainPage ni changement du DOM pendant 300 ms, 15 s au plus), l'envoi enregistré par la MainPage via `useEnvoiAuto(sendAllData)` (`C_Components/envoiAuto.js`, contexte absent hors Calc. All) est déclenché ; le résultat capturé est appliqué par `appliquerEnvoi` (`C_Components/entreeNoeud.js`), la même fonction que `onSendData` (« Retour au schéma »). Une erreur dans un nœud (`GardeErreur`) ou une page qui ne s'enregistre pas → nœud ignoré, compté dans le bandeau « ⚠ n/N nœuds calculés ».
+- Le panneau du nœud ouvert est fermé au lancement (mêmes clés localStorage). Les composants par type de nœud sont dans `COMPOSANTS_BILAN` / `COMPOSANTS_RETRO` (niveau module de `Main_FLOW.jsx`).
+- Vérifié (jsdom, chaîne FB → WHB → électrofiltre → quench → DeNOx → tour de lavage → ventilateur → cheminée) : résultats de tous les nœuds identiques à l'ouverture manuelle de chaque nœud suivie de « Retour au schéma » ; ≈ 0,3 à 1,5 s par nœud.
+- Séparateur 1 → 2 : comme l'envoi manuel, seul le premier voisin aval reçoit les données.
+
+### Pertes de charge côté fumées — DeNOx, tour de lavage, chaudière (2026-11-18)
+
+Règle commune en Bilan : P sortie = P entrée (`P_OUT` envoyé par l'amont) − perte de charge ; écrit dans `innerData` : `Pin_mmCE`, `PDC_<EQ>_mmCE`, `P_out_mmCE` (envoyé à l'aval en `P_OUT`), affiché dans l'onglet et dans le rapport.
+- **DeNOx** (`3_DENOX_Design1_ML.jsx`, section « Pression aéraulique ») : perte de charge **calculée** selon la technologie (estimation existante en Pa : plaques 800 Pa + 100 Pa par couche supplémentaire, nid d'abeilles 700 Pa, lit fixe 1 500 + 300 × hauteur) ou **imposée** (`PDC_DENOX_mode`, `PDC_DENOX_impose_mmCE`, 100 mmCE par défaut). La même valeur sert au ventilateur (OPEX). Avant : `30 − PDC FAM` (pression d'entrée ignorée) ; le champ « PDC » de la section FAM a été retiré.
+- **Tour de lavage** (`4_SCRUBBER_TourLavage.jsx`, section « Pression aéraulique ») : **calculée** = garnissage + dévésiculeur (formules Pyrofluid déjà présentes, `dPGarn` + `dPDeves`) ou **imposée** (`inp.modePDC`, `inp.pdcImposee`, 100 mmCE). `SCRUBBERMainPage` envoie `P_OUT`. Une tour noyée (taux d'engorgement > 70 %, diamètre retenu trop petit) donne une perte de charge garnissage très élevée : dimensionner le diamètre.
+- **Chaudière** (`4_WHB_Design_ML.jsx`) : champ existant, maintenant **100 mmCE par défaut** (avant 0) et conservé dans `innerData.PDC_WHB_mmCE` (avant : relu dans `PDC_mmCE`, jamais écrit → remis à 0 à chaque ouverture).
+- **Chaudière, mode Retro** : champ « Perte de charge côté fumées » (`PDC_mmCE_WHB_<nodeId>`, 100 mmCE) ; `Z_RETRO/WHB/WHB_pression.js` (`ajouterPressionWHB`) ajoute `dataFlow.P_mmCE` = P aval + PDC (avant : `P_mmCE` absent du `dataFlow` de la chaudière, la chaîne des pressions Retro s'arrêtait là) et `data_pression_WHB`, appliqué par `WHB_Parameter_Tab` et par `batchCalculators.js`. DeNOx et tour de lavage avaient déjà une PDC en Retro.
 

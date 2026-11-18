@@ -13,6 +13,7 @@ import { translations } from './REACTOR_traduction';
 import '../../index.css';
 
 import '../../index.css';
+import { useEnvoiAuto } from '../../C_Components/envoiAuto';
 
 const REACTORMainPage = ({ nodeData, title, onSendData, onClose, onGoBack,  currentLanguage = 'fr', nodeId }) => {
 
@@ -70,6 +71,9 @@ const REACTORMainPage = ({ nodeData, title, onSendData, onClose, onGoBack,  curr
       }
     })
   };
+
+  // Calc. All du mode Bilan : envoi déclenché sans ouvrir le nœud (C_Components/envoiAuto.js)
+  useEnvoiAuto(sendAllData);
 
   return (
     <div className="cadre_pour_onglet_principal">

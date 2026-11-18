@@ -204,7 +204,7 @@ Bilan FB + onglet HX, P freeboard imposée à −3 mmCE (valeur du rapport), ren
 
 ## Chaîne des pressions (relevé le 18/11/2026, non corrigé)
 - [x] **Bilan, pression de sortie écrite seulement par l'onglet Design** : ÉLECTROFILTRE envoie `P_OUT = innerData.P_out_mmCE`, calculé uniquement dans l'onglet Design → `undefined` si l'onglet n'a pas été ouvert ; QUENCH envoie `P_out_mmCE || 0` → pression remise à 0. Les nœuds aval repartent alors de 0 mmCE. À vérifier sur les autres équipements dont la perte de charge est dans le Design. — **Corrigé le 18/11/2026** : tous les onglets de calcul sont calculés à l'ouverture du nœud (`ContenuOnglets`), et FB envoie `P_OUT` (l'aval repartait de 0 après le four).
-- [ ] **DENOX, pression de sortie** : `pressionSortie = 30 − PDC` (`3_DENOX_Design1_ML.jsx`) ignore la pression d'entrée (`P_OUT` de l'amont) → −170 mmCE quelle que soit la pression amont.
-- [ ] **SCRUBBER (Bilan) et WHB** : aucune perte de charge côté fumées ; la pression d'entrée est transmise telle quelle.
+- [x] **DENOX, pression de sortie** : `pressionSortie = 30 − PDC` (`3_DENOX_Design1_ML.jsx`) ignorait la pression d'entrée — **corrigé le 18/11/2026** : P sortie = P entrée − PDC (calculée selon la technologie ou imposée).
+- [x] **SCRUBBER (Bilan) et WHB** : aucune perte de charge côté fumées — **corrigé le 18/11/2026** : tour de lavage (calculée garnissage + dévésiculeur ou imposée), chaudière 100 mmCE par défaut, conservée ; WHB Retro : P amont = P aval + PDC.
 - [ ] **FB, valeurs par défaut** : avec les valeurs par défaut (22 trous imposés), vitesse tuyères ≈ 322 m/s et pression freeboard ≈ −4 250 mmCE, maintenant transmise à l'aval via `P_OUT`.
 - [ ] **Retro, signe de la perte de charge** : en remontant, la pression amont devrait être P aval **+** PDC (DENOX, QUENCH, WATER_INJECTION, économiseurs) ; IACT (`IACT_calculations.js`) et SCRUBBER (`SCRUBBER_calculations3.js`) font P aval **−** PDC.

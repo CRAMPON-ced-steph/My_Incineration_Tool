@@ -1,5 +1,6 @@
 export const translations = {
   fr: {
+    "PDC_fumees": "Perte de charge côté fumées",
     // Titres et labels principaux
     Parametres: "Paramètres",
     calculer_et_envoyer_data: "Calculer et envoyer données",
@@ -57,6 +58,7 @@ export const translations = {
   },
 
   en: {
+    "PDC_fumees": "Flue-gas side pressure drop",
     // Titres et labels principaux
     Parametres: "Parameters",
     calculer_et_envoyer_data: "Calculate and Send Data",
@@ -114,6 +116,7 @@ export const translations = {
   },
 
   es: {
+    "PDC_fumees": "Pérdida de carga lado humos",
     // Titres et labels principaux
     Parametres: "Parámetros",
     calculer_et_envoyer_data: "Calcular y Enviar Datos",
@@ -171,6 +174,7 @@ export const translations = {
   },
 
   de: {
+    "PDC_fumees": "Rauchgasseitiger Druckverlust",
     // Titres et labels principaux
     Parametres: "Parameter",
     calculer_et_envoyer_data: "Berechnen und Daten Senden",
@@ -228,6 +232,7 @@ export const translations = {
   },
 
   it: {
+    "PDC_fumees": "Perdita di carico lato fumi",
     // Titres et labels principaux
     Parametres: "Parametri",
     calculer_et_envoyer_data: "Calcola e Invia Dati",
@@ -285,6 +290,7 @@ export const translations = {
   },
 
   pt: {
+    "PDC_fumees": "Perda de carga do lado dos fumos",
     // Titres et labels principaux
     Parametres: "Parâmetros",
     calculer_et_envoyer_data: "Calcular e Enviar Dados",
@@ -342,6 +348,7 @@ export const translations = {
   },
 
   zh: {
+    "PDC_fumees": "烟气侧压降",
     // Titres et labels principaux
     Parametres: "参数",
     calculer_et_envoyer_data: "计算并发送数据",
@@ -399,6 +406,7 @@ export const translations = {
   },
 
   ja: {
+    "PDC_fumees": "排ガス側圧力損失",
     // Titres et labels principaux
     Parametres: "パラメータ",
     calculer_et_envoyer_data: "計算してデータ送信",
@@ -456,6 +464,7 @@ export const translations = {
   },
 
   ru: {
+    "PDC_fumees": "Потеря давления по газовой стороне",
     // Titres et labels principaux
     Parametres: "Параметры",
     calculer_et_envoyer_data: "Вычислить и отправить данные",
@@ -513,6 +522,7 @@ export const translations = {
   },
 
   ar: {
+    "PDC_fumees": "فقد الضغط في جانب غازات المداخن",
     // Titres et labels principaux
     Parametres: "المعاملات",
     calculer_et_envoyer_data: "احسب وأرسل البيانات",

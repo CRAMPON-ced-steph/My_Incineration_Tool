@@ -70,6 +70,9 @@ const WHB_Report = ({ innerData = {}, currentLanguage = 'fr', nodeId }) => {
             <KV label={t('flueGasInletTemp')} value={fmt(T_IN, 0)} />
             <KV label={t('flueGasOutletTemp')} value={fmt(T_OUT, 0)} />
             <KV label={t('o2Measured')} value={fmt(O2_calcule)} unit="%" />
+            <KV label={t('pinMmce')} value={fmt(innerData.Pin_mmCE, 0)} />
+            <KV label={t('whbGasPressureDrop')} value={fmt(innerData.PDC_WHB_mmCE, 0)} />
+            <KV label={t('poutMmce')} value={fmt(innerData.P_out_mmCE, 0)} />
           </SubSection>
         </div>
       </Section>
