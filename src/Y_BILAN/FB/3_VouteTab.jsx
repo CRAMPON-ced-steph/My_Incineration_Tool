@@ -106,7 +106,7 @@ function computeCalculs(params) {
     params.NbTrousImpose === undefined ? NB_TROUS_DEFAUT : params.NbTrousImpose) || 0)));
   const nbTrous = (surfaceCible_m2) => (NbTrousImpose > 0
     ? NbTrousImpose
-    : Math.min(NB_TROUS_MAX, Math.ceil((4 * surfaceCible_m2) / (Math.PI * Math.pow(DiametreTrous_mm / 1000, 2)))));
+    : Math.min(NB_TROUS_MAX, Math.max(1, Math.round((4 * surfaceCible_m2) / (Math.PI * Math.pow(DiametreTrous_mm / 1000, 2))))));
   const DiametreVoute_m = voute.DiametreVoute;
   const TempEntreeBoiteVent_C = Number(params.TempEntreeBoiteVent_C);
   // Débit d'air ramené à un four (le débit reçu de la combustion est le total)
@@ -131,7 +131,8 @@ function computeCalculs(params) {
   let DebitReelTuyeres_m3s = DebitAirReelBoiteVentM3h_init_m3h / 3600 / NbrTuyeres;
   let SurfaceTuyeresReelle_m2 = DebitReelTuyeres_m3s / VitesseTuyereCible_ms;
   // Nombre de trous qu'on aurait sans imposition (affiché comme repère)
-  const NbTrousCalcule = Math.min(NB_TROUS_MAX, Math.ceil((4 * SurfaceTuyeresReelle_m2) / (Math.PI * Math.pow(DiametreTrous_mm / 1000, 2))));
+  // Arrondi au plus proche, au moins 1 (Pyrofluid : Math.Round, NTrous = 0 refusé)
+  const NbTrousCalcule = Math.min(NB_TROUS_MAX, Math.max(1, Math.round((4 * SurfaceTuyeresReelle_m2) / (Math.PI * Math.pow(DiametreTrous_mm / 1000, 2)))));
   let nb_de_trous = nbTrous(SurfaceTuyeresReelle_m2);
   SurfaceTuyeresReelle_m2 = (nb_de_trous * Math.PI * Math.pow(DiametreTrous_mm / 1000, 2)) / 4;
   VitesseReelleTuyere_ms = SurfaceTuyeresReelle_m2 > 0 ? DebitReelTuyeres_m3s / SurfaceTuyeresReelle_m2 : 0;
