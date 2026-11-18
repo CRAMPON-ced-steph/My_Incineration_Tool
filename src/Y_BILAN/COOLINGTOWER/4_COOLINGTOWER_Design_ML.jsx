@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import SprayTower from '../../B_Images/quench_img.jsx';
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './COOLINGTOWER_traduction';
@@ -53,8 +53,9 @@ const ParameterInput = ({ label, name, value, onChange, type = 'number', options
           onChange={onChange}
           className="w-full sm:w-72 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm"
         >
-          {options.map(opt => (
-            <option key={opt} value={opt}>{opt}</option>
+          {options.map(opt => (typeof opt === 'object'
+            ? <option key={opt.value} value={opt.value}>{opt.label}</option>
+            : <option key={opt} value={opt}>{opt}</option>
           ))}
         </select>
       ) : (
@@ -106,13 +107,26 @@ const ResultsGrid = ({ results: resultsData, t }) => (
   </div>
 );
 
+// Types d'eau de pulvérisation → clé OPEX (même liste que le quench)
+const TYPES_EAU = {
+  'eau potable': 'Conso_EauPotable_m3',
+  'eau de refroidissement': 'Conso_EauRefroidissement_m3',
+  'eau déminéralisée': 'Conso_EauDemin_m3',
+  'eau adoucie': 'Conso_EauAdoucie_m3',
+  'eau de rivière': 'Conso_EauRiviere_m3',
+};
+const PRIX_EAU = {
+  'eau potable': 'potable', 'eau de refroidissement': 'cooling', 'eau déminéralisée': 'demineralized',
+  'eau adoucie': 'soft', 'eau de rivière': 'river',
+};
+
 const COOLINGTOWERDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
   const languageCode = getLanguageCode(currentLanguage);
-  const t = (key) => {
-    return translations[languageCode]?.[key] || translations['fr']?.[key] || key;
-  };
-
-  const { truck15TPrice } = getOpexData();
+  // t stable : une fonction recréée à chaque rendu relançait les effets en boucle.
+  const t = useCallback(
+    (key) => translations[languageCode]?.[key] || translations['fr']?.[key] || key,
+    [languageCode]
+  );
 
   // ========== NOZZLE TYPES CONFIGURATION ==========
   const NOZZLE_TYPES = {
@@ -155,7 +169,16 @@ const COOLINGTOWERDesign = ({ innerData, setInnerData, currentLanguage = 'fr' })
     nozzleType: 'FULL_CONE'
   };
 
-  const [params, setParams] = useState(initialParams);
+  const [params, setParams] = useState(() => ({ ...initialParams, ...(innerData?.CT_design_params || {}) }));
+
+  // ========== OPEX : eau pulvérisée et pompe ==========
+  const [typeEau, setTypeEau] = useState(() => (TYPES_EAU[innerData?.Type_eau_tour] ? innerData.Type_eau_tour : 'eau potable'));
+  const [rendementPompe, setRendementPompe] = useState(() => innerData?.Rendement_pompe_tour ?? 70);
+  // Débit d'eau pulvérisée calculé dans l'onglet Gaz de combustion (bilan d'énergie)
+  const Q_eau_m3_h = Math.max(0, parseFloat(innerData?.Q_eau_kg_h) || 0) / 1000;
+  // Puissance de la pompe : débit × pression de pulvérisation / rendement (1 bar·m³/h = 1/36 kW)
+  const P_pompe_kW = rendementPompe > 0 ? (Q_eau_m3_h * params.pressure) / 36 / (rendementPompe / 100) : 0;
+  const prixEau = (getOpexData()?.waterPrices || {})[PRIX_EAU[typeEau]] || 0;
   const [results, setResults] = useState(null);
   const [error, setError] = useState(null);
 
@@ -259,57 +282,46 @@ const COOLINGTOWERDesign = ({ innerData, setInnerData, currentLanguage = 'fr' })
     }
   }, [params, calculateCOOLINGTOWERHeight, t]);
 
-  // ========== UPDATE INNER DATA ==========
-  useEffect(() => {
-    if (innerData && setInnerData && typeof setInnerData === 'function') {
-      const toSignificantFigures = (value, figures = 2) => {
-        if (value === 0 || value === null || value === undefined || !isFinite(value)) return 0;
-        return parseFloat(value.toPrecision(figures));
-      };
+  // ========== UPDATE INNER DATA (OPEX) ==========
+  // Seules les consommations calculées ici sont écrites ; tout le reste est remis
+  // à 0 (efface les anciennes valeurs fictives : cendres 1 kg/h, transport 90 €/h…).
+  const opexPayload = useMemo(() => {
+    const eau = Object.fromEntries(Object.values(TYPES_EAU).map((k) => [k, 0]));
+    eau[TYPES_EAU[typeEau]] = Q_eau_m3_h;
+    return {
+      consoElec1: P_pompe_kW,
+      labelElec1: t('Pompe d\'eau de pulvérisation'),
+      ...Object.fromEntries([2, 3, 4, 5, 6, 7, 8].flatMap((i) => [[`consoElec${i}`, 0], [`labelElec${i}`, '']])),
+      conso_air_co_N_m3: 0,
+      ...eau,
+      Conso_CaCO3_kg: 0, Conso_CaO_kg: 0, Conso_CaOH2_dry_kg: 0, Conso_CaOH2_wet_kg: 0,
+      Conso_NaOH_kg: 0, Conso_NaOHCO3_kg: 0, Conso_Ammonia_kg: 0, Conso_NaBrCaBr2_kg: 0, Conso_CAP_kg: 0,
+      conso_gaz_H_MW: 0, conso_gaz_L_MW: 0, conso_gaz_Process_MW: 0, conso_fuel_MW: 0,
+      conso_incineration_ash_kg_h: 0, conso_boiler_ash_kg_h: 0, conso_fly_ash_kg_h: 0,
+      CO2_transport_incineratino_ash: 0, CO2_transport_boiler_ash: 0, CO2_transport_fly_ash: 0, CO2_transport_reactifs: 0,
+      cout_transport_incineratino_ash: 0, cout_transport_boiler_ash: 0, cout_transport_fly_ash: 0, cout_transport_reactifs: 0,
+      Type_eau_tour: typeEau,
+      Rendement_pompe_tour: rendementPompe,
+      CT_design_params: params,
+      CT_resultats: results ? {
+        hauteur_m: results.height,
+        smd_um: results.sprayCharacteristics.smd * 1e6,
+        vitesse_gouttes_m_s: results.sprayCharacteristics.dropletVelocity,
+        angle_spray_deg: results.sprayCharacteristics.sprayAngle,
+        Q_eau_m3_h,
+        P_pompe_kW,
+      } : null,
+    };
+  }, [typeEau, Q_eau_m3_h, P_pompe_kW, rendementPompe, params, results, t]);
 
-      setInnerData(prevData => ({
-        ...prevData,
-        consoElec1: toSignificantFigures(2),
-        consoElec2: toSignificantFigures(0),
-        consoElec3: toSignificantFigures(0),
-        consoElec4: toSignificantFigures(0),
-        consoElec5: toSignificantFigures(0),
-        labelElec1: t('pompe'),
-        labelElec2: t('pompe'),
-        labelElec3: t('pompe'),
-        labelElec4: t('pompe'),
-        labelElec5: t('pompe'),
-        conso_air_co_N_m3: toSignificantFigures(0),
-        Conso_EauPotable_m3: toSignificantFigures(1),
-        Conso_EauRefroidissement_m3: toSignificantFigures(1),
-        Conso_EauDemin_m3: toSignificantFigures(1),
-        Conso_EauRiviere_m3: toSignificantFigures(1),
-        Conso_EauAdoucie_m3: toSignificantFigures(1),
-        Conso_CaCO3_kg: toSignificantFigures(1),
-        Conso_CaO_kg: toSignificantFigures(1),
-        Conso_CaOH2_dry_kg: toSignificantFigures(1),
-        Conso_CaOH2_wet_kg: toSignificantFigures(0),
-        Conso_NaOH_kg: toSignificantFigures(0),
-        Conso_NaOHCO3_kg: toSignificantFigures(0),
-        Conso_Ammonia_kg: toSignificantFigures(0),
-        Conso_NaBrCaBr2_kg: toSignificantFigures(0),
-        truck15TPrice: toSignificantFigures(truck15TPrice || 0),
-        conso_gaz_H_MW: toSignificantFigures(0),
-        conso_gaz_L_MW: toSignificantFigures(0),
-        conso_gaz_Process_MW: toSignificantFigures(0),
-        conso_fuel: toSignificantFigures(0),
-        conso_incineration_ash_kg_h: toSignificantFigures(1),
-        conso_boiler_ash_kg_h: toSignificantFigures(1),
-        conso_fly_ash_kg_h: toSignificantFigures(1),
-        CO2_transport_incineratino_ash: toSignificantFigures(90),
-        CO2_transport_boiler_ash: toSignificantFigures(90),
-        CO2_transport_fly_ash: toSignificantFigures(90),
-        cout_transport_incineratino_ash: toSignificantFigures(90),
-        cout_transport_boiler_ash: toSignificantFigures(90),
-        cout_transport_fly_ash: toSignificantFigures(90),
-      }));
-    }
-  }, [innerData, setInnerData, truck15TPrice, t]);
+  const lastSync = useRef('');
+  useEffect(() => {
+    if (!setInnerData || typeof setInnerData !== 'function') return;
+    const json = JSON.stringify(opexPayload);
+    if (json === lastSync.current) return;
+    lastSync.current = json;
+    setInnerData((prevData) => ({ ...prevData, ...opexPayload }));
+  }, [opexPayload, setInnerData]);
 
   return (
     <div className="p-6 flex flex-col lg:flex-row items-start bg-gray-50">
@@ -331,7 +343,7 @@ const COOLINGTOWERDesign = ({ innerData, setInnerData, currentLanguage = 'fr' })
               label={t('Type de buse')}
               value={params.nozzleType}
               onChange={handleNozzleChange}
-              options={Object.keys(NOZZLE_TYPES)}
+              options={Object.entries(NOZZLE_TYPES).map(([value, n]) => ({ value, label: n.name }))}
             />
             <p className="text-sm text-gray-600 p-3 bg-blue-50 rounded">
               {NOZZLE_TYPES[params.nozzleType].description}
@@ -402,6 +414,39 @@ const COOLINGTOWERDesign = ({ innerData, setInnerData, currentLanguage = 'fr' })
               value={params.tLiquid}
               onChange={handleInputChange}
             />
+          </div>
+        </Section>
+
+        {/* ========== OPEX SECTION ========== */}
+        <Section
+          title={t('Consommations (OPEX)')}
+          t={t}
+          results={[
+            { label: t('Débit d\'eau pulvérisée [m³/h]'), value: fmt(Q_eau_m3_h, 3) },
+            { label: t('Puissance électrique pompe [kW]'), value: fmt(P_pompe_kW, 2) },
+            { label: t('Coût de l\'eau [€/h]'), value: fmt(Q_eau_m3_h * prixEau, 2) },
+          ]}
+        >
+          <div className="space-y-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+              <label className="w-full sm:w-64 text-sm font-medium text-gray-700">{t('Type d\'eau')}:</label>
+              <select
+                value={typeEau}
+                onChange={(e) => setTypeEau(e.target.value)}
+                className="w-full sm:w-72 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm"
+              >
+                {Object.keys(TYPES_EAU).map((k) => <option key={k} value={k}>{t(k)}</option>)}
+              </select>
+            </div>
+            <ParameterInput
+              label={t('Rendement pompe [%]')}
+              name="rendementPompe"
+              value={rendementPompe}
+              onChange={(e) => setRendementPompe(Math.max(1, Math.min(100, parseFloat(e.target.value) || 0)))}
+            />
+            <p className="text-sm text-gray-600 p-3 bg-blue-50 rounded">
+              {t('Débit d\'eau calculé dans l\'onglet Gaz de combustion ; pression de pompage = pression de pulvérisation.')}
+            </p>
           </div>
         </Section>
 

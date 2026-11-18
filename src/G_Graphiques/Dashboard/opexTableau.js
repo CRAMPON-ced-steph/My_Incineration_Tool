@@ -29,6 +29,8 @@ const CLE_CALCULEE = /^row\d{1,2}$/;
 const CONFIG_PAR_TYPE = {
   FB: { numElecRows: 6 },
   GF: { numElecRows: 6 },
+  // Chaudière : tableaux de valorisation (électricité et vapeur vendues)
+  WHB: { valorisation: true },
 };
 
 export const configOpex = (equipmentType, equipmentConfig = {}) => ({
@@ -131,6 +133,8 @@ const lirePrix = () => {
     reactifs: o.reagentsTypes || {},
     gaz: o.gasTypes || {},
     fuel: o.fuelTypes || {},
+    venteElec: lireNombre(o.sellingElectricityPrice),     // devise/MWh
+    vapeur: o.steamPrices || {},                          // devise/t
   };
 };
 
@@ -227,6 +231,77 @@ const lignesCoutCo2 = (d, details, prix, t) => {
   return { cout, co2, air };
 };
 
+// ─── Valorisation (chaudière) : production vendue et recettes ─────────────────
+// Lue dans les résultats de l'onglet « Valorisation vapeur » de la chaudière
+// (6_WHB_ValoVapeur3_ML.jsx) :
+//   - sans turbine : vapeur livrée aux trois niveaux de pression (niveauN_*) ;
+//   - avec turbine : électricité (puissance_electrique_kW), soutirages
+//     (soutirages_data) et vapeur d'échappement si sa pression est d'au moins
+//     1 bar a (contre-pression ; une turbine à condensation ne la vend pas).
+// Prix (paramètres OPEX) : électricité vendue, vapeur HP / BP P1 / BP P2 pour
+// les niveaux ou soutirages 1, 2, 3, BP P2 pour l'échappement.
+const vapeurValorisee = (d) => {
+  const type = d.turbine_type;
+  if (!type) return { elec_kW: 0, niveaux: [], echappement: null };
+  if (type === 'sansTurbine') {
+    return {
+      elec_kW: 0,
+      niveaux: [1, 2, 3].map((n) => ({ t_h: lireNombre(d[`niveau${n}_debit_kg_h`]) / 1000, bar: lireNombre(d[`niveau${n}_pression_bar`]) })),
+      echappement: null,
+    };
+  }
+  const nb = Math.max(0, Math.min(3, lireNombre(d.nb_soutirages_actifs)));
+  const soutirages = (Array.isArray(d.soutirages_data) ? d.soutirages_data : []).slice(0, nb)
+    .map((x) => ({ t_h: lireNombre(x.debit_kg_h) / 1000, bar: lireNombre(x.pression_bar) }));
+  const pSortie = lireNombre(d.pression_sortie_bar);
+  const restant = lireNombre(d.debit_vapeur_kg_h) / 1000 - soutirages.reduce((s, x) => s + x.t_h, 0);
+  return {
+    elec_kW: Math.max(0, lireNombre(d.puissance_electrique_kW)),
+    niveaux: soutirages,
+    echappement: pSortie >= 1 && restant > 0 ? { t_h: restant, bar: pSortie } : null,
+  };
+};
+
+const lignesProduction = (d, prix, t) => {
+  const v = vapeurValorisee(d);
+  const pression = (bar) => (bar > 0 ? ` ${parseFloat(bar.toPrecision(3))} bar a` : '');
+  const vapeur = (key, lib, flux, prixT) => ({
+    key,
+    label: `${t(lib)}${pression(flux?.bar)} [t/h]`,
+    value: flux?.t_h || 0,
+    prix: lireNombre(prixT),
+  });
+  return [
+    { key: 'row1', label: `${t('elecProduction')} [kWé]`, value: v.elec_kW, prix: prix.venteElec },
+    vapeur('row2', 'steamLevelHP', v.niveaux[0], prix.vapeur?.highPressure),
+    vapeur('row3', 'steamLevelBP1', v.niveaux[1], prix.vapeur?.lowPressure1),
+    vapeur('row4', 'steamLevelBP2', v.niveaux[2], prix.vapeur?.lowPressure2),
+    vapeur('row5', 'steamExhaust', v.echappement, prix.vapeur?.lowPressure2),
+  ];
+};
+
+// Recette de chaque ligne de production (électricité : kW → MWh/h).
+const detaillerProduction = (lignes, defs) => {
+  const parCle = new Map(defs.map((r) => [r.key, r]));
+  return lignes.map((ligne) => {
+    const n = lireNombre(ligne.value);
+    const def = parCle.get(ligne.key);
+    if (!def) return { ...ligne, nombre: n, prix: null, recette: 0 };
+    return { ...ligne, nombre: n, prix: def.prix, recette: ligne.key === 'row1' ? (n / 1000) * def.prix : n * def.prix };
+  });
+};
+
+const lignesRecettes = (detailsProd, t) => {
+  const recette = (key) => detailsProd.find((r) => r.key === key)?.recette || 0;
+  return [
+    { key: 'row1', label: t('saleElec'), value: recette('row1') },
+    { key: 'row2', label: t('saleSteamHP'), value: recette('row2') },
+    { key: 'row3', label: t('saleSteamBP1'), value: recette('row3') },
+    { key: 'row4', label: t('saleSteamBP2'), value: recette('row4') },
+    { key: 'row5', label: t('saleSteamExhaust'), value: recette('row5') },
+  ];
+};
+
 // ─── Fusion lignes calculées / lignes sauvegardées ────────────────────────────
 const ligneDepuisDef = ({ key, label, value }) => ({ key, label, value });
 
@@ -284,8 +359,15 @@ export const calculerOpex = (innerData, { sauve = null, config = configOpex(), t
   tables.co2 = fusionner(tablesSauvees.co2, defsCout.co2, supprimees.co2);
   tables.cout = fusionner(tablesSauvees.cout, defsCout.cout, supprimees.cout);
 
+  if (config.valorisation) {
+    const defsProd = lignesProduction(d, prix, t);
+    tables.production = fusionner(tablesSauvees.production, defsProd, supprimees.production);
+    details.production = detaillerProduction(tables.production, defsProd);
+    tables.recettes = fusionner(tablesSauvees.recettes, lignesRecettes(details.production, t), supprimees.recettes);
+  }
+
   const totaux = {};
-  TABLES_OPEX.forEach((nom) => { totaux[nom] = tables[nom].reduce((s, r) => s + lireNombre(r.value), 0); });
+  Object.keys(tables).forEach((nom) => { totaux[nom] = tables[nom].reduce((s, r) => s + lireNombre(r.value), 0); });
 
   return {
     isAnnualMode: !!etat.isAnnualMode,
@@ -293,6 +375,7 @@ export const calculerOpex = (innerData, { sauve = null, config = configOpex(), t
     supprimees,
     details,
     totaux,
+    valorisation: !!config.valorisation,
     conso_air_Nm3_h: defsCout.air,
     currency: prix.currency,
     availability: prix.availability,
@@ -312,11 +395,11 @@ export const totalLignesManuelles = (opex, table) =>
 // Les tableaux sont saisis en valeurs horaires ; le mode annuel multiplie par la
 // disponibilité (h/an).
 export const uniteHoraire = (table, currency) => ({
-  elec: 'kWé', eau: 'm³/h', reactifs: 'kg/h', energie: 'MW', co2: 'kg/h', cout: `${currency}/h`,
+  elec: 'kWé', eau: 'm³/h', reactifs: 'kg/h', energie: 'MW', co2: 'kg/h', cout: `${currency}/h`, recettes: `${currency}/h`,
 }[table] || '');
 
 export const uniteAnnuelle = (table, currency) => ({
-  elec: 'MWhé', eau: 'm³', reactifs: 't', energie: 'MWh', co2: 't', cout: currency,
+  elec: 'MWhé', eau: 'm³', reactifs: 't', energie: 'MWh', co2: 't', cout: currency, recettes: currency,
 }[table] || '');
 
 export const versAnnuel = (valeurHoraire, table, availability) => {

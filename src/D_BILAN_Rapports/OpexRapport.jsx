@@ -50,7 +50,9 @@ const OpexRapport = ({ innerData = {}, equipmentType, nodeId, currentLanguage = 
   const eau = details.eau.filter(nonVide);
   const reactifs = details.reactifs.filter(nonVide);
   const energie = details.energie.filter(nonVide);
-  const saisies = TABLES_AFFICHEES.some((nom) => tables[nom].some((r) => r.valeurFixee || r.libelleFixe));
+  const production = (details.production || []).filter(nonVide);
+  const recettes = totaux.recettes || 0;
+  const saisies = TABLES_AFFICHEES.some((nom) => (tables[nom] || []).some((r) => r.valeurFixee || r.libelleFixe));
 
   return (
     <div>
@@ -124,6 +126,32 @@ const OpexRapport = ({ innerData = {}, equipmentType, nodeId, currentLanguage = 
         )}
       </div>
 
+      {opex.valorisation && (production.length > 0 || recettes !== 0) && (
+        <div style={styles.twoCol}>
+          <TableDetail
+            titre={t('energySold')}
+            colonnes={[t('item'), t('value'), t('unitPrice'), `${cur}/h`]}
+            lignes={production}
+            cellules={(r) => [
+              fmtOpex(r.nombre),
+              r.prix === null ? '—' : `${fmtOpex(r.prix)} ${r.key === 'row1' ? `${cur}/MWh` : `${cur}/t`}`,
+              r.prix === null ? '—' : fmtOpex(r.recette),
+            ]}
+            total={[t('total'), '', '', fmtOpex(production.reduce((s, r) => s + r.recette, 0))]}
+            couleurTotal="#e8f8f5"
+          />
+          <div style={{ ...styles.subSection, background: '#e8f8f5', margin: 8, borderRadius: 6 }}>
+            <h3 style={{ ...styles.subTitle, color: '#0e6655' }}>{t('revenues')}</h3>
+            {tables.recettes.filter(nonVide).map((r) => (
+              <div key={r.key} style={styles.kvRow}><span style={styles.kvLabel}>{r.label}<Marque ligne={r} /> [{cur}/h]</span><span style={styles.kvValue}>{fmtOpex(r.value)}</span></div>
+            ))}
+            <div style={{ ...styles.kvRow, fontWeight: 'bold' }}><span style={styles.kvLabel}>{t('revenues')} [{cur}/h]</span><span style={styles.kvValue}>{fmtOpex(recettes)}</span></div>
+            <div style={{ ...styles.kvRow, fontWeight: 'bold' }}><span style={styles.kvLabel}>{t('netCost')} [{cur}/h]</span><span style={styles.kvValue}>{fmtOpex(totaux.cout - recettes)}</span></div>
+            <div style={styles.kvRow}><span style={styles.kvLabel}>{t('netCost')} ({availability} {t('hoursPerYear')}) [{cur}]</span><span style={styles.kvValue}>{fmtOpex((totaux.cout - recettes) * availability)}</span></div>
+          </div>
+        </div>
+      )}
+
       <div style={styles.note}>
         {t('opexSource')}{saisies ? ` — ${t('editedValueNote')}` : ''}
       </div>
@@ -131,7 +159,7 @@ const OpexRapport = ({ innerData = {}, equipmentType, nodeId, currentLanguage = 
   );
 };
 
-const TABLES_AFFICHEES = ['elec', 'eau', 'reactifs', 'energie', 'co2', 'cout'];
+const TABLES_AFFICHEES = ['elec', 'eau', 'reactifs', 'energie', 'co2', 'cout', 'production', 'recettes'];
 const COULEURS = ['#4a90e2', '#f39c12', '#17a2b8', '#2ecc71', '#e74c3c', '#9b59b6', '#8e44ad', '#34495e'];
 
 const styles = {

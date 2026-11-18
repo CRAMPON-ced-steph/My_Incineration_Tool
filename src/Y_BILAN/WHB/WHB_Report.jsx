@@ -49,6 +49,7 @@ const WHB_Report = ({ innerData = {}, currentLanguage = 'fr', nodeId }) => {
   const FG_wet_total = (FG_OUT_kg_h.CO2 || 0) + (FG_OUT_kg_h.H2O || 0) + (FG_OUT_kg_h.O2 || 0) + (FG_OUT_kg_h.N2 || 0);
   const PInput = innerData.PInput || {};
   const Poutput = innerData.Poutput || {};
+  const opexDesign = innerData.WHB_design_opex || null;
   const elecRows = [1,2,3,4,5,6,7,8].map(i => ({ label: innerData[`labelElec${i}`] || `Poste ${i}`, value: innerData[`consoElec${i}`] })).filter(r => parseFloat(r.value) > 0);
 
   return (
@@ -98,7 +99,7 @@ const WHB_Report = ({ innerData = {}, currentLanguage = 'fr', nodeId }) => {
             <KV label={t('recoveredPower')} value={fmt(innerData.P_recuperee_kW)} />
           </SubSection>
           <SubSection title={t('turbineValorization')}>
-            <KV label={t('turbineType')} value={innerData.turbine_type || '—'} />
+            <KV label={t('turbineType')} value={innerData.turbine_type ? t(TURBINES[innerData.turbine_type] || innerData.turbine_type) : '—'} />
             <KV label={t('electricPower')} value={fmt(innerData.puissance_electrique_kW || innerData.P_elec_turbine_kW)} />
             <KV label={t('globalEfficiency')} value={fmt(innerData.rendement_global_pct || innerData.rendement_turbine, 1)} />
           </SubSection>
@@ -106,9 +107,28 @@ const WHB_Report = ({ innerData = {}, currentLanguage = 'fr', nodeId }) => {
       </Section>
 
       <Section title={`5. ${t('whbDesign')}`}>
-        <SubSection title={t('electricConsumptions')}>
-          {elecRows.length > 0 ? <ElecTable rows={elecRows} tFn={t} /> : <span style={{ color: '#999', fontSize: 12 }}>{t('dataNotAvailableDesign')}</span>}
-        </SubSection>
+        <div style={styles.twoCol}>
+          <SubSection title={t('electricConsumptions')}>
+            {elecRows.length > 0 ? <ElecTable rows={elecRows} tFn={t} /> : <span style={{ color: '#999', fontSize: 12 }}>{t('dataNotAvailableDesign')}</span>}
+            {opexDesign && (
+              <>
+                <KV label={t('feedWaterPumpFlow')} value={fmt(opexDesign.Q_eau_alim_m3_h, 2)} />
+                <KV label={t('feedWaterPumpHead')} value={fmt(opexDesign.Hmt_bar, 1)} />
+              </>
+            )}
+          </SubSection>
+          <SubSection title={t('opexConsumptions')}>
+            {opexDesign ? (
+              <>
+                <KV label={t('demineralizedMakeupWater')} value={fmt(innerData.Conso_EauDemin_m3, 3)} />
+                <KV label={t('boilerAshEvacuated')} value={fmt(innerData.conso_boiler_ash_kg_h, 2)} />
+                <KV label={t('truckAndDistance')} value={`${opexDesign.type_camion} — ${fmt(opexDesign.distance_km, 0)} km`} />
+                <KV label={t('ashTransportCO2')} value={fmt(innerData.CO2_transport_boiler_ash, 2)} />
+                <KV label={t('ashTransportCost')} value={fmt(innerData.cout_transport_boiler_ash, 2)} />
+              </>
+            ) : <span style={{ color: '#999', fontSize: 12 }}>{t('dataNotAvailableDesign')}</span>}
+          </SubSection>
+        </div>
       </Section>
 
       <Section title={`6. ${t('opex')} — ${t('hourlyCosts')}`}>
@@ -119,6 +139,9 @@ const WHB_Report = ({ innerData = {}, currentLanguage = 'fr', nodeId }) => {
     </div>
   );
 };
+
+// Type de turbine (onglet Valorisation vapeur) → clé de traduction
+const TURBINES = { sansTurbine: 'sansTurbine', contrepression: 'contrepression', deuxEtages: 'deuxEtages', troisEtages: 'troisEtages', vide: 'condensationVide' };
 
 const styles = {
   container: { fontFamily: 'Arial, sans-serif', fontSize: 13, color: '#222', maxWidth: 1100, margin: '0 auto', padding: '20px 24px', backgroundColor: '#fff' },

@@ -1,6 +1,21 @@
 export const translations = {
   // ========== FRENCH TRANSLATIONS ==========
   fr: {
+    "Pompe d'eau de pulvérisation": "Pompe d'eau de pulvérisation",
+    "Consommations (OPEX)": "Consommations (OPEX)",
+    "Débit d'eau pulvérisée [m³/h]": "Débit d'eau pulvérisée [m³/h]",
+    "Puissance électrique pompe [kW]": "Puissance électrique pompe [kW]",
+    "Coût de l'eau [€/h]": "Coût de l'eau [€/h]",
+    "Type d'eau": "Type d'eau",
+    "Rendement pompe [%]": "Rendement pompe [%]",
+    "eau potable": "Eau potable",
+    "eau de refroidissement": "Eau de refroidissement",
+    "eau déminéralisée": "Eau déminéralisée",
+    "eau adoucie": "Eau adoucie",
+    "eau de rivière": "Eau de rivière",
+    "Débit d'eau calculé dans l'onglet Gaz de combustion ; pression de pompage = pression de pulvérisation.": "Débit d'eau calculé dans l'onglet Gaz de combustion ; pression de pompage = pression de pulvérisation.",
+    "Rapport": "Rapport",
+    "Pulvérisation": "Pulvérisation",
     // — Ajouts audit i18n (2026-07) —
     "Fly ash content [g/Nm3]": "Teneur en cendres volantes [g/Nm³]",
     'Calculation parameters': 'Paramètres de calcul',
@@ -154,6 +169,21 @@ export const translations = {
 
   // ========== ENGLISH TRANSLATIONS ==========
   en: {
+    "Pompe d'eau de pulvérisation": "Spray water pump",
+    "Consommations (OPEX)": "Consumptions (OPEX)",
+    "Débit d'eau pulvérisée [m³/h]": "Sprayed water flow [m³/h]",
+    "Puissance électrique pompe [kW]": "Pump electrical power [kW]",
+    "Coût de l'eau [€/h]": "Water cost [€/h]",
+    "Type d'eau": "Water type",
+    "Rendement pompe [%]": "Pump efficiency [%]",
+    "eau potable": "Drinking water",
+    "eau de refroidissement": "Cooling water",
+    "eau déminéralisée": "Demineralized water",
+    "eau adoucie": "Softened water",
+    "eau de rivière": "River water",
+    "Débit d'eau calculé dans l'onglet Gaz de combustion ; pression de pompage = pression de pulvérisation.": "Water flow calculated in the Flue gases tab; pumping pressure = spray pressure.",
+    "Rapport": "Report",
+    "Pulvérisation": "Spraying",
     // — Ajouts audit i18n (2026-07) —
     "Fly ash content [g/Nm3]": "Fly ash content [g/Nm³]",
     'Calculation parameters': 'Calculation parameters',
@@ -307,6 +337,21 @@ export const translations = {
 
   // ========== GERMAN TRANSLATIONS ==========
   de: {
+    "Pompe d'eau de pulvérisation": "Sprühwasserpumpe",
+    "Consommations (OPEX)": "Verbräuche (OPEX)",
+    "Débit d'eau pulvérisée [m³/h]": "Sprühwassermenge [m³/h]",
+    "Puissance électrique pompe [kW]": "Elektrische Pumpenleistung [kW]",
+    "Coût de l'eau [€/h]": "Wasserkosten [€/h]",
+    "Type d'eau": "Wasserart",
+    "Rendement pompe [%]": "Pumpenwirkungsgrad [%]",
+    "eau potable": "Trinkwasser",
+    "eau de refroidissement": "Kühlwasser",
+    "eau déminéralisée": "Demineralisiertes Wasser",
+    "eau adoucie": "Enthärtetes Wasser",
+    "eau de rivière": "Flusswasser",
+    "Débit d'eau calculé dans l'onglet Gaz de combustion ; pression de pompage = pression de pulvérisation.": "Wassermenge im Reiter Rauchgase berechnet; Pumpendruck = Sprühdruck.",
+    "Rapport": "Bericht",
+    "Pulvérisation": "Versprühung",
     // — Ajouts audit i18n (2026-07) —
     "Fly ash content [g/Nm3]": "Flugaschegehalt [g/Nm³]",
     'Calculation parameters': 'Berechnungsparameter',
@@ -460,6 +505,21 @@ export const translations = {
 
   // ========== SPANISH TRANSLATIONS ==========
   es: {
+    "Pompe d'eau de pulvérisation": "Bomba de agua de pulverización",
+    "Consommations (OPEX)": "Consumos (OPEX)",
+    "Débit d'eau pulvérisée [m³/h]": "Caudal de agua pulverizada [m³/h]",
+    "Puissance électrique pompe [kW]": "Potencia eléctrica de la bomba [kW]",
+    "Coût de l'eau [€/h]": "Coste del agua [€/h]",
+    "Type d'eau": "Tipo de agua",
+    "Rendement pompe [%]": "Rendimiento de la bomba [%]",
+    "eau potable": "Agua potable",
+    "eau de refroidissement": "Agua de refrigeración",
+    "eau déminéralisée": "Agua desmineralizada",
+    "eau adoucie": "Agua descalcificada",
+    "eau de rivière": "Agua de río",
+    "Débit d'eau calculé dans l'onglet Gaz de combustion ; pression de pompage = pression de pulvérisation.": "Caudal de agua calculado en la pestaña Gases de combustión; presión de bombeo = presión de pulverización.",
+    "Rapport": "Informe",
+    "Pulvérisation": "Pulverización",
     // — Ajouts audit i18n (2026-07) —
     "Fly ash content [g/Nm3]": "Contenido de cenizas volantes [g/Nm³]",
     'Calculation parameters': 'Parámetros de cálculo',
@@ -613,6 +673,21 @@ export const translations = {
 
   // ========== ITALIAN TRANSLATIONS ==========
   it: {
+    "Pompe d'eau de pulvérisation": "Pompa acqua di nebulizzazione",
+    "Consommations (OPEX)": "Consumi (OPEX)",
+    "Débit d'eau pulvérisée [m³/h]": "Portata acqua nebulizzata [m³/h]",
+    "Puissance électrique pompe [kW]": "Potenza elettrica pompa [kW]",
+    "Coût de l'eau [€/h]": "Costo dell'acqua [€/h]",
+    "Type d'eau": "Tipo di acqua",
+    "Rendement pompe [%]": "Rendimento pompa [%]",
+    "eau potable": "Acqua potabile",
+    "eau de refroidissement": "Acqua di raffreddamento",
+    "eau déminéralisée": "Acqua demineralizzata",
+    "eau adoucie": "Acqua addolcita",
+    "eau de rivière": "Acqua di fiume",
+    "Débit d'eau calculé dans l'onglet Gaz de combustion ; pression de pompage = pression de pulvérisation.": "Portata d'acqua calcolata nella scheda Gas di scarico; pressione di pompaggio = pressione di nebulizzazione.",
+    "Rapport": "Rapporto",
+    "Pulvérisation": "Nebulizzazione",
     // — Ajouts audit i18n (2026-07) —
     "Fly ash content [g/Nm3]": "Contenuto di ceneri volanti [g/Nm³]",
     'Calculation parameters': 'Parametri di calcolo',
@@ -766,6 +841,21 @@ export const translations = {
 
   // ========== PORTUGUESE TRANSLATIONS ==========
   pt: {
+    "Pompe d'eau de pulvérisation": "Bomba de água de pulverização",
+    "Consommations (OPEX)": "Consumos (OPEX)",
+    "Débit d'eau pulvérisée [m³/h]": "Caudal de água pulverizada [m³/h]",
+    "Puissance électrique pompe [kW]": "Potência elétrica da bomba [kW]",
+    "Coût de l'eau [€/h]": "Custo da água [€/h]",
+    "Type d'eau": "Tipo de água",
+    "Rendement pompe [%]": "Rendimento da bomba [%]",
+    "eau potable": "Água potável",
+    "eau de refroidissement": "Água de arrefecimento",
+    "eau déminéralisée": "Água desmineralizada",
+    "eau adoucie": "Água amaciada",
+    "eau de rivière": "Água de rio",
+    "Débit d'eau calculé dans l'onglet Gaz de combustion ; pression de pompage = pression de pulvérisation.": "Caudal de água calculado no separador Gases de combustão; pressão de bombagem = pressão de pulverização.",
+    "Rapport": "Relatório",
+    "Pulvérisation": "Pulverização",
     // — Ajouts audit i18n (2026-07) —
     "Fly ash content [g/Nm3]": "Teor de cinzas volantes [g/Nm³]",
     'Calculation parameters': 'Parâmetros de cálculo',
@@ -919,6 +1009,21 @@ export const translations = {
 
   // ========== CHINESE (Simplified) TRANSLATIONS ==========
   zh: {
+    "Pompe d'eau de pulvérisation": "喷雾水泵",
+    "Consommations (OPEX)": "消耗（OPEX）",
+    "Débit d'eau pulvérisée [m³/h]": "喷雾水流量 [m³/h]",
+    "Puissance électrique pompe [kW]": "泵电功率 [kW]",
+    "Coût de l'eau [€/h]": "水费 [€/h]",
+    "Type d'eau": "水类型",
+    "Rendement pompe [%]": "泵效率 [%]",
+    "eau potable": "饮用水",
+    "eau de refroidissement": "冷却水",
+    "eau déminéralisée": "除盐水",
+    "eau adoucie": "软化水",
+    "eau de rivière": "河水",
+    "Débit d'eau calculé dans l'onglet Gaz de combustion ; pression de pompage = pression de pulvérisation.": "水流量在烟气选项卡中计算；泵送压力 = 喷雾压力。",
+    "Rapport": "报告",
+    "Pulvérisation": "喷雾",
     // — Ajouts audit i18n (2026-07) —
     "Fly ash content [g/Nm3]": "飞灰含量 [g/Nm³]",
     'Calculation parameters': '计算参数',
@@ -1072,6 +1177,21 @@ export const translations = {
 
   // ========== JAPANESE TRANSLATIONS ==========
   ja: {
+    "Pompe d'eau de pulvérisation": "噴霧水ポンプ",
+    "Consommations (OPEX)": "消費量（OPEX）",
+    "Débit d'eau pulvérisée [m³/h]": "噴霧水量 [m³/h]",
+    "Puissance électrique pompe [kW]": "ポンプ電力 [kW]",
+    "Coût de l'eau [€/h]": "水コスト [€/h]",
+    "Type d'eau": "水の種類",
+    "Rendement pompe [%]": "ポンプ効率 [%]",
+    "eau potable": "飲料水",
+    "eau de refroidissement": "冷却水",
+    "eau déminéralisée": "脱塩水",
+    "eau adoucie": "軟水",
+    "eau de rivière": "河川水",
+    "Débit d'eau calculé dans l'onglet Gaz de combustion ; pression de pompage = pression de pulvérisation.": "水量は排ガスタブで計算；ポンプ圧力＝噴霧圧力。",
+    "Rapport": "レポート",
+    "Pulvérisation": "噴霧",
     // — Ajouts audit i18n (2026-07) —
     "Fly ash content [g/Nm3]": "飛灰含有量 [g/Nm³]",
     'Calculation parameters': '計算パラメータ',
@@ -1225,6 +1345,21 @@ export const translations = {
 
   // ========== RUSSIAN TRANSLATIONS ==========
   ru: {
+    "Pompe d'eau de pulvérisation": "Насос распыляемой воды",
+    "Consommations (OPEX)": "Потребление (OPEX)",
+    "Débit d'eau pulvérisée [m³/h]": "Расход распыляемой воды [м³/ч]",
+    "Puissance électrique pompe [kW]": "Электрическая мощность насоса [кВт]",
+    "Coût de l'eau [€/h]": "Стоимость воды [€/ч]",
+    "Type d'eau": "Тип воды",
+    "Rendement pompe [%]": "КПД насоса [%]",
+    "eau potable": "Питьевая вода",
+    "eau de refroidissement": "Охлаждающая вода",
+    "eau déminéralisée": "Деминерализованная вода",
+    "eau adoucie": "Умягчённая вода",
+    "eau de rivière": "Речная вода",
+    "Débit d'eau calculé dans l'onglet Gaz de combustion ; pression de pompage = pression de pulvérisation.": "Расход воды рассчитан на вкладке «Дымовые газы»; давление насоса = давление распыления.",
+    "Rapport": "Отчёт",
+    "Pulvérisation": "Распыление",
     // — Ajouts audit i18n (2026-07) —
     "Fly ash content [g/Nm3]": "Содержание летучей золы [г/Нм³]",
     'Calculation parameters': 'Параметры расчета',
@@ -1378,6 +1513,21 @@ export const translations = {
 
   // ========== ARABIC TRANSLATIONS ==========
   ar: {
+    "Pompe d'eau de pulvérisation": "مضخة مياه الرش",
+    "Consommations (OPEX)": "الاستهلاك (OPEX)",
+    "Débit d'eau pulvérisée [m³/h]": "تدفق مياه الرش [م³/س]",
+    "Puissance électrique pompe [kW]": "القدرة الكهربائية للمضخة [كيلوواط]",
+    "Coût de l'eau [€/h]": "تكلفة المياه [€/س]",
+    "Type d'eau": "نوع المياه",
+    "Rendement pompe [%]": "كفاءة المضخة [%]",
+    "eau potable": "مياه الشرب",
+    "eau de refroidissement": "مياه التبريد",
+    "eau déminéralisée": "مياه منزوعة المعادن",
+    "eau adoucie": "مياه مُيسَّرة",
+    "eau de rivière": "مياه النهر",
+    "Débit d'eau calculé dans l'onglet Gaz de combustion ; pression de pompage = pression de pulvérisation.": "يُحسب تدفق المياه في تبويب غازات الاحتراق؛ ضغط الضخ = ضغط الرش.",
+    "Rapport": "التقرير",
+    "Pulvérisation": "الرش",
     // — Ajouts audit i18n (2026-07) —
     "Fly ash content [g/Nm3]": "محتوى الرماد المتطاير [غ/نم³]",
     'Calculation parameters': 'معاملات الحساب',

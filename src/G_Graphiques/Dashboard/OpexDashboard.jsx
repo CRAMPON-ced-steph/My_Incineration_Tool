@@ -66,12 +66,14 @@ const boutonPetit = { padding: '4px 8px', color: 'white', border: 'none', border
 const DataTable = ({ title, color, table, lignes, total, opex, actions, t }) => {
   const uniteH = uniteHoraire(table, opex.currency);
   const annuel = opex.isAnnualMode;
+  // Production vendue : unités différentes selon la ligne (kWé, t/h) → pas de total.
+  const sansTotal = table === 'production';
 
   return (
     <div style={{ marginBottom: '30px' }}>
       <div style={{ backgroundColor: color, padding: '10px 15px', borderRadius: '5px 5px 0 0', color: 'white', fontWeight: 'bold', fontSize: '18px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <span>{title} [{uniteH}]</span>
-        <span>{t('total')}: {annuel ? `${fmtOpex(versAnnuel(total, table, opex.availability))} ${uniteAnnuelle(table, opex.currency)}` : fmtOpex(total)}</span>
+        <span>{title}{uniteH ? ` [${uniteH}]` : ''}</span>
+        {!sansTotal && <span>{t('total')}: {annuel ? `${fmtOpex(versAnnuel(total, table, opex.availability))} ${uniteAnnuelle(table, opex.currency)}` : fmtOpex(total)}</span>}
       </div>
       <div style={{ border: `1px solid ${color}`, borderTop: 'none', padding: '15px', borderRadius: '0 0 5px 5px' }}>
         {lignes.length > 0 ? (
@@ -120,10 +122,12 @@ const DataTable = ({ title, color, table, lignes, total, opex, actions, t }) => 
           <button onClick={() => actions.ajouter(table)} style={{ padding: '8px 12px', backgroundColor: color, color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
             {t('addRow')}
           </button>
-          <div style={{ fontWeight: 'bold', fontSize: '16px', padding: '8px 12px', backgroundColor: '#f0f0f0', borderRadius: '4px', border: '1px solid #ddd' }}>
-            {t('total')}: {fmtOpex(total)} {uniteH}
-            {annuel && <span style={{ fontWeight: 'normal' }}> — {fmtOpex(versAnnuel(total, table, opex.availability))} {uniteAnnuelle(table, opex.currency)} ({t('annual').toLowerCase()})</span>}
-          </div>
+          {!sansTotal && (
+            <div style={{ fontWeight: 'bold', fontSize: '16px', padding: '8px 12px', backgroundColor: '#f0f0f0', borderRadius: '4px', border: '1px solid #ddd' }}>
+              {t('total')}: {fmtOpex(total)} {uniteH}
+              {annuel && <span style={{ fontWeight: 'normal' }}> — {fmtOpex(versAnnuel(total, table, opex.availability))} {uniteAnnuelle(table, opex.currency)} ({t('annual').toLowerCase()})</span>}
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -137,6 +141,17 @@ const CARTES = [
   { table: 'energie', titre: 'energy', couleur: '#f39c12' },
   { table: 'co2', titre: 'CO2', couleur: '#9b59b6' },
   { table: 'cout', titre: 'cost', couleur: '#34495e' },
+];
+
+// Chaudière (valorisation) : recettes et coût net.
+const CARTES_VALORISATION = [
+  { table: 'recettes', titre: 'revenues', couleur: '#16a085' },
+  { table: 'net', titre: 'netCost', couleur: '#2c3e50' },
+];
+
+const TABLEAUX_VALORISATION = [
+  { table: 'production', titre: 'energySold', couleur: '#1abc9c' },
+  { table: 'recettes', titre: 'revenues', couleur: '#16a085' },
 ];
 
 const TABLEAUX = [
@@ -161,10 +176,12 @@ const ConsumptionSummary = ({ opex, equipmentType, color, onToggle, t }) => {
         </div>
       </div>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '15px' }}>
-        {CARTES.map(({ table, titre, couleur }) => {
-          const total = opex.totaux[table];
-          const valeur = annuel ? versAnnuel(total, table, opex.availability) : total;
-          const unite = annuel ? uniteAnnuelle(table, opex.currency) : uniteHoraire(table, opex.currency);
+        {(opex.valorisation ? [...CARTES, ...CARTES_VALORISATION] : CARTES).map(({ table, titre, couleur }) => {
+          // Coût net = coût − recettes (mêmes unités que le coût).
+          const total = table === 'net' ? opex.totaux.cout - opex.totaux.recettes : opex.totaux[table];
+          const tableUnite = table === 'net' ? 'cout' : table;
+          const valeur = annuel ? versAnnuel(total, tableUnite, opex.availability) : total;
+          const unite = annuel ? uniteAnnuelle(tableUnite, opex.currency) : uniteHoraire(tableUnite, opex.currency);
           return (
             <div key={table} style={{ flex: '1 1 30%', padding: '10px', backgroundColor: couleur, color: 'white', borderRadius: '4px', minWidth: '150px' }}>
               <div>{titre === 'CO2' ? 'CO2' : t(titre)} [{unite}]</div>
@@ -285,7 +302,7 @@ const OpexDashboard = ({
       />
 
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px' }}>
-        {TABLEAUX.map(({ table, titre, couleur }) => (
+        {(opex.valorisation ? [...TABLEAUX, ...TABLEAUX_VALORISATION] : TABLEAUX).map(({ table, titre, couleur }) => (
           <div key={table} style={{ flex: '1 1 45%', minWidth: '300px' }}>
             <DataTable
               title={titre === 'CO2' ? 'CO2' : t(titre)}

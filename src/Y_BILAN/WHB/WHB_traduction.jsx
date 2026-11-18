@@ -1,6 +1,17 @@
 // WHB_traduction.js
 export const translations = {
   fr: {
+    "feedWaterPump": "Pompe alimentaire",
+    "feedWaterPumpPower": "Puissance pompe alimentaire [kW]",
+    "feedWaterPumpFlow": "Débit pompe alimentaire [m³/h]",
+    "feedWaterPumpHead": "Pression de refoulement pompe [bar]",
+    "opexConsumptions": "Consommations (OPEX)",
+    "opexConsumptionsNote": "Valeurs reprises dans l'onglet OPEX. La valorisation (électricité, vapeur vendue) vient de l'onglet Valorisation vapeur.",
+    "demineralizedMakeupWater": "Eau déminéralisée d'appoint (purge) [m³/h]",
+    "boilerAshEvacuated": "Cendres de chaudière évacuées [kg/h]",
+    "truckAndDistance": "Camion / distance",
+    "ashTransportCO2": "CO2 transport des cendres [kg/h]",
+    "ashTransportCost": "Coût transport des cendres [€/h]",
     // — Ajouts audit i18n (2026-07) —
     "steamVaporPropertiesByPressure": "Propriétés de la vapeur par pression",
     "opex": "Opex",
@@ -238,6 +249,17 @@ export const translations = {
   },
 
   en: {
+    "feedWaterPump": "Feedwater pump",
+    "feedWaterPumpPower": "Feedwater pump power [kW]",
+    "feedWaterPumpFlow": "Feedwater pump flow [m³/h]",
+    "feedWaterPumpHead": "Pump discharge pressure [bar]",
+    "opexConsumptions": "Consumptions (OPEX)",
+    "opexConsumptionsNote": "Values used in the OPEX tab. Valorisation (electricity, steam sold) comes from the Steam valorization tab.",
+    "demineralizedMakeupWater": "Demineralized make-up water (blowdown) [m³/h]",
+    "boilerAshEvacuated": "Boiler ash removed [kg/h]",
+    "truckAndDistance": "Truck / distance",
+    "ashTransportCO2": "Ash transport CO2 [kg/h]",
+    "ashTransportCost": "Ash transport cost [€/h]",
     // — Ajouts audit i18n (2026-07) —
     "rapport": "Report",
     "steamVaporPropertiesByPressure": "Steam properties by pressure",
@@ -477,6 +499,17 @@ export const translations = {
 
 
   de: {
+    "feedWaterPump": "Speisewasserpumpe",
+    "feedWaterPumpPower": "Leistung Speisewasserpumpe [kW]",
+    "feedWaterPumpFlow": "Förderstrom Speisewasserpumpe [m³/h]",
+    "feedWaterPumpHead": "Pumpenförderdruck [bar]",
+    "opexConsumptions": "Verbräuche (OPEX)",
+    "opexConsumptionsNote": "Werte für den OPEX-Reiter. Die Verwertung (Strom, verkaufter Dampf) stammt aus dem Reiter Dampfverwertung.",
+    "demineralizedMakeupWater": "Deionat-Zusatzwasser (Abschlämmung) [m³/h]",
+    "boilerAshEvacuated": "Abtransportierte Kesselasche [kg/h]",
+    "truckAndDistance": "Lkw / Entfernung",
+    "ashTransportCO2": "CO2 Aschetransport [kg/h]",
+    "ashTransportCost": "Kosten Aschetransport [€/h]",
     // — Ajouts audit i18n (2026-07) —
     "rapport": "Bericht",
     "steamVaporPropertiesByPressure": "Dampfeigenschaften nach Druck",
@@ -717,6 +750,17 @@ export const translations = {
 
 
   es: {
+    "feedWaterPump": "Bomba de alimentación",
+    "feedWaterPumpPower": "Potencia bomba de alimentación [kW]",
+    "feedWaterPumpFlow": "Caudal bomba de alimentación [m³/h]",
+    "feedWaterPumpHead": "Presión de impulsión de la bomba [bar]",
+    "opexConsumptions": "Consumos (OPEX)",
+    "opexConsumptionsNote": "Valores utilizados en la pestaña OPEX. La valorización (electricidad, vapor vendido) procede de la pestaña Valorización del vapor.",
+    "demineralizedMakeupWater": "Agua desmineralizada de aporte (purga) [m³/h]",
+    "boilerAshEvacuated": "Cenizas de caldera evacuadas [kg/h]",
+    "truckAndDistance": "Camión / distancia",
+    "ashTransportCO2": "CO2 transporte de cenizas [kg/h]",
+    "ashTransportCost": "Coste transporte de cenizas [€/h]",
     // — Ajouts audit i18n (2026-07) —
     "rapport": "Informe",
     "steamVaporPropertiesByPressure": "Propiedades del vapor por presión",
@@ -954,6 +998,17 @@ export const translations = {
   },
 
   it: {
+    "feedWaterPump": "Pompa di alimento",
+    "feedWaterPumpPower": "Potenza pompa di alimento [kW]",
+    "feedWaterPumpFlow": "Portata pompa di alimento [m³/h]",
+    "feedWaterPumpHead": "Pressione di mandata pompa [bar]",
+    "opexConsumptions": "Consumi (OPEX)",
+    "opexConsumptionsNote": "Valori ripresi nella scheda OPEX. La valorizzazione (elettricità, vapore venduto) proviene dalla scheda Valorizzazione vapore.",
+    "demineralizedMakeupWater": "Acqua demineralizzata di reintegro (spurgo) [m³/h]",
+    "boilerAshEvacuated": "Ceneri di caldaia evacuate [kg/h]",
+    "truckAndDistance": "Camion / distanza",
+    "ashTransportCO2": "CO2 trasporto ceneri [kg/h]",
+    "ashTransportCost": "Costo trasporto ceneri [€/h]",
     // — Ajouts audit i18n (2026-07) —
     "rapport": "Rapporto",
     "steamVaporPropertiesByPressure": "Proprietà del vapore per pressione",
@@ -1192,6 +1247,17 @@ export const translations = {
 
 
   pt: {
+    "feedWaterPump": "Bomba de alimentação",
+    "feedWaterPumpPower": "Potência da bomba de alimentação [kW]",
+    "feedWaterPumpFlow": "Caudal da bomba de alimentação [m³/h]",
+    "feedWaterPumpHead": "Pressão de descarga da bomba [bar]",
+    "opexConsumptions": "Consumos (OPEX)",
+    "opexConsumptionsNote": "Valores retomados no separador OPEX. A valorização (eletricidade, vapor vendido) vem do separador Valorização do vapor.",
+    "demineralizedMakeupWater": "Água desmineralizada de reposição (purga) [m³/h]",
+    "boilerAshEvacuated": "Cinzas da caldeira evacuadas [kg/h]",
+    "truckAndDistance": "Camião / distância",
+    "ashTransportCO2": "CO2 transporte de cinzas [kg/h]",
+    "ashTransportCost": "Custo transporte de cinzas [€/h]",
     // — Ajouts audit i18n (2026-07) —
     "rapport": "Relatório",
     "steamVaporPropertiesByPressure": "Propriedades do vapor por pressão",
@@ -1430,6 +1496,17 @@ export const translations = {
 
 
   ru: {
+    "feedWaterPump": "Питательный насос",
+    "feedWaterPumpPower": "Мощность питательного насоса [кВт]",
+    "feedWaterPumpFlow": "Расход питательного насоса [м³/ч]",
+    "feedWaterPumpHead": "Давление нагнетания насоса [бар]",
+    "opexConsumptions": "Потребление (OPEX)",
+    "opexConsumptionsNote": "Значения используются во вкладке OPEX. Реализация (электроэнергия, проданный пар) берётся из вкладки «Использование пара».",
+    "demineralizedMakeupWater": "Подпиточная деминерализованная вода (продувка) [м³/ч]",
+    "boilerAshEvacuated": "Вывозимая котельная зола [кг/ч]",
+    "truckAndDistance": "Грузовик / расстояние",
+    "ashTransportCO2": "CO2 транспортировки золы [кг/ч]",
+    "ashTransportCost": "Стоимость транспортировки золы [€/ч]",
     // — Ajouts audit i18n (2026-07) —
     "rapport": "Отчёт",
     "steamVaporPropertiesByPressure": "Свойства пара по давлению",
@@ -1667,6 +1744,17 @@ export const translations = {
   },
 
   zh: {
+    "feedWaterPump": "给水泵",
+    "feedWaterPumpPower": "给水泵功率 [kW]",
+    "feedWaterPumpFlow": "给水泵流量 [m³/h]",
+    "feedWaterPumpHead": "泵出口压力 [bar]",
+    "opexConsumptions": "消耗（OPEX）",
+    "opexConsumptionsNote": "这些值用于 OPEX 选项卡。售电和售汽来自蒸汽利用选项卡。",
+    "demineralizedMakeupWater": "补充除盐水（排污）[m³/h]",
+    "boilerAshEvacuated": "外运锅炉灰 [kg/h]",
+    "truckAndDistance": "卡车 / 距离",
+    "ashTransportCO2": "灰运输CO2 [kg/h]",
+    "ashTransportCost": "灰运输成本 [€/h]",
     // — Ajouts audit i18n (2026-07) —
     "rapport": "报告",
     "whbReportTitle": "余热锅炉（WHB）——综合报告",
@@ -1902,6 +1990,17 @@ export const translations = {
   },
 
   ja: {
+    "feedWaterPump": "給水ポンプ",
+    "feedWaterPumpPower": "給水ポンプ動力 [kW]",
+    "feedWaterPumpFlow": "給水ポンプ流量 [m³/h]",
+    "feedWaterPumpHead": "ポンプ吐出圧力 [bar]",
+    "opexConsumptions": "消費量（OPEX）",
+    "opexConsumptionsNote": "OPEXタブで使用される値。売電・売蒸気は蒸気活用タブから取得します。",
+    "demineralizedMakeupWater": "補給脱塩水（ブロー）[m³/h]",
+    "boilerAshEvacuated": "搬出ボイラー灰 [kg/h]",
+    "truckAndDistance": "トラック / 距離",
+    "ashTransportCO2": "灰輸送CO2 [kg/h]",
+    "ashTransportCost": "灰輸送コスト [€/h]",
     // — Ajouts audit i18n (2026-07) —
     "rapport": "レポート",
     "whbReportTitle": "廃熱ボイラー（WHB）——総合レポート",
@@ -2137,6 +2236,17 @@ export const translations = {
   },
 
   ar: {
+    "feedWaterPump": "مضخة مياه التغذية",
+    "feedWaterPumpPower": "قدرة مضخة مياه التغذية [كيلوواط]",
+    "feedWaterPumpFlow": "تدفق مضخة مياه التغذية [م³/س]",
+    "feedWaterPumpHead": "ضغط تصريف المضخة [بار]",
+    "opexConsumptions": "الاستهلاك (OPEX)",
+    "opexConsumptionsNote": "قيم مستخدمة في تبويب OPEX. التثمين (الكهرباء والبخار المباع) يأتي من تبويب تثمين البخار.",
+    "demineralizedMakeupWater": "مياه منزوعة المعادن للتعويض (التصريف) [م³/س]",
+    "boilerAshEvacuated": "رماد الغلاية المُخلى [كغ/س]",
+    "truckAndDistance": "الشاحنة / المسافة",
+    "ashTransportCO2": "CO2 نقل الرماد [كغ/س]",
+    "ashTransportCost": "تكلفة نقل الرماد [€/س]",
     // — Ajouts audit i18n (2026-07) —
     "rapport": "تقرير",
     "whbReportTitle": "غلاية استرجاع الحرارة (WHB) — تقرير تجميعي",

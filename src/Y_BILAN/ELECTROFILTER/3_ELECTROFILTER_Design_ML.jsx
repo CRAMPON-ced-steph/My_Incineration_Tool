@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import TableGeneric from '../../C_Components/Tableau_generique';
 import { coeff_Nm3_to_m3 } from '../../A_Transverse_fonction/conv_calculation';
 import { getOpexData } from '../../A_Transverse_fonction/opexDataService';
@@ -60,9 +60,11 @@ const ParameterInput = ({ translationKey, value, onChange, options = null }) => 
 const ELECTROFILTER_Design = ({ innerData = {}, setInnerData, currentLanguage = 'fr' }) => {
   const languageCode = getLanguageCode(currentLanguage);
   
-  const t = (key) => {
-    return translations[languageCode]?.[key] || translations['fr']?.[key] || key;
-  };
+  // t stable : une fonction recréée à chaque rendu relançait l'effet d'écriture en boucle.
+  const t = useCallback(
+    (key) => translations[languageCode]?.[key] || translations['fr']?.[key] || key,
+    [languageCode]
+  );
 
   // Fonction helper pour obtenir les valeurs initiales
   const getInitialValue = (paramName, defaultValue) => {
@@ -222,45 +224,67 @@ const ELECTROFILTER_Design = ({ innerData = {}, setInnerData, currentLanguage = 
     { text: t('Coût transport total [€]'), value: fmt(cout_transport_total, 2) },
   ];
 
-  useEffect(() => {
-    if (setInnerData && typeof setInnerData === 'function') {
-      const toSignificantFigures = (value, figures = 2) => {
-        if (value === 0 || value === null || value === undefined || !isFinite(value)) return 0;
-        return parseFloat(value.toPrecision(figures));
-      };
+  // Réactifs calculés dans l'onglet Polluants (injection sèche en amont du filtre)
+  const reactifs = innerData?.Conso_reactifs || {};
 
-      setInnerData(prevData => ({
-        ...prevData,
-        P_out_mmCE,
-        consoElec1: toSignificantFigures(conso_elec_champs_kW),
-        consoElec2: toSignificantFigures(conso_vis_transport_kW),
-        consoElec3: toSignificantFigures(conso_elec_marteau_debatissage_kW),
-        consoElec4: toSignificantFigures(Conso_elec_air_co_kW),
-        labelElec1: t('Consommation élec des champs'),
-        labelElec2: t('Consommation vis de transport'),
-        labelElec3: t('Consommation élec des marteaux débatisseurs'),
-        labelElec4: t('Air comprimé'),
-        conso_air_co_N_m3: conso_air_co_Nm3_h,
-        pression_air_comprime_bar,
-        conso_fly_ash_kg_h: toSignificantFigures(cendres_kg_h),
-        CO2_transport_fly_ash: toSignificantFigures(CO2_transport_total),
-        cout_transport_fly_ash: toSignificantFigures(cout_transport_total),
-      }));
-    }
-  }, [
-    conso_elec_champs_kW,
-    conso_vis_transport_kW,
-    conso_elec_marteau_debatissage_kW,
-    Conso_elec_air_co_kW,
-    conso_air_co_Nm3_h,
-    pression_air_comprime_bar,
-    cout_transport_total,
-    CO2_transport_total,
-    cendres_kg_h,
+  // ─── Écriture dans innerData (onglet OPEX et rapport) ───
+  // Toutes les clés OPEX standard sont écrites : celles que l'électrofiltre ne
+  // consomme pas sont remises à 0 (pas de valeur héritée d'un autre nœud).
+  const opexPayload = useMemo(() => ({
     P_out_mmCE,
-    setInnerData,
-    t,
+    consoElec1: conso_elec_champs_kW,
+    consoElec2: conso_vis_transport_kW,
+    consoElec3: conso_elec_marteau_debatissage_kW,
+    consoElec4: Conso_elec_air_co_kW,
+    labelElec1: t('Consommation élec des champs'),
+    labelElec2: t('Consommation vis de transport'),
+    labelElec3: t('Consommation élec des marteaux débatisseurs'),
+    labelElec4: t('Air comprimé'),
+    ...Object.fromEntries([5, 6, 7, 8].flatMap((i) => [[`consoElec${i}`, 0], [`labelElec${i}`, '']])),
+    conso_air_co_N_m3: conso_air_co_Nm3_h,
+    pression_air_comprime_bar,
+    Conso_EauPotable_m3: 0, Conso_EauRefroidissement_m3: 0, Conso_EauDemin_m3: 0, Conso_EauRiviere_m3: 0, Conso_EauAdoucie_m3: 0,
+    Conso_CaCO3_kg: reactifs.CaCO3 || 0,
+    Conso_CaO_kg: reactifs.CaO || 0,
+    Conso_CaOH2_dry_kg: reactifs.CaOH2dry || 0,
+    Conso_CaOH2_wet_kg: reactifs.CaOH2wet || 0,
+    Conso_NaOH_kg: reactifs.NaOH || 0,
+    Conso_NaOHCO3_kg: reactifs.NaOHCO3 || 0,
+    Conso_Ammonia_kg: 0, Conso_NaBrCaBr2_kg: 0, Conso_CAP_kg: 0,
+    conso_gaz_H_MW: 0, conso_gaz_L_MW: 0, conso_gaz_Process_MW: 0, conso_fuel_MW: 0,
+    conso_incineration_ash_kg_h: 0, conso_boiler_ash_kg_h: 0,
+    conso_fly_ash_kg_h: cendres_kg_h,
+    CO2_transport_incineratino_ash: 0, CO2_transport_boiler_ash: 0,
+    CO2_transport_fly_ash: CO2_transport_total,
+    CO2_transport_reactifs: 0,
+    cout_transport_incineratino_ash: 0, cout_transport_boiler_ash: 0,
+    cout_transport_fly_ash: cout_transport_total,
+    cout_transport_reactifs: 0,
+    ESP_design: {
+      surface_plaques_m2: surfacePlaques,
+      nombre_plaques: nombrePlaques,
+      nombre_champs: nombreChamps,
+      rendement_capture_pct: Rdt_capture,
+      vitesse_migration: Vitesse_migration,
+      type_camion,
+      distance_km,
+    },
+  }), [
+    P_out_mmCE, conso_elec_champs_kW, conso_vis_transport_kW, conso_elec_marteau_debatissage_kW,
+    Conso_elec_air_co_kW, conso_air_co_Nm3_h, pression_air_comprime_bar, reactifs.CaCO3, reactifs.CaO,
+    reactifs.CaOH2dry, reactifs.CaOH2wet, reactifs.NaOH, reactifs.NaOHCO3, cendres_kg_h,
+    CO2_transport_total, cout_transport_total, surfacePlaques, nombrePlaques, nombreChamps,
+    Rdt_capture, Vitesse_migration, type_camion, distance_km, t,
   ]);
+
+  const lastSync = useRef('');
+  useEffect(() => {
+    if (!setInnerData || typeof setInnerData !== 'function') return;
+    const json = JSON.stringify(opexPayload);
+    if (json === lastSync.current) return;
+    lastSync.current = json;
+    setInnerData((prevData) => ({ ...prevData, ...opexPayload }));
+  }, [opexPayload, setInnerData]);
 
   return (
     <EFDesignCtx.Provider value={t}>

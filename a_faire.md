@@ -101,7 +101,7 @@ Test : chaque page Bilan ouverte avec un même flux amont (14 200 kg/h de fumée
 
 ### Transmission et stabilité
 - [ ] **Résultats non transmis à l'aval** : BHF, électrofiltre, cyclone, réacteur, tour de refroidissement et laveur renvoient `T_OUT` et `FG_OUT_kg_h` reçus de l'amont (jamais mis à jour). Leurs températures de sortie, entrées d'air et eau injectée ne sont pas transmises. Laveur : `T_scrubber_out` / `FG_scrubber_out_kg_h` sont calculés mais lus par aucun nœud → ventilateur et cheminée calculés avec les fumées d'entrée du laveur.
-- [ ] **Boucles de rendu infinies à l'ouverture de l'onglet Design** (la page ne se stabilise jamais) : chaudière, quench simple, injection d'eau, électrofiltre, réacteur, cyclone, tour de refroidissement. Le BHF avait le même défaut quand l'onglet Polluants n'avait pas été ouvert avant Design : corrigé le 18/11/2026. Cause : effet qui appelle `setInnerData` et dépend de `innerData` ou d'une fonction de traduction `t` recréée à chaque rendu (même défaut que celui déjà corrigé dans le Design du four rotatif).
+- [ ] **Boucles de rendu infinies à l'ouverture de l'onglet Design** (la page ne se stabilise jamais) : quench simple, injection d'eau, réacteur, cyclone (chaudière, électrofiltre et tour de refroidissement corrigés le 18/11/2026). Le BHF avait le même défaut quand l'onglet Polluants n'avait pas été ouvert avant Design : corrigé le 18/11/2026. Cause : effet qui appelle `setInnerData` et dépend de `innerData` ou d'une fonction de traduction `t` recréée à chaque rendu (même défaut que celui déjà corrigé dans le Design du four rotatif).
 - [x] **DeNOx : l'onglet OPEX plante** (corrigé le 18/11/2026 : valeurs écrites en nombres, lecture tolérante dans l'onglet OPEX) (page blanche) après passage par Design : `consoElec1`, `consoElec2`, `Conso_Ammonia_kg` écrits en texte (`toFixed`) → `toPrecision` sur une chaîne dans `OpexDashboard`. (Hors calcul de réchauffage, laissé tel quel.)
 - [ ] **Nœud CO₂ non implémenté** : onglets 2 à 6 vides ; l'onglet 1 est une copie des fumées du four rotatif et envoie T = 900 °C et des débits nuls en aval.
 
@@ -144,6 +144,13 @@ Corrigé : l'onglet OPEX est la source unique. Les rapports (section OPEX de cha
 - [x] **Ventilateur** : l'ancien rapport ne comptait que l'eau potable.
 
 ### Restant
-- [ ] **Chaudière** et **électrofiltre** : pas d'onglet OPEX (chaudière : `5_WHB_Opex.jsx` / `OpexDashboard_WHB.jsx` non branchés ; électrofiltre : onglet commenté). Le rapport utilise les valeurs calculées, sans saisie possible.
-- [ ] **Valeurs fictives écrites par certains Design** : tour de refroidissement (cendres 1 kg/h et transport 90 €/h et 90 kg CO₂/h pour chaque type de cendre), injection d'air (cendres de chaudière 1 kg/h). Elles apparaissent dans l'OPEX.
-- [ ] **Projets existants** : un nœud aval peut encore contenir des consommations recopiées de l'amont (clés que son Design n'écrit pas). Les vérifier dans son onglet OPEX (supprimer la ligne ou remettre 0).
+- [x] **Chaudière** et **électrofiltre** : onglet OPEX ajouté (18/11/2026), alimenté par l'onglet Design ; chaudière : valorisation (électricité, vapeur vendue) lue dans l'onglet Valorisation vapeur.
+- [x] **Valeurs fictives de la tour de refroidissement** (cendres 1 kg/h, transport 3 × 90 €/h et 3 × 90 kg CO₂/h, eau 1 m³/h de chaque type, 1 kg/h de CaCO₃, CaO, Ca(OH)₂) : remplacées par l'eau pulvérisée calculée et la pompe (débit × pression de pulvérisation / rendement), le reste à 0.
+- [ ] **Injection d'air** : écrit 1 kg/h de cendres de chaudière (valeur fictive, sans coût associé).
+- [ ] **Projets existants** : un nœud aval peut encore contenir des consommations recopiées de l'amont (clés que son Design n'écrit pas). Les vérifier dans son onglet OPEX (supprimer la ligne ou remettre 0). Tour de refroidissement, électrofiltre et chaudière : corrigé à la réouverture de l'onglet Design (toutes les clés OPEX y sont réécrites).
+
+### Formules OPEX à revoir (relevé du 18/11/2026)
+- [ ] **Coût du transport des résidus compté comme un voyage par heure** : `prix [€/km] × distance` est enregistré en €/h quel que soit le débit de résidus (BHF, électrofiltre, chaudière, four rotatif, réacteur). Ex. chaudière : 41 kg/h de cendres, 100 km → 25 €/h (219 k€/an) ; électrofiltre : 1 kg/h, 50 km → 12,5 €/h. À remplacer par (débit en t/h ÷ capacité du camion) × distance × prix (× 2 pour le retour à vide si le prix l'exclut). Le CO₂ (kg/t·km × t/h × km) est, lui, proportionnel au débit.
+- [ ] **CO₂ de l'air comprimé compté deux fois** (BHF, électrofiltre) : la puissance du compresseur est une ligne d'électricité (CO₂ électricité) et la ligne « air comprimé » recalcule le même CO₂ (Nm³/h × ratio kWh/Nm³ × facteur CO₂). Électrofiltre par défaut : 15 kg/h de trop.
+- [ ] **FB / GF : achat des réactifs compté deux fois** : `Conso_reactifs.cout` (coût d'achat) est recopié dans `cout_transport_reactifs` (ligne « Transport réactifs ») alors que l'achat est déjà compté dans « Conso réactifs ».
+- [ ] **Chaudière** : eau d'appoint = purge seule (retour complet des condensats supposé) ; si la vapeur est vendue sans retour, l'appoint est le débit d'eau alimentaire.
