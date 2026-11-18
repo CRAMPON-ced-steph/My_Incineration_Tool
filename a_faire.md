@@ -164,19 +164,20 @@ Corrigé : l'onglet OPEX est la source unique. Les rapports (section OPEX de cha
 ## FB — onglet HX / récupérateur (`src/Y_BILAN/FB/4_Recuperator.jsx`) — comparaison à Pyrofluid (18/11/2026)
 
 Référence : `ClassRecuperateur.vb` et `Recuperateur.vb` (Drive, 1_VALIDATION_PYRO › CODE DU PYROFLUID › 03 Recuperateur).
-Exemple chiffré : fumées 870 → 550 °C, air 60 → 580 °C, 1 000 kW échangés, 8 000 Nm³/h d'air, vitesses 16 / 25 m/s.
+Après correction (18/11/2026), l'onglet redonne Pyrofluid à 0,05 % près (273,15 au lieu de 273) : DTLM 381 K, surface 68,9 m², DP air 280 mmCE (2 passes) / 347 (3 passes), section 0,380 m².
+Exemple chiffré (avant correction) : fumées 870 → 550 °C, air 60 → 580 °C, 1 000 kW échangés, 8 000 Nm³/h d'air, vitesses 16 / 25 m/s.
 
 Conforme : Hext, Hint, U propre, U encrassé = U / (1 + encrassement), F = 1, chaleur fumées = chaleur air / rendement, boucle de perte de charge côté air (tubes 38,5 / 44,5 mm, 1,6 m par passe), formule de la DTLM, conversion Nm³ → m³ (273,15 au lieu de 273, négligeable). Température de sortie des fumées : même bilan, inversé sur l'enthalpie NIST (choix déjà validé) au lieu du Cp moyen du mélange.
 
 ### Calculs
-- [ ] **DTLM** : la sortie d'air est prise à T air avant préchauffage + 100 °C (115 °C) au lieu de la température d'air préchauffé (`Tair_ap_prechauffe_C`). DTLM 613 K au lieu de 381 K.
-- [ ] **Unités de la surface** : UA en W/K divisé par U en kcal/(h·m²·K) → surface × 1,163. Avec la DTLM : surface −28 % à encrassement égal (50 m² au lieu de 69), −36 % avec les valeurs par défaut de l'outil (44 m²).
-- [ ] **Section calandre** : calculée avec le débit massique (Nm³/h × ρ) au lieu du débit réel à la température du freeboard (`DEBREELVOLFUMFOUR`) → 0,115 m² au lieu de 0,381 m².
-- [ ] **Perte de charge côté air** : `DP_RecupAir` reçoit un débit déjà converti en m³/h réels (580 °C) qu'il reconvertit → débit compté environ deux fois, DP 168 mmCE au lieu de 280.
-- [ ] **Pression du freeboard** : la clé `P_freeboard` n'est jamais écrite (l'onglet Voûte écrit `PressionFreeboard` / `Pression_Freeboard`) → toujours 89 mmCE par défaut.
-- [ ] **Pression des fumées transmise à l'aval** : `P_sortie_HX_mmCE` = 2 000 mmCE (pression côté air) est envoyée en `P_out_mmCE` / `P_OUT` ; la chaudière et l'électrofiltre partent de 2 000 mmCE (débits réels aval −15 %). Pyrofluid transmet la pression du freeboard.
-- [ ] **Ligne récupérateur → four (50 mmCE) absente** : Pyrofluid prend pression soufflante = P voûte + DP HX + 50 et débit d'air sortie HX à P voûte + 50. Le champ `PDC_reseau_sortie_entree_boite_mmCe` (50) existe mais n'est pas utilisé.
-- [ ] **PDC fumées dans le HX** : 50 mmCE par défaut (Pyrofluid 40) ; `PDC_recuperateur_fumees_mmCE` (40), `PDC_carneau_mmCE`, `PDC_echangeur_air_mmCE` ne servent pas ou presque.
+- [x] **DTLM** (corrigé le 18/11/2026 : air entrée = sortie soufflante, sortie = air préchauffé ; alerte si températures incompatibles) : la sortie d'air est prise à T air avant préchauffage + 100 °C (115 °C) au lieu de la température d'air préchauffé (`Tair_ap_prechauffe_C`). DTLM 613 K au lieu de 381 K.
+- [x] **Unités de la surface** (corrigé : UA en kcal/h·°C pour le calcul de la surface, W/K affiché) : UA en W/K divisé par U en kcal/(h·m²·K) → surface × 1,163. Avec la DTLM : surface −28 % à encrassement égal (50 m² au lieu de 69), −36 % avec les valeurs par défaut de l'outil (44 m²).
+- [x] **Section calandre** (corrigé : débit réel au freeboard) : calculée avec le débit massique (Nm³/h × ρ) au lieu du débit réel à la température du freeboard (`DEBREELVOLFUMFOUR`) → 0,115 m² au lieu de 0,381 m².
+- [x] **Perte de charge côté air** (corrigé : débit en Nm³/h) : `DP_RecupAir` reçoit un débit déjà converti en m³/h réels (580 °C) qu'il reconvertit → débit compté environ deux fois, DP 168 mmCE au lieu de 280.
+- [x] **Pression du freeboard** (corrigé : lue dans `PressionFreeboard` de l'onglet Voûte, 89 mmCE tant qu'il n'a pas été calculé) : la clé `P_freeboard` n'est jamais écrite (l'onglet Voûte écrit `PressionFreeboard` / `Pression_Freeboard`) → toujours 89 mmCE par défaut.
+- [x] **Pression des fumées transmise à l'aval** (corrigé : P freeboard − PDC côté fumées) : `P_sortie_HX_mmCE` = 2 000 mmCE (pression côté air) est envoyée en `P_out_mmCE` / `P_OUT` ; la chaudière et l'électrofiltre partent de 2 000 mmCE (débits réels aval −15 %). Pyrofluid transmet la pression du freeboard.
+- [x] **Ligne récupérateur → four (50 mmCE) absente** (corrigé : saisissable, 50 par défaut) : Pyrofluid prend pression soufflante = P voûte + DP HX + 50 et débit d'air sortie HX à P voûte + 50. Le champ `PDC_reseau_sortie_entree_boite_mmCe` (50) existe mais n'est pas utilisé.
+- [x] **PDC fumées dans le HX** (corrigé : 40 mmCE par défaut ; un ancien réglage à 50 passe à 40) : 50 mmCE par défaut (Pyrofluid 40) ; `PDC_recuperateur_fumees_mmCE` (40), `PDC_carneau_mmCE`, `PDC_echangeur_air_mmCE` ne servent pas ou presque.
 - [ ] **P voûte** : l'outil prend la pression par défaut saisie (2 000) ; Pyrofluid lit `PressionVoute` du nœud four (vérifier dans `ClassDimFourVoute` si c'est la valeur calculée).
 
 ### Décisions prises (18/11/2026, appliquées)
