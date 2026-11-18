@@ -292,6 +292,7 @@ const FB_Report = ({ innerData = {}, currentLanguage = 'fr', nodeId }) => {
   // HX côté air
   const PDC_HX_cote_air_mmCE        = innerData.PDC_HX_cote_air_mmCE   ?? 0;
   const P_cote_air_entree_mmCE      = innerData.P_cote_air_entree_mmCE ?? 0;
+  const P_cote_air_sortie_mmCE      = innerData.P_cote_air_sortie_mmCE ?? (P_cote_air_entree_mmCE - (innerData.PDC_HX_cote_air_mmCE ?? 0));
   const Q_air_entree_HX_m3_h        = innerData.Q_air_entree_HX_m3_h  ?? 0;
   const Q_air_sortie_HX_m3_h        = innerData.Q_air_sortie_HX_m3_h  ?? 0;
   // Ventilateur
@@ -639,6 +640,7 @@ const FB_Report = ({ innerData = {}, currentLanguage = 'fr', nodeId }) => {
             </div>
             <div>
               <KV label={tr("preheatedAirTempC")}      value={fmt(Tair_ap_prechauffe_C, 0)}   />
+              <KV label={tr("hxAirOutPressMmCE")}      value={fmt(P_cote_air_sortie_mmCE, 0)} />
               <KV label={tr("airOutHxM3h")}            value={fmt(Q_air_sortie_HX_m3_h, 0)}   />
               <KV label={tr("airOutEnthalpyKW")}       value={fmt(Hair_ap_prechauffage_kW * HX_facteur, 1)} />
             </div>
