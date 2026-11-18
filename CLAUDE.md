@@ -610,6 +610,8 @@ Doit être l'**inverse cohérent** de `option_T` :
 
 - **Prix des réactifs en €/t** (`reagentsTypes[*].cost`) : tout le code fait kg/h ÷ 1000 × prix. `migrerPrixReactifs()` (appelée par `writeDefaultsToStorage` au démarrage) convertit une seule fois les anciennes valeurs en €/kg (< 10 → × 1000), drapeau `opex_reagentsCostUnit = 'EUR_t'`.
 
+- **CO2 du transport des réactifs** : `reagentsTypes[*].co2PerTrip` = kg CO2 par **tonne** livrée = `co2PerTKm × distance × ALLER_RETOUR` (`co2TransportReactif_kg_t`, recalculé au chargement et à chaque `updateOpexData`). Tous les onglets Polluants et l'onglet OPEX font kg/h ÷ 1000 × `co2PerTrip`. `ALLER_RETOUR` (= 2) est unique, partagé avec `transport_residus.js`.
+
 ### Points ouverts
 
 Les anomalies relevées mais non corrigées (GF, RK) sont listées dans `a_faire.md` à la racine du dépôt. Cocher / retirer une ligne une fois corrigée.

@@ -46,18 +46,20 @@ export const DEFAULT_OPEX_DATA = {
     HFO: { liquid: 0.70, co2Emission: 3.64 },
   },
   // Prix d'achat des réactifs en €/t (le calcul fait kg/h ÷ 1000 × prix).
+  // co2PerTrip = CO2 du transport en kg par tonne livrée (aller-retour) : recalculé
+  // à partir de co2PerTKm et distance par co2TransportReactif_kg_t().
   // Jusqu'au 18/11/2026 les valeurs par défaut étaient saisies en €/kg : voir migrerPrixReactifs().
   reagentsTypes: {
-    CaOH2:      { cost: 100,   Purity: 90,  CO2emission: 0.846, truckType: 25, distance: 30, co2PerTKm: 0.119, co2PerTrip: 3.57 },
-    CaO:        { cost: 100,   Purity: 95,  CO2emission: 1.11,  truckType: 25, distance: 30, co2PerTKm: 0.119, co2PerTrip: 3.57 },
-    CaCO3:      { cost: 100,   Purity: 95,  CO2emission: 0.76,  truckType: 25, distance: 30, co2PerTKm: 0.119, co2PerTrip: 3.57 },
-    HCO3:       { cost: 1000,  Purity: 100, CO2emission: 1.166, truckType: 25, distance: 30, co2PerTKm: 0.119, co2PerTrip: 3.57 },
-    NaOH:       { cost: 300,   Purity: 100, CO2emission: 1.174, truckType: 25, distance: 30, co2PerTKm: 0.119, co2PerTrip: 3.57 },
-    NaOHCO3:    { cost: 200,   Purity: 100, CO2emission: 0.76,  truckType: 25, distance: 30, co2PerTKm: 0.119, co2PerTrip: 3.57 },
-    NH3:        { cost: 50,    Purity: 95,  CO2emission: 2.11,  truckType: 25, distance: 30, co2PerTKm: 0.119, co2PerTrip: 3.57 },
-    Urea:       { cost: 50,    Purity: 95,  CO2emission: 0.76,  truckType: 25, distance: 30, co2PerTKm: 0.119, co2PerTrip: 3.57 },
-    NaBr_CaBr2: { cost: 1000,  Purity: 52,  CO2emission: 0.76,  truckType: 25, distance: 30, co2PerTKm: 0.119, co2PerTrip: 3.57 },
-    CAP:        { cost: 1000,  Purity: 100, CO2emission: 0.99,  truckType: 25, distance: 30, co2PerTKm: 0.119, co2PerTrip: 3.57 },
+    CaOH2:      { cost: 100,   Purity: 90,  CO2emission: 0.846, truckType: 25, distance: 30, co2PerTKm: 0.119, co2PerTrip: 7.14 },
+    CaO:        { cost: 100,   Purity: 95,  CO2emission: 1.11,  truckType: 25, distance: 30, co2PerTKm: 0.119, co2PerTrip: 7.14 },
+    CaCO3:      { cost: 100,   Purity: 95,  CO2emission: 0.76,  truckType: 25, distance: 30, co2PerTKm: 0.119, co2PerTrip: 7.14 },
+    HCO3:       { cost: 1000,  Purity: 100, CO2emission: 1.166, truckType: 25, distance: 30, co2PerTKm: 0.119, co2PerTrip: 7.14 },
+    NaOH:       { cost: 300,   Purity: 100, CO2emission: 1.174, truckType: 25, distance: 30, co2PerTKm: 0.119, co2PerTrip: 7.14 },
+    NaOHCO3:    { cost: 200,   Purity: 100, CO2emission: 0.76,  truckType: 25, distance: 30, co2PerTKm: 0.119, co2PerTrip: 7.14 },
+    NH3:        { cost: 50,    Purity: 95,  CO2emission: 2.11,  truckType: 25, distance: 30, co2PerTKm: 0.119, co2PerTrip: 7.14 },
+    Urea:       { cost: 50,    Purity: 95,  CO2emission: 0.76,  truckType: 25, distance: 30, co2PerTKm: 0.119, co2PerTrip: 7.14 },
+    NaBr_CaBr2: { cost: 1000,  Purity: 52,  CO2emission: 0.76,  truckType: 25, distance: 30, co2PerTKm: 0.119, co2PerTrip: 7.14 },
+    CAP:        { cost: 1000,  Purity: 100, CO2emission: 0.99,  truckType: 25, distance: 30, co2PerTKm: 0.119, co2PerTrip: 7.14 },
   },
 
   // Section 6: Steam
@@ -84,6 +86,22 @@ export const DEFAULT_OPEX_DATA = {
     { name: 'Fly ashes disposal',                    cost: 100, truckType: 25, distance: 30, co2PerTKm: 0.119, co2PerTrip: 89.25 },
   ],
 };
+
+// --- Transport des réactifs ---
+// Distance parcourue par livraison : aller chargé + retour à vide.
+export const ALLER_RETOUR = 2;
+
+// CO2 du transport d'un réactif [kg CO2 par tonne livrée]
+// = facteur [kg CO2/(t·km)] × distance [km] × aller-retour.
+// (Avant le 18/11/2026 : « CO2 par livraison », × charge du camion, mais
+// multiplié par des tonnes → CO2 surestimé d'un facteur 25 dès l'ouverture
+// de l'onglet Paramètres OPEX, sous-estimé de moitié avant.)
+export const co2TransportReactif_kg_t = (r) =>
+  Math.round((parseFloat(r?.co2PerTKm) || 0) * (parseFloat(r?.distance) || 0) * ALLER_RETOUR * 1000) / 1000;
+
+// co2PerTrip toujours dérivé (jamais une valeur ancienne restée en mémoire)
+const normaliserReactifs = (reactifs) =>
+  Object.fromEntries(Object.entries(reactifs || {}).map(([k, r]) => [k, { ...r, co2PerTrip: co2TransportReactif_kg_t(r) }]));
 
 // --- localStorage helpers ---
 
@@ -140,6 +158,7 @@ export const loadFromStorage = () => {
       try { result[key] = JSON.parse(stored); } catch (e) { /* keep default */ }
     }
   });
+  result.reagentsTypes = normaliserReactifs(result.reagentsTypes);
   return result;
 };
 
@@ -151,6 +170,7 @@ export const getOpexData = () => opexData;
 
 export const updateOpexData = (newData) => {
   opexData = { ...opexData, ...newData };
+  if (newData?.reagentsTypes) opexData.reagentsTypes = normaliserReactifs(newData.reagentsTypes);
 };
 
 // Reloads service state from localStorage (called once at app startup).
