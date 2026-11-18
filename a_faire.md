@@ -186,6 +186,12 @@ Bilan FB + onglet HX, P freeboard imposée à −3 mmCE (valeur du rapport), ren
 - Mode outil (NIST) : écarts de 0,2 à 0,9 % (T fumées sortie 565 °C, surface 60,4 m²).
 - [x] **Débits d'air +1,3 %** — décision de Cédric (18/11/2026) : on garde le débit **humide**, c'est lui qui passe réellement ; le débit sec de Pyrofluid est une erreur de Pyrofluid. L'outil prend le débit d'air **humide** (4 229 Nm³/h, soufflante 4 325), Pyrofluid le débit **sec** (4 174 Nm³/h, soufflante 4 268 — « débit air soufflante sec »). Conséquence : PDC côté tube −0,7 % (379 au lieu de 382 mmCE).
 
+### Ventilateur (soufflante) — vérifié le 18/11/2026
+- Débit, température (T air + 45 °C) et pression (P voûte + 50 + PDC air) conformes à Pyrofluid ; débit humide (décision). Valence : 4 325 Nm³/h, 60 °C, 2 429 mmCE (rapport : 4 268 sec, 60 °C, 2 432).
+- Pyrofluid ne calcule pas la puissance. Outil : débit réel au refoulement × pression / rendement (70 %) = 40,4 kW sur Valence ; compression isentropique / 0,7 = 40,0 kW (écart +1 %). Ordre de grandeur cohérent (≈ 90 kWh/t MS pour la soufflante seule).
+- [ ] **Option à décider** : l'échauffement de +45 °C (convention Pyrofluid) demanderait ≈ 70 kW ; avec un rendement de 70 %, la compression échauffe l'air d'environ 26 °C (18 °C en isentropique). Calculer la température de sortie soufflante à partir de la compression ferait entrer l'air ≈ 19 °C plus froid dans l'échangeur (puissance d'échange +3,7 % sur Valence).
+- Non compté : pertes de charge à l'aspiration (filtre, silencieux), la pression du ventilateur part de l'atmosphère.
+
 ### Décisions prises (18/11/2026, appliquées)
 - [x] Valeurs par défaut : rendement 95 % (onglet Combustion) et encrassement 25 %, désormais saisissable dans l'onglet HX. Les anciens réglages HX (encrassement 10 %, non saisissable) passent à 25 % ; un rendement déjà enregistré dans l'onglet Combustion est conservé.
 - [x] Nombre de passes : choix 2 ou 3 (perte de charge côté air).
