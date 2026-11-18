@@ -11,12 +11,12 @@
 // Avant le 18/11/2026, le coût était « prix × distance » enregistré en €/h,
 // soit un voyage par heure quel que soit le débit de résidus.
 
-import { getOpexData } from './opexDataService';
+import { getOpexData, ALLER_RETOUR } from './opexDataService';
 
 export const CHARGE_UTILE_CAMION_T = { '15t': 15, '20t': 20, '25t': 25 };
 
-// Distance facturée par rotation : aller chargé + retour à vide.
-export const ALLER_RETOUR = 2;
+// Distance facturée par rotation : aller chargé + retour à vide (ALLER_RETOUR, opexDataService).
+export { ALLER_RETOUR };
 
 export const chargeUtileCamion_t = (typeCamion) =>
   CHARGE_UTILE_CAMION_T[typeCamion] || parseFloat(typeCamion) || 15;

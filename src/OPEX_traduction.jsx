@@ -2,6 +2,7 @@
 
 const translations = {
   fr: {
+    "co2TransportPerTonne": "CO2 transport (aller-retour)",
     // Page title and navigation
     opexParameters: "Paramètres OPEX",
     general: "Général",
@@ -99,6 +100,7 @@ const translations = {
   },
 
   en: {
+    "co2TransportPerTonne": "Transport CO2 (round trip)",
     // Page title and navigation
     opexParameters: "OPEX Parameters",
     general: "General",
@@ -196,6 +198,7 @@ const translations = {
   },
 
   es: {
+    "co2TransportPerTonne": "CO2 transporte (ida y vuelta)",
     // Page title and navigation
     opexParameters: "Parámetros OPEX",
     general: "General",
@@ -293,6 +296,7 @@ const translations = {
   },
 
   de: {
+    "co2TransportPerTonne": "Transport-CO2 (Hin- und Rückfahrt)",
     // Page title and navigation
     opexParameters: "OPEX-Parameter",
     general: "Allgemein",
@@ -390,6 +394,7 @@ const translations = {
   },
 
   it: {
+    "co2TransportPerTonne": "CO2 trasporto (andata e ritorno)",
     // Page title and navigation
     opexParameters: "Parametri OPEX",
     general: "Generale",
@@ -487,6 +492,7 @@ const translations = {
   },
 
   pt: {
+    "co2TransportPerTonne": "CO2 transporte (ida e volta)",
     // Page title and navigation
     opexParameters: "Parâmetros OPEX",
     general: "Geral",
@@ -584,6 +590,7 @@ const translations = {
   },
 
   zh: {
+    "co2TransportPerTonne": "运输CO2（往返）",
     // Page title and navigation
     opexParameters: "运营支出参数",
     general: "常规",
@@ -681,6 +688,7 @@ const translations = {
   },
 
   ja: {
+    "co2TransportPerTonne": "輸送CO2（往復）",
     // Page title and navigation
     opexParameters: "OPEX パラメータ",
     general: "一般",
@@ -778,6 +786,7 @@ const translations = {
   },
 
   ru: {
+    "co2TransportPerTonne": "CO2 транспорта (туда и обратно)",
     // Page title and navigation
     opexParameters: "Параметры OPEX",
     general: "Основные",
@@ -875,6 +884,7 @@ const translations = {
   },
 
   ar: {
+    "co2TransportPerTonne": "CO2 النقل (ذهاباً وإياباً)",
     // Page title and navigation
     opexParameters: "معاملات المصاريف التشغيلية",
     general: "عام",

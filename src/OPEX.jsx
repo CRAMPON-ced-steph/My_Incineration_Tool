@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import InputField from './C_Components/input_retro';
 import DropdownField from './C_Components/input_retro_deroulant';
 import CountryDropdown from './C_Components/input_retro_double_deroulant';
-import { updateOpexData, DEFAULT_OPEX_DATA } from './A_Transverse_fonction/opexDataService';
+import { updateOpexData, DEFAULT_OPEX_DATA, co2TransportReactif_kg_t } from './A_Transverse_fonction/opexDataService';
 import { fmt } from './A_Transverse_fonction/formatNumber';
 import { getOPEXTranslations } from './OPEX_traduction';
 import { getLanguageCode } from './F_Gestion_Langues/Fonction_Traduction';
@@ -159,7 +159,7 @@ const OPEX_form = ({ onClose, currentLanguage = 'fr' }) => {
     })));
   }, [byproductsDepsKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Update reagent CO2 per trip calculations
+  // CO2 du transport des réactifs [kg/t livrée] = kg/(t·km) × distance × aller-retour
   const reagentsDepsKey = JSON.stringify(
     Object.fromEntries(
       Object.keys(reagentsTypes).map(key => [
@@ -175,7 +175,7 @@ const OPEX_form = ({ onClose, currentLanguage = 'fr' }) => {
         const reagent = updatedReagents[reagentKey];
         updatedReagents[reagentKey] = {
           ...reagent,
-          co2PerTrip: parseFloat((reagent.co2PerTKm * reagent.truckType * reagent.distance * 2).toFixed(3))
+          co2PerTrip: co2TransportReactif_kg_t(reagent)
         };
       });
       return updatedReagents;
@@ -942,7 +942,7 @@ const OPEX_form = ({ onClose, currentLanguage = 'fr' }) => {
                   <InputField label={t.truckType || "Camion"} unit="[T]" value={reagentsTypes.CaOH2.truckType} onChange={(e) => handleReagentChange('CaOH2', 'truckType', e.target.value)} />
                   <InputField label={t.distance || "Distance"} unit="[km]" value={reagentsTypes.CaOH2.distance} onChange={(e) => handleReagentChange('CaOH2', 'distance', e.target.value)} />
                   <InputField label={t.co2PerTKm || "CO2/T.km"} unit="[kgCO2/t.km]" value={reagentsTypes.CaOH2.co2PerTKm} onChange={(e) => handleReagentChange('CaOH2', 'co2PerTKm', e.target.value)} />
-                  <InputField label={t.co2PerDelivery || "CO2/livraison"} unit="[kg]" value={reagentsTypes.CaOH2.co2PerTrip} readOnly />
+                  <InputField label={t.co2TransportPerTonne || "CO2 transport (aller-retour)"} unit="[kgCO2/t]" value={reagentsTypes.CaOH2.co2PerTrip} readOnly />
                 </div>
               </div>
 
@@ -955,7 +955,7 @@ const OPEX_form = ({ onClose, currentLanguage = 'fr' }) => {
                   <InputField label={t.truckType || "Camion"} unit="[T]" value={reagentsTypes.CaO.truckType} onChange={(e) => handleReagentChange('CaO', 'truckType', e.target.value)} />
                   <InputField label={t.distance || "Distance"} unit="[km]" value={reagentsTypes.CaO.distance} onChange={(e) => handleReagentChange('CaO', 'distance', e.target.value)} />
                   <InputField label={t.co2PerTKm || "CO2/T.km"} unit="[kgCO2/t.km]" value={reagentsTypes.CaO.co2PerTKm} onChange={(e) => handleReagentChange('CaO', 'co2PerTKm', e.target.value)} />
-                  <InputField label={t.co2PerDelivery || "CO2/livraison"} unit="[kg]" value={reagentsTypes.CaO.co2PerTrip} readOnly />
+                  <InputField label={t.co2TransportPerTonne || "CO2 transport (aller-retour)"} unit="[kgCO2/t]" value={reagentsTypes.CaO.co2PerTrip} readOnly />
                 </div>
               </div>
 
@@ -968,7 +968,7 @@ const OPEX_form = ({ onClose, currentLanguage = 'fr' }) => {
                   <InputField label={t.truckType || "Camion"} unit="[T]" value={reagentsTypes.CaCO3.truckType} onChange={(e) => handleReagentChange('CaCO3', 'truckType', e.target.value)} />
                   <InputField label={t.distance || "Distance"} unit="[km]" value={reagentsTypes.CaCO3.distance} onChange={(e) => handleReagentChange('CaCO3', 'distance', e.target.value)} />
                   <InputField label={t.co2PerTKm || "CO2/T.km"} unit="[kgCO2/t.km]" value={reagentsTypes.CaCO3.co2PerTKm} onChange={(e) => handleReagentChange('CaCO3', 'co2PerTKm', e.target.value)} />
-                  <InputField label={t.co2PerDelivery || "CO2/livraison"} unit="[kg]" value={reagentsTypes.CaCO3.co2PerTrip} readOnly />
+                  <InputField label={t.co2TransportPerTonne || "CO2 transport (aller-retour)"} unit="[kgCO2/t]" value={reagentsTypes.CaCO3.co2PerTrip} readOnly />
                 </div>
               </div>
 
@@ -982,7 +982,7 @@ const OPEX_form = ({ onClose, currentLanguage = 'fr' }) => {
                     <InputField label={t.truckType || "Camion"} unit="[T]" value={reagentData.truckType} onChange={(e) => handleReagentChange(reagentKey, 'truckType', e.target.value)} />
                     <InputField label={t.distance || "Distance"} unit="[km]" value={reagentData.distance} onChange={(e) => handleReagentChange(reagentKey, 'distance', e.target.value)} />
                     <InputField label={t.co2PerTKm || "CO2/T.km"} unit="[kgCO2/t.km]" value={reagentData.co2PerTKm} onChange={(e) => handleReagentChange(reagentKey, 'co2PerTKm', e.target.value)} />
-                    <InputField label={t.co2PerDelivery || "CO2/livraison"} unit="[kg]" value={reagentData.co2PerTrip} readOnly />
+                    <InputField label={t.co2TransportPerTonne || "CO2 transport (aller-retour)"} unit="[kgCO2/t]" value={reagentData.co2PerTrip} readOnly />
                   </div>
                 </div>
               ))}

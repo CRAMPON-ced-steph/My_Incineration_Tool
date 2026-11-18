@@ -16,7 +16,7 @@
 // État sauvegardé par nœud : localStorage `opexDashboard_<TYPE>_<nodeId>` et
 // innerData[`opexTableau_<TYPE>_<nodeId>`] (voyage avec le projet JSON).
 
-import { getOpexData } from '../../A_Transverse_fonction/opexDataService';
+import { getOpexData, co2TransportReactif_kg_t } from '../../A_Transverse_fonction/opexDataService';
 import { fmt } from '../../A_Transverse_fonction/formatNumber';
 
 export const TABLES_OPEX = ['elec', 'eau', 'reactifs', 'energie', 'co2', 'cout'];
@@ -170,7 +170,7 @@ const lignesConsommation = (d, prix, t, config) => {
   ].map(([key, label, champ, typeReactif]) => ({
     key, label, value: lireNombre(d[champ]),
     prix: lireNombre(prix.reactifs?.[typeReactif]?.cost),         // devise/t
-    co2: lireNombre(prix.reactifs?.[typeReactif]?.co2PerTrip),    // kg CO2/t transportée
+    co2: co2TransportReactif_kg_t(prix.reactifs?.[typeReactif]),  // kg CO2/t livrée (aller-retour)
   }));
 
   const energie = [
