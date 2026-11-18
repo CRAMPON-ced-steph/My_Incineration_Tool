@@ -21,6 +21,8 @@ import {
  TUBEANDSHELL_Parameter_Tab,
  WATERCOOLERMainPage,
  WATERCOOLER_Parameter_Tab,
+ AIRCOOLERMainPage,
+ AIRCOOLER_Parameter_Tab,
  
  
  SEP12MainPage,
@@ -69,6 +71,7 @@ const batchResultStorageKey = (label, nodeId) => {
     WATER_INJECTION: 'calculationResult_WATER_INJECTION',
     AIRINJECTION: 'calculationResult_AIRINJECTION',
     Cooling_HX_eau: 'calculationResult_WATERCOOLER',
+    Cooling_HX_air: 'calculationResult_AIRCOOLER',
   };
   const base = baseKeys[label];
   return base ? `${base}_${nodeId}` : null;
@@ -614,7 +617,6 @@ function Flow({
       ...(mode === 'Bilan' ? { WATER_INJECTION: WATER_INJECTIONMainPage } : { WATER_INJECTION: WATER_INJECTION_Parameter_Tab }),
 
       /*
-      ...(mode === 'Bilan' ? { Cooling_HX_air: AIRCOOLERMainPage } : { Cooling_HX_air: AIRCOOLER_Parameter_Tab }),
       ...(mode === 'Bilan' ? { HX_TubeAndShell: TUBEANDSHELLMainPage } : { HX_TubeAndShell: TUBEANDSHELL_Parameter_Tab }),
       
       ...(mode === 'Bilan' ? { '2to1': SEP21MainPage } : { '2to1': SEP21_Parameter_Tab }),
@@ -624,6 +626,7 @@ function Flow({
 
       ...(mode === 'Bilan' ? { HX_TubeAndShell: TUBEANDSHELLMainPage } : { HX_TubeAndShell: TUBEANDSHELL_Parameter_Tab }),
       ...(mode === 'Bilan' ? { Cooling_HX_eau: WATERCOOLERMainPage } : { Cooling_HX_eau: WATERCOOLER_Parameter_Tab }),
+      ...(mode === 'Bilan' ? { Cooling_HX_air: AIRCOOLERMainPage } : { Cooling_HX_air: AIRCOOLER_Parameter_Tab }),
       
       ...(mode === 'Bilan' ? { '2to1': SEP21MainPage } : {}),
       ...(mode === 'Bilan' ? { '1to2': SEP12MainPage } : {}),

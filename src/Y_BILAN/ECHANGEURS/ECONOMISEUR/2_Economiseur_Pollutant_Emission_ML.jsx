@@ -1,15 +1,15 @@
-// Onglet « Polluants » de l'économiseur : pas de captation (Pyrofluid : sortie = entrée,
+// Onglet « Polluants » des économiseurs (eau / air) : pas de captation (Pyrofluid : sortie = entrée,
 // poussières comprises). Affichage des concentrations en entrée / sortie.
 import React, { useState, useEffect } from 'react';
 import PollutantCalculator from '../../../C_Components/Tableau_polluants';
 import TableGeneric from '../../../C_Components/Tableau_generique';
 import { fmt } from '../../../A_Transverse_fonction/formatNumber';
-import { ChampNumerique, styles } from './WATERCOOLER_ui';
+import { ChampNumerique, styles } from './economiseur_ui';
 
 const O2_REF_DEFAUT = 11;
 
-const WATERCOOLERPollutantEmission = ({ innerData = {}, t, nodeId }) => {
-  const cle = `emissions2_WATERCOOLER_${nodeId}`;
+const EconomiseurPollutantEmission = ({ innerData = {}, t, nodeId, config }) => {
+  const cle = `emissions2_${config.code}_${nodeId}`;
   const [O2ref, setO2ref] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem(cle) || '{}').O2_ref ?? O2_REF_DEFAUT;
@@ -64,4 +64,4 @@ const WATERCOOLERPollutantEmission = ({ innerData = {}, t, nodeId }) => {
   );
 };
 
-export default WATERCOOLERPollutantEmission;
+export default EconomiseurPollutantEmission;
