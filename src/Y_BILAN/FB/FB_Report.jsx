@@ -299,6 +299,15 @@ const FB_Report = ({ innerData = {}, currentLanguage = 'fr', nodeId }) => {
   const Q_air_ventilateur_m3_h      = innerData.Q_air_ventilateur_m3_h       ?? 0;
   const Puissance_elec_ventilateur_kW = innerData.Puissance_elec_ventilateur_kW ?? 0;
   const Rendement_ventilateur_HX    = innerData.Rendement_ventilateur_HX     ?? 0;
+  // Configuration HX : HX_facteur = part d'un échangeur (1 / nombre d'échangeurs).
+  // Les grandeurs extensives reprises du bilan (totales) sont ramenées à un échangeur.
+  const HX_facteur                  = Number(innerData.HX_facteur) > 0 ? Number(innerData.HX_facteur) : 1;
+  const HX_nbEchangeurs             = Number(innerData.HX_nbEchangeurs) || 1;
+  const HX_parFour                  = !!innerData.HX_parFour;
+  const NbreDePass_HX               = innerData.NbreDePass_HX ?? 2;
+  const Encrassement_HX_pourcent    = innerData.Encrassement_HX_pourcent;
+  const HX_airSecTert               = !!innerData.HX_airSecTertVentilateur;
+  const Puissance_elec_ventilateur_unitaire_kW = innerData.Puissance_elec_ventilateur_unitaire_kW ?? Puissance_elec_ventilateur_kW;
 
   return (
     <div style={styles.container}>
@@ -597,20 +606,23 @@ const FB_Report = ({ innerData = {}, currentLanguage = 'fr', nodeId }) => {
           )}
         </SubSection>
 
+        {HX_nbEchangeurs > 1 && (
+          <div style={{ fontSize: 12, color: '#1565c0', margin: '4px 0 8px' }}>{tr("hxValuesPerUnit")}</div>
+        )}
         <SubSection title={tr("subHxFlueGas")}>
           <div style={{ ...styles.twoCol, gap: 32 }}>
             <div>
               <KV label={tr("vaultFGTempC")}           value={fmt(Temp_fumee_voute_C, 0)}      />
-              <KV label={tr("wetFGFlowNm3h")}          value={fmt(FG_wet_Nm3_h, 0)}            />
+              <KV label={tr("wetFGFlowNm3h")}          value={fmt(FG_wet_Nm3_h * HX_facteur, 0)} />
               <KV label={tr("freeBoardPressMmCE")}     value={fmt(P_freeboard_mmCE, 0)}        />
               <KV label={tr("fgInletHxM3h")}           value={fmt(Q_FG_wet_entree_m3_h, 0)}   />
-              <KV label={tr("fgInletEnthalpyKW")}      value={fmt(Hf_voute_kW, 1)}             />
+              <KV label={tr("fgInletEnthalpyKW")}      value={fmt(Hf_voute_kW * HX_facteur, 1)} />
             </div>
             <div>
               <KV label={tr("hxFGOutTempC")}           value={fmt(Tf_voute_ap_HX_C, 0)}       />
               <KV label={tr("hxFGOutPressMmCE")}       value={fmt(P_sortie_HX_fg_mmCE, 0)}    />
               <KV label={tr("fgOutletHxM3h")}          value={fmt(Q_FG_wet_sortie_m3_h, 0)}   />
-              <KV label={tr("fgOutletEnthalpyKW")}     value={fmt(Hf_voute_ap_HX_kW, 1)}      />
+              <KV label={tr("fgOutletEnthalpyKW")}     value={fmt(Hf_voute_ap_HX_kW * HX_facteur, 1)} />
             </div>
           </div>
         </SubSection>
@@ -619,16 +631,16 @@ const FB_Report = ({ innerData = {}, currentLanguage = 'fr', nodeId }) => {
           <div style={{ ...styles.twoCol, gap: 32 }}>
             <div>
               <KV label={tr("blowerAirTempCLabel")}    value={fmt(Temp_air_soufflante_C, 0)}  />
-              <KV label={tr("totalAirFlowNm3h")}       value={fmt(Q_air_comb_tot_Nm3_h, 0)}   />
+              <KV label={tr("totalAirFlowNm3h")}       value={fmt(Q_air_comb_tot_Nm3_h * HX_facteur, 0)} />
               <KV label={tr("hxAirPdcMmCE")}           value={fmt(PDC_HX_cote_air_mmCE, 1)}   />
               <KV label={tr("hxAirInPressMmCE")}       value={fmt(P_cote_air_entree_mmCE, 0)} />
               <KV label={tr("airInHxM3h")}             value={fmt(Q_air_entree_HX_m3_h, 0)}   />
-              <KV label={tr("airInEnthalpyKW")}        value={fmt(H_air_soufflante_kW, 1)}    />
+              <KV label={tr("airInEnthalpyKW")}        value={fmt(H_air_soufflante_kW * HX_facteur, 1)} />
             </div>
             <div>
               <KV label={tr("preheatedAirTempC")}      value={fmt(Tair_ap_prechauffe_C, 0)}   />
               <KV label={tr("airOutHxM3h")}            value={fmt(Q_air_sortie_HX_m3_h, 0)}   />
-              <KV label={tr("airOutEnthalpyKW")}       value={fmt(Hair_ap_prechauffage_kW, 1)} />
+              <KV label={tr("airOutEnthalpyKW")}       value={fmt(Hair_ap_prechauffage_kW * HX_facteur, 1)} />
             </div>
           </div>
         </SubSection>
@@ -636,9 +648,13 @@ const FB_Report = ({ innerData = {}, currentLanguage = 'fr', nodeId }) => {
         <SubSection title={tr("subHxSizing")}>
           <div style={{ ...styles.twoCol, gap: 32 }}>
             <div>
+              <KV label={tr("hxSizingMode")}           value={HX_parFour ? tr("hxOnePerFurnace") : tr("hxOneForAll")} />
+              <KV label={tr("hxExchangersCount")}      value={fmt(HX_nbEchangeurs, 0)}                    />
+              <KV label={tr("hxPassesCount")}          value={fmt(NbreDePass_HX, 0)}                      />
               <KV label={tr("hxEffPct")}               value={fmt(Rdt_HX, 1)}                             />
-              <KV label={tr("heatFromFGKW")}           value={fmt(Hf_voute_kW - Hf_voute_ap_HX_kW, 1)}   />
-              <KV label={tr("heatToAirKW")}            value={fmt(Hair_ap_prechauffage_kW - H_air_soufflante_kW, 1)} />
+              <KV label={tr("hxFoulingPct")}           value={Encrassement_HX_pourcent != null ? fmt(Encrassement_HX_pourcent, 0) : '—'} />
+              <KV label={tr("heatFromFGKW")}           value={fmt((Hf_voute_kW - Hf_voute_ap_HX_kW) * HX_facteur, 1)}   />
+              <KV label={tr("heatToAirKW")}            value={fmt((Hair_ap_prechauffage_kW - H_air_soufflante_kW) * HX_facteur, 1)} />
               <KV label={tr("dtlmK")}                  value={fmt(DTLM_HX, 2)}                            />
               <KV label={tr("uaFactorWK")}             value={fmt(Facteur_UA, 0)}                         />
             </div>
@@ -655,6 +671,7 @@ const FB_Report = ({ innerData = {}, currentLanguage = 'fr', nodeId }) => {
         <SubSection title={tr("subFan")}>
           <div style={{ ...styles.twoCol, gap: 32 }}>
             <div>
+              <KV label={tr("fanSecTertAir")}          value={HX_airSecTert ? tr("yesLabel") : tr("noLabel")} />
               <KV label={tr("airToPulseNm3h")}         value={fmt(Q_air_pulser_Nm3_h, 0)}             />
               <KV label={tr("fanPressMmCE")}           value={fmt(P_cote_air_entree_mmCE, 0)}         />
               <KV label={tr("blowerAirTempCLabel")}    value={fmt(Temp_air_soufflante_C, 0)}          />
@@ -662,7 +679,10 @@ const FB_Report = ({ innerData = {}, currentLanguage = 'fr', nodeId }) => {
             <div>
               <KV label={tr("fanFlowM3hLabel")}        value={fmt(Q_air_ventilateur_m3_h, 0)}         />
               <KV label={tr("fanEffPctLabel")}         value={fmt(Rendement_ventilateur_HX * 100, 1)} />
-              <KV label={tr("elecPowerKWLabel")}       value={fmt(Puissance_elec_ventilateur_kW, 1)}  />
+              <KV label={tr("elecPowerKWLabel")}       value={fmt(Puissance_elec_ventilateur_unitaire_kW, 1)} />
+              {HX_nbEchangeurs > 1 && (
+                <KV label={tr("totalElecPowerKW")}     value={fmt(Puissance_elec_ventilateur_kW, 1)}  />
+              )}
             </div>
           </div>
         </SubSection>

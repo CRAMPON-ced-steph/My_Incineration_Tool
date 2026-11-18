@@ -179,11 +179,11 @@ Conforme : Hext, Hint, U propre, U encrassé = U / (1 + encrassement), F = 1, ch
 - [ ] **PDC fumées dans le HX** : 50 mmCE par défaut (Pyrofluid 40) ; `PDC_recuperateur_fumees_mmCE` (40), `PDC_carneau_mmCE`, `PDC_echangeur_air_mmCE` ne servent pas ou presque.
 - [ ] **P voûte** : l'outil prend la pression par défaut saisie (2 000) ; Pyrofluid lit `PressionVoute` du nœud four (vérifier dans `ClassDimFourVoute` si c'est la valeur calculée).
 
-### Décisions à prendre
-- [ ] Valeurs par défaut : rendement 85 % (Pyrofluid 95 %, plage admise 70-100 %) ; encrassement 10 % (Pyrofluid 25 %, maximum 30 %).
-- [ ] Nombre de passes figé à 2 (Pyrofluid : 2 ou 3).
-- [ ] Débit du ventilateur : outil = air de combustion + instrumentation + secondaire + tertiaire ; Pyrofluid = air total + instrumentation (air non enrichi si O2 > 21 %).
-- [ ] Un échangeur par four : Pyrofluid divise les débits par le nombre de fours ; l'outil dimensionne sur le débit total.
+### Décisions prises (18/11/2026, appliquées)
+- [x] Valeurs par défaut : rendement 95 % (onglet Combustion) et encrassement 25 %, désormais saisissable dans l'onglet HX. Les anciens réglages HX (encrassement 10 %, non saisissable) passent à 25 % ; un rendement déjà enregistré dans l'onglet Combustion est conservé.
+- [x] Nombre de passes : choix 2 ou 3 (perte de charge côté air).
+- [x] Débit du ventilateur : bouton « air secondaire et tertiaire » ; sur « Non » (par défaut) = Pyrofluid (air de combustion + instrumentation).
+- [x] Bouton « un échangeur pour l'ensemble des fours / un échangeur par four » (par défaut : par four, comme Pyrofluid). En mode par four, débits, enthalpies, surface, section et ventilateur sont donnés pour un échangeur ; la puissance électrique totale (tous les ventilateurs) alimente l'OPEX.
 
 ### Mineur
 - [ ] Pas de contrôle « T air entrée + 45 < T air préchauffé » (Pyrofluid bloque le calcul) ; Cp moyen des fumées non affiché.

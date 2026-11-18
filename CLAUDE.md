@@ -612,6 +612,13 @@ Doit être l'**inverse cohérent** de `option_T` :
 
 - **CO2 du transport des réactifs** : `reagentsTypes[*].co2PerTrip` = kg CO2 par **tonne** livrée = `co2PerTKm × distance × ALLER_RETOUR` (`co2TransportReactif_kg_t`, recalculé au chargement et à chaque `updateOpexData`). Tous les onglets Polluants et l'onglet OPEX font kg/h ÷ 1000 × `co2PerTrip`. `ALLER_RETOUR` (= 2) est unique, partagé avec `transport_residus.js`.
 
+### FB — onglet HX / récupérateur (2026-11-18)
+
+- Comparé à Pyrofluid `ClassRecuperateur.vb` : écarts de calcul listés dans `a_faire.md` (DTLM, unités de la surface, section calandre, perte de charge air, pressions), **non corrigés** tant que Cédric ne les a pas validés.
+- Options (`freeParams_HX_FB_<nodeId>`, `_version: 2`) : encrassement 25 % par défaut (saisissable), 2 ou 3 passes, `airSecTertVentilateur` (false = Pyrofluid), `echangeurParFour` (true = Pyrofluid). Rendement du récupérateur 95 % par défaut (`thermalParams.Rdt_HX`, onglet Combustion).
+- Mode par four : `HX_facteur` = 1 / nombre de fours. Les grandeurs extensives de l'onglet HX et de la section HX du rapport sont pour **un** échangeur ; `H_air_soufflante_kW` reste le total (clé partagée avec l'onglet Combustion) ; `Puissance_elec_ventilateur_kW` = total de tous les ventilateurs (OPEX), `Puissance_elec_ventilateur_unitaire_kW` = un ventilateur.
+- L'onglet Combustion écrit `Vair_instru_tot_Nm3_h`, `Vair_sec_tot_Nm3_h`, `Vair_tert_tot_Nm3_h` pour le débit du ventilateur.
+
 ### Points ouverts
 
 Les anomalies relevées mais non corrigées (GF, RK) sont listées dans `a_faire.md` à la racine du dépôt. Cocher / retirer une ligne une fois corrigée.
