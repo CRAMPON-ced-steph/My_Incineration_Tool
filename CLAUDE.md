@@ -600,7 +600,10 @@ Doit être l'**inverse cohérent** de `option_T` :
 - `activeNodes_*` (panneau OPEX de `Main_FLOW`) : toujours horaires.
 - **Clés OPEX propres au nœud** (`estCleOpexNoeud` : `consoElec*`, `labelElec*`, `Conso_*`, `conso_gaz/fuel/air/…`, `CO2_transport_*`, `cout_transport_*`, `activeNodes_*`, `opexTableau_*`) : `Main_FLOW.onSendData` ne les recopie plus dans le nœud aval (`sansClesOpex`). FB et GF les ajoutent explicitement à leur envoi (liste blanche).
 - Nouvel équipement : écrire les clés standard dans `innerData` (nombres, pas `toFixed`), passer `nodeId` à l'onglet OPEX et au rapport, mettre `<OpexRapport innerData equipmentType nodeId currentLanguage />` dans la section OPEX du rapport. Ne pas recréer de calcul de coût dans le rapport.
-- `OpexDashboard_WHB.jsx` / `5_WHB_Opex.jsx` : non branchés (code mort).
+- **Chaudière (WHB)** : onglet OPEX branché (`5_WHB_Opex.jsx` → `OpexDashboard`, `OpexDashboard_WHB.jsx` supprimé). `configOpex('WHB')` active la **valorisation** : tableaux `production` (électricité kWé, vapeur t/h) et `recettes` (€/h), coût net = coût − recettes. Lue dans les résultats de l'onglet Valorisation vapeur (`turbine_type`, `niveauN_*`, `soutirages_data`, `puissance_electrique_kW`, échappement si ≥ 1 bar a) ; prix : électricité vendue, vapeur HP / BP P1 / BP P2.
+- **Électrofiltre** : onglet OPEX activé ; le Design reprend aussi les réactifs de l'onglet Polluants (`Conso_reactifs`).
+- **Tour de refroidissement** : le Design écrit l'eau pulvérisée (`Q_eau_kg_h` de l'onglet Gaz) dans le type d'eau choisi et la pompe (débit × pression de pulvérisation / rendement) ; plus de valeurs fictives.
+- **Écriture OPEX depuis un Design** (tour, électrofiltre, chaudière, quench) : `t` en `useCallback`, charge utile en `useMemo`, garde `lastSync` (JSON) avant `setInnerData` — sinon boucle de rendu. Écrire **toutes** les clés OPEX standard (0 pour celles non consommées) pour effacer d'anciennes valeurs, sans arrondi.
 
 ### Points ouverts
 

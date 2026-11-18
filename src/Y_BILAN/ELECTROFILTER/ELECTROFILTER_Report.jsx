@@ -50,6 +50,12 @@ const ELECTROFILTER_Report = ({ innerData = {}, currentLanguage = 'fr', nodeId }
   const PInput = innerData.PInput || {};
   const Poutput = innerData.Poutput || {};
   const Residus = innerData.Residus || {};
+  const ESP = innerData.ESP_design || {};
+  const reactifs = [
+    ['CaCO₃', innerData.Conso_CaCO3_kg], ['CaO', innerData.Conso_CaO_kg],
+    [t('Ca(OH)₂ sec'), innerData.Conso_CaOH2_dry_kg], [t('Ca(OH)₂ humide'), innerData.Conso_CaOH2_wet_kg],
+    ['NaOH', innerData.Conso_NaOH_kg], ['NaHCO₃', innerData.Conso_NaOHCO3_kg],
+  ].map(([label, value]) => ({ label, value })).filter(r => parseFloat(r.value) > 0);
   const elecRows = [1,2,3,4,5,6,7,8].map(i => ({ label: innerData[`labelElec${i}`] || `Poste ${i}`, value: innerData[`consoElec${i}`] })).filter(r => parseFloat(r.value) > 0);
 
   return (
@@ -76,14 +82,47 @@ const ELECTROFILTER_Report = ({ innerData = {}, currentLanguage = 'fr', nodeId }
         <SubSection title={t('Gaz en sortie [kg/h]')}><PollutantTable masses={Poutput} /></SubSection>
         <SubSection title={t('Résidus calculés')}>
           <KV label={t('Cendres lourdes sèches [kg/h]')} value={fmt(Residus.DryBottomAsh_kg_h)} />
-          <KV label={t('Cendres volantes [kg/h]')} value={fmt(Residus.FlyAsh_kg_h)} />
+          <KV label={t('Cendres lourdes humides [kg/h]')} value={fmt(Residus.WetBottomAsh_kg_h)} />
         </SubSection>
       </Section>
 
       <Section title={t('3. Design')}>
-        <SubSection title={t('Consommations électriques')}>
-          {elecRows.length > 0 ? <ElecTable rows={elecRows} t={t} /> : <span style={{ color: '#999', fontSize: 12 }}>{t('Données non disponibles (ouvrir l\'onglet Design)')}</span>}
-        </SubSection>
+        <div style={styles.twoCol}>
+          <div>
+            <SubSection title={t('Dimensionnement')}>
+              {ESP.surface_plaques_m2 !== undefined ? (
+                <>
+                  <KV label={t('Surface des plaques [m²]')} value={fmt(ESP.surface_plaques_m2, 1)} />
+                  <KV label={t('Nombre de plaques [Nb]')} value={fmt(ESP.nombre_plaques, 0)} />
+                  <KV label={t('Nombre de champs')} value={fmt(ESP.nombre_champs, 0)} />
+                  <KV label={t('Rendement de capture [%]')} value={fmt(ESP.rendement_capture_pct, 2)} />
+                  <KV label={t('Vitesse de migration [m/s]')} value={fmt(ESP.vitesse_migration, 1)} />
+                </>
+              ) : <span style={{ color: '#999', fontSize: 12 }}>{t('Données non disponibles (ouvrir l\'onglet Design)')}</span>}
+            </SubSection>
+            <SubSection title={t('Consommations électriques')}>
+              {elecRows.length > 0 ? <ElecTable rows={elecRows} t={t} /> : <span style={{ color: '#999', fontSize: 12 }}>{t('Données non disponibles (ouvrir l\'onglet Design)')}</span>}
+            </SubSection>
+          </div>
+          <div>
+            <SubSection title={t('Air comprimé')}>
+              <KV label={t('Consommation air comprimé [Nm3/h]')} value={fmt(innerData.conso_air_co_N_m3, 1)} />
+              <KV label={t('Pression air comprimé [Bar]')} value={fmt(innerData.pression_air_comprime_bar, 1)} />
+            </SubSection>
+            {reactifs.length > 0 && (
+              <SubSection title={t('Réactifs [kg/h]')}>
+                {reactifs.map(({ label, value }) => <KV key={label} label={label} value={fmt(value, 2)} />)}
+              </SubSection>
+            )}
+            <SubSection title={t('Évacuation des résidus')}>
+              <KV label={t('Residus électrofiltre [kg/h]')} value={fmt(innerData.conso_fly_ash_kg_h, 2)} />
+              <KV label={t('Type de camion')} value={ESP.type_camion || '—'} />
+              <KV label={t('Distance [km]')} value={fmt(ESP.distance_km, 0)} />
+              <KV label={t('CO2 transport [kg/h]')} value={fmt(innerData.CO2_transport_fly_ash, 2)} />
+              <KV label={t('Coût transport [€/h]')} value={fmt(innerData.cout_transport_fly_ash, 2)} />
+            </SubSection>
+          </div>
+        </div>
       </Section>
 
       <Section title={t('4. OPEX — Coûts horaires')}><OpexRapport innerData={innerData} equipmentType="ELECTROFILTER" nodeId={nodeId} currentLanguage={currentLanguage} /></Section>

@@ -1,5 +1,14 @@
 export const translations = {
   fr: {
+    "Ca(OH)₂ sec": "Ca(OH)₂ sec",
+    "Ca(OH)₂ humide": "Ca(OH)₂ humide",
+    "Cendres lourdes humides [kg/h]": "Cendres lourdes humides [kg/h]",
+    "Dimensionnement": "Dimensionnement",
+    "Nombre de champs": "Nombre de champs",
+    "Réactifs [kg/h]": "Réactifs [kg/h]",
+    "Évacuation des résidus": "Évacuation des résidus",
+    "CO2 transport [kg/h]": "CO2 transport [kg/h]",
+    "Coût transport [€/h]": "Coût transport [€/h]",
     // — Clés états dynamiques (copiées de QUENCH, 2026-07) —
     "SOx reactif": "Réactif SOx",
     "HCl reactif": "Réactif HCl",
@@ -160,6 +169,15 @@ export const translations = {
   },
 
   en: {
+    "Ca(OH)₂ sec": "Dry Ca(OH)₂",
+    "Ca(OH)₂ humide": "Wet Ca(OH)₂",
+    "Cendres lourdes humides [kg/h]": "Wet bottom ash [kg/h]",
+    "Dimensionnement": "Sizing",
+    "Nombre de champs": "Number of fields",
+    "Réactifs [kg/h]": "Reagents [kg/h]",
+    "Évacuation des résidus": "Residue disposal",
+    "CO2 transport [kg/h]": "Transport CO2 [kg/h]",
+    "Coût transport [€/h]": "Transport cost [€/h]",
     // — Clés états dynamiques (copiées de QUENCH, 2026-07) —
     "SOx reactif": "SOx reactif",
     "HCl reactif": "HCl reactif",
@@ -322,6 +340,15 @@ export const translations = {
   },
 
   de: {
+    "Ca(OH)₂ sec": "Ca(OH)₂ trocken",
+    "Ca(OH)₂ humide": "Ca(OH)₂ nass",
+    "Cendres lourdes humides [kg/h]": "Nasse Rostasche [kg/h]",
+    "Dimensionnement": "Auslegung",
+    "Nombre de champs": "Anzahl der Felder",
+    "Réactifs [kg/h]": "Reagenzien [kg/h]",
+    "Évacuation des résidus": "Rückstandsentsorgung",
+    "CO2 transport [kg/h]": "Transport-CO2 [kg/h]",
+    "Coût transport [€/h]": "Transportkosten [€/h]",
     // — Clés états dynamiques (copiées de QUENCH, 2026-07) —
     "SOx reactif": "SOx-Reaktionsmittel",
     "HCl reactif": "HCl-Reaktionsmittel",
@@ -472,6 +499,15 @@ export const translations = {
   },
 
   es: {
+    "Ca(OH)₂ sec": "Ca(OH)₂ seco",
+    "Ca(OH)₂ humide": "Ca(OH)₂ húmedo",
+    "Cendres lourdes humides [kg/h]": "Escorias húmedas [kg/h]",
+    "Dimensionnement": "Dimensionamiento",
+    "Nombre de champs": "Número de campos",
+    "Réactifs [kg/h]": "Reactivos [kg/h]",
+    "Évacuation des résidus": "Evacuación de residuos",
+    "CO2 transport [kg/h]": "CO2 transporte [kg/h]",
+    "Coût transport [€/h]": "Coste transporte [€/h]",
     // — Clés états dynamiques (copiées de QUENCH, 2026-07) —
     "SOx reactif": "Reactivo SOx",
     "HCl reactif": "Reactivo HCl",
@@ -620,6 +656,15 @@ export const translations = {
   },
 
   it: {
+    "Ca(OH)₂ sec": "Ca(OH)₂ secco",
+    "Ca(OH)₂ humide": "Ca(OH)₂ umido",
+    "Cendres lourdes humides [kg/h]": "Ceneri pesanti umide [kg/h]",
+    "Dimensionnement": "Dimensionamento",
+    "Nombre de champs": "Numero di campi",
+    "Réactifs [kg/h]": "Reagenti [kg/h]",
+    "Évacuation des résidus": "Smaltimento dei residui",
+    "CO2 transport [kg/h]": "CO2 trasporto [kg/h]",
+    "Coût transport [€/h]": "Costo trasporto [€/h]",
     // — Clés états dynamiques (copiées de QUENCH, 2026-07) —
     "SOx reactif": "Reattivo SOx",
     "HCl reactif": "Reattivo HCl",
@@ -768,6 +813,15 @@ export const translations = {
   },
 
   pt: {
+    "Ca(OH)₂ sec": "Ca(OH)₂ seco",
+    "Ca(OH)₂ humide": "Ca(OH)₂ húmido",
+    "Cendres lourdes humides [kg/h]": "Cinzas pesadas húmidas [kg/h]",
+    "Dimensionnement": "Dimensionamento",
+    "Nombre de champs": "Número de campos",
+    "Réactifs [kg/h]": "Reagentes [kg/h]",
+    "Évacuation des résidus": "Evacuação de resíduos",
+    "CO2 transport [kg/h]": "CO2 transporte [kg/h]",
+    "Coût transport [€/h]": "Custo transporte [€/h]",
     // — Clés états dynamiques (copiées de QUENCH, 2026-07) —
     "SOx reactif": "Reagente SOx",
     "HCl reactif": "Reagente HCl",
@@ -913,6 +967,15 @@ export const translations = {
   },
 
   ru: {
+    "Ca(OH)₂ sec": "Ca(OH)₂ сухой",
+    "Ca(OH)₂ humide": "Ca(OH)₂ влажный",
+    "Cendres lourdes humides [kg/h]": "Влажная зола [кг/ч]",
+    "Dimensionnement": "Расчёт размеров",
+    "Nombre de champs": "Количество полей",
+    "Réactifs [kg/h]": "Реагенты [кг/ч]",
+    "Évacuation des résidus": "Вывоз остатков",
+    "CO2 transport [kg/h]": "CO2 транспорта [кг/ч]",
+    "Coût transport [€/h]": "Стоимость транспорта [€/ч]",
     // — Clés états dynamiques (copiées de QUENCH, 2026-07) —
     "SOx reactif": "Реагент SOx",
     "HCl reactif": "Реагент HCl",
@@ -1061,6 +1124,15 @@ export const translations = {
   },
 
   zh: {
+    "Ca(OH)₂ sec": "Ca(OH)₂（干式）",
+    "Ca(OH)₂ humide": "Ca(OH)₂（湿式）",
+    "Cendres lourdes humides [kg/h]": "湿底灰 [kg/h]",
+    "Dimensionnement": "尺寸设计",
+    "Nombre de champs": "电场数",
+    "Réactifs [kg/h]": "药剂 [kg/h]",
+    "Évacuation des résidus": "残渣外运",
+    "CO2 transport [kg/h]": "运输CO2 [kg/h]",
+    "Coût transport [€/h]": "运输成本 [€/h]",
     // — Clés états dynamiques (copiées de QUENCH, 2026-07) —
     "SOx reactif": "SOx反应剂",
     "HCl reactif": "HCl反应剂",
@@ -1210,6 +1282,15 @@ export const translations = {
   },
 
   ja: {
+    "Ca(OH)₂ sec": "Ca(OH)₂（乾式）",
+    "Ca(OH)₂ humide": "Ca(OH)₂（湿式）",
+    "Cendres lourdes humides [kg/h]": "湿式主灰 [kg/h]",
+    "Dimensionnement": "寸法設計",
+    "Nombre de champs": "フィールド数",
+    "Réactifs [kg/h]": "薬剤 [kg/h]",
+    "Évacuation des résidus": "残渣の搬出",
+    "CO2 transport [kg/h]": "輸送CO2 [kg/h]",
+    "Coût transport [€/h]": "輸送コスト [€/h]",
     // — Clés états dynamiques (copiées de QUENCH, 2026-07) —
     "SOx reactif": "SOx反応剤",
     "HCl reactif": "HCl反応剤",
@@ -1356,6 +1437,15 @@ export const translations = {
   },
 
   ar: {
+    "Ca(OH)₂ sec": "Ca(OH)₂ جاف",
+    "Ca(OH)₂ humide": "Ca(OH)₂ رطب",
+    "Cendres lourdes humides [kg/h]": "الرماد القاعي الرطب [كغ/س]",
+    "Dimensionnement": "تحديد الأبعاد",
+    "Nombre de champs": "عدد الحقول",
+    "Réactifs [kg/h]": "الكواشف [كغ/س]",
+    "Évacuation des résidus": "إخلاء المخلفات",
+    "CO2 transport [kg/h]": "CO2 النقل [كغ/س]",
+    "Coût transport [€/h]": "تكلفة النقل [€/س]",
     // — Clés états dynamiques (copiées de QUENCH, 2026-07) —
     "SOx reactif": "كاشف SOx",
     "HCl reactif": "كاشف HCl",

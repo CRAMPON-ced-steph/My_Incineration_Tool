@@ -82,7 +82,20 @@ export const translations = {
     editedValueNote: '✎ : valeur saisie dans l\'onglet OPEX',
     hoursPerYear: 'h/an',
     otherRows: 'Autres (lignes ajoutées)',
-    opexSource: 'Valeurs de l\'onglet OPEX du nœud'
+    opexSource: 'Valeurs de l\'onglet OPEX du nœud',
+    // — Valorisation chaudière (2026-11-18) —
+    steamLevelHP: 'Vapeur HP',
+    steamLevelBP1: 'Vapeur BP P1',
+    steamLevelBP2: 'Vapeur BP P2',
+    steamExhaust: 'Vapeur d\'échappement turbine',
+    saleElec: 'Vente d\'électricité',
+    saleSteamHP: 'Vente de vapeur HP',
+    saleSteamBP1: 'Vente de vapeur BP P1',
+    saleSteamBP2: 'Vente de vapeur BP P2',
+    saleSteamExhaust: 'Vente de vapeur d\'échappement',
+    energySold: 'Énergie valorisée',
+    revenues: 'Recettes',
+    netCost: 'Coût net (coût − recettes)'
   },
 
   en: {
@@ -166,7 +179,20 @@ export const translations = {
     editedValueNote: '✎: value entered in the OPEX tab',
     hoursPerYear: 'h/yr',
     otherRows: 'Other (added rows)',
-    opexSource: 'Values from the node\'s OPEX tab'
+    opexSource: 'Values from the node\'s OPEX tab',
+    // — Valorisation chaudière (2026-11-18) —
+    steamLevelHP: 'HP steam',
+    steamLevelBP1: 'LP steam P1',
+    steamLevelBP2: 'LP steam P2',
+    steamExhaust: 'Turbine exhaust steam',
+    saleElec: 'Electricity sales',
+    saleSteamHP: 'HP steam sales',
+    saleSteamBP1: 'LP steam P1 sales',
+    saleSteamBP2: 'LP steam P2 sales',
+    saleSteamExhaust: 'Exhaust steam sales',
+    energySold: 'Energy sold',
+    revenues: 'Revenues',
+    netCost: 'Net cost (cost − revenues)'
   },
 
   de: {
@@ -250,7 +276,20 @@ export const translations = {
     editedValueNote: '✎: im OPEX-Reiter eingegebener Wert',
     hoursPerYear: 'h/Jahr',
     otherRows: 'Sonstiges (hinzugefügte Zeilen)',
-    opexSource: 'Werte aus dem OPEX-Reiter des Knotens'
+    opexSource: 'Werte aus dem OPEX-Reiter des Knotens',
+    // — Valorisation chaudière (2026-11-18) —
+    steamLevelHP: 'HD-Dampf',
+    steamLevelBP1: 'ND-Dampf P1',
+    steamLevelBP2: 'ND-Dampf P2',
+    steamExhaust: 'Turbinenabdampf',
+    saleElec: 'Stromverkauf',
+    saleSteamHP: 'Verkauf HD-Dampf',
+    saleSteamBP1: 'Verkauf ND-Dampf P1',
+    saleSteamBP2: 'Verkauf ND-Dampf P2',
+    saleSteamExhaust: 'Verkauf Abdampf',
+    energySold: 'Verwertete Energie',
+    revenues: 'Erlöse',
+    netCost: 'Nettokosten (Kosten − Erlöse)'
   },
 
   es: {
@@ -334,7 +373,20 @@ export const translations = {
     editedValueNote: '✎: valor introducido en la pestaña OPEX',
     hoursPerYear: 'h/año',
     otherRows: 'Otros (filas añadidas)',
-    opexSource: 'Valores de la pestaña OPEX del nodo'
+    opexSource: 'Valores de la pestaña OPEX del nodo',
+    // — Valorisation chaudière (2026-11-18) —
+    steamLevelHP: 'Vapor AP',
+    steamLevelBP1: 'Vapor BP P1',
+    steamLevelBP2: 'Vapor BP P2',
+    steamExhaust: 'Vapor de escape de turbina',
+    saleElec: 'Venta de electricidad',
+    saleSteamHP: 'Venta de vapor AP',
+    saleSteamBP1: 'Venta de vapor BP P1',
+    saleSteamBP2: 'Venta de vapor BP P2',
+    saleSteamExhaust: 'Venta de vapor de escape',
+    energySold: 'Energía valorizada',
+    revenues: 'Ingresos',
+    netCost: 'Coste neto (coste − ingresos)'
   },
 
   it: {
@@ -418,7 +470,20 @@ export const translations = {
     editedValueNote: '✎: valore inserito nella scheda OPEX',
     hoursPerYear: 'h/anno',
     otherRows: 'Altro (righe aggiunte)',
-    opexSource: 'Valori della scheda OPEX del nodo'
+    opexSource: 'Valori della scheda OPEX del nodo',
+    // — Valorisation chaudière (2026-11-18) —
+    steamLevelHP: 'Vapore AP',
+    steamLevelBP1: 'Vapore BP P1',
+    steamLevelBP2: 'Vapore BP P2',
+    steamExhaust: 'Vapore di scarico turbina',
+    saleElec: 'Vendita di elettricità',
+    saleSteamHP: 'Vendita di vapore AP',
+    saleSteamBP1: 'Vendita di vapore BP P1',
+    saleSteamBP2: 'Vendita di vapore BP P2',
+    saleSteamExhaust: 'Vendita di vapore di scarico',
+    energySold: 'Energia valorizzata',
+    revenues: 'Ricavi',
+    netCost: 'Costo netto (costo − ricavi)'
   },
 
   pt: {
@@ -502,7 +567,20 @@ export const translations = {
     editedValueNote: '✎: valor introduzido no separador OPEX',
     hoursPerYear: 'h/ano',
     otherRows: 'Outros (linhas adicionadas)',
-    opexSource: 'Valores do separador OPEX do nó'
+    opexSource: 'Valores do separador OPEX do nó',
+    // — Valorisation chaudière (2026-11-18) —
+    steamLevelHP: 'Vapor AP',
+    steamLevelBP1: 'Vapor BP P1',
+    steamLevelBP2: 'Vapor BP P2',
+    steamExhaust: 'Vapor de escape da turbina',
+    saleElec: 'Venda de eletricidade',
+    saleSteamHP: 'Venda de vapor AP',
+    saleSteamBP1: 'Venda de vapor BP P1',
+    saleSteamBP2: 'Venda de vapor BP P2',
+    saleSteamExhaust: 'Venda de vapor de escape',
+    energySold: 'Energia valorizada',
+    revenues: 'Receitas',
+    netCost: 'Custo líquido (custo − receitas)'
   },
 
   ru: {
@@ -586,7 +664,20 @@ export const translations = {
     editedValueNote: '✎: значение введено во вкладке OPEX',
     hoursPerYear: 'ч/год',
     otherRows: 'Прочее (добавленные строки)',
-    opexSource: 'Значения из вкладки OPEX узла'
+    opexSource: 'Значения из вкладки OPEX узла',
+    // — Valorisation chaudière (2026-11-18) —
+    steamLevelHP: 'Пар ВД',
+    steamLevelBP1: 'Пар НД P1',
+    steamLevelBP2: 'Пар НД P2',
+    steamExhaust: 'Отработанный пар турбины',
+    saleElec: 'Продажа электроэнергии',
+    saleSteamHP: 'Продажа пара ВД',
+    saleSteamBP1: 'Продажа пара НД P1',
+    saleSteamBP2: 'Продажа пара НД P2',
+    saleSteamExhaust: 'Продажа отработанного пара',
+    energySold: 'Реализованная энергия',
+    revenues: 'Выручка',
+    netCost: 'Чистые затраты (затраты − выручка)'
   },
 
   zh: {
@@ -670,7 +761,20 @@ export const translations = {
     editedValueNote: '✎：在 OPEX 选项卡中输入的值',
     hoursPerYear: '小时/年',
     otherRows: '其他（新增行）',
-    opexSource: '节点 OPEX 选项卡中的值'
+    opexSource: '节点 OPEX 选项卡中的值',
+    // — Valorisation chaudière (2026-11-18) —
+    steamLevelHP: '高压蒸汽',
+    steamLevelBP1: '低压蒸汽 P1',
+    steamLevelBP2: '低压蒸汽 P2',
+    steamExhaust: '汽轮机排汽',
+    saleElec: '售电',
+    saleSteamHP: '高压蒸汽销售',
+    saleSteamBP1: '低压蒸汽 P1 销售',
+    saleSteamBP2: '低压蒸汽 P2 销售',
+    saleSteamExhaust: '排汽销售',
+    energySold: '已利用能源',
+    revenues: '收入',
+    netCost: '净成本（成本 − 收入）'
   },
 
   ja: {
@@ -754,7 +858,20 @@ export const translations = {
     editedValueNote: '✎：OPEXタブで入力した値',
     hoursPerYear: '時間/年',
     otherRows: 'その他（追加行）',
-    opexSource: 'ノードのOPEXタブの値'
+    opexSource: 'ノードのOPEXタブの値',
+    // — Valorisation chaudière (2026-11-18) —
+    steamLevelHP: '高圧蒸気',
+    steamLevelBP1: '低圧蒸気 P1',
+    steamLevelBP2: '低圧蒸気 P2',
+    steamExhaust: 'タービン排気蒸気',
+    saleElec: '売電',
+    saleSteamHP: '高圧蒸気の販売',
+    saleSteamBP1: '低圧蒸気 P1 の販売',
+    saleSteamBP2: '低圧蒸気 P2 の販売',
+    saleSteamExhaust: '排気蒸気の販売',
+    energySold: '活用エネルギー',
+    revenues: '収入',
+    netCost: '純コスト（コスト − 収入）'
   },
 
   ar: {
@@ -838,6 +955,19 @@ export const translations = {
     editedValueNote: '✎: قيمة مُدخلة في علامة تبويب OPEX',
     hoursPerYear: 'ساعة/سنة',
     otherRows: 'أخرى (صفوف مضافة)',
-    opexSource: 'قيم علامة تبويب OPEX للعقدة'
+    opexSource: 'قيم علامة تبويب OPEX للعقدة',
+    // — Valorisation chaudière (2026-11-18) —
+    steamLevelHP: 'بخار عالي الضغط',
+    steamLevelBP1: 'بخار منخفض الضغط P1',
+    steamLevelBP2: 'بخار منخفض الضغط P2',
+    steamExhaust: 'بخار عادم التوربين',
+    saleElec: 'بيع الكهرباء',
+    saleSteamHP: 'بيع البخار عالي الضغط',
+    saleSteamBP1: 'بيع البخار منخفض الضغط P1',
+    saleSteamBP2: 'بيع البخار منخفض الضغط P2',
+    saleSteamExhaust: 'بيع بخار العادم',
+    energySold: 'الطاقة المُثمَّنة',
+    revenues: 'الإيرادات',
+    netCost: 'صافي التكلفة (التكلفة − الإيرادات)'
   }
 };

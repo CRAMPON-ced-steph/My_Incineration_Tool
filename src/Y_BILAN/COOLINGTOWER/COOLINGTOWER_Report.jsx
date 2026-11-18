@@ -57,6 +57,8 @@ const COOLINGTOWER_Report = ({ innerData = {}, currentLanguage = 'fr', nodeId })
   const Poutput = innerData.Poutput || {};
   const Residus = innerData.Residus || {};
   const elecRows = [1,2,3,4,5,6,7,8].map(i => ({ label: innerData[`labelElec${i}`] || `Poste ${i}`, value: innerData[`consoElec${i}`] })).filter(r => parseFloat(r.value) > 0);
+  const CT = innerData.CT_resultats || null;
+  const params = innerData.CT_design_params || {};
   const waterConsumption = [
     { label: t('Eau potable [m³/h]'), value: innerData.Conso_EauPotable_m3 },
     { label: t('Eau de refroidissement [m³/h]'), value: innerData.Conso_EauRefroidissement_m3 },
@@ -96,16 +98,24 @@ const COOLINGTOWER_Report = ({ innerData = {}, currentLanguage = 'fr', nodeId })
 
       <Section title={t('3. Design')}>
         <div style={styles.twoCol}>
-          <SubSection title={t('Consommations électriques')}>
-            {elecRows.length > 0 ? <ElecTable rows={elecRows} t={t} tr={tr} /> : <span style={{ color: '#999', fontSize: 12 }}>{t('Données non disponibles (ouvrir l\'onglet Design)')}</span>}
+          <SubSection title={t('Pulvérisation')}>
+            {CT ? (
+              <>
+                <KV label={t('Type de buse')} value={t(BUSES[params.nozzleType] || params.nozzleType || '—')} />
+                <KV label={t('Pression (bar)')} value={fmt(params.pressure, 1)} />
+                <KV label={t('Débit d\'eau pulvérisée [m³/h]')} value={fmt(CT.Q_eau_m3_h, 3)} />
+                <KV label={t('Type d\'eau')} value={t(innerData.Type_eau_tour || 'eau potable')} />
+                <KV label={t('Hauteur minimale')} value={fmt(CT.hauteur_m, 2)} unit="m" />
+                <KV label="SMD" value={fmt(CT.smd_um, 1)} unit="μm" />
+              </>
+            ) : <span style={{ color: '#999', fontSize: 12 }}>{t('Données non disponibles (ouvrir l\'onglet Design)')}</span>}
           </SubSection>
           <div>
-            {waterConsumption.length > 0 && <SubSection title={t('Consommation d\'eau')}>{waterConsumption.map(({ label, value }) => <KV key={label} label={label} value={fmt(value, 3)} />)}</SubSection>}
-            <SubSection title={t('Énergie auxiliaire')}>
-              <KV label={t('Gaz haute valeur [MW]')} value={fmt(innerData.conso_gaz_H_MW)} />
-              <KV label={t('Fuel [MW]')} value={fmt(innerData.conso_fuel_MW)} />
-              <KV label={t('Air comprimé [Nm³/h]')} value={fmt(innerData.conso_air_co_N_m3)} />
+            <SubSection title={t('Consommations électriques')}>
+              {elecRows.length > 0 ? <ElecTable rows={elecRows} t={t} tr={tr} /> : <span style={{ color: '#999', fontSize: 12 }}>{t('Données non disponibles (ouvrir l\'onglet Design)')}</span>}
+              {CT && <KV label={t('Rendement pompe [%]')} value={fmt(innerData.Rendement_pompe_tour, 0)} />}
             </SubSection>
+            {waterConsumption.length > 0 && <SubSection title={t('Consommation d\'eau')}>{waterConsumption.map(({ label, value }) => <KV key={label} label={label} value={fmt(value, 3)} />)}</SubSection>}
           </div>
         </div>
       </Section>
@@ -115,6 +125,9 @@ const COOLINGTOWER_Report = ({ innerData = {}, currentLanguage = 'fr', nodeId })
     </div>
   );
 };
+
+// Types de buse de l'onglet Design → libellés (COOLINGTOWER_traduction)
+const BUSES = { HOLLOW_CONE: 'Cône creux', FULL_CONE: 'Cône plein', FLAT_JET: 'Jet plat', SPIRAL: 'Spirale' };
 
 const styles = {
   container: { fontFamily: 'Arial, sans-serif', fontSize: 13, color: '#222', maxWidth: 1100, margin: '0 auto', padding: '20px 24px', backgroundColor: '#fff' },

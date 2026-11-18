@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { T_ref } from '../../A_Transverse_fonction/constantes';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { FG_emissivity } from '../../A_Transverse_fonction/FG_emissivite';
@@ -10,7 +10,10 @@ import { translations } from './WHB_traduction';
 import { fmt } from '../../A_Transverse_fonction/formatNumber';
 const WHBDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
   const languageCode = getLanguageCode(currentLanguage);
-  const t = (key) => translations[languageCode]?.[key] || translations['fr']?.[key] || key;
+  const t = useCallback(
+    (key) => translations[languageCode]?.[key] || translations['fr']?.[key] || key,
+    [languageCode]
+  );
 
   // ===== ÉTATS PRINCIPAUX =====
   const getInitialValue = (paramName, defaultValue = 0) => {
@@ -33,9 +36,7 @@ const WHBDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
     compressorType,
     powerRatio,
     airConsumptionPrice,
-    sellingElectricityPrice,
     gasTypes,
-    steamPrices,
     waterPrices,
     byproducts
   } = getOpexData();
@@ -641,15 +642,13 @@ const WHBDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
   const elements_eau_WHB = [
     { text: t('waterPurgeLosses'), value: innerData?.Eau_purge_kg_h || 0 }
   ];
-  const Eau_demin_m3_h = (innerData?.Eau_purge_kg_h || 0) / 1000;
+  const Eau_demin_m3_h = Math.max(0, innerData?.Eau_purge_kg_h || 0) / 1000;
 
   const Q_eau_m3_h = innerData?.Debit_eau_m3_h || 0;
   const Hmt = (innerData?.Pression_vapeur_bar || 0) + 20;
-  const P_pompe_alim_kW = Q_eau_m3_h * Hmt / (36 * 0.7);
+  // 1 bar × 1 m³/h = 1/36 kW ; rendement pompe 70 % ; pas de valeur négative si la chaudière ne produit pas
+  const P_pompe_alim_kW = Math.max(0, Q_eau_m3_h * Hmt / (36 * 0.7));
 
-  const elements_Pompe_alim = [
-    { text: 'Puissance_pompe_alimentaire', value: P_pompe_alim_kW },
-  ];
 
   const type_camion = '15t';
   const distance_km = 100;
@@ -674,138 +673,73 @@ const WHBDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
       break;
   }
 
-  const Refidis_kg_h = innerData?.Boiler_ash || 0;
+  // Cendres retenues dans la chaudière (onglet Polluants) ; négatif si l'amont ne fournit pas ses cendres volantes → 0
+  const Refidis_kg_h = Math.max(0, innerData?.Boiler_ash || 0);
 
   const CO2_transport_refidis = CO2_transport_kg_km * distance_km * (Refidis_kg_h / 1000);
   const cout_transport_refidis = cout_transport_euro_km * distance_km;
 
-  useEffect(() => {
-    if (innerData && setInnerData) {
-      const toSignificantFigures = (value, figures = 2) => {
-        if (value === 0 || value === null || value === undefined) return 0;
-        return parseFloat(value.toPrecision(figures));
-      };
+  // Réactifs éventuels calculés dans l'onglet Polluants
+  const reactifs = innerData?.Conso_reactifs || {};
 
-      const consoElec1 = P_pompe_alim_kW;
-      const consoElec2 = 0;
-      const consoElec3 = 0;
-      const consoElec4 = 0;
-      const consoElec5 = 0;
-
-      const labelElec1 = 'Pompe alimentation';
-      const labelElec2 = 'Air comprimé';
-      const labelElec3 = '';
-      const labelElec4 = '';
-      const labelElec5 = '';
-
-      const conso_air_co_N_m3 = 1;
-
-      const Conso_EauPotable_m3 = 0;
-      const Conso_EauRefroidissement_m3 = 0;
-      const Conso_EauDemin_m3 = Eau_demin_m3_h;
-      const Conso_EauRiviere_m3 = 0;
-      const Conso_EauAdoucie_m3 = 0;
-
-      const Conso_CaCO3_kg = innerData?.Conso_reactifs?.CaCO3 || 0;
-      const Conso_CaO_kg = innerData?.Conso_reactifs?.CaO || 0;
-      const Conso_CaOH2_dry_kg = innerData?.Conso_reactifs?.CaOH2_dry || 0;
-      const Conso_CaOH2_wet_kg = innerData?.Conso_reactifs?.CaOH2_wet || 0;
-      const Conso_NaOH_kg = innerData?.Conso_reactifs?.NaOH || 0;
-      const Conso_NaOHCO3_kg = innerData?.Conso_reactifs?.NaOHCO3 || 0;
-      const Conso_Ammonia_kg = innerData?.Conso_reactifs?.Ammonia || 0;
-      const Conso_NaBrCaBr2_kg = innerData?.Conso_reactifs?.NaBrCaBr2 || 0;
-      const Conso_CAP_kg = innerData?.Conso_reactifs?.CAP || 0;
-
-      const conso_gaz_H_MW = 0;
-      const conso_gaz_L_MW = 0;
-      const conso_gaz_Process_MW = 0;
-      const conso_fuel = 0;
-
-      const conso_incineration_ash_kg_h = 0;
-      const conso_boiler_ash_kg_h = Refidis_kg_h;
-      const conso_fly_ash_kg_h = 0;
-
-      const CO2_transport_incineratino_ash = 0;
-      const CO2_transport_boiler_ash = CO2_transport_refidis;
-      const CO2_transport_fly_ash = 0;
-      const CO2_transport_reactifs = innerData?.Conso_reactifs?.CO2_transport || 0;
-
-      const cout_transport_incineratino_ash = 0;
-      const cout_transport_boiler_ash = cout_transport_refidis;
-      const cout_transport_fly_ash = 0;
-      const cout_transport_reactifs = innerData?.Conso_reactifs?.cout || 0;
-
-      const production_electrique_kW = toSignificantFigures(Math.abs(innerData?.puissance_electrique_kW || 0));
-      const debit_vapeur_HP_th = toSignificantFigures(innerData?.debit_vapeur_HP_kg_h || 0);
-      const debit_vapeur_MP_th = toSignificantFigures(innerData?.debit_vapeur_MP_kg_h || 0);
-      const debit_vapeur_BP_th = toSignificantFigures(innerData?.debit_vapeur_BP_kg_h || 0);
-
-      const gain_production_electrique = toSignificantFigures(Math.abs(innerData?.puissance_electrique_kW || 0) / 1000) * sellingElectricityPrice;
-      const gain_debit_vapeur_HP = toSignificantFigures(innerData?.debit_vapeur_HP_kg_h || 0) / 1000 * steamPrices.highPressure;
-      const gain_debit_vapeur_MP = toSignificantFigures(innerData?.debit_vapeur_MP_kg_h || 0) / 1000 * steamPrices.lowPressure1;
-      const gain_debit_vapeur_BP = toSignificantFigures(innerData?.debit_vapeur_BP_kg_h || 0) / 1000 * steamPrices.lowPressure2;
-
-      setInnerData(prevData => ({
-        ...prevData,
-        consoElec1,
-        consoElec2,
-        consoElec3,
-        consoElec4,
-        consoElec5,
-        labelElec1,
-        labelElec2,
-        labelElec3,
-        labelElec4,
-        labelElec5,
-        conso_air_co_N_m3,
-        Conso_EauPotable_m3,
-        Conso_EauRefroidissement_m3,
-        Conso_EauDemin_m3,
-        Conso_EauRiviere_m3,
-        Conso_EauAdoucie_m3,
-        Conso_CaCO3_kg,
-        Conso_CaO_kg,
-        Conso_CaOH2_dry_kg,
-        Conso_CaOH2_wet_kg,
-        Conso_NaOH_kg,
-        Conso_NaOHCO3_kg,
-        Conso_Ammonia_kg,
-        Conso_NaBrCaBr2_kg,
-        truck15TPrice: cout_transport_reactifs,
-        conso_gaz_H_MW,
-        conso_gaz_L_MW,
-        conso_gaz_Process_MW,
-        conso_fuel,
-        conso_incineration_ash_kg_h,
-        conso_boiler_ash_kg_h,
-        conso_fly_ash_kg_h,
-        CO2_transport_incineratino_ash,
-        CO2_transport_boiler_ash,
-        CO2_transport_fly_ash,
-        CO2_transport_reactifs,
-        cout_transport_incineratino_ash,
-        cout_transport_boiler_ash,
-        cout_transport_fly_ash,
-        cout_transport_reactifs,
-        production_electrique_kW,
-        debit_vapeur_HP_th,
-        debit_vapeur_MP_th,
-        debit_vapeur_BP_th,
-        gain_production_electrique,
-        gain_debit_vapeur_HP,
-        gain_debit_vapeur_MP,
-        gain_debit_vapeur_BP
-      }));
-    }
-  }, [
-    innerData,
-    setInnerData,
-    P_pompe_alim_kW,
-    Eau_demin_m3_h,
-    Refidis_kg_h,
-    CO2_transport_refidis,
-    cout_transport_refidis
+  // ─── Écriture dans innerData (onglet OPEX et rapport) ───
+  // Consommations calculées ici : pompe alimentaire, eau déminéralisée d'appoint
+  // (pertes de purge), cendres de chaudière et leur transport. Les autres clés
+  // OPEX sont remises à 0. La valorisation (électricité, vapeur vendue) est lue
+  // par l'onglet OPEX dans les résultats de l'onglet Valorisation vapeur.
+  const opexPayload = useMemo(() => ({
+    P_out_mmCE,
+    consoElec1: P_pompe_alim_kW,
+    labelElec1: t('feedWaterPump'),
+    ...Object.fromEntries([2, 3, 4, 5, 6, 7, 8].flatMap((i) => [[`consoElec${i}`, 0], [`labelElec${i}`, '']])),
+    conso_air_co_N_m3: 0,
+    Conso_EauPotable_m3: 0, Conso_EauRefroidissement_m3: 0,
+    Conso_EauDemin_m3: Eau_demin_m3_h,
+    Conso_EauRiviere_m3: 0, Conso_EauAdoucie_m3: 0,
+    Conso_CaCO3_kg: reactifs.CaCO3 || 0,
+    Conso_CaO_kg: reactifs.CaO || 0,
+    Conso_CaOH2_dry_kg: reactifs.CaOH2dry || 0,
+    Conso_CaOH2_wet_kg: reactifs.CaOH2wet || 0,
+    Conso_NaOH_kg: reactifs.NaOH || 0,
+    Conso_NaOHCO3_kg: reactifs.NaOHCO3 || 0,
+    Conso_Ammonia_kg: reactifs.Ammonia || 0,
+    Conso_NaBrCaBr2_kg: reactifs.NaBrCaBr2 || 0,
+    Conso_CAP_kg: reactifs.CAP || 0,
+    conso_gaz_H_MW: 0, conso_gaz_L_MW: 0, conso_gaz_Process_MW: 0, conso_fuel_MW: 0,
+    conso_incineration_ash_kg_h: 0,
+    conso_boiler_ash_kg_h: Refidis_kg_h,
+    conso_fly_ash_kg_h: 0,
+    CO2_transport_incineratino_ash: 0,
+    CO2_transport_boiler_ash: CO2_transport_refidis,
+    CO2_transport_fly_ash: 0,
+    CO2_transport_reactifs: 0,
+    cout_transport_incineratino_ash: 0,
+    cout_transport_boiler_ash: Refidis_kg_h > 0 ? cout_transport_refidis : 0,
+    cout_transport_fly_ash: 0,
+    cout_transport_reactifs: 0,
+    WHB_design_opex: { Hmt_bar: Hmt, Q_eau_alim_m3_h: Q_eau_m3_h, type_camion, distance_km },
+  }), [
+    P_out_mmCE, P_pompe_alim_kW, Eau_demin_m3_h, Refidis_kg_h, CO2_transport_refidis, cout_transport_refidis,
+    reactifs.CaCO3, reactifs.CaO, reactifs.CaOH2dry, reactifs.CaOH2wet, reactifs.NaOH, reactifs.NaOHCO3,
+    reactifs.Ammonia, reactifs.NaBrCaBr2, reactifs.CAP, Hmt, Q_eau_m3_h, t,
   ]);
+
+  const lastSync = useRef('');
+  useEffect(() => {
+    if (!setInnerData) return;
+    const json = JSON.stringify(opexPayload);
+    if (json === lastSync.current) return;
+    lastSync.current = json;
+    setInnerData((prevData) => ({ ...prevData, ...opexPayload }));
+  }, [opexPayload, setInnerData]);
+
+  const elements_opex_WHB = [
+    { text: t('feedWaterPumpPower'), value: fmt(P_pompe_alim_kW, 2) },
+    { text: t('demineralizedMakeupWater'), value: fmt(Eau_demin_m3_h, 3) },
+    { text: t('boilerAshEvacuated'), value: fmt(Refidis_kg_h, 2) },
+    { text: t('ashTransportCO2'), value: fmt(CO2_transport_refidis, 2) },
+    { text: t('ashTransportCost'), value: fmt(Refidis_kg_h > 0 ? cout_transport_refidis : 0, 2) },
+  ];
 
   return (
     <div style={styles.container}>
@@ -1302,6 +1236,13 @@ const WHBDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
       <div style={styles.pdcSection}>
         <div style={styles.pdcTitle}>{t('waterRecallConsumption')}</div>
         <TableGeneric elements={elements_eau_WHB} />
+      </div>
+
+      {/* SECTION OPEX */}
+      <div style={styles.pdcSection}>
+        <div style={styles.pdcTitle}>{t('opexConsumptions')}</div>
+        <TableGeneric elements={elements_opex_WHB} />
+        <div style={{ fontSize: '10px', color: '#666', marginTop: '6px' }}>{t('opexConsumptionsNote')}</div>
       </div>
     </div>
   );

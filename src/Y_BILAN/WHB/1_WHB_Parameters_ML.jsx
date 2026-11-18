@@ -119,8 +119,6 @@ const WHB_Parameters = ({ innerData, setInnerData, upstreamT_IN, upstreamFG_IN, 
     innerData['Pression_vapeur_bar'] = boilerPressure;
     innerData['Temperature_vapeur_C'] = steamType === 'saturated' ? saturationSteamTemp : superheatedSteamTemp;
     innerData['Debit_eau_m3_h'] = Q_feedwater_kg_h / 1000;
-    // OPEX : eau alimentaire chaudière comptée en eau déminéralisée (comme l'ancien rapport WHB)
-    innerData['Conso_EauDemin_m3'] = Q_feedwater_kg_h / 1000;
     innerData['Q_steam_kg_h'] = Q_steam_kg_h;
     innerData['P_recuperee_kW'] = H_diff / 3600; // kJ/h -> kW (lu par WHB_Report)
     innerData['Q_feedwater_kg_h'] = Q_feedwater_kg_h;

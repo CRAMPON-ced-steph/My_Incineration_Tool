@@ -5,6 +5,7 @@ import WHBFlueGasPollutantEmission from './3_WHB_Pollutant_Emission_ML';
 import WHBDesign from './4_WHB_Design_ML';
 import TurbineCalculator from './6_WHB_ValoVapeur3_ML';
 import CalculateurChaudiere from './7_Various_boiler_calculations_ML';
+import WHBOpex from './5_WHB_Opex';
 import WHB_Report from './WHB_Report';
 
 import '../../index.css';
@@ -98,8 +99,20 @@ const WHBMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLa
       ),
     },
     {
+      name: 'opex',
+      label: t('opex'),
+      content: (
+        <WHBOpex
+          innerData={innerData}
+          setInnerData={setInnerData}
+          currentLanguage={currentLanguage}
+          nodeId={nodeId}
+        />
+      ),
+    },
+    {
       name: 'rapport',
-      label: 'Rapport',
+      label: t('rapport'),
       content: <WHB_Report innerData={innerData} currentLanguage={currentLanguage} nodeId={nodeId} />,
     },
   ];

@@ -26,7 +26,7 @@ const ELECTROFILTERMainPage = ({ nodeData, title, onSendData, onClose, onGoBack 
   {name: t('Flue gases'), content: < ELECTROFILTERFlueGasParameters innerData={innerData}setInnerData={setInnerData}currentLanguage={currentLanguage} nodeId={nodeId}/> },
   {name: t('Pollutant Emissions'), content: <ELECTROFILTERFlueGasPollutantEmission  innerData={innerData}setInnerData={setInnerData}currentLanguage={currentLanguage} nodeId={nodeId}/>,},
   {name: t('Design'), content: < ELECTROFILTERDesign innerData={innerData}setInnerData={setInnerData}currentLanguage={currentLanguage} nodeId={nodeId}/> },
-  //{name: t('Opex'), content: < ELECTROFILTEROpex innerData={innerData}setInnerData={setInnerData} currentLanguage={currentLanguage} nodeId={nodeId}/> },
+  {name: t('Opex'), content: < ELECTROFILTEROpex innerData={innerData}setInnerData={setInnerData} currentLanguage={currentLanguage} nodeId={nodeId}/> },
   {name: t('Rapport'), content: <ELECTROFILTER_Report innerData={innerData} currentLanguage={currentLanguage} nodeId={nodeId} />},
   ];
 

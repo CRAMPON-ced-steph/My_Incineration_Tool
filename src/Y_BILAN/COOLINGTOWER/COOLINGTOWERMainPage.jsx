@@ -88,7 +88,7 @@ const COOLINGTOWERMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, 
             cursor: 'pointer',
           }}
         >
-          Back to Flow
+          {t('Back to Flow')}
         </button>
       </div>
 
@@ -117,7 +117,7 @@ const COOLINGTOWERMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, 
               width: '2000px', 
             }}
           >
-            {tab.name}
+            {t(tab.name)}
           </button>
         ))}
       </div>
