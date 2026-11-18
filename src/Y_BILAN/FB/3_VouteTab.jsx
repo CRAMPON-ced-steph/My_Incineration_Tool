@@ -96,6 +96,12 @@ function computeCalculs(params) {
 
   const PressionVouteDefaut_mmCe = Number(params.PressionVouteDefaut_mmCe) || 2000;
   const DiametreTrous_mm = Number(params.DiametreTrous_mm) || 5;
+  // Nombre de trous par tuyère imposé (comme la saisie de Pyrofluid) ; vide ou 0 = calculé
+  // à partir de la vitesse tuyère cible. Imposé, il fixe la vitesse réelle des tuyères.
+  const NbTrousImpose = Math.max(0, Math.round(Number(params.NbTrousImpose) || 0));
+  const nbTrous = (surfaceCible_m2) => (NbTrousImpose > 0
+    ? NbTrousImpose
+    : Math.min(NB_TROUS_MAX, Math.ceil((4 * surfaceCible_m2) / (Math.PI * Math.pow(DiametreTrous_mm / 1000, 2)))));
   const DiametreVoute_m = voute.DiametreVoute;
   const TempEntreeBoiteVent_C = Number(params.TempEntreeBoiteVent_C);
   // Débit d'air ramené à un four (le débit reçu de la combustion est le total)
@@ -119,7 +125,9 @@ function computeCalculs(params) {
 
   let DebitReelTuyeres_m3s = DebitAirReelBoiteVentM3h_init_m3h / 3600 / NbrTuyeres;
   let SurfaceTuyeresReelle_m2 = DebitReelTuyeres_m3s / VitesseTuyereCible_ms;
-  let nb_de_trous = Math.min(NB_TROUS_MAX, Math.ceil((4 * SurfaceTuyeresReelle_m2) / (Math.PI * Math.pow(DiametreTrous_mm / 1000, 2))));
+  // Nombre de trous qu'on aurait sans imposition (affiché comme repère)
+  const NbTrousCalcule = Math.min(NB_TROUS_MAX, Math.ceil((4 * SurfaceTuyeresReelle_m2) / (Math.PI * Math.pow(DiametreTrous_mm / 1000, 2))));
+  let nb_de_trous = nbTrous(SurfaceTuyeresReelle_m2);
   SurfaceTuyeresReelle_m2 = (nb_de_trous * Math.PI * Math.pow(DiametreTrous_mm / 1000, 2)) / 4;
   VitesseReelleTuyere_ms = SurfaceTuyeresReelle_m2 > 0 ? DebitReelTuyeres_m3s / SurfaceTuyeresReelle_m2 : 0;
 
@@ -139,7 +147,7 @@ function computeCalculs(params) {
   DebitAirReelBoiteVentM3h_m3s = DebitAirReelBoiteVent_m3h / 3600;
   DebitReelTuyeres_m3s = DebitAirReelBoiteVentM3h_init_m3h / 3600 / NbrTuyeres;
   SurfaceTuyeresReelle_m2 = DebitReelTuyeres_m3s / VitesseTuyereCible_ms;
-  nb_de_trous = Math.min(NB_TROUS_MAX, Math.ceil((4 * SurfaceTuyeresReelle_m2) / (Math.PI * Math.pow(DiametreTrous_mm / 1000, 2))));
+  nb_de_trous = nbTrous(SurfaceTuyeresReelle_m2);
   SurfaceTuyeresReelle_m2 = (nb_de_trous * Math.PI * Math.pow(DiametreTrous_mm / 1000, 2)) / 4;
   VitesseReelleTuyere_ms = SurfaceTuyeresReelle_m2 > 0 ? DebitReelTuyeres_m3s / SurfaceTuyeresReelle_m2 : 0;
   const PressionFreeboard = PFreeBoard(PressionVouteDefaut_mmCe, PDC_Voute_Iter1);
@@ -151,6 +159,8 @@ function computeCalculs(params) {
     DebitVolFumeesHumide_Nm3hFour,
     VolTotalAirInstrumentation_Nm3h,
     DiametreTrous_mm,
+    NbTrousImpose: NbTrousImpose > 0 ? NbTrousImpose : '',
+    NbTrousCalcule,
     TempNiveauVoute_C,
     NeutralisationCentre,
     TempFreeboard_C,
@@ -210,6 +220,7 @@ const DimensionnementTab = ({ innerData = {}, innerDataTick, onDataChange, curre
     Modele: innerData?.Modele ?? 'R36',
     DiametreVouteKey: innerData?.DiametreVouteKey ?? '2.258',
     DiametreTrous_mm: innerData?.DiametreTrous_mm?.toString() ?? '5',
+    NbTrousImpose: innerData?.NbTrousImpose ? String(innerData.NbTrousImpose) : '',
     TempNiveauVoute_C: innerData?.TempNiveauVoute_C?.toString() ?? '720',
     NeutralisationCentre: innerData?.NeutralisationCentre ?? false,
     DiametreFreeboardCustom_m: innerData?.DiametreFreeboardCustom_m?.toString() ?? '3.8',
@@ -622,6 +633,21 @@ const DimensionnementTab = ({ innerData = {}, innerDataTick, onDataChange, curre
               onChange={(e) => handleParametreChange('DiametreTrous_mm', e.target.value)}
               style={inputStyle}
             />
+          </div>
+          <div>
+            <label style={labelStyle}>{t('Nombre de trous par tuyère')}</label>
+            <input
+              type="number"
+              min="0"
+              step="1"
+              value={parametres.NbTrousImpose}
+              placeholder={calculsComplets ? `${t('Calculé')} : ${calculsComplets.NbTrousCalcule}` : t('Calculé')}
+              onChange={(e) => handleParametreChange('NbTrousImpose', e.target.value)}
+              style={inputStyle}
+            />
+            <div style={{ fontSize: '11px', color: '#6b7280', marginTop: '4px' }}>
+              {t('Vide : calculé à partir de la vitesse tuyère cible')}
+            </div>
           </div>
           {[
             { label: t('Temperature Entree Boite à Vent [°C]'), key: 'TempEntreeBoiteVent_C', step: '10', readOnly: true },
