@@ -105,7 +105,7 @@ const DEFAULT_THERMAL = {
   Temp_air_balayage_instrumentation_C: 15,
   Tair_ap_prechauffe_C: 580,
   Pertes_thermiques_pourcent: 3,
-  Rdt_HX: 0.85,
+  Rdt_HX: 0.95, // rendement du récupérateur — valeur par défaut Pyrofluid
 };
 
 // ============================================================
@@ -820,7 +820,7 @@ const CombustionTab = ({ innerData = {}, onInnerDataChange, onResultsChange, cur
     innerData.Tf_voute_ap_HX_C = results.Tf_voute_ap_HX_C || 0;
     innerData.Hf_voute_ap_HX_kW = results.Hf_voute_ap_HX_kW || 0;
     innerData.Hair_ap_prechauffage_kW = results.Hair_ap_prechauffage_kW || 0;
-    innerData.Rdt_HX = thermalParams.Rdt_HX != null ? thermalParams.Rdt_HX * 100 : 85;
+    innerData.Rdt_HX = thermalParams.Rdt_HX != null ? thermalParams.Rdt_HX * 100 : 95;
     innerData.Temp_air_soufflante_C = results.Temp_air_soufflante_C || 60;
     innerData.Q_air_comb_tot_Nm3_h = results.VolumeAirCombustionTot_Nm3_h || 0;
     innerData.Volume_air_combustible_total_Nm3_h =
@@ -828,6 +828,10 @@ const CombustionTab = ({ innerData = {}, onInnerDataChange, onResultsChange, cur
       (results.Vair_instru_tot || 0) +
       (results.Vair_sec_tot || 0) +
       (results.Vair_tert_tot || 0);
+    // Détail pour le ventilateur de l'onglet HX (air secondaire / tertiaire en option)
+    innerData.Vair_instru_tot_Nm3_h = results.Vair_instru_tot || 0;
+    innerData.Vair_sec_tot_Nm3_h = results.Vair_sec_tot || 0;
+    innerData.Vair_tert_tot_Nm3_h = results.Vair_tert_tot || 0;
     innerData.Rho_FG_kg_Nm3 = results.Rho_FG_kg_Nm3 || 0;
     innerData.Masse_air_sec_combustion_tot_kg_h = results.Masse_air_sec_combustion_tot_kg_h || 0;
 
@@ -912,8 +916,11 @@ const CombustionTab = ({ innerData = {}, onInnerDataChange, onResultsChange, cur
         (results.Vair_instru_tot || 0) +
         (results.Vair_sec_tot || 0) +
         (results.Vair_tert_tot || 0),
+      Vair_instru_tot_Nm3_h: results.Vair_instru_tot || 0,
+      Vair_sec_tot_Nm3_h: results.Vair_sec_tot || 0,
+      Vair_tert_tot_Nm3_h: results.Vair_tert_tot || 0,
       Masse_air_sec_combustion_tot_kg_h: results.Masse_air_sec_combustion_tot_kg_h || 0,
-      Rdt_HX: thermalParams.Rdt_HX || 0.85, Tair_ap_prechauffe_C: results.Tair_ap_prechauffe_C || 0,
+      Rdt_HX: thermalParams.Rdt_HX ?? 0.95, Tair_ap_prechauffe_C: results.Tair_ap_prechauffe_C || 0,
     });
   }, [results, emissions, innerData, thermalParams, equilibre, eau_add_effective_kg_h, onInnerDataChange, onResultsChange]);
 

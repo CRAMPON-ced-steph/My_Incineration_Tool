@@ -11,6 +11,16 @@ export const translations = {
   // FRANÇAIS
   // ============================================================
   fr: {
+    "Configuration de l'échangeur": "Configuration de l'échangeur",
+    "Un échangeur pour l'ensemble des fours": "Un échangeur pour l'ensemble des fours",
+    "Un échangeur par four": "Un échangeur par four",
+    "Nombre de fours": "Nombre de fours",
+    "Nombre d'échangeurs": "Nombre d'échangeurs",
+    "Nombre de passes": "Nombre de passes",
+    "Débits, enthalpies, surface et ventilateur affichés pour un échangeur (un four).": "Débits, enthalpies, surface et ventilateur affichés pour un échangeur (un four).",
+    "Air secondaire et tertiaire dans le débit du ventilateur": "Air secondaire et tertiaire dans le débit du ventilateur",
+    "Puissance électrique totale [kW]": "Puissance électrique totale [kW]",
+    "ventilateur": "ventilateur",
     // — Mode « Calcul Pyrofluid d'origine » (onglet Combustion) —
     'Calcul Pyrofluid d\'origine : ACTIF': 'Calcul Pyrofluid d\'origine : ACTIF',
     'Calcul Pyrofluid d\'origine': 'Calcul Pyrofluid d\'origine',
@@ -711,6 +721,16 @@ export const translations = {
   // ENGLISH
   // ============================================================
   en: {
+    "Configuration de l'échangeur": "Heat exchanger configuration",
+    "Un échangeur pour l'ensemble des fours": "One exchanger for all furnaces",
+    "Un échangeur par four": "One exchanger per furnace",
+    "Nombre de fours": "Number of furnaces",
+    "Nombre d'échangeurs": "Number of exchangers",
+    "Nombre de passes": "Number of passes",
+    "Débits, enthalpies, surface et ventilateur affichés pour un échangeur (un four).": "Flows, enthalpies, area and fan are shown for one exchanger (one furnace).",
+    "Air secondaire et tertiaire dans le débit du ventilateur": "Secondary and tertiary air in fan flow",
+    "Puissance électrique totale [kW]": "Total electrical power [kW]",
+    "ventilateur": "fan",
     // — Mode « Calcul Pyrofluid d'origine » (onglet Combustion) —
     'Calcul Pyrofluid d\'origine : ACTIF': 'Original Pyrofluid calculation: ON',
     'Calcul Pyrofluid d\'origine': 'Original Pyrofluid calculation',
@@ -1411,6 +1431,16 @@ export const translations = {
   // ESPAÑOL
   // ============================================================
   es: {
+    "Configuration de l'échangeur": "Configuración del intercambiador",
+    "Un échangeur pour l'ensemble des fours": "Un intercambiador para todos los hornos",
+    "Un échangeur par four": "Un intercambiador por horno",
+    "Nombre de fours": "Número de hornos",
+    "Nombre d'échangeurs": "Número de intercambiadores",
+    "Nombre de passes": "Número de pasos",
+    "Débits, enthalpies, surface et ventilateur affichés pour un échangeur (un four).": "Caudales, entalpías, superficie y ventilador mostrados para un intercambiador (un horno).",
+    "Air secondaire et tertiaire dans le débit du ventilateur": "Aire secundario y terciario en el caudal del ventilador",
+    "Puissance électrique totale [kW]": "Potencia eléctrica total [kW]",
+    "ventilateur": "ventilador",
     // — Mode « Calcul Pyrofluid d'origine » (onglet Combustion) —
     'Calcul Pyrofluid d\'origine : ACTIF': 'Cálculo Pyrofluid original: ACTIVO',
     'Calcul Pyrofluid d\'origine': 'Cálculo Pyrofluid original',
@@ -1993,6 +2023,16 @@ export const translations = {
   // DEUTSCH
   // ============================================================
   de: {
+    "Configuration de l'échangeur": "Wärmetauscher-Konfiguration",
+    "Un échangeur pour l'ensemble des fours": "Ein Wärmetauscher für alle Öfen",
+    "Un échangeur par four": "Ein Wärmetauscher pro Ofen",
+    "Nombre de fours": "Anzahl der Öfen",
+    "Nombre d'échangeurs": "Anzahl der Wärmetauscher",
+    "Nombre de passes": "Anzahl der Durchgänge",
+    "Débits, enthalpies, surface et ventilateur affichés pour un échangeur (un four).": "Ströme, Enthalpien, Fläche und Gebläse für einen Wärmetauscher (einen Ofen) angezeigt.",
+    "Air secondaire et tertiaire dans le débit du ventilateur": "Sekundär- und Tertiärluft im Gebläsestrom",
+    "Puissance électrique totale [kW]": "Elektrische Gesamtleistung [kW]",
+    "ventilateur": "Gebläse",
     // — Mode « Calcul Pyrofluid d'origine » (onglet Combustion) —
     'Calcul Pyrofluid d\'origine : ACTIF': 'Original-Pyrofluid-Berechnung: AKTIV',
     'Calcul Pyrofluid d\'origine': 'Original-Pyrofluid-Berechnung',
@@ -2575,6 +2615,16 @@ export const translations = {
   // ITALIANO
   // ============================================================
   it: {
+    "Configuration de l'échangeur": "Configurazione dello scambiatore",
+    "Un échangeur pour l'ensemble des fours": "Uno scambiatore per tutti i forni",
+    "Un échangeur par four": "Uno scambiatore per forno",
+    "Nombre de fours": "Numero di forni",
+    "Nombre d'échangeurs": "Numero di scambiatori",
+    "Nombre de passes": "Numero di passaggi",
+    "Débits, enthalpies, surface et ventilateur affichés pour un échangeur (un four).": "Portate, entalpie, superficie e ventilatore indicati per uno scambiatore (un forno).",
+    "Air secondaire et tertiaire dans le débit du ventilateur": "Aria secondaria e terziaria nella portata del ventilatore",
+    "Puissance électrique totale [kW]": "Potenza elettrica totale [kW]",
+    "ventilateur": "ventilatore",
     // — Mode « Calcul Pyrofluid d'origine » (onglet Combustion) —
     'Calcul Pyrofluid d\'origine : ACTIF': 'Calcolo Pyrofluid originale: ATTIVO',
     'Calcul Pyrofluid d\'origine': 'Calcolo Pyrofluid originale',
@@ -3157,6 +3207,16 @@ export const translations = {
   // PORTUGUÊS
   // ============================================================
   pt: {
+    "Configuration de l'échangeur": "Configuração do permutador",
+    "Un échangeur pour l'ensemble des fours": "Um permutador para todos os fornos",
+    "Un échangeur par four": "Um permutador por forno",
+    "Nombre de fours": "Número de fornos",
+    "Nombre d'échangeurs": "Número de permutadores",
+    "Nombre de passes": "Número de passes",
+    "Débits, enthalpies, surface et ventilateur affichés pour un échangeur (un four).": "Caudais, entalpias, superfície e ventilador indicados para um permutador (um forno).",
+    "Air secondaire et tertiaire dans le débit du ventilateur": "Ar secundário e terciário no caudal do ventilador",
+    "Puissance électrique totale [kW]": "Potência elétrica total [kW]",
+    "ventilateur": "ventilador",
     // — Mode « Calcul Pyrofluid d'origine » (onglet Combustion) —
     'Calcul Pyrofluid d\'origine : ACTIF': 'Cálculo Pyrofluid original: ATIVO',
     'Calcul Pyrofluid d\'origine': 'Cálculo Pyrofluid original',
@@ -3739,6 +3799,16 @@ export const translations = {
   // 中文 (CHINESE SIMPLIFIED)
   // ============================================================
   zh: {
+    "Configuration de l'échangeur": "换热器配置",
+    "Un échangeur pour l'ensemble des fours": "所有焚烧炉共用一台换热器",
+    "Un échangeur par four": "每台焚烧炉一台换热器",
+    "Nombre de fours": "焚烧炉数量",
+    "Nombre d'échangeurs": "换热器数量",
+    "Nombre de passes": "管程数",
+    "Débits, enthalpies, surface et ventilateur affichés pour un échangeur (un four).": "流量、焓、换热面积和风机均按一台换热器（一台炉）显示。",
+    "Air secondaire et tertiaire dans le débit du ventilateur": "风机流量包含二次和三次风",
+    "Puissance électrique totale [kW]": "总电功率 [kW]",
+    "ventilateur": "风机",
     // — Mode « Calcul Pyrofluid d'origine » (onglet Combustion) —
     'Calcul Pyrofluid d\'origine : ACTIF': 'Pyrofluid 原始计算：已启用',
     'Calcul Pyrofluid d\'origine': 'Pyrofluid 原始计算',
@@ -4321,6 +4391,16 @@ export const translations = {
   // 日本語 (JAPANESE)
   // ============================================================
   ja: {
+    "Configuration de l'échangeur": "熱交換器の構成",
+    "Un échangeur pour l'ensemble des fours": "全炉で熱交換器1基",
+    "Un échangeur par four": "炉ごとに熱交換器1基",
+    "Nombre de fours": "炉の数",
+    "Nombre d'échangeurs": "熱交換器の数",
+    "Nombre de passes": "パス数",
+    "Débits, enthalpies, surface et ventilateur affichés pour un échangeur (un four).": "流量、エンタルピー、伝熱面積、送風機は熱交換器1基（炉1基）あたりの値です。",
+    "Air secondaire et tertiaire dans le débit du ventilateur": "送風機流量に二次・三次空気を含める",
+    "Puissance électrique totale [kW]": "総電力 [kW]",
+    "ventilateur": "送風機",
     // — Mode « Calcul Pyrofluid d'origine » (onglet Combustion) —
     'Calcul Pyrofluid d\'origine : ACTIF': 'Pyrofluid 原計算：有効',
     'Calcul Pyrofluid d\'origine': 'Pyrofluid 原計算',
@@ -4903,6 +4983,16 @@ export const translations = {
   // РУССКИЙ (RUSSIAN)
   // ============================================================
   ru: {
+    "Configuration de l'échangeur": "Конфигурация теплообменника",
+    "Un échangeur pour l'ensemble des fours": "Один теплообменник на все печи",
+    "Un échangeur par four": "Один теплообменник на печь",
+    "Nombre de fours": "Количество печей",
+    "Nombre d'échangeurs": "Количество теплообменников",
+    "Nombre de passes": "Число ходов",
+    "Débits, enthalpies, surface et ventilateur affichés pour un échangeur (un four).": "Расходы, энтальпии, поверхность и вентилятор показаны для одного теплообменника (одной печи).",
+    "Air secondaire et tertiaire dans le débit du ventilateur": "Вторичный и третичный воздух в расходе вентилятора",
+    "Puissance électrique totale [kW]": "Общая электрическая мощность [кВт]",
+    "ventilateur": "вентилятор",
     // — Mode « Calcul Pyrofluid d'origine » (onglet Combustion) —
     'Calcul Pyrofluid d\'origine : ACTIF': 'Исходный расчёт Pyrofluid: ВКЛ',
     'Calcul Pyrofluid d\'origine': 'Исходный расчёт Pyrofluid',
@@ -5485,6 +5575,16 @@ export const translations = {
   // العربية (ARABIC)
   // ============================================================
   ar: {
+    "Configuration de l'échangeur": "تكوين المبادل الحراري",
+    "Un échangeur pour l'ensemble des fours": "مبادل واحد لجميع الأفران",
+    "Un échangeur par four": "مبادل لكل فرن",
+    "Nombre de fours": "عدد الأفران",
+    "Nombre d'échangeurs": "عدد المبادلات",
+    "Nombre de passes": "عدد الممرات",
+    "Débits, enthalpies, surface et ventilateur affichés pour un échangeur (un four).": "التدفقات والإنثالبيات والمساحة والمروحة معروضة لمبادل واحد (فرن واحد).",
+    "Air secondaire et tertiaire dans le débit du ventilateur": "الهواء الثانوي والثالثي ضمن تدفق المروحة",
+    "Puissance électrique totale [kW]": "القدرة الكهربائية الإجمالية [kW]",
+    "ventilateur": "مروحة",
     // — Mode « Calcul Pyrofluid d'origine » (onglet Combustion) —
     'Calcul Pyrofluid d\'origine : ACTIF': 'حساب Pyrofluid الأصلي: مفعّل',
     'Calcul Pyrofluid d\'origine': 'حساب Pyrofluid الأصلي',

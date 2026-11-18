@@ -17,8 +17,12 @@ const useTranslation = (currentLanguage = 'fr') => {
   }, [currentLanguage]);
 };
 
+// _version 2 (18/11/2026) : encrassement 25 % et rendement 95 % par défaut (valeurs Pyrofluid),
+// choix 2 / 3 passes, air secondaire + tertiaire au ventilateur, un échangeur global ou par four.
+const VERSION_FREE_PARAMS = 2;
 const DEFAULT_FREE_PARAMS = {
-  Encrassement_pourcent: 10,
+  _version: VERSION_FREE_PARAMS,
+  Encrassement_pourcent: 25,
   vitesse_des_fumees_m_s: 16,
   PDC_carneau_mmCE: 5,
   PDC_echangeur_air_mmCE: 0,
@@ -27,51 +31,95 @@ const DEFAULT_FREE_PARAMS = {
   PDC_reseau_sortie_entree_boite_mmCe: 50,
   PDC_HX_FG_mmCE: 50,
   Rendement_ventilateur: 0.7,
+  NbreDePass: 2,                 // Pyrofluid : 2 ou 3 passes
+  airSecTertVentilateur: false,  // false = Pyrofluid (air de combustion + instrumentation)
+  echangeurParFour: true,        // true = Pyrofluid (un échangeur par four)
 };
+
+const lireFreeParams = (cle) => {
+  try {
+    const saved = JSON.parse(localStorage.getItem(cle) || 'null');
+    if (!saved || typeof saved !== 'object') return DEFAULT_FREE_PARAMS;
+    // Avant la version 2, l'encrassement n'était pas saisissable : la valeur
+    // enregistrée était l'ancienne valeur par défaut (10 %) → on prend 25 %.
+    if (!(saved._version >= VERSION_FREE_PARAMS)) delete saved.Encrassement_pourcent;
+    return { ...DEFAULT_FREE_PARAMS, ...saved, _version: VERSION_FREE_PARAMS };
+  } catch { return DEFAULT_FREE_PARAMS; }
+};
+
+// Choix entre deux (ou plusieurs) options — défini au niveau module (référence stable).
+const ChoixBoutons = ({ options, value, onChange }) => (
+  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+    {options.map((o) => {
+      const actif = o.value === value;
+      return (
+        <button
+          key={String(o.value)}
+          type="button"
+          onClick={() => onChange(o.value)}
+          style={{
+            padding: '8px 14px', borderRadius: '4px', fontSize: '13px', cursor: 'pointer',
+            border: actif ? '2px solid #1565c0' : '1px solid #ccc',
+            backgroundColor: actif ? '#e3f2fd' : 'white',
+            color: actif ? '#1565c0' : '#333', fontWeight: actif ? 'bold' : 'normal',
+          }}
+        >
+          {o.label}
+        </button>
+      );
+    })}
+  </div>
+);
 
 const Recuperateur = ({ innerData = {}, combustionResults = {}, currentLanguage = 'fr', onInnerDataChange, nodeId }) => {
   const t = useTranslation(currentLanguage);
   const LS_KEY = `freeParams_HX_FB_${nodeId}`;
 
-  const [freeParams, setFreeParams] = useState(() => {
-    try {
-      const saved = localStorage.getItem(LS_KEY);
-      return saved ? { ...DEFAULT_FREE_PARAMS, ...JSON.parse(saved) } : DEFAULT_FREE_PARAMS;
-    } catch { return DEFAULT_FREE_PARAMS; }
-  });
+  const [freeParams, setFreeParams] = useState(() => lireFreeParams(LS_KEY));
 
-  // ── Entrées fumées depuis CombustionTab ──
+  // ── Un échangeur pour l'ensemble des fours, ou un échangeur par four ──
+  // Les débits et enthalpies du bilan sont pour l'ensemble des fours ; en mode « par four »,
+  // toutes les grandeurs extensives sont divisées par le nombre de fours (comme Pyrofluid).
+  const NombreFour   = Math.max(1, Number(innerData?.NombreFour) || 1);
+  const parFour      = !!freeParams.echangeurParFour;
+  const nbEchangeurs = parFour ? NombreFour : 1;
+  const f            = 1 / nbEchangeurs;
+  const NbreDePass   = Number(freeParams.NbreDePass) === 3 ? 3 : 2;
+
+  // ── Entrées fumées depuis CombustionTab (par échangeur) ──
   const T_entree_fumee_C = innerData?.Temp_fumee_voute_C ?? 870;
-  const Q_FG_wet_Nm3_h   = innerData?.FG_wet_Nm3_h ?? 5280;
+  const Q_FG_wet_Nm3_h   = (innerData?.FG_wet_Nm3_h ?? 5280) * f;
   const P_freeboard_mmCE  = innerData?.P_freeboard ?? 89;
-  const H_fumees_in_kW    = innerData?.Hf_voute_kW ?? 0;
+  const H_fumees_in_kW    = (innerData?.Hf_voute_kW ?? 0) * f;
   const rho_FG            = innerData?.Rho_FG_kg_Nm3 ?? 1.1;
 
-  // ── Entrées air depuis CombustionTab ──
+  // ── Entrées air depuis CombustionTab (par échangeur) ──
   const T_air_entree_C               = innerData?.Temp_air_fluidisation_av_prechauffe_C ?? 0;
-  const Q_Air_dry_Nm3_h              = innerData?.Q_air_comb_tot_Nm3_h ?? 0;
+  const Q_Air_dry_Nm3_h              = (innerData?.Q_air_comb_tot_Nm3_h ?? 0) * f;
   const Masse_air_sec_combustion_kg_h = innerData?.Masse_air_sec_combustion_tot_kg_h ?? 0;
 
   // ── Fumées après HX ──
   const Tf_voute_ap_HX_C  = innerData?.Tf_voute_ap_HX_C  ?? 550;
-  const Hf_voute_ap_HX_kW = innerData?.Hf_voute_ap_HX_kW ?? 0;
+  const Hf_voute_ap_HX_kW = (innerData?.Hf_voute_ap_HX_kW ?? 0) * f;
 
-  // ── Rendement HX ──
-  const Rdt_HX = (innerData?.Rdt_HX ?? 85) / 100;
+  // ── Rendement HX (saisi dans l'onglet Combustion, 95 % par défaut comme Pyrofluid) ──
+  const Rdt_HX = (innerData?.Rdt_HX ?? 95) / 100;
 
   // ── Air côté HX ──
   const Temp_air_soufflante_C    = innerData?.Temp_air_soufflante_C   ?? 60;
   const Tair_ap_prechauffe_C     = innerData?.Tair_ap_prechauffe_C    ?? 0;
   const P_voute_defaut_mmCE      = innerData?.PressionVouteDefaut_mmCe ?? 2000;
-  const Hair_ap_prechauffage_kW  = innerData?.Hair_ap_prechauffage_kW  ?? 0;
+  const Hair_ap_prechauffage_kW  = (innerData?.Hair_ap_prechauffage_kW ?? 0) * f;
   const Meau_air_comburant       = innerData?.Meau_air_comburant       ?? 0;
 
   // Col. 9 bilan énergétique détaillé — calculé localement (indépendant du montage de CombustionTab)
   // Même loi d'enthalpie que CombustionTab (NIST, ou Cp Pyrofluid en mode d'origine)
+  // H_air_soufflante_tot_kW : ensemble des fours (clé innerData partagée avec CombustionTab).
   const modeOrigine = !!innerData?.FB_modeOrigine;
-  const H_air_soufflante_kW =
+  const H_air_soufflante_tot_kW =
     hAir_kW(modeOrigine)(Temp_air_soufflante_C) * Masse_air_sec_combustion_kg_h
     + hVap_kW(modeOrigine)(Temp_air_soufflante_C) * Meau_air_comburant;
+  const H_air_soufflante_kW = H_air_soufflante_tot_kW * f;
 
   // ============================================================
   // CALCUL PRINCIPAL - DESIGN RÉCUPÉRATEUR
@@ -150,7 +198,7 @@ const Recuperateur = ({ innerData = {}, combustionResults = {}, currentLanguage 
     Q_air_sortie_HX_m3_h,
     T_air_moyen_HX_C,
     freeParams.vitesse_air_m_s,
-    2,
+    NbreDePass,
     designRecup.S_echange_m2 ?? 0
   );
 
@@ -158,14 +206,25 @@ const Recuperateur = ({ innerData = {}, combustionResults = {}, currentLanguage 
   const Q_air_entree_HX_m3_h   = calculDebitPT(Q_Air_dry_Nm3_h, P_cote_air_entree_mmCE, Temp_air_soufflante_C);
 
   // ── Ventilateur ──
-  const Q_air_pulser_Nm3_h     = innerData?.Volume_air_combustible_total_Nm3_h
-    || combustionResults?.Volume_air_combustible_total_Nm3_h
-    || 0;
+  // Pyrofluid : air de combustion + air d'instrumentation. Option : + air secondaire et tertiaire.
+  const lireAir = (k) => innerData?.[k] ?? combustionResults?.[k];
+  const V_air_comb_Nm3_h   = lireAir('Q_air_comb_tot_Nm3_h') ?? 0;
+  const V_air_instru_Nm3_h = lireAir('Vair_instru_tot_Nm3_h');
+  const V_air_sec_Nm3_h    = lireAir('Vair_sec_tot_Nm3_h') ?? 0;
+  const V_air_tert_Nm3_h   = lireAir('Vair_tert_tot_Nm3_h') ?? 0;
+  const Q_air_pulser_tot_Nm3_h = V_air_instru_Nm3_h != null
+    ? V_air_comb_Nm3_h + V_air_instru_Nm3_h
+      + (freeParams.airSecTertVentilateur ? V_air_sec_Nm3_h + V_air_tert_Nm3_h : 0)
+    // Onglet Combustion pas encore recalculé (ancien projet) : total disponible seulement
+    : (lireAir('Volume_air_combustible_total_Nm3_h') || 0);
+  const Q_air_pulser_Nm3_h     = Q_air_pulser_tot_Nm3_h * f; // par ventilateur
   const Q_air_ventilateur_m3_h = calculDebitPT(Q_air_pulser_Nm3_h, P_cote_air_entree_mmCE, Temp_air_soufflante_C);
-  const Puissance_elec_ventilateur_kW =
+  const Puissance_elec_ventilateur_unitaire_kW =
     freeParams.Rendement_ventilateur > 0
       ? ((Q_air_ventilateur_m3_h / 3600) * P_cote_air_entree_mmCE * 9.81)/ freeParams.Rendement_ventilateur / 1000
       : 0;
+  // Puissance totale (tous les ventilateurs) : c'est elle qui alimente l'OPEX
+  const Puissance_elec_ventilateur_kW = Puissance_elec_ventilateur_unitaire_kW * nbEchangeurs;
 
   // ============================================================
   // MISE À JOUR innerData AVEC RÉSULTATS
@@ -198,19 +257,28 @@ const Recuperateur = ({ innerData = {}, combustionResults = {}, currentLanguage 
     innerData.P_cote_air_entree_mmCE = P_cote_air_entree_mmCE;
     innerData.Q_air_entree_HX_m3_h   = Q_air_entree_HX_m3_h;
     innerData.Q_air_sortie_HX_m3_h   = Q_air_sortie_HX_m3_h;
-    innerData.H_air_soufflante_kW    = H_air_soufflante_kW;
-    // Ventilateur
+    innerData.H_air_soufflante_kW    = H_air_soufflante_tot_kW; // ensemble des fours
+    // Ventilateur (débits par ventilateur, puissance totale pour l'OPEX)
     innerData.Q_air_pulser_Nm3_h          = Q_air_pulser_Nm3_h;
     innerData.Q_air_ventilateur_m3_h      = Q_air_ventilateur_m3_h;
+    innerData.Puissance_elec_ventilateur_unitaire_kW = Puissance_elec_ventilateur_unitaire_kW;
     innerData.Puissance_elec_ventilateur_kW = Puissance_elec_ventilateur_kW;
     innerData.Rendement_ventilateur_HX    = freeParams.Rendement_ventilateur;
+    innerData.HX_airSecTertVentilateur    = !!freeParams.airSecTertVentilateur;
+    // Configuration : HX_facteur = part d'un échangeur dans le total (1 / nombre d'échangeurs)
+    innerData.HX_parFour                  = parFour;
+    innerData.HX_nbEchangeurs             = nbEchangeurs;
+    innerData.HX_facteur                  = f;
+    innerData.NbreDePass_HX               = NbreDePass;
+    innerData.Encrassement_HX_pourcent    = freeParams.Encrassement_pourcent;
     onInnerDataChange?.();
   }, [innerData,
     Q_FG_wet_entree_m3_h, P_sortie_HX_fg_mmCE, Q_FG_wet_sortie_m3_h,
     PDC_HX_cote_air_mmCE, P_cote_air_entree_mmCE, Q_air_entree_HX_m3_h,
-    Q_air_sortie_HX_m3_h, H_air_soufflante_kW, Q_air_pulser_Nm3_h,
-    Q_air_ventilateur_m3_h, Puissance_elec_ventilateur_kW,
-    freeParams.Rendement_ventilateur, onInnerDataChange,
+    Q_air_sortie_HX_m3_h, H_air_soufflante_tot_kW, Q_air_pulser_Nm3_h,
+    Q_air_ventilateur_m3_h, Puissance_elec_ventilateur_unitaire_kW, Puissance_elec_ventilateur_kW,
+    freeParams.Rendement_ventilateur, freeParams.airSecTertVentilateur, freeParams.Encrassement_pourcent,
+    parFour, nbEchangeurs, f, NbreDePass, onInnerDataChange,
   ]);
 
   // ============================================================
@@ -223,6 +291,11 @@ const Recuperateur = ({ innerData = {}, combustionResults = {}, currentLanguage 
 
   const handleFreeParamChange = useCallback((key, value) => {
     setFreeParams((prev) => ({ ...prev, [key]: parseFloat(value) || 0 }));
+  }, []);
+
+  // Choix (booléens, nombre de passes) : valeur gardée telle quelle
+  const handleFreeParamChoice = useCallback((key, value) => {
+    setFreeParams((prev) => ({ ...prev, [key]: value }));
   }, []);
 
   // ============================================================
@@ -264,6 +337,44 @@ const Recuperateur = ({ innerData = {}, combustionResults = {}, currentLanguage 
   return (
     <div style={{ padding: '20px', maxWidth: '1400px', margin: '0 auto' }}>
 
+      {/* ── CONFIGURATION DE L'ÉCHANGEUR ── */}
+      <div style={cardStyle}>
+        <h2 style={cardTitle}>🔧 {t("Configuration de l'échangeur")}</h2>
+        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: '20px', alignItems: 'start' }}>
+          <div>
+            <label style={labelStyle}>{t('Dimensionnement')}</label>
+            <ChoixBoutons
+              value={parFour}
+              onChange={(v) => handleFreeParamChoice('echangeurParFour', v)}
+              options={[
+                { value: false, label: t("Un échangeur pour l'ensemble des fours") },
+                { value: true,  label: t('Un échangeur par four') },
+              ]}
+            />
+          </div>
+          <div>
+            <label style={labelStyle}>{t('Nombre de fours')}</label>
+            <input type="text" value={fmt(NombreFour, 0)} readOnly style={readOnlyStyle} />
+          </div>
+          <div>
+            <label style={labelStyle}>{t("Nombre d'échangeurs")}</label>
+            <input type="text" value={fmt(nbEchangeurs, 0)} readOnly style={readOnlyStyle} />
+          </div>
+          <div>
+            <label style={labelStyle}>{t('Nombre de passes')}</label>
+            <ChoixBoutons
+              value={NbreDePass}
+              onChange={(v) => handleFreeParamChoice('NbreDePass', v)}
+              options={[{ value: 2, label: '2' }, { value: 3, label: '3' }]}
+            />
+          </div>
+        </div>
+        {nbEchangeurs > 1 && (
+          <div style={{ marginTop: '15px', fontSize: '13px', color: '#1565c0' }}>
+            {t('Débits, enthalpies, surface et ventilateur affichés pour un échangeur (un four).')}
+          </div>
+        )}
+      </div>
 
       {/* ── HX CÔTÉ FUMÉES ── */}
       <div style={cardStyle}>
@@ -395,6 +506,15 @@ const Recuperateur = ({ innerData = {}, combustionResults = {}, currentLanguage 
         <h2 style={cardTitle}>💨 {t('Dimensionnement du ventilateur') || 'Dimensionnement du ventilateur'}</h2>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px' }}>
 
+          <div style={{ gridColumn: '1 / -1' }}>
+            <label style={labelStyle}>{t('Air secondaire et tertiaire dans le débit du ventilateur')}</label>
+            <ChoixBoutons
+              value={!!freeParams.airSecTertVentilateur}
+              onChange={(v) => handleFreeParamChoice('airSecTertVentilateur', v)}
+              options={[{ value: true, label: t('Oui') }, { value: false, label: t('Non') }]}
+            />
+          </div>
+
           <div>
             <label style={labelStyle}>{t("Débit d'air à pulser [Nm3/h]") || "Débit d'air à pulser [Nm3/h]"}</label>
             <input type="text" value={`${fmt(Q_air_pulser_Nm3_h, 0)} Nm³/h`} readOnly style={readOnlyStyle} />
@@ -425,8 +545,15 @@ const Recuperateur = ({ innerData = {}, combustionResults = {}, currentLanguage 
 
           <div>
             <label style={labelStyle}>{t('Puissance électrique consommée [kW]') || 'Puissance électrique consommée [kW]'}</label>
-            <div style={resultBox}>{fmt(Puissance_elec_ventilateur_kW, 1)} kW</div>
+            <div style={resultBox}>{fmt(Puissance_elec_ventilateur_unitaire_kW, 1)} kW</div>
           </div>
+
+          {nbEchangeurs > 1 && (
+            <div>
+              <label style={labelStyle}>{t('Puissance électrique totale [kW]')} ({fmt(nbEchangeurs, 0)} × {t('ventilateur')})</label>
+              <div style={resultBox}>{fmt(Puissance_elec_ventilateur_kW, 1)} kW</div>
+            </div>
+          )}
 
         </div>
       </div>
@@ -491,7 +618,11 @@ const Recuperateur = ({ innerData = {}, combustionResults = {}, currentLanguage 
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
 
-                <div style={{ height: '55px' }} />
+                <div>
+                  <label style={labelStyle}>{t('Encrassement')} (%)</label>
+                  <input type="number" step="1" min="0" value={freeParams.Encrassement_pourcent}
+                    onChange={(e) => handleFreeParamChange('Encrassement_pourcent', e.target.value)} style={inputStyle} />
+                </div>
 
                 <div>
                   <label style={labelStyle}>{t("Q chaleur reçue par l'air") || "Q chaleur reçue par l'air"} (kW)</label>
