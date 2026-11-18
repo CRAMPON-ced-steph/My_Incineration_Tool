@@ -189,7 +189,7 @@ Bilan FB + onglet HX, P freeboard imposée à −3 mmCE (valeur du rapport), ren
 ### Ventilateur (soufflante) — vérifié le 18/11/2026
 - Débit, température (T air + 45 °C) et pression (P voûte + 50 + PDC air) conformes à Pyrofluid ; débit humide (décision). Valence : 4 325 Nm³/h, 60 °C, 2 429 mmCE (rapport : 4 268 sec, 60 °C, 2 432).
 - Pyrofluid ne calcule pas la puissance. Outil : débit réel au refoulement × pression / rendement (70 %) = 40,4 kW sur Valence ; compression isentropique / 0,7 = 40,0 kW (écart +1 %). Ordre de grandeur cohérent (≈ 90 kWh/t MS pour la soufflante seule).
-- [ ] **Option à décider** : l'échauffement de +45 °C (convention Pyrofluid) demanderait ≈ 70 kW ; avec un rendement de 70 %, la compression échauffe l'air d'environ 26 °C (18 °C en isentropique). Calculer la température de sortie soufflante à partir de la compression ferait entrer l'air ≈ 19 °C plus froid dans l'échangeur (puissance d'échange +3,7 % sur Valence).
+- [x] **Échauffement de +45 °C dans la soufflante — décision de Cédric (18/11/2026) : on garde +45 °C** (convention Pyrofluid), pas de paramètre ni de calcul par la compression. Pour mémoire : +45 °C demanderait ≈ 70 kW ; avec un rendement de 70 %, la compression échauffe l'air d'environ 26 °C (18 °C en isentropique) ; calculer la température de sortie soufflante ferait entrer l'air ≈ 19 °C plus froid dans l'échangeur (puissance d'échange +3,7 % sur Valence). Les +45 °C servent aussi dans l'onglet Combustion (`T_soufflante` : enthalpie de l'air soufflé et de balayage, récupération d'énergie).
 - Non compté : pertes de charge à l'aspiration (filtre, silencieux), la pression du ventilateur part de l'atmosphère.
 
 ### Décisions prises (18/11/2026, appliquées)
