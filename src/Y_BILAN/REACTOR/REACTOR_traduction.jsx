@@ -1,5 +1,8 @@
 export const translations = {
   fr: {
+    "CO2 Transport [kg/h]": "CO2 transport [kg/h]",
+    "Cost Transport [€/h]": "Coût transport [€/h]",
+    "Truck trips [nb/yr]": "Rotations de camion [nb/an]",
     // — Clés états dynamiques (copiées de QUENCH, 2026-07) —
     "SOx reactif": "Réactif SOx",
     "HCl reactif": "Réactif HCl",
@@ -241,6 +244,9 @@ export const translations = {
   },
 
   en: {
+    "CO2 Transport [kg/h]": "Transport CO2 [kg/h]",
+    "Cost Transport [€/h]": "Transport cost [€/h]",
+    "Truck trips [nb/yr]": "Truck trips [no./yr]",
     // — Clés états dynamiques (copiées de QUENCH, 2026-07) —
     "SOx reactif": "SOx reactif",
     "HCl reactif": "HCl reactif",
@@ -482,6 +488,9 @@ export const translations = {
   },
 
   de: {
+    "CO2 Transport [kg/h]": "Transport-CO2 [kg/h]",
+    "Cost Transport [€/h]": "Transportkosten [€/h]",
+    "Truck trips [nb/yr]": "Lkw-Fahrten [Anz./Jahr]",
     // — Clés états dynamiques (copiées de QUENCH, 2026-07) —
     "SOx reactif": "SOx-Reaktionsmittel",
     "HCl reactif": "HCl-Reaktionsmittel",
@@ -723,6 +732,9 @@ export const translations = {
   },
 
   es: {
+    "CO2 Transport [kg/h]": "CO2 transporte [kg/h]",
+    "Cost Transport [€/h]": "Coste transporte [€/h]",
+    "Truck trips [nb/yr]": "Viajes de camión [n.º/año]",
     // — Clés états dynamiques (copiées de QUENCH, 2026-07) —
     "SOx reactif": "Reactivo SOx",
     "HCl reactif": "Reactivo HCl",
@@ -964,6 +976,9 @@ export const translations = {
   },
 
   it: {
+    "CO2 Transport [kg/h]": "CO2 trasporto [kg/h]",
+    "Cost Transport [€/h]": "Costo trasporto [€/h]",
+    "Truck trips [nb/yr]": "Viaggi del camion [n./anno]",
     // — Clés états dynamiques (copiées de QUENCH, 2026-07) —
     "SOx reactif": "Reattivo SOx",
     "HCl reactif": "Reattivo HCl",
@@ -1205,6 +1220,9 @@ export const translations = {
   },
 
   pt: {
+    "CO2 Transport [kg/h]": "CO2 transporte [kg/h]",
+    "Cost Transport [€/h]": "Custo transporte [€/h]",
+    "Truck trips [nb/yr]": "Viagens de camião [n.º/ano]",
     // — Clés états dynamiques (copiées de QUENCH, 2026-07) —
     "SOx reactif": "Reagente SOx",
     "HCl reactif": "Reagente HCl",
@@ -1446,6 +1464,9 @@ export const translations = {
   },
 
   ru: {
+    "CO2 Transport [kg/h]": "CO2 транспорта [кг/ч]",
+    "Cost Transport [€/h]": "Стоимость транспорта [€/ч]",
+    "Truck trips [nb/yr]": "Рейсы грузовика [шт./год]",
     // — Clés états dynamiques (copiées de QUENCH, 2026-07) —
     "SOx reactif": "Реагент SOx",
     "HCl reactif": "Реагент HCl",
@@ -1687,6 +1708,9 @@ export const translations = {
   },
 
   zh: {
+    "CO2 Transport [kg/h]": "运输CO2 [kg/h]",
+    "Cost Transport [€/h]": "运输成本 [€/h]",
+    "Truck trips [nb/yr]": "卡车往返次数 [次/年]",
     // — Clés états dynamiques (copiées de QUENCH, 2026-07) —
     "SOx reactif": "SOx反应剂",
     "HCl reactif": "HCl反应剂",
@@ -1927,6 +1951,9 @@ export const translations = {
   },
 
   ja: {
+    "CO2 Transport [kg/h]": "輸送CO2 [kg/h]",
+    "Cost Transport [€/h]": "輸送コスト [€/h]",
+    "Truck trips [nb/yr]": "トラック往復回数 [回/年]",
     // — Clés états dynamiques (copiées de QUENCH, 2026-07) —
     "SOx reactif": "SOx反応剤",
     "HCl reactif": "HCl反応剤",
@@ -2167,6 +2194,9 @@ export const translations = {
   },
 
   ar: {
+    "CO2 Transport [kg/h]": "CO2 النقل [كغ/س]",
+    "Cost Transport [€/h]": "تكلفة النقل [€/س]",
+    "Truck trips [nb/yr]": "رحلات الشاحنة [عدد/سنة]",
     // — Clés états dynamiques (copiées de QUENCH, 2026-07) —
     "SOx reactif": "كاشف SOx",
     "HCl reactif": "كاشف HCl",

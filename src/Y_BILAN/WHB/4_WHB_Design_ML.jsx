@@ -8,6 +8,7 @@ import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './WHB_traduction';
 
 import { fmt } from '../../A_Transverse_fonction/formatNumber';
+import { coutTransportResidus_h, rotationsCamion_an } from '../../A_Transverse_fonction/transport_residus';
 const WHBDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
   const languageCode = getLanguageCode(currentLanguage);
   const t = useCallback(
@@ -677,7 +678,8 @@ const WHBDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
   const Refidis_kg_h = Math.max(0, innerData?.Boiler_ash || 0);
 
   const CO2_transport_refidis = CO2_transport_kg_km * distance_km * (Refidis_kg_h / 1000);
-  const cout_transport_refidis = cout_transport_euro_km * distance_km;
+  // Coût : rotations de camion (débit / charge utile) × aller-retour × distance × prix €/km
+  const cout_transport_refidis = coutTransportResidus_h(Refidis_kg_h, distance_km, cout_transport_euro_km, type_camion);
 
   // Réactifs éventuels calculés dans l'onglet Polluants
   const reactifs = innerData?.Conso_reactifs || {};
@@ -714,7 +716,7 @@ const WHBDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
     CO2_transport_fly_ash: 0,
     CO2_transport_reactifs: 0,
     cout_transport_incineratino_ash: 0,
-    cout_transport_boiler_ash: Refidis_kg_h > 0 ? cout_transport_refidis : 0,
+    cout_transport_boiler_ash: cout_transport_refidis,
     cout_transport_fly_ash: 0,
     cout_transport_reactifs: 0,
     WHB_design_opex: { Hmt_bar: Hmt, Q_eau_alim_m3_h: Q_eau_m3_h, type_camion, distance_km },
@@ -738,7 +740,8 @@ const WHBDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
     { text: t('demineralizedMakeupWater'), value: fmt(Eau_demin_m3_h, 3) },
     { text: t('boilerAshEvacuated'), value: fmt(Refidis_kg_h, 2) },
     { text: t('ashTransportCO2'), value: fmt(CO2_transport_refidis, 2) },
-    { text: t('ashTransportCost'), value: fmt(Refidis_kg_h > 0 ? cout_transport_refidis : 0, 2) },
+    { text: t('ashTransportCost'), value: fmt(cout_transport_refidis, 2) },
+    { text: t('truckTrips'), value: fmt(rotationsCamion_an(Refidis_kg_h, type_camion), 1) },
   ];
 
   return (

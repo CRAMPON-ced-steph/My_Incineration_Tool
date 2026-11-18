@@ -1,5 +1,6 @@
 export const translations = {
   fr: {
+    "Rotations de camion [nb/an]": "Rotations de camion [nb/an]",
     "Ca(OH)₂ sec": "Ca(OH)₂ sec",
     "Ca(OH)₂ humide": "Ca(OH)₂ humide",
     "Cendres lourdes humides [kg/h]": "Cendres lourdes humides [kg/h]",
@@ -169,6 +170,7 @@ export const translations = {
   },
 
   en: {
+    "Rotations de camion [nb/an]": "Truck trips [no./yr]",
     "Ca(OH)₂ sec": "Dry Ca(OH)₂",
     "Ca(OH)₂ humide": "Wet Ca(OH)₂",
     "Cendres lourdes humides [kg/h]": "Wet bottom ash [kg/h]",
@@ -340,6 +342,7 @@ export const translations = {
   },
 
   de: {
+    "Rotations de camion [nb/an]": "Lkw-Fahrten [Anz./Jahr]",
     "Ca(OH)₂ sec": "Ca(OH)₂ trocken",
     "Ca(OH)₂ humide": "Ca(OH)₂ nass",
     "Cendres lourdes humides [kg/h]": "Nasse Rostasche [kg/h]",
@@ -499,6 +502,7 @@ export const translations = {
   },
 
   es: {
+    "Rotations de camion [nb/an]": "Viajes de camión [n.º/año]",
     "Ca(OH)₂ sec": "Ca(OH)₂ seco",
     "Ca(OH)₂ humide": "Ca(OH)₂ húmedo",
     "Cendres lourdes humides [kg/h]": "Escorias húmedas [kg/h]",
@@ -656,6 +660,7 @@ export const translations = {
   },
 
   it: {
+    "Rotations de camion [nb/an]": "Viaggi del camion [n./anno]",
     "Ca(OH)₂ sec": "Ca(OH)₂ secco",
     "Ca(OH)₂ humide": "Ca(OH)₂ umido",
     "Cendres lourdes humides [kg/h]": "Ceneri pesanti umide [kg/h]",
@@ -813,6 +818,7 @@ export const translations = {
   },
 
   pt: {
+    "Rotations de camion [nb/an]": "Viagens de camião [n.º/ano]",
     "Ca(OH)₂ sec": "Ca(OH)₂ seco",
     "Ca(OH)₂ humide": "Ca(OH)₂ húmido",
     "Cendres lourdes humides [kg/h]": "Cinzas pesadas húmidas [kg/h]",
@@ -967,6 +973,7 @@ export const translations = {
   },
 
   ru: {
+    "Rotations de camion [nb/an]": "Рейсы грузовика [шт./год]",
     "Ca(OH)₂ sec": "Ca(OH)₂ сухой",
     "Ca(OH)₂ humide": "Ca(OH)₂ влажный",
     "Cendres lourdes humides [kg/h]": "Влажная зола [кг/ч]",
@@ -1124,6 +1131,7 @@ export const translations = {
   },
 
   zh: {
+    "Rotations de camion [nb/an]": "卡车往返次数 [次/年]",
     "Ca(OH)₂ sec": "Ca(OH)₂（干式）",
     "Ca(OH)₂ humide": "Ca(OH)₂（湿式）",
     "Cendres lourdes humides [kg/h]": "湿底灰 [kg/h]",
@@ -1282,6 +1290,7 @@ export const translations = {
   },
 
   ja: {
+    "Rotations de camion [nb/an]": "トラック往復回数 [回/年]",
     "Ca(OH)₂ sec": "Ca(OH)₂（乾式）",
     "Ca(OH)₂ humide": "Ca(OH)₂（湿式）",
     "Cendres lourdes humides [kg/h]": "湿式主灰 [kg/h]",
@@ -1437,6 +1446,7 @@ export const translations = {
   },
 
   ar: {
+    "Rotations de camion [nb/an]": "رحلات الشاحنة [عدد/سنة]",
     "Ca(OH)₂ sec": "Ca(OH)₂ جاف",
     "Ca(OH)₂ humide": "Ca(OH)₂ رطب",
     "Cendres lourdes humides [kg/h]": "الرماد القاعي الرطب [كغ/س]",

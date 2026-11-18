@@ -1,5 +1,8 @@
 export const translations = {
   fr: {
+    "CO2 transport [kg/h]": "CO2 transport [kg/h]",
+    "Coût transport [€/h]": "Coût transport [€/h]",
+    "Rotations de camion [nb/an]": "Rotations de camion [nb/an]",
     // — Ajouts audit i18n (2026-07) —
     "Résultats": "Résultats",
     // MainPage (titre + onglets)
@@ -216,6 +219,9 @@ export const translations = {
   },
 
   en: {
+    "CO2 transport [kg/h]": "Transport CO2 [kg/h]",
+    "Coût transport [€/h]": "Transport cost [€/h]",
+    "Rotations de camion [nb/an]": "Truck trips [no./yr]",
     // — Ajouts audit i18n (2026-07) —
     "Résultats": "Results",
     // MainPage (titre + onglets)
@@ -432,6 +438,9 @@ export const translations = {
   },
 
   de: {
+    "CO2 transport [kg/h]": "Transport-CO2 [kg/h]",
+    "Coût transport [€/h]": "Transportkosten [€/h]",
+    "Rotations de camion [nb/an]": "Lkw-Fahrten [Anz./Jahr]",
     // — Ajouts audit i18n (2026-07) —
     "Résultats": "Ergebnisse",
     // MainPage (titre + onglets)
@@ -648,6 +657,9 @@ export const translations = {
   },
 
   it: {
+    "CO2 transport [kg/h]": "CO2 trasporto [kg/h]",
+    "Coût transport [€/h]": "Costo trasporto [€/h]",
+    "Rotations de camion [nb/an]": "Viaggi del camion [n./anno]",
     // — Ajouts audit i18n (2026-07) —
     "Résultats": "Risultati",
     // MainPage (titre + onglets)
@@ -864,6 +876,9 @@ export const translations = {
   },
 
   es: {
+    "CO2 transport [kg/h]": "CO2 transporte [kg/h]",
+    "Coût transport [€/h]": "Coste transporte [€/h]",
+    "Rotations de camion [nb/an]": "Viajes de camión [n.º/año]",
     // — Ajouts audit i18n (2026-07) —
     "Résultats": "Resultados",
     // MainPage (titre + onglets)
@@ -1080,6 +1095,9 @@ export const translations = {
   },
 
   pt: {
+    "CO2 transport [kg/h]": "CO2 transporte [kg/h]",
+    "Coût transport [€/h]": "Custo transporte [€/h]",
+    "Rotations de camion [nb/an]": "Viagens de camião [n.º/ano]",
     // — Ajouts audit i18n (2026-07) —
     "Résultats": "Resultados",
     // MainPage (titre + onglets)
@@ -1296,6 +1314,9 @@ export const translations = {
   },
 
   ru: {
+    "CO2 transport [kg/h]": "CO2 транспорта [кг/ч]",
+    "Coût transport [€/h]": "Стоимость транспорта [€/ч]",
+    "Rotations de camion [nb/an]": "Рейсы грузовика [шт./год]",
     // — Ajouts audit i18n (2026-07) —
     "BHF (Four à Grille) — Rapport de synthèse": "BHF (Колосниковая печь) — Сводный отчёт",
     "1. Gaz de combustion": "1. Дымовые газы",
@@ -1510,6 +1531,9 @@ export const translations = {
   },
 
   zh: {
+    "CO2 transport [kg/h]": "运输CO2 [kg/h]",
+    "Coût transport [€/h]": "运输成本 [€/h]",
+    "Rotations de camion [nb/an]": "卡车往返次数 [次/年]",
     // — Ajouts audit i18n (2026-07) —
     "BHF (Four à Grille) — Rapport de synthèse": "BHF（炉排炉）——综合报告",
     "1. Gaz de combustion": "1. 烟气",
@@ -1724,6 +1748,9 @@ export const translations = {
   },
 
   ja: {
+    "CO2 transport [kg/h]": "輸送CO2 [kg/h]",
+    "Coût transport [€/h]": "輸送コスト [€/h]",
+    "Rotations de camion [nb/an]": "トラック往復回数 [回/年]",
     // — Ajouts audit i18n (2026-07) —
     "BHF (Four à Grille) — Rapport de synthèse": "BHF（火格子炉）——総合レポート",
     "1. Gaz de combustion": "1. 燃焼ガス",
@@ -1938,6 +1965,9 @@ export const translations = {
   },
 
   ar: {
+    "CO2 transport [kg/h]": "CO2 النقل [كغ/س]",
+    "Coût transport [€/h]": "تكلفة النقل [€/س]",
+    "Rotations de camion [nb/an]": "رحلات الشاحنة [عدد/سنة]",
     // — Ajouts audit i18n (2026-07) —
     "BHF (Four à Grille) — Rapport de synthèse": "BHF (فرن شبكي) — تقرير تجميعي",
     "1. Gaz de combustion": "1. غازات الاحتراق",

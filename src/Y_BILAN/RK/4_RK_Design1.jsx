@@ -24,6 +24,7 @@ import { dataArray_CO2 } from '../../D_Data_base/dataCO2';
 
 import { getLanguageCode } from '../../F_Gestion_Langues/Fonction_Traduction';
 import { translations } from './RK_traduction';
+import { coutTransportResidus_h, rotationsCamion_an } from '../../A_Transverse_fonction/transport_residus';
 
 const RKdesign = ({ innerData, setInnerData, currentLanguage = 'fr', nodeId }) => {
 
@@ -433,15 +434,17 @@ const RKdesign = ({ innerData, setInnerData, currentLanguage = 'fr', nodeId }) =
   }
 
   const CO2_transport_total = CO2_transport_kg_km * distance_km * (Masse_imbrûlees_kg_h / 1000);
-  const cout_transport_total = cout_transport_euro_km * distance_km;
+  // Coût : rotations de camion (débit / charge utile) × aller-retour × distance × prix €/km
+  const cout_transport_total = coutTransportResidus_h(Masse_imbrûlees_kg_h, distance_km, cout_transport_euro_km, type_camion);
 
   const elements_Conso_extracteur = [
     { text: t('dr_consoElecExtracteur'), value: fmt(P_elec_extracteur_kW, 2) },
     { text: t('dr_masseImbruleesKgh'), value: fmt(Masse_imbrûlees_kg_h, 2) },
     { text: t('dr_co2Transport'), value: fmt(CO2_transport_kg_km, 2) },
     { text: t('dr_coutTransport'), value: fmt(cout_transport_euro_km, 2) },
-    { text: t('dr_co2TransportTotal'), value: fmt(CO2_transport_total, 2) },
-    { text: t('dr_coutTransportTotal'), value: fmt(cout_transport_total, 2) },
+    { text: t('dr_co2TransportHoraire'), value: fmt(CO2_transport_total, 2) },
+    { text: t('dr_coutTransportHoraire'), value: fmt(cout_transport_total, 2) },
+    { text: t('dr_rotationsCamion'), value: fmt(rotationsCamion_an(Masse_imbrûlees_kg_h, type_camion), 1) },
   ];
 
   // ESTIMATION CONSOMMATEUR ELECTRIQUE VENTILATEUR AIR DE COMBUSTION avec persistance
