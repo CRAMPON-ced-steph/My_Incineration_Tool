@@ -158,3 +158,33 @@ Corrigé : l'onglet OPEX est la source unique. Les rapports (section OPEX de cha
 - [x] **FB / GF** : valeurs fictives des cendres du four (1 kg/h, transport 1 €/h, 1 kg CO₂/h) remises à 0 (18/11/2026).
 - [x] **CO₂ du transport des réactifs** (corrigé le 18/11/2026) : débit [t/h] × facteur [kg/t·km] × distance × 2 (aller-retour), via `co2TransportReactif_kg_t` (`opexDataService.js`) ; `co2PerTrip` est toujours recalculé (kg CO₂ par tonne livrée), quel que soit l'état de l'onglet Paramètres OPEX. Ex. 100 kg/h de Ca(OH)₂ à 30 km : 0,71 kg/h (avant 0,36 ou 18 kg/h).
 - [x] **Chaudière** : eau d'appoint = purge seule (retour complet des condensats supposé) — laissé tel quel (décision de Cédric, 18/11/2026).
+
+---
+
+## FB — onglet HX / récupérateur (`src/Y_BILAN/FB/4_Recuperator.jsx`) — comparaison à Pyrofluid (18/11/2026)
+
+Référence : `ClassRecuperateur.vb` et `Recuperateur.vb` (Drive, 1_VALIDATION_PYRO › CODE DU PYROFLUID › 03 Recuperateur).
+Exemple chiffré : fumées 870 → 550 °C, air 60 → 580 °C, 1 000 kW échangés, 8 000 Nm³/h d'air, vitesses 16 / 25 m/s.
+
+Conforme : Hext, Hint, U propre, U encrassé = U / (1 + encrassement), F = 1, chaleur fumées = chaleur air / rendement, boucle de perte de charge côté air (tubes 38,5 / 44,5 mm, 1,6 m par passe), formule de la DTLM, conversion Nm³ → m³ (273,15 au lieu de 273, négligeable). Température de sortie des fumées : même bilan, inversé sur l'enthalpie NIST (choix déjà validé) au lieu du Cp moyen du mélange.
+
+### Calculs
+- [ ] **DTLM** : la sortie d'air est prise à T air avant préchauffage + 100 °C (115 °C) au lieu de la température d'air préchauffé (`Tair_ap_prechauffe_C`). DTLM 613 K au lieu de 381 K.
+- [ ] **Unités de la surface** : UA en W/K divisé par U en kcal/(h·m²·K) → surface × 1,163. Avec la DTLM : surface −28 % à encrassement égal (50 m² au lieu de 69), −36 % avec les valeurs par défaut de l'outil (44 m²).
+- [ ] **Section calandre** : calculée avec le débit massique (Nm³/h × ρ) au lieu du débit réel à la température du freeboard (`DEBREELVOLFUMFOUR`) → 0,115 m² au lieu de 0,381 m².
+- [ ] **Perte de charge côté air** : `DP_RecupAir` reçoit un débit déjà converti en m³/h réels (580 °C) qu'il reconvertit → débit compté environ deux fois, DP 168 mmCE au lieu de 280.
+- [ ] **Pression du freeboard** : la clé `P_freeboard` n'est jamais écrite (l'onglet Voûte écrit `PressionFreeboard` / `Pression_Freeboard`) → toujours 89 mmCE par défaut.
+- [ ] **Pression des fumées transmise à l'aval** : `P_sortie_HX_mmCE` = 2 000 mmCE (pression côté air) est envoyée en `P_out_mmCE` / `P_OUT` ; la chaudière et l'électrofiltre partent de 2 000 mmCE (débits réels aval −15 %). Pyrofluid transmet la pression du freeboard.
+- [ ] **Ligne récupérateur → four (50 mmCE) absente** : Pyrofluid prend pression soufflante = P voûte + DP HX + 50 et débit d'air sortie HX à P voûte + 50. Le champ `PDC_reseau_sortie_entree_boite_mmCe` (50) existe mais n'est pas utilisé.
+- [ ] **PDC fumées dans le HX** : 50 mmCE par défaut (Pyrofluid 40) ; `PDC_recuperateur_fumees_mmCE` (40), `PDC_carneau_mmCE`, `PDC_echangeur_air_mmCE` ne servent pas ou presque.
+- [ ] **P voûte** : l'outil prend la pression par défaut saisie (2 000) ; Pyrofluid lit `PressionVoute` du nœud four (vérifier dans `ClassDimFourVoute` si c'est la valeur calculée).
+
+### Décisions à prendre
+- [ ] Valeurs par défaut : rendement 85 % (Pyrofluid 95 %, plage admise 70-100 %) ; encrassement 10 % (Pyrofluid 25 %, maximum 30 %).
+- [ ] Nombre de passes figé à 2 (Pyrofluid : 2 ou 3).
+- [ ] Débit du ventilateur : outil = air de combustion + instrumentation + secondaire + tertiaire ; Pyrofluid = air total + instrumentation (air non enrichi si O2 > 21 %).
+- [ ] Un échangeur par four : Pyrofluid divise les débits par le nombre de fours ; l'outil dimensionne sur le débit total.
+
+### Mineur
+- [ ] Pas de contrôle « T air entrée + 45 < T air préchauffé » (Pyrofluid bloque le calcul) ; Cp moyen des fumées non affiché.
+- [ ] Puissance électrique du ventilateur : ajout de l'outil (absente de `ClassRecuperateur`).
