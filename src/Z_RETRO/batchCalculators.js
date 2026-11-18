@@ -27,6 +27,7 @@ import { performCalculation_WHB_option_T_O2 } from './WHB/WHB_calculation_option
 import { performCalculation_WHB_option_Qeau_Qair } from './WHB/WHB_calculation_option3';
 import { performCalculation_WHB_option_Qeau_O2 } from './WHB/WHB_calculation_option4';
 import { performCalculation_IACT } from './IACT/IACT_calculations';
+import { performCalculation_WATERCOOLER, lireParamsRetro as lireParams_WATERCOOLER } from './WATERCOOLER/WATERCOOLER_calculations';
 import { performCalculation_RK } from './RK/RK_calculations1';
 import { performCalculation_RK_with_WHB } from './RK/RK_calculations2';
 import { performCalculation_FB_MS } from './FB/FB_calculation_MS';
@@ -274,6 +275,12 @@ export const batchCalcMap = {
       f(`T_amont_IACT_${nodeId}`, String(nodeData?.result?.dataFlow?.T ?? 200)),
       f(`PDC_aero_IACT_${nodeId}`, '10')
     );
+  },
+
+  // Économiseur fumées / eau : paramètres en un seul objet JSON (params_retro_WATERCOOLER_<nodeId>)
+  'Cooling_HX_eau': (nodeData, nodeId) => {
+    if (!nodeData?.result?.dataFlow) return null;
+    return performCalculation_WATERCOOLER(nodeData, lireParams_WATERCOOLER(nodeId));
   },
 
   'RK+SCC': (nodeData, nodeId) => {

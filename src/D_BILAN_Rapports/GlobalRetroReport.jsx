@@ -35,6 +35,7 @@ const RETRO_REPORT_MAP = {
   AIRINJECTION:   true,
   IACT:           true,
   HX_TubeAndShell:true,
+  Cooling_HX_eau: true,
   WATER_INJECTION:true,
   QUENCHsimple:   true,
   SATURATOR:      true,
@@ -42,7 +43,7 @@ const RETRO_REPORT_MAP = {
 
 
 const EQUIPMENT_ORDER = [
-  'RK+SCC', 'GF', 'FB', 'WHB', 'IACT', 'HX_TubeAndShell',
+  'RK+SCC', 'GF', 'FB', 'WHB', 'IACT', 'HX_TubeAndShell', 'Cooling_HX_eau',
   'QUENCH', 'QUENCHsimple', 'SATURATOR', 'WATER_INJECTION', 'DENOX', 'BHF', 'AIRINJECTION',
   'REACTOR', 'SCRUBBER', 'ELECTROFILTER', 'CYCLONE',
   'COOLINGTOWER', 'IDFAN', 'STACK',
@@ -620,7 +621,7 @@ const GlobalRetroReport = ({ nodes, edges, onClose, currentLanguage }) => {
 };
 
 // ── Renders only the inner report content (no modal overlay) ──────────────────
-const ReportBody = ({ node, tr }) => {
+const ReportBody = ({ node, tr, currentLanguage }) => {
   const label = node.data.label;
   const result    = node.data.result    || {};
   const inputData = node.data.inputData || {};
@@ -652,6 +653,7 @@ const ReportBody = ({ node, tr }) => {
   if (label === 'AIRINJECTION')   return <AIRINJECTIONReportBody   calculationResult={result} inputParams={inputData} tr={tr} />;
   if (label === 'IACT')           return <IACTReportBody           calculationResult={result} inputParams={inputData} tr={tr} />;
   if (label === 'HX_TubeAndShell')return <TUBEANDSHELLReportBody  calculationResult={result} inputParams={inputData} tr={tr} />;
+  if (label === 'Cooling_HX_eau') return <WATERCOOLERReportBody    calculationResult={result} inputParams={inputData} tr={tr} currentLanguage={currentLanguage} />;
   if (label === 'WATER_INJECTION')return <WATER_INJECTIONReportBody calculationResult={result} inputParams={inputData} tr={tr} />;
   return null;
 };
@@ -661,6 +663,7 @@ import { fmt } from '../A_Transverse_fonction/formatNumber';
 import { getLanguageCode } from '../F_Gestion_Langues/Fonction_Traduction';
 import { getAirParasiteT } from '../C_Components/airParasite_traduction';
 import { makeReportT } from './report_traduction';
+import { translations as trWATERCOOLER } from '../Z_RETRO/WATERCOOLER/WATERCOOLER_traduction';
 
 const Section = ({ title, children }) => (
   <div style={bodyStyles.section}>
@@ -2003,6 +2006,83 @@ const WATER_INJECTIONReportBody = ({ calculationResult, inputParams, tr }) => {
             </div>
           ))}
         </div>
+      </Section>
+    </div>
+  );
+};
+
+// ── WATERCOOLER (économiseur fumées / eau, nœud Cooling_HX_eau) ──────────────────
+const WATERCOOLERReportBody = ({ calculationResult, tr, currentLanguage = 'fr' }) => {
+  const lc = getLanguageCode(currentLanguage);
+  const t = (k) => trWATERCOOLER[lc]?.[k] || trWATERCOOLER.fr?.[k] || k;
+  const r  = calculationResult || {};
+  const df = r.dataFlow || {};
+  const d  = r.dataWATERCOOLER || {};
+  const erreurs = d.erreurs || [];
+  const alertes = d.alertes || [];
+  return (
+    <div style={bodyStyles.body}>
+      <h1 style={bodyStyles.mainTitle}>{tr("retroTitleWATERCOOLER")}</h1>
+      <Section title={t('rapSection1')}>
+        <div style={bodyStyles.twoCol}>
+          <Sub title={t('rapFumees')}>
+            <KV label={t('TfumeesEntree')} value={fmt(df.T, 1)} />
+            <KV label={t('TfumeesSortie')} value={fmt(df.T_in, 1)} />
+            <KV label={t('QnHumide')}      value={fmt(df.Qv_wet_Nm3_h, 0)} />
+            <KV label={t('QnSec')}         value={fmt(df.Qv_sec_Nm3_h, 0)} />
+            <KV label={t('QvEntree')}      value={fmt(d.Q_FG_entree_m3_h, 0)} />
+            <KV label={t('Pentree')}       value={fmt(d.P_entree_mmCE, 1)} />
+            <KV label={t('Psortie')}       value={fmt(d.P_sortie_mmCE, 1)} />
+          </Sub>
+          <Sub title={t('rapOptions')}>
+            <KV label={t('calculDe')}     value={t(`opt_${d.calcul}`)} />
+            <KV label={t('proprietes')}   value={t(d.modeOrigine ? 'modeOrigine' : 'modeOutil')} />
+            <KV label={t('nbEchangeurs')} value={fmt(d.nbEchangeurs, 0)} />
+            <KV label={t('Rdt')}          value={fmt(d.Rdt_pct, 1)} />
+            <KV label={t('PDCfumees')}    value={fmt(d.PDC_fumees_mmCE, 0)} />
+          </Sub>
+        </div>
+      </Section>
+      <Section title={t('rapSection2')}>
+        <div style={bodyStyles.twoCol}>
+          <Sub title={t('rapEau')}>
+            <KV label={t('TeauEntree')}    value={fmt(d.T_eau_entree_C, 1)} />
+            <KV label={t('TeauSortie')}    value={fmt(d.T_eau_sortie_C, 1)} />
+            <KV label={t('DebitEauEch')}   value={fmt(d.Debit_eau_ech_kg_h, 0)} />
+            <KV label={t('DebitEauTot')}   value={fmt(d.Debit_eau_tot_kg_h, 0)} />
+            <KV label={t('DebitEauTotM3')} value={fmt(d.Qv_eau_tot_m3_h, 2)} />
+            <KV label={t('PeauSat')}       value={fmt(d.P_eau_bar, 2)} />
+          </Sub>
+          <Sub title={t('rapPuissances')}>
+            <KV label={t('PuissanceFumees')}     value={fmt(d.Q_fumees_kW, 1)} />
+            <KV label={t('PuissanceFumeesKcal')} value={fmt(d.Q_fumees_kcal_h, 0)} />
+            <KV label={t('PuissanceEau')}        value={fmt(d.Q_eau_kW, 1)} />
+            <KV label={t('CpMoyen')}             value={fmt(d.Cp_fumees_moy_kcal_kg_C, 4)} />
+          </Sub>
+        </div>
+      </Section>
+      <Section title={t('rapSection3')}>
+        <div style={bodyStyles.twoCol}>
+          <Sub title={t('echangeThermique')}>
+            <KV label={t('DTML')}         value={fmt(d.DTML_C, 1)} />
+            <KV label={t('UA')}           value={fmt(d.UA_ech_kcal_h_C, 0)} />
+            <KV label={t('U')}            value={fmt(d.U_kcal_h_m2_C, 1)} />
+            <KV label={t('Encrassement')} value={fmt(d.Encrassement_pct, 1)} />
+            <KV label={t('SurfaceEch')}   value={fmt(d.S_ech_m2, 1)} />
+            <KV label={t('SurfaceTot')}   value={fmt(d.S_tot_m2, 1)} />
+          </Sub>
+          <Sub title={t('pompeCirculation')}>
+            <KV label={t('DPpompe')}        value={fmt(d.DP_pompe_bar, 2)} />
+            <KV label={t('RdtPompe')}       value={fmt(d.Rdt_pompe_pct, 0)} />
+            <KV label={t('PuissancePompe')} value={fmt(d.Puissance_pompe_kW, 2)} />
+          </Sub>
+        </div>
+        {(erreurs.length > 0 || alertes.length > 0) && (
+          <Sub title={t('rapMessages')}>
+            {erreurs.map((c) => <div key={c} style={{ color: '#b71c1c', fontSize: 12 }}>⛔ {t(c)}</div>)}
+            {alertes.map((c) => <div key={c} style={{ color: '#8a4b00', fontSize: 12 }}>⚠ {t(c)}</div>)}
+          </Sub>
+        )}
       </Section>
     </div>
   );
