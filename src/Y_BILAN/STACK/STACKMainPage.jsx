@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import ContenuOnglets from '../../C_Components/ContenuOnglets';
 import STACKFlueGasParameters from './1_STACK_Flue_gas_ML';
 import STACKFlueGasPollutantEmission from './2_STACK_Pollutant_Emission_ML';
 // Ancien onglet Design conservé dans './3_STACK_Design2_ML' (plus utilisé) — remplacé par le portage Pyrofluid V4.5
@@ -67,7 +68,7 @@ const STACKMainPage = ({
       )
     },
     {
-      name: t('opex'),
+      affichage: true, name: t('opex'),
       content: (
         <STACKOpex
           innerData={innerData}
@@ -78,15 +79,12 @@ const STACKMainPage = ({
       )
     },
     {
-      name: t('rapport'),
+      affichage: true, name: t('rapport'),
       content: <STACK_Report innerData={innerData} currentLanguage={currentLanguage} nodeId={nodeId} />
     }
   ];
 
   // Get current tab content
-  const renderTabContent = () => {
-    return tabs[activeTab]?.content || null;
-  };
 
   // Send data and navigate back
   const sendAllData = () => {
@@ -185,7 +183,7 @@ const STACKMainPage = ({
           minHeight: '400px',
         }}
       >
-        {renderTabContent()}
+        <ContenuOnglets tabs={tabs} actif={activeTab} />
       </div>
     </div>
   );

@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import ContenuOnglets from '../../C_Components/ContenuOnglets';
 //import REACTOR_Parameters from './1_REACTOR_Parameters';
 import REACTORFlueGasParameters from './1_REACTOR_Flue_gas_ML';
 import REACTORFlueGasPollutantEmission  from './2_REACTOR_Pollutant_Emission_ML';
@@ -39,18 +40,15 @@ const REACTORMainPage = ({ nodeData, title, onSendData, onClose, onGoBack,  curr
       content: <REACTORDesign innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} nodeId={nodeId} />
     },
     {
-      name: t('opex'),
+      affichage: true, name: t('opex'),
       content: <REACTOROpex innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} nodeId={nodeId} />
     },
     {
-      name: 'Rapport',
+      affichage: true, name: 'Rapport',
       content: <REACTOR_Report innerData={innerData} currentLanguage={currentLanguage} nodeId={nodeId} />
     },
   ], [currentLanguage, innerData, t]);
 
-  const renderTabContent = () => {
-    return tabs[activeTab]?.content || null;
-  };
 
   const sendAllData = () => {
     onSendData({
@@ -132,7 +130,7 @@ const REACTORMainPage = ({ nodeData, title, onSendData, onClose, onGoBack,  curr
       <div
         style={{ padding: '20px', background: '#f9f9f9', borderRadius: '8px' }}
       >
-        {renderTabContent()}
+        <ContenuOnglets tabs={tabs} actif={activeTab} />
       </div>
     </div>
   );

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import ContenuOnglets from '../../C_Components/ContenuOnglets';
 import AIRINJECTIONFlueGasParameters from './1_AIRINJECTION_Flue_gas_ML';
 import AIRINJECTIONFlueGasPollutantEmission from './2_AIRINJECTION_Pollutant_Emission_ML';
 import AIRINJECTIONOpex from './4_AIRINJECTION_Opex';
@@ -32,18 +33,15 @@ const AIRINJECTIONMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, 
       content: <AIRINJECTIONFlueGasPollutantEmission innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} nodeId={nodeId} />
     },
     {
-      name: t('Opex'),
+      affichage: true, name: t('Opex'),
       content: <AIRINJECTIONOpex innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} nodeId={nodeId} />
     },
     {
-      name: t('Rapport'),
+      affichage: true, name: t('Rapport'),
       content: <AIRINJECTION_Report innerData={innerData} currentLanguage={currentLanguage} nodeId={nodeId} />
     },
   ];
 
-  const renderTabContent = () => {
-    return tabs[activeTabIndex]?.content || null;
-  };
 
   const sendAllData = () => {
     onSendData({
@@ -129,7 +127,7 @@ const AIRINJECTIONMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, 
       <div
         style={{ padding: '20px', background: '#f9f9f9', borderRadius: '8px' }}
       >
-        {renderTabContent()}
+        <ContenuOnglets tabs={tabs} actif={tabs[activeTabIndex]?.name} />
       </div>
     </div>
   );

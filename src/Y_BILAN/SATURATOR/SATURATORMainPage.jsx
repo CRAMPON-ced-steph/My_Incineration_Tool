@@ -1,5 +1,6 @@
 ﻿import React, { useState, useRef } from 'react';
 import SATURATORFlueGasParameters from './2_SATURATOR_Flue_gas_ML';
+import ContenuOnglets from '../../C_Components/ContenuOnglets';
 import SATURATORFlueGasPollutantEmission from './3_SATURATOR_Pollutant_Emission_ML';
 import SATURATORDesign from './4_SATURATOR_Design1_ML';
 import SATURATORopex from './5_SATURATOR_Opex';
@@ -44,21 +45,17 @@ const SATURATORMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, cur
       content: <SATURATORDesign innerData={innerData} setInnerData={setInnerData} upstreamT_IN={T_IN_upstream} upstreamFG_IN={FG_IN_upstream} currentLanguage={currentLanguage} nodeId={nodeId} />
     },
     {
-      name: t('Opex'),
+      affichage: true, name: t('Opex'),
       content: <SATURATORopex innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} nodeId={nodeId} />
     },
     {
-      name: t('rapport'),
+      affichage: true, name: t('rapport'),
       content: <SATURATOR_Report innerData={innerData} nodeId={nodeId} currentLanguage={currentLanguage} />
     },
   ];
 
   const [activeTab, setActiveTab] = useState(tabs[0].name);
 
-  const renderTabContent = () => {
-    const active = tabs.find((tab) => tab.name === activeTab);
-    return active ? active.content : null;
-  };
 
   const sendAllData = () => {
     onSendData({
@@ -149,7 +146,7 @@ const SATURATORMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, cur
       <div
         style={{ padding: '20px', background: '#f9f9f9', borderRadius: '8px' }}
       >
-        {renderTabContent()}
+        <ContenuOnglets tabs={tabs} actif={activeTab} />
       </div>
     </div>
   );

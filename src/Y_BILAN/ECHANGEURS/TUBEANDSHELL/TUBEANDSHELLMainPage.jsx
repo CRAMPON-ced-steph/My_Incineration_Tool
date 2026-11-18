@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types */
 import React, { useState, useRef } from 'react';
+import ContenuOnglets from '../../../C_Components/ContenuOnglets';
 import TubeAndShellParameters from './1_TUBEANDSHELL_Parameters';
 import TUBEANDSHELL_Report from './TUBEANDSHELL_Report';
 import '../../../index.css';
@@ -32,7 +33,7 @@ const TUBEANDSHELLMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, 
       ),
     },
     {
-      name: t('Rapport'),
+      affichage: true, name: t('Rapport'),
       content: (
         <TUBEANDSHELL_Report
           innerData={innerData}
@@ -101,7 +102,7 @@ const TUBEANDSHELLMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, 
       </div>
 
       <div style={{ padding: '20px', background: '#f9f9f9', borderRadius: '8px' }}>
-        {tabs.find((tab) => tab.name === activeTab)?.content}
+        <ContenuOnglets tabs={tabs} actif={activeTab} />
       </div>
     </div>
   );

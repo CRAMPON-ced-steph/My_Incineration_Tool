@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import ContenuOnglets from '../../C_Components/ContenuOnglets';
 //import ELECTROFILTER_Parameters from './1_ELECTROFILTER_Parameters';
 import ELECTROFILTERFlueGasParameters from './1_ELECTROFILTER_Flue_gas_ML';
 import ELECTROFILTERFlueGasPollutantEmission  from './2_ELECTROFILTER_Pollutant_Emission_ML';
@@ -26,15 +27,12 @@ const ELECTROFILTERMainPage = ({ nodeData, title, onSendData, onClose, onGoBack 
   {name: t('Flue gases'), content: < ELECTROFILTERFlueGasParameters innerData={innerData}setInnerData={setInnerData}currentLanguage={currentLanguage} nodeId={nodeId}/> },
   {name: t('Pollutant Emissions'), content: <ELECTROFILTERFlueGasPollutantEmission  innerData={innerData}setInnerData={setInnerData}currentLanguage={currentLanguage} nodeId={nodeId}/>,},
   {name: t('Design'), content: < ELECTROFILTERDesign innerData={innerData}setInnerData={setInnerData}currentLanguage={currentLanguage} nodeId={nodeId}/> },
-  {name: t('Opex'), content: < ELECTROFILTEROpex innerData={innerData}setInnerData={setInnerData} currentLanguage={currentLanguage} nodeId={nodeId}/> },
-  {name: t('Rapport'), content: <ELECTROFILTER_Report innerData={innerData} currentLanguage={currentLanguage} nodeId={nodeId} />},
+  {affichage: true, name: t('Opex'), content: < ELECTROFILTEROpex innerData={innerData}setInnerData={setInnerData} currentLanguage={currentLanguage} nodeId={nodeId}/> },
+  {affichage: true, name: t('Rapport'), content: <ELECTROFILTER_Report innerData={innerData} currentLanguage={currentLanguage} nodeId={nodeId} />},
   ];
 
   const [activeTabIndex, setActiveTabIndex] = useState(0);
 
-  const renderTabContent = () => {
-    return tabs[activeTabIndex]?.content || null;
-  };
 
   const sendAllData = () => {
     onSendData({
@@ -120,7 +118,7 @@ const ELECTROFILTERMainPage = ({ nodeData, title, onSendData, onClose, onGoBack 
       <div
         style={{ padding: '20px', background: '#f9f9f9', borderRadius: '8px' }}
       >
-        {renderTabContent()}
+        <ContenuOnglets tabs={tabs} actif={tabs[activeTabIndex]?.name} />
       </div>
     </div>
   );

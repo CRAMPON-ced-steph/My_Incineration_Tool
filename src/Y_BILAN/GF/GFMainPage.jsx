@@ -1,4 +1,5 @@
 import React, { useState, useRef, useCallback, useMemo } from 'react';
+import ContenuOnglets from '../../C_Components/ContenuOnglets';
 import BouesTab from './1_OmTab';
 import CombustionTab from './2_CombustionTab';
 import GF_Report from './GF_Report';
@@ -60,6 +61,9 @@ const GFMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
     setInnerDataTick((t) => t + 1);
   }, []);
 
+  // Mise à jour partagée de innerDataRef — fonction STABLE (useCallback) : passée aux onglets
+  // Polluant et OPEX, dont l'effet d'écriture dépend de setInnerData. Une fonction recréée à
+  // chaque rendu relançait cet effet en boucle (rendu infini dès l'ouverture de l'onglet).
   const setInnerDataForCalcOpex = useCallback((updater) => {
     const newVal = typeof updater === 'function' ? updater(innerDataRef.current) : updater;
     Object.assign(innerDataRef.current, newVal);
@@ -335,8 +339,9 @@ const GFMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
   // RENDER TAB CONTENT
   // ============================================================
 
-  const renderTabContent = () => {
-    switch (activeTab) {
+  // Contenu d'un onglet ; tous les onglets de calcul restent montés (ContenuOnglets)
+  const renderOnglet = (name) => {
+    switch (name) {
       case 'boues':
         return (
           <BouesTab
@@ -361,11 +366,7 @@ const GFMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
         return (
           <Pollutant
             innerData={innerDataRef.current}
-            setInnerData={(updater) => {
-              const newVal = typeof updater === 'function' ? updater(innerDataRef.current) : updater;
-              Object.assign(innerDataRef.current, newVal);
-              notifyInnerDataChanged();
-            }}
+            setInnerData={setInnerDataForCalcOpex}
             onInnerDataChange={notifyInnerDataChanged}
             currentLanguage={currentLanguage}
             nodeId={nodeId}
@@ -387,11 +388,7 @@ const GFMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
           <GFopex
             innerData={innerDataRef.current}
             innerDataTick={innerDataTick}
-            setInnerData={(updater) => {
-              const newVal = typeof updater === 'function' ? updater(innerDataRef.current) : updater;
-              Object.assign(innerDataRef.current, newVal);
-              notifyInnerDataChanged();
-            }}
+            setInnerData={setInnerDataForCalcOpex}
             currentLanguage={currentLanguage}
             nodeId={nodeId}
           />
@@ -537,7 +534,10 @@ const GFMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
           margin: '0 20px 20px 20px',
         }}
       >
-        {renderTabContent()}
+        <ContenuOnglets
+          tabs={tabs.map((tab) => ({ ...tab, content: renderOnglet(tab.name), affichage: tab.name === 'opex' || tab.name === 'rapport' }))}
+          actif={activeTab}
+        />
       </div>
 
       {/* ════════════════════════════════════════ FOOTER ════════════════════════════════════════ */}

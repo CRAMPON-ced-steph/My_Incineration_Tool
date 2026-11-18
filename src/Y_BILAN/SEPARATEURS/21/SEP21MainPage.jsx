@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import ContenuOnglets from '../../../C_Components/ContenuOnglets';
 import SEP21FlueGasMixer from './SEP21_fluegas_mixer';
 import SEP21FlueGasPollutantEmission from './SEP21_Pollutant_Emission';
 
@@ -55,10 +56,6 @@ const SEP21MainPage = ({ nodeData, title, onSendData, onClose, onGoBack, current
     },
   ];
 
-  const renderTabContent = () => {
-    const active = tabs.find((tab) => tab.name === activeTab);
-    return active ? active.content : null;
-  };
 
   const sendAllData = () => {
     if (!onSendData || typeof onSendData !== 'function') {
@@ -193,7 +190,7 @@ const SEP21MainPage = ({ nodeData, title, onSendData, onClose, onGoBack, current
           minHeight: '500px'
         }}
       >
-        {renderTabContent()}
+        <ContenuOnglets tabs={tabs} actif={activeTab} />
       </div>
     </div>
   );

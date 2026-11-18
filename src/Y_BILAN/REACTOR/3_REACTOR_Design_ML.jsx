@@ -272,7 +272,9 @@ const REACTORDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
     NaOHCO3: 0,
   };
 
-  // Export data
+  // Export data — garde lastSync : `consommation_reactifs` (objet recréé à chaque rendu tant que
+  // l'onglet Polluants n'a rien écrit) relançait l'effet en boucle.
+  const lastSync = useRef('');
   useEffect(() => {
     if (setInnerData && typeof setInnerData === 'function') {
       const toSignificantFigures = (value, figures = 2) => {
@@ -286,8 +288,7 @@ const REACTORDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
         reactorParams['Agitation Type'] === 'mechanical' ? reactorResults.agitationPower : 0
       );
 
-      setInnerData((prevData) => ({
-        ...prevData,
+      const payload = {
         P_out_mmCE,
         consoElec1,
         consoElec2,
@@ -309,7 +310,11 @@ const REACTORDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
         reactorDiameter: reactorResults.diameter,
         reactorHeight: reactorResults.height,
         agitationPower: reactorResults.agitationPower,
-      }));
+      };
+      const json = JSON.stringify(payload);
+      if (json === lastSync.current) return;
+      lastSync.current = json;
+      setInnerData((prevData) => ({ ...prevData, ...payload }));
     }
   }, [
     Conso_elec_vis_transport_kW,

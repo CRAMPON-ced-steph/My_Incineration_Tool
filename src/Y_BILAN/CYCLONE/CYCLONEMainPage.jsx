@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import ContenuOnglets from '../../C_Components/ContenuOnglets';
 import CYCLONEFlueGasParameters from './1_CYCLONE_Flue_gas_ML';
 import CYCLONEFlueGasPollutantEmission from './2_CYCLONE_Pollutant_Emission_ML';
 import CYCLONEDesign from './3_CYCLONE_Design_ML';
@@ -37,18 +38,15 @@ const CYCLONEMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, curre
       content: <CYCLONEDesign innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} nodeId={nodeId} />
     },
     {
-      name: t('Opex'),
+      affichage: true, name: t('Opex'),
       content: <CYCLONEOpex innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} nodeId={nodeId} />
     },
     {
-      name: t('Rapport'),
+      affichage: true, name: t('Rapport'),
       content: <CYCLONE_Report innerData={innerData} currentLanguage={currentLanguage} nodeId={nodeId} />
     },
   ];
 
-  const renderTabContent = () => {
-    return tabs[activeTabIndex]?.content || null;
-  };
 
   const sendAllData = () => {
     onSendData({
@@ -134,7 +132,7 @@ const CYCLONEMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, curre
       <div
         style={{ padding: '20px', background: '#f9f9f9', borderRadius: '8px' }}
       >
-        {renderTabContent()}
+        <ContenuOnglets tabs={tabs} actif={tabs[activeTabIndex]?.name} />
       </div>
     </div>
   );

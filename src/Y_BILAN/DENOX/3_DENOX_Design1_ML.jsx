@@ -103,6 +103,17 @@ const DENOXDesign = ({ innerData, setInnerData, currentLanguage = 'fr' }) => {
     'Vitesse superficielle [m/s]': getInitialValue('Vitesse_superficielle', 4.5),
   });
 
+  // Le débit de gaz suit le débit calculé par l'onglet Gaz (après réchauffage) : cet onglet
+  // peut être monté avant que l'onglet Gaz ait calculé (onglets montés en arrière-plan).
+  // Une saisie manuelle reste en place tant que le débit amont ne change pas.
+  const debitAmont = innerData?.FG_DENOX_wet_OUT_reheating;
+  const dernierDebitAmont = useRef(debitAmont);
+  useEffect(() => {
+    if (debitAmont === undefined || debitAmont === dernierDebitAmont.current) return;
+    dernierDebitAmont.current = debitAmont;
+    setParametresSCR((prev) => ({ ...prev, 'Débit de gaz [Nm³/h]': debitAmont }));
+  }, [debitAmont]);
+
   // Paramètres FAM
   const [parametresFAM, setParametresFAM] = useState({
     'Rendement de capture [%]': getInitialValue('Rendement_capture', 99.9),

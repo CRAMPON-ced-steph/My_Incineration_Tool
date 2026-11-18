@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import ContenuOnglets from '../../C_Components/ContenuOnglets';
 import CaptureParameters from './1_Capture_Parameters';
 //import CaptureQuench from './2_Capture_Quench';
 //import CaptureAbsorption  from './3_Capture_Absorption';
@@ -27,10 +28,6 @@ const CO2MainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLa
 
   const [activeTab, setActiveTab] = useState(tabs[0].name); // Onglet actif par défaut
 
-  const renderTabContent = () => {
-    const active = tabs.find((tab) => tab.name === activeTab);
-    return active ? active.content : null;
-  };
 
   const sendAllData = () => {
       onSendData({
@@ -125,7 +122,7 @@ const CO2MainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLa
       <div
         style={{ padding: '20px', background: '#f9f9f9', borderRadius: '8px' }}
       >
-        {renderTabContent()}
+        <ContenuOnglets tabs={tabs} actif={activeTab} />
       </div>
     </div>
   );

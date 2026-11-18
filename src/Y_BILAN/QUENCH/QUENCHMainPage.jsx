@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import ContenuOnglets from '../../C_Components/ContenuOnglets';
 import QUENCHFlueGasParameters from './2_QUENCH_Flue_gas_ML';
 import QUENCHFlueGasPollutantEmission from './3_QUENCH_Pollutant_Emission_ML';
 import QUENCHDesign from './4_QUENCH_Design1_ML';
@@ -44,21 +45,17 @@ const QUENCHMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, curren
       content: <QUENCHDesign innerData={innerData} setInnerData={setInnerData} upstreamT_IN={T_IN_upstream} upstreamFG_IN={FG_IN_upstream} currentLanguage={currentLanguage} nodeId={nodeId} />
     },
     {
-      name: t('Opex'),
+      affichage: true, name: t('Opex'),
       content: <QUENCHOpex innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} nodeId={nodeId} />
     },
     {
-      name: t('rapport'),
+      affichage: true, name: t('rapport'),
       content: <QUENCH_Report innerData={innerData} nodeId={nodeId} currentLanguage={currentLanguage} />
     },
   ];
 
   const [activeTab, setActiveTab] = useState(tabs[0].name);
 
-  const renderTabContent = () => {
-    const active = tabs.find((tab) => tab.name === activeTab);
-    return active ? active.content : null;
-  };
 
   const sendAllData = () => {
     onSendData({
@@ -150,7 +147,7 @@ const QUENCHMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, curren
       <div
         style={{ padding: '20px', background: '#f9f9f9', borderRadius: '8px' }}
       >
-        {renderTabContent()}
+        <ContenuOnglets tabs={tabs} actif={activeTab} />
       </div>
     </div>
   );

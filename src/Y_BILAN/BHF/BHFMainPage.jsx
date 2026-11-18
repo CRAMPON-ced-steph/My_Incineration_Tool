@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import ContenuOnglets from '../../C_Components/ContenuOnglets';
 import BHFFlueGasParameters from './1_BHF_Flue_gas_ML';
 import BHFFlueGasPollutantEmission from './2_BHF_Pollutant_Emission_ML';
 import BHFDesign from './3_BHF_Design_ML';
@@ -30,21 +31,17 @@ const BHFMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLa
       content: <BHFDesign innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} nodeId={nodeId} />
     },
     {
-      name: t('Opex'),
+      affichage: true, name: t('Opex'),
       content: <BHFOpex innerData={innerData} setInnerData={setInnerData} currentLanguage={currentLanguage} nodeId={nodeId} />
     },
     {
-      name: 'Rapport',
+      affichage: true, name: 'Rapport',
       content: <BHF_Report innerData={innerData} currentLanguage={currentLanguage} nodeId={nodeId} />
     },
   ];
 
   const [activeTab, setActiveTab] = useState(tabs[0].name);
 
-  const renderTabContent = () => {
-    const active = tabs.find((tab) => tab.name === activeTab);
-    return active ? active.content : null;
-  };
 
   const sendAllData = () => {
     onSendData({
@@ -130,7 +127,7 @@ const BHFMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLa
       <div
         style={{ padding: '20px', background: '#f9f9f9', borderRadius: '8px' }}
       >
-        {renderTabContent()}
+        <ContenuOnglets tabs={tabs} actif={activeTab} />
       </div>
     </div>
   );

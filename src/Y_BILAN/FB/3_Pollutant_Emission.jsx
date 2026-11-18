@@ -5,6 +5,7 @@ import { R_1, R_2, R_3 } from '../../A_Transverse_fonction/FGT_fct';
 
 import SCC_NOxAndMercuryCalculator from '../../C_Components/Traitement_fumées_SCC';
 import TableGeneric from '../../C_Components/Tableau_generique';
+import useSyncInnerData from '../../C_Components/useSyncInnerData';
 import { getOpexData } from '../../A_Transverse_fonction/opexDataService';
 
 import Input_bilan from '../../C_Components/MiseEnFormeInputParamBilan';
@@ -484,33 +485,15 @@ const FBPollutantEmission = ({ innerData, setInnerData, currentLanguage = 'fr', 
     { text: t('flyAsh'), value: FlyAsh_kg_h },
   ];
 
-  // Mise à jour de innerData via setInnerData
-  useEffect(() => {
-    if (!setInnerData) return;
-    setInnerData(prev => ({
-      ...prev,
-      Residus,
-      PInput: masses_pollutant_input,
-      Poutput: masses_pollutant_output,
-      REFIDIS: mass_residus_tot,
-      Conso_reactifs: Conso_Reactifs,
-    }));
-  }, [
-    Conso_Reactifs.CaCO3,
-    Conso_Reactifs.CaO,
-    Conso_Reactifs.CaOH2wet,
-    Conso_Reactifs.CaOH2dry,
-    Conso_Reactifs.NaOH,
-    Conso_Reactifs.NaOHCO3,
-    Conso_Reactifs.Ammonia,
-    Conso_Reactifs.NaBrCaBr2,
-    Conso_Reactifs.CAP,
-    DryBottomAsh_kg_h,
-    WetBottomAsh_kg_h,
-    FlyAsh_kg_h,
-    mass_residus_tot,
-    setInnerData,
-  ]);
+  // Mise à jour de innerData : toutes les valeurs écrites servent de dépendance
+  // (l'onglet reste monté en arrière-plan et doit suivre le calcul de la combustion).
+  useSyncInnerData(setInnerData, {
+    Residus,
+    PInput: masses_pollutant_input,
+    Poutput: masses_pollutant_output,
+    REFIDIS: mass_residus_tot,
+    Conso_reactifs: Conso_Reactifs,
+  });
 
   return (
     <div className="cadre_pour_onglet">

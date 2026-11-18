@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import ContenuOnglets from '../../C_Components/ContenuOnglets';
 //import COOLINGTOWER_Parameters from './1_COOLINGTOWER_Parameters';
 import COOLINGTOWERFlueGasParameters from './2_COOLINGTOWER_Flue_gas_ML';
 import COOLINGTOWERFlueGasPollutantEmission  from './3_COOLINGTOWER_Pollutant_Emission_ML';
@@ -25,16 +26,12 @@ const COOLINGTOWERMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, 
   {name: 'Flue gases', content: < COOLINGTOWERFlueGasParameters innerData={innerData}setInnerData={setInnerData}currentLanguage={currentLanguage} nodeId={nodeId} /> },
   {name: 'Pollutant Emissions', content: <COOLINGTOWERFlueGasPollutantEmission  innerData={innerData}setInnerData={setInnerData}currentLanguage={currentLanguage} nodeId={nodeId} />,},
   {name: 'Design', content: < COOLINGTOWERDesign innerData={innerData}setInnerData={setInnerData}currentLanguage={currentLanguage} nodeId={nodeId} /> },
-  {name: 'Opex', content: < COOLINGTOWEROpex innerData={innerData}setInnerData={setInnerData}currentLanguage={currentLanguage} nodeId={nodeId} /> },
-  {name: 'Rapport', content: <COOLINGTOWER_Report innerData={innerData} currentLanguage={currentLanguage} nodeId={nodeId} />},
+  {affichage: true, name: 'Opex', content: < COOLINGTOWEROpex innerData={innerData}setInnerData={setInnerData}currentLanguage={currentLanguage} nodeId={nodeId} /> },
+  {affichage: true, name: 'Rapport', content: <COOLINGTOWER_Report innerData={innerData} currentLanguage={currentLanguage} nodeId={nodeId} />},
   ];
 
   const [activeTab, setActiveTab] = useState(tabs[0].name); // Onglet actif par défaut
 
-  const renderTabContent = () => {
-    const active = tabs.find((tab) => tab.name === activeTab);
-    return active ? active.content : null;
-  };
 
 
 
@@ -125,7 +122,7 @@ const COOLINGTOWERMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, 
       <div
         style={{ padding: '20px', background: '#f9f9f9', borderRadius: '8px' }}
       >
-        {renderTabContent()}
+        <ContenuOnglets tabs={tabs} actif={activeTab} />
       </div>
     </div>
   );

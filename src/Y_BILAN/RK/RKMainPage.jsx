@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import ContenuOnglets from '../../C_Components/ContenuOnglets';
 import CombustionParameters from './1_CombustionParameters1';
 //import CombustionParameters from './1_Combustion_essai';
 import FlueGasParameters from './2_Flue_gas1';
@@ -71,7 +72,7 @@ const RKMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
       )
     },
     {
-      name: 'opex',
+      affichage: true, name: 'opex',
       label: t.opex || 'Opex',
       content: (
         <RKopex
@@ -83,7 +84,7 @@ const RKMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
       )
     },
     {
-      name: 'rapport',
+      affichage: true, name: 'rapport',
       label: t.rapport || 'Rapport',
       content: (
         <RK_Report
@@ -97,19 +98,7 @@ const RKMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
 
   const [activeTab, setActiveTab] = useState(tabs[0].name); // Onglet actif par défaut
   
-  const renderTabContent = () => {
-    const active = tabs.find((tab) => tab.name === activeTab);
-    return active ? active.content : null;
-  };
 
-  // L'onglet Design calcule et écrit dans innerData les données OPEX (électricité, gaz,
-  // air comprimé, eau, réactifs, cendres, transport). Il reste monté en arrière-plan
-  // (invisible) pour que l'OPEX et le rapport soient à jour sans ouvrir l'onglet Design.
-  const renderDesignEnArrierePlan = () => {
-    if (activeTab === 'design') return null;
-    const design = tabs.find((tab) => tab.name === 'design');
-    return design ? <div style={{ display: 'none' }} aria-hidden="true">{design.content}</div> : null;
-  };
 
   const sendAllData = () => {
     if (!onSendData || typeof onSendData !== 'function') {
@@ -239,8 +228,7 @@ const RKMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
           minHeight: '500px' // Hauteur minimale pour le contenu
         }}
       >
-        {renderTabContent()}
-        {renderDesignEnArrierePlan()}
+        <ContenuOnglets tabs={tabs} actif={activeTab} />
       </div>
     </div>
   );

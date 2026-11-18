@@ -1,5 +1,6 @@
 
 import React, { useState, useRef } from 'react';
+import ContenuOnglets from '../../C_Components/ContenuOnglets';
 //import IDFAN_Parameters from './1_IDFAN_Parameters';
 import IDFANFlueGasParameters from './1_IDFAN_Flue_gas1_ML';
 import IDFANFlueGasPollutantEmission  from './2_IDFAN_Pollutant_Emission_ML';
@@ -44,17 +45,13 @@ const IDFANMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, current
  // {name: 'Design', content: < IDFANDesign innerData={innerData}/> },
 
  //{name: 'Design', content: < IDFANDesign innerData={innerData}setInnerData={setInnerData}/> },
- {name: t('Opex'), content: < IDFANOpex innerData={innerData}setInnerData={setInnerData}currentLanguage={currentLanguage} nodeId={nodeId} /> },
- {name: t('Rapport'), content: <IDFAN_Report innerData={innerData} currentLanguage={currentLanguage} nodeId={nodeId} />},
+ {affichage: true, name: t('Opex'), content: < IDFANOpex innerData={innerData}setInnerData={setInnerData}currentLanguage={currentLanguage} nodeId={nodeId} /> },
+ {affichage: true, name: t('Rapport'), content: <IDFAN_Report innerData={innerData} currentLanguage={currentLanguage} nodeId={nodeId} />},
 
   ];
 
   const [activeTab, setActiveTab] = useState(tabs[0].name); // Onglet actif par défaut
 
-  const renderTabContent = () => {
-    const active = tabs.find((tab) => tab.name === activeTab);
-    return active ? active.content : null;
-  };
 
 
 
@@ -158,7 +155,7 @@ const IDFANMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, current
       <div
         style={{ padding: '20px', background: '#f9f9f9', borderRadius: '8px' }}
       >
-        {renderTabContent()}
+        <ContenuOnglets tabs={tabs} actif={activeTab} />
       </div>
     </div>
   );

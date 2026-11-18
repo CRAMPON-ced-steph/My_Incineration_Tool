@@ -75,9 +75,9 @@ const SO2ScrubberCalculator = ({ innerData = {}, setInnerData, currentLanguage =
   };
 
   const languageCode = getLanguageCode(currentLanguage);
-  const t = (key) => {
-    return translations[languageCode]?.[key] || translations['fr']?.[key] || key;
-  };
+  // t stable (useCallback) : une fonction recréée à chaque rendu relançait les effets qui
+  // en dépendent, d'où un rendu en boucle dès l'ouverture de l'onglet.
+  const t = useCallback((key) => translations[languageCode]?.[key] || translations['fr']?.[key] || key, [languageCode]);
 
   // ===== ÉTATS PRINCIPAUX =====
   const [fumeParams, setFumeParams] = useState({
