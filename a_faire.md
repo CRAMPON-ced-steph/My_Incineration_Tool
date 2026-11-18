@@ -119,3 +119,25 @@ Test : chaque page Bilan ouverte avec un même flux amont (14 200 kg/h de fumée
 ### Non couvert
 - [ ] Mode Retro (`src/Z_RETRO`) de ces équipements.
 - [ ] Détail des onglets Polluants, Design et OPEX (seuls la stabilité et les points ci-dessus ont été vérifiés).
+
+---
+
+## Onglets OPEX → onglets Rapport (vérification du 18/11/2026)
+
+Les rapports recalculent l'OPEX à partir des valeurs calculées (`innerData`), pas à partir du tableau affiché dans l'onglet OPEX (`OpexDashboard.jsx`).
+
+### Tous les équipements
+- [ ] **Modifications faites dans l'onglet OPEX non reprises dans le rapport** : cellules modifiées et lignes ajoutées restent dans l'état de l'onglet (localStorage) ; le tableau de bord ne renvoie à `innerData` que des totaux (`activeNodes_*`). De plus, une cellule calculée modifiée est écrasée dès que le calcul est mis à jour (`mergeComputedRows`).
+- [ ] **Mémoire de l'onglet OPEX par type et non par nœud** : clé `opexDashboard_${equipmentType}` → deux nœuds du même type (ex. deux BHF) partagent les mêmes lignes modifiées (convention `_${nodeId}` non appliquée).
+- [ ] **Arrondi** : l'onglet OPEX arrondit chaque valeur à 2 chiffres significatifs avant de calculer les coûts, le rapport utilise la valeur exacte (petits écarts là où l'onglet Design n'arrondit pas déjà, ex. eau du quench).
+
+### Écarts par équipement
+- [ ] **Charbon actif (CAP)** : compté dans les rapports (coût et CO₂ de transport) mais absent de l'onglet OPEX (pas de ligne CAP, exclu de `cout_reactifs`) → BHF : totaux différents entre OPEX et rapport.
+- [ ] **Quench, quench simple, saturateur, injection d'eau** : eau adoucie et eau de rivière (selon le type d'eau choisi dans Design) écrites mais non lues par le rapport → coût de l'eau absent du rapport.
+- [ ] **Réacteur** : CaO et Ca(OH)₂ humide absents du rapport.
+- [ ] **Électrofiltre** : CaCO₃, CaO, NaOH absents du rapport.
+- [ ] **Chaudière** : pas de section transport dans le rapport → coût et CO₂ du transport des cendres de chaudière (`cout_transport_boiler_ash`, `CO2_transport_boiler_ash`) absents.
+- [ ] **DeNOx** : `consoElec1`, `consoElec2`, `Conso_Ammonia_kg` écrits en texte (`toFixed`) → l'onglet OPEX plante et le rapport additionne des chaînes (total électricité et coûts faux / NaN).
+
+### Cohérents
+FB, GF, RK, injection d'air, cyclone, tour de refroidissement, ventilateur, laveur, cheminée, IACT (mêmes clés et mêmes formules de coût). Tubes-calandre : pas d'OPEX.
