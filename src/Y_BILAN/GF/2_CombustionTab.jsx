@@ -333,6 +333,17 @@ function runIterativeCalc({
     const Vair_sec_tot = Vair_sec + Vvap_sec;
     const Vair_tert_tot = Vair_tert + Vvap_tert;
 
+    // Excès d'air global = air sec total entrant / air sec stœchiométrique − 1
+    // (définition usuelle, celle du HTFB : l'air de balayage, secondaire et tertiaire est compté dans l'excès).
+    // Air stœchiométrique de chaque combustible = air de combustion / (1 + excès saisi).
+    const facteurLit = 1 + Exces_air_lit / 100;
+    const facteurComb = 1 + Exces_air_combustible / 100;
+    const Maire_stoechio_tot = (facteurLit > 0 ? Maire_sec_comb_boue / facteurLit : 0)
+      + (facteurComb > 0 ? Maire_sec_comb_gaz / facteurComb : 0);
+    const Maire_sec_total_entrant = Maire_sec_comb_boue + Maire_sec_comb_gaz + Maire_balayage
+      + (Masse_air_secondaire_kg_h || 0) + (Masse_air_tertiaire_kg_h || 0);
+    const Exces_air_global_pct = Maire_stoechio_tot > 0 ? (Maire_sec_total_entrant / Maire_stoechio_tot - 1) * 100 : null;
+
     const isConverged = forceGazZero || Math.abs(Q_gaz_kg) < TOLERANCE;
     const isLastIter = iter === MAX_ITER - 1;
 
@@ -367,6 +378,9 @@ function runIterativeCalc({
         VolumeVapeurEauAirCombustionTot_Nm3_h: Vvap_tot,
         VolumeAirCombustionTot_Nm3_h: Vair_comb_tot,
         Masse_air_sec_boue_total_kg_h: Maire_sec_boue_tot,
+        Masse_air_stoechio_tot_kg_h: Maire_stoechio_tot,
+        Masse_air_sec_total_entrant_kg_h: Maire_sec_total_entrant,
+        Exces_air_global_pct,
 
         // Air instrumentation / secondaire / tertiaire détail
         Masse_air_instru_kg_h: Maire_balayage,
@@ -584,7 +598,9 @@ const CombustionTab = ({ innerData = {}, onInnerDataChange, onResultsChange, cur
     innerData.Q_gaz_kg_h = results.Q_gaz_kg_h || 0;
     innerData.Q_gaz_Nm3_h = results.Q_gaz_Nm3_h || 0;
     innerData.Temp_air_fluidisation_av_prechauffe_C = thermalParams.Temp_air_fluidisation_av_prechauffe_C || 0;
-    innerData.Exces_air = emissions.Exces_air_lit || 0;
+    // Excès d'air global calculé (air total / air stœchiométrique − 1), lu par le rapport
+    // (« Excès d'air global ») ; avant : copie de l'excès d'air primaire saisi.
+    innerData.Exces_air = results.Exces_air_global_pct ?? null;
     innerData.Exces_air_lit = emissions.Exces_air_lit || 0;
     innerData.Exces_air_combustible = emissions.Exces_air_combustible || 0;
     innerData.Temp_fumee_voute_C = thermalParams.Temp_fumee_voute_C || 870;
@@ -836,6 +852,10 @@ const CombustionTab = ({ innerData = {}, onInnerDataChange, onResultsChange, cur
             <input type="number" step="0.1" value={emissions.Exces_air_lit ?? DEFAULT_EMISSIONS.Exces_air_lit} onChange={(e) => handleEmission('Exces_air_lit', e.target.value)} style={inputStyle} /></div>
           <div><label style={labelStyle}>{t("Excès d'air Combustible d'appoint")} (%)</label>
             <input type="number" step="0.1" value={emissions.Exces_air_combustible ?? DEFAULT_EMISSIONS.Exces_air_combustible} onChange={(e) => handleEmission('Exces_air_combustible', e.target.value)} style={inputStyle} /></div>
+          <div><label style={labelStyle}>{t("Excès d'air global")} (%)</label>
+            <input type="text" readOnly value={results.Exces_air_global_pct != null ? f(results.Exces_air_global_pct, 1) : '-'} style={{ ...inputStyle, backgroundColor: '#f3f4f6', fontWeight: 'bold', color: '#374151' }} />
+            <div style={{ fontSize: '11px', color: '#6b7280', marginTop: '4px' }}>{t('air total / air stœchiométrique − 1')}</div>
+          </div>
           <div><label style={labelStyle}>{t('O₂% air de combustion lit')}</label>
             <input type="number" step="0.1" value={emissions.O2_pct_air_combustion ?? DEFAULT_EMISSIONS.O2_pct_air_combustion} onChange={(e) => handleEmission('O2_pct_air_combustion', e.target.value)} style={inputStyle} /></div>
           <div><label style={labelStyle}>{t('Teneur en eau')} (kg H₂O/kg AS)</label>

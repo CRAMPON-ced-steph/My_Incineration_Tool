@@ -313,7 +313,7 @@ const GFMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
       '',
       '🔥 COMBUSTION',
       `• PCI boue: ${d.PCIKCALKGMV ?? 0} kCal/kg MV`,
-      `• Excès d\'air: ${d.Exces_air ?? 0}%`,
+      `• Excès d'air global: ${fmt(d.Exces_air ?? 0, 1)}%`,
       `• Temp. fumée voûte: ${d.Temp_fumee_voute_C ?? 0} °C`,
       '',
       '💨 FUMÉES',
