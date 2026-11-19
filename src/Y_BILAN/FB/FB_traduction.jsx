@@ -276,6 +276,8 @@ export const translations = {
     // — Ajouts audit i18n (2026-07) —
     "Excès d'air Lit Fluidisé": "Excès d'air Lit Fluidisé",
     "Excès d'air Combustible d'appoint": "Excès d'air Combustible d'appoint",
+    "Excès d'air global": "Excès d'air global",
+    'air total / air stœchiométrique − 1': "air total / air stœchiométrique − 1",
     "Type eau additionnelle": "Type eau additionnelle",
     "Débit d'air à pulser [Nm3/h]": "Débit d'air à pulser [Nm³/h]",
     "Débit MS": "Débit MS",
@@ -994,6 +996,8 @@ export const translations = {
     // — Ajouts audit i18n (2026-07) —
     "Excès d'air Lit Fluidisé": "Fluidized bed excess air",
     "Excès d'air Combustible d'appoint": "Auxiliary fuel excess air",
+    "Excès d'air global": "Overall excess air",
+    'air total / air stœchiométrique − 1': "total air / stoichiometric air − 1",
     "Type eau additionnelle": "Additional water type",
     "Débit d'air à pulser [Nm3/h]": "Blown air flow [Nm³/h]",
     "Débit MS": "Dry solids flow",
@@ -1716,6 +1720,8 @@ export const translations = {
     // — Ajouts audit i18n (2026-07) —
     "Excès d'air Lit Fluidisé": "Exceso de aire del lecho fluidizado",
     "Excès d'air Combustible d'appoint": "Exceso de aire del combustible auxiliar",
+    "Excès d'air global": "Exceso de aire global",
+    'air total / air stœchiométrique − 1': "aire total / aire estequiométrico − 1",
     "Type eau additionnelle": "Tipo de agua adicional",
     "Débit d'air à pulser [Nm3/h]": "Caudal de aire soplado [Nm³/h]",
     "Débit MS": "Caudal de MS",
@@ -2316,6 +2322,8 @@ export const translations = {
     // — Ajouts audit i18n (2026-07) —
     "Excès d'air Lit Fluidisé": "Luftüberschuss Wirbelschicht",
     "Excès d'air Combustible d'appoint": "Luftüberschuss Zusatzbrennstoff",
+    "Excès d'air global": "Gesamt-Luftüberschuss",
+    'air total / air stœchiométrique − 1': "Gesamtluft / stöchiometrische Luft − 1",
     "Type eau additionnelle": "Typ Zusatzwasser",
     "Débit d'air à pulser [Nm3/h]": "Blasluftdurchsatz [Nm³/h]",
     "Débit MS": "TS-Durchsatz",
@@ -2916,6 +2924,8 @@ export const translations = {
     // — Ajouts audit i18n (2026-07) —
     "Excès d'air Lit Fluidisé": "Eccesso d'aria letto fluido",
     "Excès d'air Combustible d'appoint": "Eccesso d'aria combustibile ausiliario",
+    "Excès d'air global": "Eccesso d'aria globale",
+    'air total / air stœchiométrique − 1': "aria totale / aria stechiometrica − 1",
     "Type eau additionnelle": "Tipo di acqua aggiuntiva",
     "Débit d'air à pulser [Nm3/h]": "Portata aria soffiata [Nm³/h]",
     "Débit MS": "Portata SS",
@@ -3516,6 +3526,8 @@ export const translations = {
     // — Ajouts audit i18n (2026-07) —
     "Excès d'air Lit Fluidisé": "Excesso de ar do leito fluidizado",
     "Excès d'air Combustible d'appoint": "Excesso de ar do combustível auxiliar",
+    "Excès d'air global": "Excesso de ar global",
+    'air total / air stœchiométrique − 1': "ar total / ar estequiométrico − 1",
     "Type eau additionnelle": "Tipo de água adicional",
     "Débit d'air à pulser [Nm3/h]": "Vazão de ar soprado [Nm³/h]",
     "Débit MS": "Vazão de MS",
@@ -4116,6 +4128,8 @@ export const translations = {
     // — Ajouts audit i18n (2026-07) —
     "Excès d'air Lit Fluidisé": "流化床过量空气",
     "Excès d'air Combustible d'appoint": "辅助燃料过量空气",
+    "Excès d'air global": "总过量空气",
+    'air total / air stœchiométrique − 1': "总空气量 / 理论空气量 − 1",
     "Type eau additionnelle": "补充水类型",
     "Débit d'air à pulser [Nm3/h]": "鼓风量 [Nm³/h]",
     "Débit MS": "干物质流量",
@@ -4716,6 +4730,8 @@ export const translations = {
     // — Ajouts audit i18n (2026-07) —
     "Excès d'air Lit Fluidisé": "流動床過剰空気",
     "Excès d'air Combustible d'appoint": "補助燃料過剰空気",
+    "Excès d'air global": "全体過剰空気率",
+    'air total / air stœchiométrique − 1': "全空気量 / 理論空気量 − 1",
     "Type eau additionnelle": "追加水の種類",
     "Débit d'air à pulser [Nm3/h]": "送風量 [Nm³/h]",
     "Débit MS": "乾物流量",
@@ -5316,6 +5332,8 @@ export const translations = {
     // — Ajouts audit i18n (2026-07) —
     "Excès d'air Lit Fluidisé": "Избыток воздуха кипящего слоя",
     "Excès d'air Combustible d'appoint": "Избыток воздуха вспомогательного топлива",
+    "Excès d'air global": "Общий избыток воздуха",
+    'air total / air stœchiométrique − 1': "общий воздух / стехиометрический воздух − 1",
     "Type eau additionnelle": "Тип дополнительной воды",
     "Débit d'air à pulser [Nm3/h]": "Расход вдуваемого воздуха [Нм³/ч]",
     "Débit MS": "Расход сухого вещества",
@@ -5916,6 +5934,8 @@ export const translations = {
     // — Ajouts audit i18n (2026-07) —
     "Excès d'air Lit Fluidisé": "فائض هواء الطبقة المميعة",
     "Excès d'air Combustible d'appoint": "فائض هواء الوقود المساعد",
+    "Excès d'air global": "فائض الهواء الإجمالي",
+    'air total / air stœchiométrique − 1': "الهواء الكلي / الهواء الستوكيومتري − 1",
     "Type eau additionnelle": "نوع الماء الإضافي",
     "Débit d'air à pulser [Nm3/h]": "تدفق الهواء المنفوخ [نم³/س]",
     "Débit MS": "تدفق المادة الجافة",
