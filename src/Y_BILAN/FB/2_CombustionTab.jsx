@@ -828,7 +828,9 @@ const CombustionTab = ({ innerData = {}, onInnerDataChange, onResultsChange, cur
     innerData.type_energy = emissions.type_energy;
     innerData.Tair_ap_prechauffe_C = results.Tair_ap_prechauffe_C || 0;
     innerData.Temp_air_fluidisation_av_prechauffe_C = thermalParams.Temp_air_fluidisation_av_prechauffe_C || 0;
-    innerData.Exces_air = emissions.Exces_air_lit || 0;
+    // Excès d'air global calculé (air total / air stœchiométrique − 1), lu par le rapport
+    // (« Excès d'air global ») ; avant : copie de l'excès d'air lit saisi.
+    innerData.Exces_air = results.Exces_air_global_pct ?? null;
     innerData.Exces_air_lit = emissions.Exces_air_lit || 0;
     innerData.Exces_air_combustible = emissions.Exces_air_combustible || 0;
     innerData.Temp_fumee_voute_C = thermalParams.Temp_fumee_voute_C || 870;
