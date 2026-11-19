@@ -635,11 +635,14 @@ Doit être l'**inverse cohérent** de `option_T` :
 - **Résidus** (FB et GF) : `Inert_kg_h` = `innerData.MM_kg_h` (matière minérale / cendres de l'onglet 1). Avant : `Inert_kg_h` n'était écrit par aucun onglet → cendres de fond et cendres volantes toujours à 0. Cendres de fond sèches = matière minérale − cendres volantes + résidus de neutralisation ; FB : cendres volantes = fines.
 - L'explication du calcul (valeurs et formules) est affichée en bas de l'onglet Polluant FB (clés `dustNote*`, 10 langues). « Débit boue brute » (et non « Débit de déchets ») dans les paramètres calculés FB, une décimale.
 
-### FB — appoint de sable (2026-11-19)
+### FB — appoint de sable et purge du lit (2026-11-19)
 
-- Onglet Caractéristiques des Boues, carte « Appoint de sable » sous la répartition des matières minérales : cas `standard` 4–6, `eleve` 10–15, `inertes` (boues chargées en inertes grossiers) 15–25 kg de sable / t MS (`CAS_APPOINT_SABLE`, plages données par Cédric) ; choisir un cas met le milieu de la plage, le ratio reste saisissable (alerte hors plage). localStorage `bouesTab_appointSable_FB_<nodeId>`.
-- Écrit dans `innerData` : `Appoint_sable_cas`, `Appoint_sable_kg_tMS`, `Appoint_sable_kg_h` (= ratio × MS kg/h / 1000) et `Conso_sable_kg` (clé OPEX du nœud).
-- OPEX : `configOpex('FB').appointSable` → ligne `row10` « Sable d'appoint » du tableau des réactifs (FB seulement), comptée dans « Consommation de réactifs ». Prix `sandMakeupPrice` en **€/kg** (0,1 par défaut), saisi dans le panneau des paramètres OPEX, onglet Sous-produits, cadre « Appoint de sable » ; converti en €/t comme les réactifs. Pas de CO2 de transport pour le sable.
+- Onglet Caractéristiques des Boues, carte « Appoint de sable » sous la répartition des matières minérales (décision de Cédric) : **appoint [kg/h] = fines minérales parties avec les fumées (`MM_cyclones`, Rosin-Rammler < d_cut) + purge du lit**, purge = part de la fraction grossière (`MM_lit`) retirée du lit, **3 % par défaut** (saisissable). Affiché en kg/h, kg/t MS et t/semaine. localStorage `bouesTab_appointSable_FB_<nodeId>` = `{ purgePct }` (l'ancienne forme `{ cas, ratio }` en kg/t MS, remplacée le même jour, est ignorée).
+- **Calcul OPEX seulement** : le bilan matière de l'onglet Polluant n'est pas modifié (cendres de fond = toute la fraction grossière + résidus de neutralisation).
+- Écrit dans `innerData` : `Appoint_sable_purge_pct`, `Appoint_sable_fines_kg_h`, `Purge_lit_kg_h`, `Appoint_sable_kg_h`, `Appoint_sable_kg_tMS`, et les clés OPEX du nœud `Conso_sable_kg` (= appoint) et `Conso_purge_lit_kg` (= purge).
+- OPEX (`configOpex('FB').appointSable`, FB seulement) : ligne `row10` « Sable d'appoint » du tableau des réactifs (prix `sandMakeupPrice` en **€/kg**, 0,1 par défaut, cadre « Appoint de sable » de l'onglet Sous-produits du panneau OPEX, converti en €/t comme les réactifs, sans CO2) ; ligne `row8` du tableau des coûts et `row6` du tableau CO2 « Évacuation de la purge du lit » = purge [t/h] × tarif du sous-produit « Incineration ash » (150 €/t par défaut) et CO2 du transport aller-retour (`co2TransportReactif_kg_t`).
+- Contrôle (St. Paul) avec d′ = 300 µm : fines 137,6 kg/h + purge 3 % × 648,6 = 19,5 kg/h → appoint 157,1 kg/h (32 kg/t MS) ; sable 15,7 €/h à 0,1 €/kg ; purge 2,92 €/h et 0,14 kg CO2/h.
+- **Rosin-Rammler par défaut** (`DEFAULT_ROSIN_RAMMLER`, demande de Cédric du 19/11/2026) : d′ = **50 µm** (avant 300), n = 1,5, d_cut = 100 µm → 94 % de fines. St. Paul : fines 739,8 kg/h, fraction grossière 46,5 kg/h, DustFlyAsh 736,4 kg/h, appoint de sable 741,1 kg/h (151 kg/t MS). Les nœuds existants gardent leurs valeurs enregistrées (`bouesTab_rosinRammler_FB_<nodeId>`) jusqu'à « Réinitialiser ».
 
 ### Points ouverts
 
