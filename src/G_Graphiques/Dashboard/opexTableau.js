@@ -27,7 +27,8 @@ const CLE_CALCULEE = /^row\d{1,2}$/;
 
 // Réglages par type d'équipement (partagés onglet OPEX / rapport).
 const CONFIG_PAR_TYPE = {
-  FB: { numElecRows: 6 },
+  // Four à lit fluidisé : ligne « sable d'appoint » dans le tableau des réactifs
+  FB: { numElecRows: 6, appointSable: true },
   GF: { numElecRows: 6 },
   // Chaudière : tableaux de valorisation (électricité et vapeur vendues)
   WHB: { valorisation: true },
@@ -134,6 +135,7 @@ const lirePrix = () => {
     fuel: o.fuelTypes || {},
     venteElec: lireNombre(o.sellingElectricityPrice),     // devise/MWh
     vapeur: o.steamPrices || {},                          // devise/t
+    sable: lireNombre(o.sandMakeupPrice),                 // devise/kg (onglet Sous-produits)
   };
 };
 
@@ -172,6 +174,14 @@ const lignesConsommation = (d, prix, t, config) => {
     prix: lireNombre(prix.reactifs?.[typeReactif]?.cost),         // devise/t
     co2: co2TransportReactif_kg_t(prix.reactifs?.[typeReactif]),  // kg CO2/t livrée (aller-retour)
   }));
+  // Lit fluidisé : sable d'appoint (onglet Caractéristiques des Boues, Conso_sable_kg en kg/h).
+  // Prix saisi en devise/kg dans l'onglet Sous-produits, converti en devise/t comme les réactifs.
+  if (config.appointSable) {
+    reactifs.push({
+      key: 'row10', label: t('sandMakeup'), value: lireNombre(d.Conso_sable_kg),
+      prix: prix.sable * 1000, co2: 0,
+    });
+  }
 
   const energie = [
     ['row1', 'gasH', 'conso_gaz_H_MW', prix.gaz?.naturalGasH?.molecule, prix.gaz?.naturalGasH?.co2Emission],

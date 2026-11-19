@@ -32,6 +32,7 @@ export const translations = {
     
     // Réactifs
     ammonia: 'Ammoniaque',
+    sandMakeup: "Sable d'appoint",
     
     // Énergies
     gasH: 'Gaz H',
@@ -129,6 +130,7 @@ export const translations = {
     
     // Reagents
     ammonia: 'Ammonia',
+    sandMakeup: "Make-up sand",
     
     // Energy
     gasH: 'Gas H',
@@ -226,6 +228,7 @@ export const translations = {
     
     // Reagenzien
     ammonia: 'Ammoniak',
+    sandMakeup: "Nachfüllsand",
     
     // Energie
     gasH: 'Gas H',
@@ -323,6 +326,7 @@ export const translations = {
     
     // Reactivos
     ammonia: 'Amoníaco',
+    sandMakeup: "Arena de aporte",
     
     // Energía
     gasH: 'Gas H',
@@ -420,6 +424,7 @@ export const translations = {
     
     // Reagenti
     ammonia: 'Ammoniaca',
+    sandMakeup: "Sabbia di reintegro",
     
     // Energia
     gasH: 'Gas H',
@@ -517,6 +522,7 @@ export const translations = {
     
     // Reagentes
     ammonia: 'Amônia',
+    sandMakeup: "Areia de reposição",
     
     // Energia
     gasH: 'Gás H',
@@ -614,6 +620,7 @@ export const translations = {
     
     // Реактивы
     ammonia: 'Аммиак',
+    sandMakeup: "Песок для подпитки",
     
     // Энергия
     gasH: 'Газ H',
@@ -711,6 +718,7 @@ export const translations = {
     
     // 试剂
     ammonia: '氨',
+    sandMakeup: "补充砂",
     
     // 能源
     gasH: '燃气 H',
@@ -808,6 +816,7 @@ export const translations = {
     
     // 試薬
     ammonia: 'アンモニア',
+    sandMakeup: "補給砂",
     
     // エネルギー
     gasH: 'ガス H',
@@ -905,6 +914,7 @@ export const translations = {
     
     // الكواشف
     ammonia: 'أمونيا',
+    sandMakeup: "رمل التعويض",
     
     // الطاقة
     gasH: 'غاز H',

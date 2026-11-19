@@ -635,6 +635,12 @@ Doit être l'**inverse cohérent** de `option_T` :
 - **Résidus** (FB et GF) : `Inert_kg_h` = `innerData.MM_kg_h` (matière minérale / cendres de l'onglet 1). Avant : `Inert_kg_h` n'était écrit par aucun onglet → cendres de fond et cendres volantes toujours à 0. Cendres de fond sèches = matière minérale − cendres volantes + résidus de neutralisation ; FB : cendres volantes = fines.
 - L'explication du calcul (valeurs et formules) est affichée en bas de l'onglet Polluant FB (clés `dustNote*`, 10 langues). « Débit boue brute » (et non « Débit de déchets ») dans les paramètres calculés FB, une décimale.
 
+### FB — appoint de sable (2026-11-19)
+
+- Onglet Caractéristiques des Boues, carte « Appoint de sable » sous la répartition des matières minérales : cas `standard` 4–6, `eleve` 10–15, `inertes` (boues chargées en inertes grossiers) 15–25 kg de sable / t MS (`CAS_APPOINT_SABLE`, plages données par Cédric) ; choisir un cas met le milieu de la plage, le ratio reste saisissable (alerte hors plage). localStorage `bouesTab_appointSable_FB_<nodeId>`.
+- Écrit dans `innerData` : `Appoint_sable_cas`, `Appoint_sable_kg_tMS`, `Appoint_sable_kg_h` (= ratio × MS kg/h / 1000) et `Conso_sable_kg` (clé OPEX du nœud).
+- OPEX : `configOpex('FB').appointSable` → ligne `row10` « Sable d'appoint » du tableau des réactifs (FB seulement), comptée dans « Consommation de réactifs ». Prix `sandMakeupPrice` en **€/kg** (0,1 par défaut), saisi dans le panneau des paramètres OPEX, onglet Sous-produits, cadre « Appoint de sable » ; converti en €/t comme les réactifs. Pas de CO2 de transport pour le sable.
+
 ### Points ouverts
 
 Les anomalies relevées mais non corrigées (GF, RK) sont listées dans `a_faire.md` à la racine du dépôt. Cocher / retirer une ligne une fois corrigée.

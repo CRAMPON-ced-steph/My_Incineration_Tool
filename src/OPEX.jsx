@@ -79,6 +79,7 @@ const OPEX_form = ({ onClose, currentLanguage = 'fr' }) => {
   const [steamPrices, setSteamPrices] = useState(loadFromLocalStorage('opex_steamPrices', defaultValues.steamPrices));
   const [waterPrices, setWaterPrices] = useState(loadFromLocalStorage('opex_waterPrices', defaultValues.waterPrices));
   const [byproducts, setByproducts] = useState(loadFromLocalStorage('opex_byproducts', defaultValues.byproducts));
+  const [sandMakeupPrice, setSandMakeupPrice] = useState(loadFromLocalStorage('opex_sandMakeupPrice', defaultValues.sandMakeupPrice));
   const [fuelTypes, setFuelTypes] = useState(loadFromLocalStorage('opex_fuelTypes', defaultValues.fuelTypes));
   const [reagentsTypes, setReagentsTypes] = useState(loadFromLocalStorage('opex_reagentsTypes', defaultValues.reagentsTypes));
 
@@ -120,7 +121,8 @@ const OPEX_form = ({ onClose, currentLanguage = 'fr' }) => {
     localStorage.setItem('opex_steamPrices', JSON.stringify(steamPrices));
     localStorage.setItem('opex_waterPrices', JSON.stringify(waterPrices));
     localStorage.setItem('opex_byproducts', JSON.stringify(byproducts));
-  }, [gasTypes, fuelTypes, reagentsTypes, steamPrices, waterPrices, byproducts]);
+    localStorage.setItem('opex_sandMakeupPrice', JSON.stringify(sandMakeupPrice));
+  }, [gasTypes, fuelTypes, reagentsTypes, steamPrices, waterPrices, byproducts, sandMakeupPrice]);
 
   // Tab configuration
   const tabs = [
@@ -207,14 +209,15 @@ const OPEX_form = ({ onClose, currentLanguage = 'fr' }) => {
       reagentsTypes,
       steamPrices,
       waterPrices,
-      byproducts
+      byproducts,
+      sandMakeupPrice
     });
   }, [
     availability, ratioElec, currency, selectedCountryCode, selectedRatio,
     truck15TCO2, truck15TPrice, truck20TCO2, truck20TPrice, truck25TCO2, truck25TPrice,
     airPressure, compressorType, powerRatio, airConsumptionPrice,
     purchaseElectricityPrice, sellingElectricityPrice,
-    gasTypes, fuelTypes, reagentsTypes, steamPrices, waterPrices, byproducts
+    gasTypes, fuelTypes, reagentsTypes, steamPrices, waterPrices, byproducts, sandMakeupPrice
   ]);
 
   const handleCountryChange = (e) => {
@@ -900,6 +903,22 @@ const OPEX_form = ({ onClose, currentLanguage = 'fr' }) => {
                     })}
                   </tbody>
                 </table>
+              </div>
+
+              {/* Appoint de sable du lit fluidisé (FB) */}
+              <div style={{ ...styles.subSection, marginTop: '24px' }}>
+                <h3 style={styles.subTitle}>⏳ {t.sandMakeup || "Appoint de sable"}</h3>
+                <div style={getFormGridStyle()}>
+                  <InputField
+                    label={t.cost || "Coût"}
+                    unit={`[${currency}/kg]`}
+                    value={sandMakeupPrice}
+                    onChange={(e) => setSandMakeupPrice(parseFloat(e.target.value) || 0)}
+                  />
+                </div>
+                <p style={{ fontSize: '12px', color: '#6b7280', marginTop: '8px' }}>
+                  {t.sandMakeupNote || "Four à lit fluidisé uniquement : l'appoint de sable (onglet Caractéristiques des Boues) est ajouté au tableau des réactifs de l'onglet OPEX."}
+                </p>
               </div>
             </div>
           )}

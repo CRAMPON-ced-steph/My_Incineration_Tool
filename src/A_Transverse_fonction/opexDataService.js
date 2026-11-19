@@ -80,6 +80,8 @@ export const DEFAULT_OPEX_DATA = {
   },
 
   // Section 8: Byproducts
+  // Sable d'appoint du lit fluidisé (FB) : prix d'achat en €/kg (onglet Sous-produits).
+  sandMakeupPrice: 0.1,
   byproducts: [
     { name: 'Incineration ash / clinker / residues', cost: 150, truckType: 25, distance: 30, co2PerTKm: 0.119, co2PerTrip: 89.25 },
     { name: 'Boiler ashes disposal',                 cost: 100, truckType: 25, distance: 30, co2PerTKm: 0.119, co2PerTrip: 89.25 },
