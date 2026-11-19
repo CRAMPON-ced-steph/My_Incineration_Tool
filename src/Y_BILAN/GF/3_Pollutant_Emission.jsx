@@ -354,7 +354,11 @@ const GFPollutantEmission = ({ innerData, setInnerData, currentLanguage = 'fr', 
   const Conso_NaOHCO3_kg = conso_NaOHCO3_SOx + conso_NaOHCO3_HCl + conso_NaOHCO3_HF;
   const Conso_Ammonia_kg = NH3_consumption_kg_h;
   const Conso_NaBrCaBr2_kg = hg_treatment.bromide_consumption;
-  const Conso_CAP_kg = 1;
+  // CAP : seulement s'il est choisi comme réactif d'une ligne de traitement (avant : 1 kg/h fictif).
+  const Conso_CAP_kg =
+    (SOx_reactif === 'CAP' ? mass_reactif_reel_SOx : 0) +
+    (HCl_reactif === 'CAP' ? mass_reactif_reel_HCl : 0) +
+    (HF_reactif === 'CAP' ? mass_reactif_reel_HF : 0);
 
   const Cout_CaCO3 = reagentsTypes?.CaCO3 ? (Conso_CaCO3_kg / 1000) * reagentsTypes.CaCO3.cost : 0;
   const Cout_CaO = reagentsTypes?.CaO ? (Conso_CaO_kg / 1000) * reagentsTypes.CaO.cost : 0;

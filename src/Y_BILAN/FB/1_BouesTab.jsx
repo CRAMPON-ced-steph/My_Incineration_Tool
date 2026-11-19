@@ -55,9 +55,9 @@ const DEFAULT_ROSIN_RAMMLER = {
 const RR_SIZES = [10, 25, 50, 100, 200, 300, 500, 1000, 2000]; // µm
 
 // Appoint de sable du lit (calcul OPEX, décision de Cédric du 19/11/2026) :
-//   appoint [kg/h] = fines minérales parties avec les fumées (Rosin-Rammler, < d_cut)
-//                  + purge du lit = part de la fraction grossière (> d_cut) retirée du lit.
-// La purge est évacuée au tarif « Incineration ash » (paramètres OPEX, onglet Sous-produits).
+//   appoint [kg/h] = fraction grossière (Rosin-Rammler, > d_cut) restée dans le lit et évacuée
+//                  = part évacuée [%] × fraction grossière (purge du lit).
+// Le même débit est évacué au tarif « Incineration ash » (paramètres OPEX, onglet Sous-produits).
 // Le bilan matière de l'onglet Polluant n'est pas modifié.
 const DEFAULT_APPOINT_SABLE = { purgePct: 3 };
 
@@ -431,8 +431,8 @@ const BouesTab = ({ innerData, onInnerDataChange, currentLanguage, nodeId }) => 
     innerData.MM_cyclones_kg_h   = rr_F_dcut * MM_total;
     innerData.MM_lit_kg_h        = rr_R_dcut * MM_total;
 
-    // Appoint de sable du lit [kg/h] = fines parties avec les fumées + purge du lit
-    // (part de la fraction grossière). Calcul OPEX seulement (FB) :
+    // Appoint de sable du lit [kg/h] = fraction grossière restée dans le lit et évacuée
+    // (purge = part évacuée × fraction grossière). Calcul OPEX seulement (FB) :
     //   Conso_sable_kg     → ligne « Sable d'appoint » du tableau des réactifs (prix €/kg) ;
     //   Conso_purge_lit_kg → évacuation au tarif « Incineration ash » (€/t), tableaux coût et CO2.
     const purgePct = Math.max(0, Number(appointSable.purgePct) || 0);
@@ -441,7 +441,7 @@ const BouesTab = ({ innerData, onInnerDataChange, currentLanguage, nodeId }) => 
     innerData.Appoint_sable_purge_pct  = purgePct;
     innerData.Appoint_sable_fines_kg_h = rr_F_dcut * MM_total;
     innerData.Purge_lit_kg_h           = purge_kg_h;
-    innerData.Appoint_sable_kg_h       = rr_F_dcut * MM_total + purge_kg_h;
+    innerData.Appoint_sable_kg_h       = purge_kg_h;
     innerData.Appoint_sable_kg_tMS     = MS_kg_h_sable > 0 ? (innerData.Appoint_sable_kg_h / MS_kg_h_sable) * 1000 : 0;
     innerData.Conso_sable_kg           = innerData.Appoint_sable_kg_h;
     innerData.Conso_purge_lit_kg       = purge_kg_h;
@@ -1084,11 +1084,9 @@ const BouesTab = ({ innerData, onInnerDataChange, currentLanguage, nodeId }) => 
         const dcut     = Number(rosinRammler.dcut)   || 0;
         const R_dcut   = Math.exp(-Math.pow(dcut / dprime, n_rr));
         const MM_total = Number(boue.MM_kg_h) || 0;
-        const fines_kg_h = (1 - R_dcut) * MM_total;
         const grossiere_kg_h = R_dcut * MM_total;
         const purgePct = Math.max(0, Number(appointSable.purgePct) || 0);
-        const purge_kg_h = (purgePct / 100) * grossiere_kg_h;
-        const appoint_kg_h = fines_kg_h + purge_kg_h;
+        const appoint_kg_h = (purgePct / 100) * grossiere_kg_h;
         const MS = Number(boue.MS_kg_h) || 0;
         const appoint_kg_tMS = MS > 0 ? (appoint_kg_h / MS) * 1000 : 0;
         const semaine_t = (appoint_kg_h * (Number(fonctionnement.summaryTotal) || 0)) / 1000;
@@ -1101,7 +1099,7 @@ const BouesTab = ({ innerData, onInnerDataChange, currentLanguage, nodeId }) => 
             <p style={{ color: '#6b7280', fontSize: '13px', marginBottom: '20px' }}>
               {t('appointSableDescription')}
             </p>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '15px', alignItems: 'start' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '15px', alignItems: 'start' }}>
               <div>
                 <label style={labelStyle}>{t('appointSablePurgePct')}</label>
                 <input
@@ -1117,22 +1115,18 @@ const BouesTab = ({ innerData, onInnerDataChange, currentLanguage, nodeId }) => 
                   {t('appointSablePurgeNote')}
                 </div>
               </div>
-              <div style={boite('#f97316')}>
-                <div style={{ fontSize: '13px', fontWeight: '700', color: '#f97316', marginBottom: '8px' }}>{t('appointSableFines')}</div>
-                <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#1a202c' }}>{fmt(fines_kg_h, 1)} kg/h</div>
-              </div>
               <div style={boite('#10b981')}>
-                <div style={{ fontSize: '13px', fontWeight: '700', color: '#10b981', marginBottom: '8px' }}>{t('appointSablePurge')}</div>
-                <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#1a202c' }}>{fmt(purge_kg_h, 1)} kg/h</div>
+                <div style={{ fontSize: '13px', fontWeight: '700', color: '#10b981', marginBottom: '8px' }}>{t('appointSableGrossiere')}</div>
+                <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#1a202c' }}>{fmt(grossiere_kg_h, 1)} kg/h</div>
                 <div style={{ fontSize: '11px', color: '#6b7280', marginTop: '4px' }}>
-                  {fmt(purgePct, 1)} % × {fmt(grossiere_kg_h, 1)} kg/h
+                  {fmt(R_dcut * 100, 1)} % {t('sur')} {fmt(MM_total, 1)} kg/h {t('MM total')}
                 </div>
               </div>
               <div style={boite('#a16207')}>
                 <div style={{ fontSize: '13px', fontWeight: '700', color: '#a16207', marginBottom: '8px' }}>{t('appointSableTitre')}</div>
                 <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#1a202c' }}>{fmt(appoint_kg_h, 1)} kg/h</div>
                 <div style={{ fontSize: '11px', color: '#6b7280', marginTop: '4px' }}>
-                  {fmt(appoint_kg_tMS, 1)} {t('appointSableUnite')} · {fmt(semaine_t, 2)} {t('appointSableSemaine')}
+                  {fmt(purgePct, 1)} % × {fmt(grossiere_kg_h, 1)} kg/h · {fmt(appoint_kg_tMS, 2)} {t('appointSableUnite')} · {fmt(semaine_t, 2)} {t('appointSableSemaine')}
                 </div>
               </div>
             </div>
