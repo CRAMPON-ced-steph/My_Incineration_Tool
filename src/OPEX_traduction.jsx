@@ -67,6 +67,8 @@ const translations = {
 
     // Tab 8: Byproducts
     byproductsShippingTreatment: "Sous-produits : transport + traitement",
+    sandMakeup: "Appoint de sable",
+    sandMakeupNote: "Four à lit fluidisé uniquement : l'appoint de sable (onglet Caractéristiques des Boues) est ajouté au tableau des réactifs de l'onglet OPEX.",
     product: "Produit", 
     cost: "Coût",
     truckType: "Type camion",
@@ -165,6 +167,8 @@ const translations = {
 
     // Tab 8: Byproducts
     byproductsShippingTreatment: "Byproducts: shipping + treatment",
+    sandMakeup: "Sand make-up",
+    sandMakeupNote: "Fluidised bed furnace only: the sand make-up (Sludge Characteristics tab) is added to the reagents table of the OPEX tab.",
     product: "Product",
     cost: "Cost", 
     truckType: "Truck type",
@@ -263,6 +267,8 @@ const translations = {
 
     // Tab 8: Byproducts
     byproductsShippingTreatment: "Subproductos: envío + tratamiento",
+    sandMakeup: "Aporte de arena",
+    sandMakeupNote: "Solo horno de lecho fluidizado: el aporte de arena (pestaña Características de los Lodos) se añade a la tabla de reactivos de la pestaña OPEX.",
     product: "Producto",
     cost: "Coste",
     truckType: "Tipo camión",
@@ -361,6 +367,8 @@ const translations = {
 
     // Tab 8: Byproducts
     byproductsShippingTreatment: "Nebenprodukte: Versand + Behandlung",
+    sandMakeup: "Sandnachfüllung",
+    sandMakeupNote: "Nur Wirbelschichtofen: Die Sandnachfüllung (Reiter Schlammeigenschaften) wird zur Reagenzientabelle des Reiters OPEX hinzugefügt.",
     product: "Produkt",
     cost: "Kosten",
     truckType: "LKW-Typ",
@@ -459,6 +467,8 @@ const translations = {
 
     // Tab 8: Byproducts
     byproductsShippingTreatment: "Sottoprodotti: spedizione + trattamento",
+    sandMakeup: "Reintegro di sabbia",
+    sandMakeupNote: "Solo forno a letto fluido: il reintegro di sabbia (scheda Caratteristiche dei Fanghi) è aggiunto alla tabella dei reagenti della scheda OPEX.",
     product: "Prodotto",
     cost: "Costo",
     truckType: "Tipo camion",
@@ -557,6 +567,8 @@ const translations = {
 
     // Tab 8: Byproducts
     byproductsShippingTreatment: "Subprodutos: envio + tratamento",
+    sandMakeup: "Reposição de areia",
+    sandMakeupNote: "Apenas forno de leito fluidizado: a reposição de areia (separador Características das Lamas) é adicionada à tabela de reagentes do separador OPEX.",
     product: "Produto",
     cost: "Custo",
     truckType: "Tipo camião",
@@ -655,6 +667,8 @@ const translations = {
 
     // Tab 8: Byproducts
     byproductsShippingTreatment: "副产品：运输+处理",
+    sandMakeup: "补砂",
+    sandMakeupNote: "仅限流化床焚烧炉：补砂量（污泥特性选项卡）计入 OPEX 选项卡的药剂表。",
     product: "产品",
     cost: "成本",
     truckType: "卡车类型",
@@ -753,6 +767,8 @@ const translations = {
 
     // Tab 8: Byproducts
     byproductsShippingTreatment: "副生成物：輸送+処理",
+    sandMakeup: "補給砂",
+    sandMakeupNote: "流動床炉のみ：補給砂（汚泥特性タブ）は OPEX タブの薬剤表に加算されます。",
     product: "製品",
     cost: "コスト",
     truckType: "トラック型式",
@@ -851,6 +867,8 @@ const translations = {
 
     // Tab 8: Byproducts
     byproductsShippingTreatment: "Побочные продукты: доставка + обработка",
+    sandMakeup: "Подпитка песком",
+    sandMakeupNote: "Только печь кипящего слоя: подпитка песком (вкладка «Характеристики осадка») добавляется в таблицу реагентов вкладки OPEX.",
     product: "Продукт",
     cost: "Стоимость",
     truckType: "Тип грузовика",
@@ -949,6 +967,8 @@ const translations = {
 
     // Tab 8: Byproducts
     byproductsShippingTreatment: "المنتجات الثانوية: الشحن + المعالجة",
+    sandMakeup: "تعويض الرمل",
+    sandMakeupNote: "لفرن الطبقة المميعة فقط: يُضاف تعويض الرمل (تبويب خصائص الحمأة) إلى جدول الكواشف في تبويب OPEX.",
     product: "المنتج",
     cost: "التكلفة",
     truckType: "نوع الشاحنة",
