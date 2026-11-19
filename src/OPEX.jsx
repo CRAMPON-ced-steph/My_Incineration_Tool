@@ -917,7 +917,7 @@ const OPEX_form = ({ onClose, currentLanguage = 'fr' }) => {
                   />
                 </div>
                 <p style={{ fontSize: '12px', color: '#6b7280', marginTop: '8px' }}>
-                  {t.sandMakeupNote || "Four à lit fluidisé uniquement : l'appoint de sable (onglet Caractéristiques des Boues) est ajouté au tableau des réactifs de l'onglet OPEX."}
+                  {t.sandMakeupNote || "Four à lit fluidisé uniquement : appoint = fines + purge du lit (onglet Caractéristiques des Boues)."}
                 </p>
               </div>
             </div>

@@ -68,7 +68,7 @@ const translations = {
     // Tab 8: Byproducts
     byproductsShippingTreatment: "Sous-produits : transport + traitement",
     sandMakeup: "Appoint de sable",
-    sandMakeupNote: "Four à lit fluidisé uniquement : l'appoint de sable (onglet Caractéristiques des Boues) est ajouté au tableau des réactifs de l'onglet OPEX.",
+    sandMakeupNote: "Four à lit fluidisé uniquement : appoint = fines minérales parties avec les fumées + purge du lit (part de la fraction grossière, onglet Caractéristiques des Boues), ajouté au tableau des réactifs de l'onglet OPEX. La purge est évacuée au tarif « Incineration ash » du tableau ci-dessus.",
     product: "Produit", 
     cost: "Coût",
     truckType: "Type camion",
@@ -168,7 +168,7 @@ const translations = {
     // Tab 8: Byproducts
     byproductsShippingTreatment: "Byproducts: shipping + treatment",
     sandMakeup: "Sand make-up",
-    sandMakeupNote: "Fluidised bed furnace only: the sand make-up (Sludge Characteristics tab) is added to the reagents table of the OPEX tab.",
+    sandMakeupNote: "Fluidised bed furnace only: make-up = mineral fines leaving with the flue gas + bed purge (share of the coarse fraction, Sludge Characteristics tab), added to the reagents table of the OPEX tab. The purge is disposed of at the 'Incineration ash' rate of the table above.",
     product: "Product",
     cost: "Cost", 
     truckType: "Truck type",
@@ -268,7 +268,7 @@ const translations = {
     // Tab 8: Byproducts
     byproductsShippingTreatment: "Subproductos: envío + tratamiento",
     sandMakeup: "Aporte de arena",
-    sandMakeupNote: "Solo horno de lecho fluidizado: el aporte de arena (pestaña Características de los Lodos) se añade a la tabla de reactivos de la pestaña OPEX.",
+    sandMakeupNote: "Solo horno de lecho fluidizado: aporte = finos minerales arrastrados con los humos + purga del lecho (parte de la fracción gruesa, pestaña Características de los Lodos), añadido a la tabla de reactivos de la pestaña OPEX. La purga se evacúa a la tarifa «Incineration ash» de la tabla anterior.",
     product: "Producto",
     cost: "Coste",
     truckType: "Tipo camión",
@@ -368,7 +368,7 @@ const translations = {
     // Tab 8: Byproducts
     byproductsShippingTreatment: "Nebenprodukte: Versand + Behandlung",
     sandMakeup: "Sandnachfüllung",
-    sandMakeupNote: "Nur Wirbelschichtofen: Die Sandnachfüllung (Reiter Schlammeigenschaften) wird zur Reagenzientabelle des Reiters OPEX hinzugefügt.",
+    sandMakeupNote: "Nur Wirbelschichtofen: Nachfüllung = mit dem Rauchgas ausgetragener mineralischer Feinanteil + Bettabzug (Anteil der Grobfraktion, Reiter Schlammeigenschaften), zur Reagenzientabelle des Reiters OPEX hinzugefügt. Der Bettabzug wird zum Tarif „Incineration ash“ der obigen Tabelle entsorgt.",
     product: "Produkt",
     cost: "Kosten",
     truckType: "LKW-Typ",
@@ -468,7 +468,7 @@ const translations = {
     // Tab 8: Byproducts
     byproductsShippingTreatment: "Sottoprodotti: spedizione + trattamento",
     sandMakeup: "Reintegro di sabbia",
-    sandMakeupNote: "Solo forno a letto fluido: il reintegro di sabbia (scheda Caratteristiche dei Fanghi) è aggiunto alla tabella dei reagenti della scheda OPEX.",
+    sandMakeupNote: "Solo forno a letto fluido: reintegro = fini minerali trascinati dai fumi + spurgo del letto (parte della frazione grossolana, scheda Caratteristiche dei Fanghi), aggiunto alla tabella dei reagenti della scheda OPEX. Lo spurgo è smaltito alla tariffa «Incineration ash» della tabella sopra.",
     product: "Prodotto",
     cost: "Costo",
     truckType: "Tipo camion",
@@ -568,7 +568,7 @@ const translations = {
     // Tab 8: Byproducts
     byproductsShippingTreatment: "Subprodutos: envio + tratamento",
     sandMakeup: "Reposição de areia",
-    sandMakeupNote: "Apenas forno de leito fluidizado: a reposição de areia (separador Características das Lamas) é adicionada à tabela de reagentes do separador OPEX.",
+    sandMakeupNote: "Apenas forno de leito fluidizado: reposição = finos minerais arrastrados com os gases + purga do leito (parte da fração grosseira, separador Características das Lamas), adicionada à tabela de reagentes do separador OPEX. A purga é evacuada à tarifa «Incineration ash» da tabela acima.",
     product: "Produto",
     cost: "Custo",
     truckType: "Tipo camião",
@@ -668,7 +668,7 @@ const translations = {
     // Tab 8: Byproducts
     byproductsShippingTreatment: "副产品：运输+处理",
     sandMakeup: "补砂",
-    sandMakeupNote: "仅限流化床焚烧炉：补砂量（污泥特性选项卡）计入 OPEX 选项卡的药剂表。",
+    sandMakeupNote: "仅限流化床焚烧炉：补砂量 = 随烟气带走的矿物细颗粒 + 排床量（粗颗粒部分，污泥特性选项卡），计入 OPEX 选项卡的药剂表。排床物按上表 “Incineration ash” 费率处置。",
     product: "产品",
     cost: "成本",
     truckType: "卡车类型",
@@ -768,7 +768,7 @@ const translations = {
     // Tab 8: Byproducts
     byproductsShippingTreatment: "副生成物：輸送+処理",
     sandMakeup: "補給砂",
-    sandMakeupNote: "流動床炉のみ：補給砂（汚泥特性タブ）は OPEX タブの薬剤表に加算されます。",
+    sandMakeupNote: "流動床炉のみ：補給量 = 排ガスとともに持ち去られる鉱物微粒子 + 床抜き（粗粒分の割合、汚泥特性タブ）。OPEX タブの薬剤表に加算されます。床抜き物は上表の「Incineration ash」の単価で処分します。",
     product: "製品",
     cost: "コスト",
     truckType: "トラック型式",
@@ -868,7 +868,7 @@ const translations = {
     // Tab 8: Byproducts
     byproductsShippingTreatment: "Побочные продукты: доставка + обработка",
     sandMakeup: "Подпитка песком",
-    sandMakeupNote: "Только печь кипящего слоя: подпитка песком (вкладка «Характеристики осадка») добавляется в таблицу реагентов вкладки OPEX.",
+    sandMakeupNote: "Только печь кипящего слоя: подпитка = минеральная мелкая фракция, уносимая с газами + продувка слоя (доля крупной фракции, вкладка «Характеристики осадка»), добавляется в таблицу реагентов вкладки OPEX. Продувка вывозится по тарифу «Incineration ash» из таблицы выше.",
     product: "Продукт",
     cost: "Стоимость",
     truckType: "Тип грузовика",
@@ -968,7 +968,7 @@ const translations = {
     // Tab 8: Byproducts
     byproductsShippingTreatment: "المنتجات الثانوية: الشحن + المعالجة",
     sandMakeup: "تعويض الرمل",
-    sandMakeupNote: "لفرن الطبقة المميعة فقط: يُضاف تعويض الرمل (تبويب خصائص الحمأة) إلى جدول الكواشف في تبويب OPEX.",
+    sandMakeupNote: "لفرن الطبقة المميعة فقط: التعويض = الجسيمات المعدنية الدقيقة الخارجة مع الغازات + تصريف الطبقة (جزء من الجسيمات الخشنة، تبويب خصائص الحمأة)، ويُضاف إلى جدول الكواشف في تبويب OPEX. يُتخلص من التصريف بتعرفة «Incineration ash» في الجدول أعلاه.",
     product: "المنتج",
     cost: "التكلفة",
     truckType: "نوع الشاحنة",

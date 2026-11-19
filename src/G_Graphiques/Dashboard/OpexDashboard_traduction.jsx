@@ -33,6 +33,7 @@ export const translations = {
     // Réactifs
     ammonia: 'Ammoniaque',
     sandMakeup: "Sable d'appoint",
+    bedPurgeDisposal: "Évacuation de la purge du lit",
     
     // Énergies
     gasH: 'Gaz H',
@@ -131,6 +132,7 @@ export const translations = {
     // Reagents
     ammonia: 'Ammonia',
     sandMakeup: "Make-up sand",
+    bedPurgeDisposal: "Bed purge disposal",
     
     // Energy
     gasH: 'Gas H',
@@ -229,6 +231,7 @@ export const translations = {
     // Reagenzien
     ammonia: 'Ammoniak',
     sandMakeup: "Nachfüllsand",
+    bedPurgeDisposal: "Entsorgung des Bettabzugs",
     
     // Energie
     gasH: 'Gas H',
@@ -327,6 +330,7 @@ export const translations = {
     // Reactivos
     ammonia: 'Amoníaco',
     sandMakeup: "Arena de aporte",
+    bedPurgeDisposal: "Evacuación de la purga del lecho",
     
     // Energía
     gasH: 'Gas H',
@@ -425,6 +429,7 @@ export const translations = {
     // Reagenti
     ammonia: 'Ammoniaca',
     sandMakeup: "Sabbia di reintegro",
+    bedPurgeDisposal: "Smaltimento dello spurgo del letto",
     
     // Energia
     gasH: 'Gas H',
@@ -523,6 +528,7 @@ export const translations = {
     // Reagentes
     ammonia: 'Amônia',
     sandMakeup: "Areia de reposição",
+    bedPurgeDisposal: "Evacuação da purga do leito",
     
     // Energia
     gasH: 'Gás H',
@@ -621,6 +627,7 @@ export const translations = {
     // Реактивы
     ammonia: 'Аммиак',
     sandMakeup: "Песок для подпитки",
+    bedPurgeDisposal: "Вывоз продувки слоя",
     
     // Энергия
     gasH: 'Газ H',
@@ -719,6 +726,7 @@ export const translations = {
     // 试剂
     ammonia: '氨',
     sandMakeup: "补充砂",
+    bedPurgeDisposal: "排床物处置",
     
     // 能源
     gasH: '燃气 H',
@@ -817,6 +825,7 @@ export const translations = {
     // 試薬
     ammonia: 'アンモニア',
     sandMakeup: "補給砂",
+    bedPurgeDisposal: "床抜き物の処分",
     
     // エネルギー
     gasH: 'ガス H',
@@ -915,6 +924,7 @@ export const translations = {
     // الكواشف
     ammonia: 'أمونيا',
     sandMakeup: "رمل التعويض",
+    bedPurgeDisposal: "التخلص من تصريف الطبقة",
     
     // الطاقة
     gasH: 'غاز H',

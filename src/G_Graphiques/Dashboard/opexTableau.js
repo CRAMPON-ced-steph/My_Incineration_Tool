@@ -28,6 +28,7 @@ const CLE_CALCULEE = /^row\d{1,2}$/;
 // Réglages par type d'équipement (partagés onglet OPEX / rapport).
 const CONFIG_PAR_TYPE = {
   // Four à lit fluidisé : ligne « sable d'appoint » dans le tableau des réactifs
+  // et évacuation de la purge du lit au tarif « Incineration ash » (tableaux coût et CO2)
   FB: { numElecRows: 6, appointSable: true },
   GF: { numElecRows: 6 },
   // Chaudière : tableaux de valorisation (électricité et vapeur vendues)
@@ -136,6 +137,8 @@ const lirePrix = () => {
     venteElec: lireNombre(o.sellingElectricityPrice),     // devise/MWh
     vapeur: o.steamPrices || {},                          // devise/t
     sable: lireNombre(o.sandMakeupPrice),                 // devise/kg (onglet Sous-produits)
+    // Sous-produit « Incineration ash / clinker / residues » : prix en devise/t (onglet Sous-produits)
+    cendres: (o.byproducts || []).find((b) => /incineration ash/i.test(b?.name || '')) || (o.byproducts || [])[0] || {},
   };
 };
 
@@ -216,7 +219,7 @@ const detailler = (table, lignes, defs, prix) => {
 
 const somme = (lignes, champ) => lignes.reduce((s, r) => s + (r[champ] || 0), 0);
 
-const lignesCoutCo2 = (d, details, prix, t) => {
+const lignesCoutCo2 = (d, details, prix, t, config = {}) => {
   const air = lireNombre(d.conso_air_co_N_m3);
   const residusCout = lireNombre(d.cout_transport_incineratino_ash) + lireNombre(d.cout_transport_boiler_ash) + lireNombre(d.cout_transport_fly_ash);
   const residusCo2 = lireNombre(d.CO2_transport_incineratino_ash) + lireNombre(d.CO2_transport_boiler_ash) + lireNombre(d.CO2_transport_fly_ash);
@@ -239,6 +242,13 @@ const lignesCoutCo2 = (d, details, prix, t) => {
     { key: 'row4', label: t('transportReagents'), value: somme(details.reactifs, 'co2kg') },
     { key: 'row5', label: t('transportResiduesAsh'), value: residusCo2 },
   ];
+  // Lit fluidisé : purge du lit (part de la fraction grossière, onglet Caractéristiques des Boues)
+  // évacuée au tarif « Incineration ash » [devise/t] ; CO2 du transport aller-retour [kg/t].
+  if (config.appointSable) {
+    const purge_t_h = lireNombre(d.Conso_purge_lit_kg) / 1000;
+    cout.push({ key: 'row8', label: t('bedPurgeDisposal'), value: purge_t_h * lireNombre(prix.cendres.cost) });
+    co2.push({ key: 'row6', label: t('bedPurgeDisposal'), value: purge_t_h * co2TransportReactif_kg_t(prix.cendres) });
+  }
   return { cout, co2, air };
 };
 
@@ -366,7 +376,7 @@ export const calculerOpex = (innerData, { sauve = null, config = configOpex(), t
     details[nom] = detailler(nom, tables[nom], defsConso[nom], prix);
   });
 
-  const defsCout = lignesCoutCo2(d, details, prix, t);
+  const defsCout = lignesCoutCo2(d, details, prix, t, config);
   tables.co2 = fusionner(tablesSauvees.co2, defsCout.co2, supprimees.co2);
   tables.cout = fusionner(tablesSauvees.cout, defsCout.cout, supprimees.cout);
 
