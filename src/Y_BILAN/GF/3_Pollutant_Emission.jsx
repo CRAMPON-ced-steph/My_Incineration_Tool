@@ -129,7 +129,9 @@ const GFPollutantEmission = ({ innerData, setInnerData, currentLanguage = 'fr', 
   const Debit_fumees_humide_Nm3_h = innerData?.FG_wet_Nm3_h ?? 10000; // débit humide complet
   const FG_O2_calcule_pct = (innerData?.O2_calcule ?? 0.11) * 100; // converti ratio→% pour conv_O2_ref et affichage
   const masse_dechets = innerData?.MasseBoueBrute ?? 0;
-  const Inert_kg_h = innerData?.Inert_kg_h ?? 0;
+  // Cendres des déchets (onglet 1) : base des cendres de fond
+  // (cendres − cendres volantes + résidus de neutralisation)
+  const Inert_kg_h = innerData?.MM_kg_h ?? 0;
 
   // Calculs des masses de polluants d'entrée
   const Masse_polluant_HCl_kg_h = innerData?.FG_pollutant_OUT_kg_h?.HCl ?? 0;
@@ -151,15 +153,15 @@ const GFPollutantEmission = ({ innerData, setInnerData, currentLanguage = 'fr', 
     (innerData?.masse_pollutant_metallique_kg_h?.Cd_kg_h ?? 0) +
     (innerData?.masse_pollutant_metallique_kg_h?.Ti_kg_h ?? 0);
 
+  // Groupe réglementaire Sb + As + Pb + Cr + Co + Cu + Mn + Ni + V : métaux saisis dans l'onglet 1
+  // (Sb, Co et V n'y sont pas saisis, Mn seulement s'il existe). Al, Fe et Zn n'en font pas partie.
   const Masse_polluant_SdAsPbCrCoCuMnNi_kg_h =
-    (innerData?.masse_pollutant_metallique_kg_h?.Al_kg_h ?? 0) +
     (innerData?.masse_pollutant_metallique_kg_h?.As_kg_h ?? 0) +
     (innerData?.masse_pollutant_metallique_kg_h?.Pb_kg_h ?? 0) +
     (innerData?.masse_pollutant_metallique_kg_h?.Cr_kg_h ?? 0) +
     (innerData?.masse_pollutant_metallique_kg_h?.Cu_kg_h ?? 0) +
     (innerData?.masse_pollutant_metallique_kg_h?.Ni_kg_h ?? 0) +
-    (innerData?.masse_pollutant_metallique_kg_h?.Fe_kg_h ?? 0) +
-    (innerData?.masse_pollutant_metallique_kg_h?.Zn_kg_h ?? 0);
+    (innerData?.masse_pollutant_metallique_kg_h?.Mn_kg_h ?? 0);
 
   // Calcul de la consommation d'ammoniaque
   const calculateAmmoniaConsumption = useCallback(() => {
