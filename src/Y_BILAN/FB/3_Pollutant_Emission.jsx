@@ -130,7 +130,9 @@ const FBPollutantEmission = ({ innerData, setInnerData, currentLanguage = 'fr', 
   const Debit_fumees_humide_Nm3_h = innerData?.FG_wet_Nm3_h ?? 10000; // débit humide complet
   const FG_O2_calcule_pct = (innerData?.O2_calcule ?? 0.11) * 100; // converti ratio→% pour conv_O2_ref et affichage
   const masse_dechets = innerData?.MasseBoueBrute ?? 0;
-  const Inert_kg_h = innerData?.Inert_kg_h ?? 0;
+  // Matière minérale totale de l'onglet Caractéristiques des Boues : base des cendres de fond
+  // (matière minérale − cendres volantes + résidus de neutralisation)
+  const Inert_kg_h = innerData?.MM_kg_h ?? 0;
 
   // Concentration cendres volantes : auto-calculée depuis Rosin-Rammler (BouesTab) si non saisie
   const MM_cyclones_kg_h = innerData?.MM_cyclones_kg_h ?? 0;
@@ -139,16 +141,17 @@ const FBPollutantEmission = ({ innerData, setInnerData, currentLanguage = 'fr', 
     : 2.3;
   const FlyAsh_g_Nm3 = emissions2.flyAshesContent ?? flyAshesContent_auto;
 
-  // Masses métaux lourds depuis BouesTab (mg/kg MS → kg/h)
+  // Métaux suivis à part dans le tableau des polluants (Hg, PCDD/F, Cd + Tl, As + Pb + Cr + Cu + Ni + Mn),
+  // comptés à 100 % dans les fumées sur leurs propres lignes : retirés des fines pour ne pas compter
+  // deux fois leur masse. Al, Fe, Zn, Mg et Se restent dans les poussières (ils suivent la matière
+  // minérale) ; HF est un gaz (ligne HF), il n'est pas retiré des poussières.
   const metals_kg_h = innerData?.masse_pollutant_metallique_kg_h ?? {};
-  const heavyMetals_total_kg_h =
-    (metals_kg_h.Al_kg_h    || 0) + (metals_kg_h.As_kg_h   || 0) +
-    (metals_kg_h.Cd_kg_h    || 0) + (metals_kg_h.Cr_kg_h   || 0) +
-    (metals_kg_h.Cu_kg_h    || 0) + (metals_kg_h.Fe_kg_h   || 0) +
-    (metals_kg_h.Hg_kg_h    || 0) + (metals_kg_h.Ni_kg_h   || 0) +
-    (metals_kg_h.Pb_kg_h    || 0) + (metals_kg_h.Zn_kg_h   || 0) +
-    (metals_kg_h.PCDDF_kg_h || 0) + (metals_kg_h.Ti_kg_h   || 0) +
-    (metals_kg_h.HF_kg_h    || 0);
+  const metauxSuivis_kg_h =
+    (metals_kg_h.Hg_kg_h || 0) + (metals_kg_h.PCDDF_kg_h || 0) +
+    (metals_kg_h.Cd_kg_h || 0) + (metals_kg_h.Ti_kg_h    || 0) +
+    (metals_kg_h.As_kg_h || 0) + (metals_kg_h.Pb_kg_h    || 0) +
+    (metals_kg_h.Cr_kg_h || 0) + (metals_kg_h.Cu_kg_h    || 0) +
+    (metals_kg_h.Ni_kg_h || 0) + (metals_kg_h.Mn_kg_h    || 0);
 
   // Calculs des masses de polluants d'entrée
   const Masse_polluant_HCl_kg_h = innerData?.FG_pollutant_OUT_kg_h?.HCl ?? 0;
@@ -160,7 +163,7 @@ const FBPollutantEmission = ({ innerData, setInnerData, currentLanguage = 'fr', 
   const Masse_polluant_HF_kg_h = innerData?.masse_pollutant_metallique_kg_h?.HF_kg_h ?? 0;
 
   const Masse_polluant_NOx_kg_h = innerData?.FG_pollutant_OUT_kg_h?.NOx ?? 0;
-  const Masse_polluant_Dust_FlyAshes_kg_h = Math.max(0, MM_cyclones_kg_h - heavyMetals_total_kg_h);
+  const Masse_polluant_Dust_FlyAshes_kg_h = Math.max(0, MM_cyclones_kg_h - metauxSuivis_kg_h);
 
   const Masse_polluant_Hg_kg_h = innerData?.masse_pollutant_metallique_kg_h?.Hg_kg_h ?? 0;
 
@@ -170,15 +173,15 @@ const FBPollutantEmission = ({ innerData, setInnerData, currentLanguage = 'fr', 
     (innerData?.masse_pollutant_metallique_kg_h?.Cd_kg_h ?? 0) +
     (innerData?.masse_pollutant_metallique_kg_h?.Ti_kg_h ?? 0);
 
+  // Groupe réglementaire Sb + As + Pb + Cr + Co + Cu + Mn + Ni + V : métaux saisis dans l'onglet
+  // Caractéristiques des Boues (Sb, Co et V n'y sont pas saisis). Al, Fe et Zn n'en font pas partie.
   const Masse_polluant_SdAsPbCrCoCuMnNi_kg_h =
-    (innerData?.masse_pollutant_metallique_kg_h?.Al_kg_h ?? 0) +
     (innerData?.masse_pollutant_metallique_kg_h?.As_kg_h ?? 0) +
     (innerData?.masse_pollutant_metallique_kg_h?.Pb_kg_h ?? 0) +
     (innerData?.masse_pollutant_metallique_kg_h?.Cr_kg_h ?? 0) +
     (innerData?.masse_pollutant_metallique_kg_h?.Cu_kg_h ?? 0) +
     (innerData?.masse_pollutant_metallique_kg_h?.Ni_kg_h ?? 0) +
-    (innerData?.masse_pollutant_metallique_kg_h?.Fe_kg_h ?? 0) +
-    (innerData?.masse_pollutant_metallique_kg_h?.Zn_kg_h ?? 0);
+    (innerData?.masse_pollutant_metallique_kg_h?.Mn_kg_h ?? 0);
 
   // Calcul de la consommation d'ammoniaque
   const calculateAmmoniaConsumption = useCallback(() => {
@@ -473,7 +476,7 @@ const FBPollutantEmission = ({ innerData, setInnerData, currentLanguage = 'fr', 
   }, []);
 
   const elementsGeneric = [
-    { text: t('wasteFlow'), value: masse_dechets },
+    { text: t('rawSludgeFlow'), value: fmt(masse_dechets, 1) },
     { text: t('flueGasFlowWet'), value: fmt(Debit_fumees_humide_Nm3_h, 0) },
     { text: t('flueGasFlowDry'), value: fmt(Debit_fumees_sec_Nm3_h, 0) },
     { text: t('o2Calculated'), value: fmt(FG_O2_calcule_pct, 2) },
@@ -483,6 +486,15 @@ const FBPollutantEmission = ({ innerData, setInnerData, currentLanguage = 'fr', 
     { text: t('bottomAsh'), value: DryBottomAsh_kg_h },
     { text: t('bottomAshWet'), value: WetBottomAsh_kg_h },
     { text: t('flyAsh'), value: FlyAsh_kg_h },
+  ];
+
+  // Explication du calcul des poussières, cendres volantes et cendres de fond (bas de l'onglet)
+  const explicationPoussieres = [
+    { text: t('dustNoteFinesLbl'), value: fmt(MM_cyclones_kg_h, 1) },
+    { text: t('dustNoteMetalsLbl'), value: fmt(metauxSuivis_kg_h, 2) },
+    { text: 'DustFlyAsh [kg/h]', value: fmt(Masse_polluant_Dust_FlyAshes_kg_h, 1) },
+    { text: t('dustNoteMMLbl'), value: fmt(Inert_kg_h, 1) },
+    { text: t('dustNoteResidusLbl'), value: fmt(mass_residus_tot, 1) },
   ];
 
   // Mise à jour de innerData : toutes les valeurs écrites servent de dépendance
@@ -874,6 +886,16 @@ const FBPollutantEmission = ({ innerData, setInnerData, currentLanguage = 'fr', 
 
       <h3>{t('bottomAshesCalculated') || 'Cendres de fond calculées'}</h3>
       <TableGeneric elements={residusCalculations} />
+
+      <h3>{t('dustNoteTitle')}</h3>
+      <TableGeneric elements={explicationPoussieres} />
+      <ul style={{ fontSize: '12px', color: '#4b5563', marginTop: '8px', paddingLeft: '20px', lineHeight: 1.5 }}>
+        <li>{t('dustNoteDust')}</li>
+        <li>{t('dustNoteMetals')}</li>
+        <li>{t('dustNoteRest')}</li>
+        <li>{t('dustNoteFlyAsh')}</li>
+        <li>{t('dustNoteBottom')}</li>
+      </ul>
     </div>
   );
 };
