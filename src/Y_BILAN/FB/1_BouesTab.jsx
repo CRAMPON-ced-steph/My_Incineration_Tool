@@ -47,7 +47,7 @@ const PRECISION_CHONS_VALUES = {
 };
 
 const DEFAULT_ROSIN_RAMMLER = {
-  dprime: 300,  // µm — diamètre caractéristique (63.2 % de fines)
+  dprime: 50,   // µm — diamètre caractéristique (63.2 % de fines) ; 50 µm par défaut depuis le 19/11/2026 (avant 300)
   n:      1.5,  // coefficient d'uniformité
   dcut:   100,  // µm — diamètre de coupure (séparation lit / cyclones)
 };
