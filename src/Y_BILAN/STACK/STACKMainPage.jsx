@@ -31,7 +31,6 @@ const STACKMainPage = ({
 
   // State management
   const [innerData, setInnerData] = useState(nodeData.result);
-  const [activeTab, setActiveTab] = useState(0);
 
   // Tab configuration with translated names
   const tabs = [
@@ -85,7 +84,7 @@ const STACKMainPage = ({
     }
   ];
 
-  // Get current tab content
+  const [activeTab, setActiveTab] = useState(tabs[0].name);
 
   // Send data and navigate back
   const sendAllData = () => {
@@ -154,21 +153,21 @@ const STACKMainPage = ({
           overflowX: 'auto',
         }}
       >
-        {tabs.map((tab, index) => (
+        {tabs.map((tab) => (
           <button
-            key={index}
-            onClick={() => setActiveTab(index)}
+            key={tab.name}
+            onClick={() => setActiveTab(tab.name)}
             style={{
               padding: '10px 20px',
-              background: activeTab === index ? '#4a90e2' : 'white',
-              color: activeTab === index ? 'white' : '#333',
+              background: activeTab === tab.name ? '#4a90e2' : 'white',
+              color: activeTab === tab.name ? 'white' : '#333',
               border: 'none',
               borderBottom:
-                activeTab === index
+                activeTab === tab.name
                   ? '2px solid #4a90e2'
                   : '2px solid transparent',
               cursor: 'pointer',
-              fontWeight: activeTab === index ? 'bold' : 'normal',
+              fontWeight: activeTab === tab.name ? 'bold' : 'normal',
               whiteSpace: 'nowrap',
               transition: 'all 0.3s',
             }}
