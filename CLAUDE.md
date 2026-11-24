@@ -644,6 +644,14 @@ Doit être l'**inverse cohérent** de `option_T` :
 - Contrôle (St. Paul) avec d′ = 300 µm : fines 137,6 kg/h + purge 3 % × 648,6 = 19,5 kg/h → appoint 157,1 kg/h (32 kg/t MS) ; sable 15,7 €/h à 0,1 €/kg ; purge 2,92 €/h et 0,14 kg CO2/h.
 - **Rosin-Rammler par défaut** (`DEFAULT_ROSIN_RAMMLER`, demande de Cédric du 19/11/2026) : d′ = **50 µm** (avant 300), n = 1,5, d_cut = 100 µm → 94 % de fines. St. Paul : fines 739,8 kg/h, fraction grossière 46,5 kg/h, DustFlyAsh 736,4 kg/h, appoint de sable 741,1 kg/h (151 kg/t MS). Les nœuds existants gardent leurs valeurs enregistrées (`bouesTab_rosinRammler_FB_<nodeId>`) jusqu'à « Réinitialiser ».
 
+### FB — onglet Design réacteur : Pyrofluid / Thermylis (2026-11-24)
+
+- Onglet `reacteur` (après Fluidisation) : `7_ReacteurDesignTab.jsx` (affichage, `affichage: true`, n'écrit rien dans `innerData`), calculs purs `7_reacteur_design_calculs.js`, traductions `7_ReacteurDesign_traduction.jsx` (clés = texte français, dictionnaire `fr` vide ; les autres langues reprennent l'anglais). localStorage `reacteurDesign_FB_<nodeId>`.
+- **Pyrofluid** = gamme standard R28–R72 (`PYRO_GAMME` : Ø réacteur, Ø voûte, tuyères posées / à commander, Ø carneau, Ø gaine d'air, sable, capacité MV, injecteurs, démarrage — Généralités VWT-EM-GCG-0037 Rev C) + formules de chaudronnerie VWT-EM-GCE-0310 Rev C (boîte à vent Hbav, tronçon 4 h / h' / h1, dôme 23°) ; rayon de voûte 5 m (R28–R50) / 7 m (R56–R72). La hauteur du réacteur n'est pas standard : cylindre pour le temps de séjour visé (4,5 s, guide) au débit de calcul. `R63` de l'onglet Voûte = R62 des guides ; R80–R90 = extensions de l'outil (pas de données carneau / gaine / sable : Ø calculés à 16,5 et 23,5 m/s).
+- **Thermylis (HTFB)** = dimensions calculées, formules de la HTFB Design Sheet V1 (onglet 14) : D1 / D2 aux vitesses 2,1 / 3,0 ft/s, distributeur = plus petit anneau A–J ≥ Ø requis (air ramené à 1200 °F à 0,85 m/s ; au-delà de J : soufflante d'appoint) ou Ø calculé, H5 = tan α (D1 − Dcarneau) / 2, H6 par R2 = 1,2 (D3 + 2 (T1 + T2)) − 3,06 ft, volumes et temps de séjour de la feuille. **Validé à 10⁻⁴ près sur St. Paul** (D1–D6, R2, H5–H7, hauteur totale 42,28 ft, 6 temps de séjour). Le Ø du carneau est calculé à 18 m/s (la feuille reprend le Ø du PFD) ou imposé.
+- Base de calcul par four lue dans `innerData` (`FG_wet_Nm3_h`, `Q_air_comb_tot_Nm3_h`, `Temp_fumee_voute_C`, `TempNiveauVoute_C`, `Tair_ap_prechauffe_C`, `PressionVouteDefaut_mmCe`, `PDC_Voute_Iter2`, `MS_kg_h`, `MV_kg_h`, `MS_pourcent`, `NombreFour`, `Modele`) ; chaque champ peut être saisi pour l'onglet. Contrôle Valence (Ø 3,8 / 2,34 m) : vitesse voûte 0,90 m/s et charge 105 kg MS/m²/h, comme le rapport Pyrofluid V4.5.
+- Hypothèse : max(Da) de la formule Hbav = Ø de la gaine d'air de fluidisation.
+
 ### Points ouverts
 
 Les anomalies relevées mais non corrigées (GF, RK) sont listées dans `a_faire.md` à la racine du dépôt. Cocher / retirer une ligne une fois corrigée.
