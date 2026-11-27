@@ -33,6 +33,8 @@ const en = {
   "Ø calculé (hors anneau)": "Calculated Ø (no ring)",
   "Unité des longueurs": "Length unit",
   "Réinitialiser": "Reset",
+  "Imprimer l'onglet": "Print this tab",
+  "Nœud FB": "FB node",
   "Base de calcul (par four)": "Design basis (per furnace)",
   "Champ vide = valeur des autres onglets (en gris). Une saisie la remplace pour cet onglet seulement.": "Empty field = value from the other tabs (in grey). An entry overrides it for this tab only.",
   "Nombre de fours": "Number of furnaces",

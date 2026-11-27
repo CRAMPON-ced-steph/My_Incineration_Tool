@@ -2,7 +2,7 @@
 // et du HTFB (dimensions calculées, distributeur sur anneaux A–J) côte à côte, pour le
 // même débit par four. Affichage seul : n'écrit rien dans innerData.
 // Calculs : 7_reacteur_design_calculs.js (sources et formules en tête du fichier).
-import React, { useState, useMemo, useEffect, useCallback, createContext, useContext } from 'react';
+import React, { useState, useMemo, useEffect, useCallback, useRef, createContext, useContext } from 'react';
 import { fmt } from '../../A_Transverse_fonction/formatNumber';
 import { makeT } from '../../F_Gestion_Langues/localT';
 import { translations } from './7_ReacteurDesign_traduction';
@@ -47,6 +47,61 @@ const sSection = { background: '#edf2f7', fontWeight: 700, color: '#2d3748', pad
 const COUL_PYRO = '#c53030';
 const COUL_THER = '#2b6cb0';
 
+// ── Impression de l'onglet seul (hors rapport) ─────────────────────────────
+// Copie le contenu affiché dans une iframe cachée et lance l'impression de cette iframe :
+// seul l'onglet est imprimé (ou enregistré en PDF), la page de l'outil n'est pas touchée.
+// Les champs de saisie sont remplacés par leur valeur ; les éléments [data-no-print] sont retirés.
+const echapper = (txt) => String(txt).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+const CSS_IMPRESSION = `
+  @page { size: A4 landscape; margin: 10mm; }
+  body { font-family: Arial, sans-serif; margin: 0; color: #1a202c; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  div { overflow: visible !important; }
+  [data-carte] { box-shadow: none !important; border: 1px solid #e2e8f0; margin-bottom: 10px !important; padding: 10px !important; }
+  [data-carte="petite"] { break-inside: avoid; }
+  table, th, td { font-size: 9.5px !important; }
+  th { position: static !important; }
+  thead { display: table-header-group; }
+  tr { break-inside: avoid; }
+  svg { max-width: 100% !important; break-inside: avoid; }
+  h2 { font-size: 14px !important; margin: 0 0 8px 0 !important; }
+  .entete { font-size: 10px; color: #4a5568; margin-bottom: 8px; display: flex; justify-content: space-between; }
+`;
+
+const imprimerOnglet = (racine, titre, sousTitre) => {
+  if (!racine) return;
+  const clone = racine.cloneNode(true);
+  const origine = racine.querySelectorAll('input, select');
+  clone.querySelectorAll('input, select').forEach((el, i) => {
+    const o = origine[i];
+    const saisi = o.tagName !== 'SELECT' && o.value !== '';
+    const txt = o.tagName === 'SELECT' ? (o.options[o.selectedIndex]?.text ?? '') : (o.value !== '' ? o.value : (o.placeholder || ''));
+    const span = document.createElement('span');
+    span.textContent = txt;
+    span.style.cssText = `display:inline-block;padding:3px 6px;border:1px solid #cbd5e0;border-radius:3px;min-width:50px;font-size:11px;background:${saisi ? '#fffbea' : '#f7fafc'}`;
+    el.replaceWith(span);
+  });
+  clone.querySelectorAll('[data-no-print]').forEach((e) => e.remove());
+
+  const iframe = document.createElement('iframe');
+  iframe.setAttribute('aria-hidden', 'true');
+  iframe.style.cssText = 'position:fixed;right:0;bottom:0;width:0;height:0;border:0';
+  document.body.appendChild(iframe);
+  const doc = iframe.contentDocument;
+  doc.open();
+  doc.write(`<!doctype html><html><head><meta charset="utf-8"><title>${echapper(titre)}</title><style>${CSS_IMPRESSION}</style></head>`
+    + `<body><div class="entete"><span>${echapper(sousTitre)}</span><span>${echapper(new Date().toLocaleString())}</span></div>${clone.outerHTML}</body></html>`);
+  doc.close();
+  const fenetre = iframe.contentWindow;
+  const nettoyer = () => setTimeout(() => iframe.remove(), 500);
+  fenetre.addEventListener('afterprint', nettoyer);
+  setTimeout(() => {
+    fenetre.focus();
+    fenetre.print();
+    setTimeout(() => { if (iframe.isConnected) iframe.remove(); }, 60000);
+  }, 250);
+};
+
 // ── Contexte (les sous-composants sont au niveau module, cf. CLAUDE.md) ─────
 const Ctx = createContext(null);
 
@@ -66,7 +121,7 @@ const ChampBase = ({ cle, label, unite, dec = 1 }) => {
           onChange={(e) => majBase(cle, e.target.value)}
         />
         {val !== '' && (
-          <button type="button" onClick={() => majBase(cle, '')} title="↺" style={{ border: '1px solid #cbd5e0', background: 'white', borderRadius: '4px', cursor: 'pointer' }}>↺</button>
+          <button type="button" data-no-print onClick={() => majBase(cle, '')} title="↺" style={{ border: '1px solid #cbd5e0', background: 'white', borderRadius: '4px', cursor: 'pointer' }}>↺</button>
         )}
       </div>
     </div>
@@ -186,6 +241,7 @@ const Schema = ({ pyro, ther, labelPyro, labelTher }) => {
 const ReacteurDesignTab = ({ innerData = {}, innerDataTick, currentLanguage = 'fr', nodeId }) => {
   const t = useMemo(() => makeT(translations, currentLanguage), [currentLanguage]);
   const [etat, setEtat] = useState(() => lireEtat(nodeId));
+  const racineRef = useRef(null);
 
   useEffect(() => {
     try { localStorage.setItem(cleStockage(nodeId), JSON.stringify(etat)); } catch { /* quota */ }
@@ -242,9 +298,9 @@ const ReacteurDesignTab = ({ innerData = {}, innerDataTick, currentLanguage = 'f
 
   return (
     <Ctx.Provider value={ctx}>
-      <div style={{ fontFamily: 'Arial, sans-serif' }}>
+      <div ref={racineRef} style={{ fontFamily: 'Arial, sans-serif' }}>
         {/* ── En-tête ── */}
-        <div style={sCard}>
+        <div data-carte="petite" style={sCard}>
           <h2 style={{ ...sH2, fontSize: '20px' }}>{t('Design réacteur — Pyrofluid / HTFB')}</h2>
           <p style={{ margin: '0 0 6px 0', color: '#4a5568', fontSize: '13px' }}>
             {t('Le Pyrofluid est défini par une gamme standard (R28 à R72) : un Ø de réacteur et une voûte par taille, les hauteurs suivent les règles de chaudronnerie. Le HTFB n\'a pas de taille standard : ses diamètres découlent des vitesses de gaz, seul le distributeur est pris sur des anneaux (A à J).')}
@@ -272,15 +328,20 @@ const ReacteurDesignTab = ({ innerData = {}, innerDataTick, currentLanguage = 'f
                 <option value="ft">ft</option>
               </select>
             </div>
-            <button type="button" onClick={() => setEtat({ ...ETAT_DEFAUT, thermylis: { ...THERMYLIS_DEFAUTS } })}
+            <button type="button" data-no-print onClick={() => setEtat({ ...ETAT_DEFAUT, thermylis: { ...THERMYLIS_DEFAUTS } })}
               style={{ padding: '7px 12px', border: '1px solid #cbd5e0', background: 'white', borderRadius: '4px', cursor: 'pointer' }}>
               {t('Réinitialiser')}
+            </button>
+            <button type="button" data-no-print
+              onClick={() => imprimerOnglet(racineRef.current, t('Design réacteur — Pyrofluid / HTFB'), `${t('Nœud FB')} ${nodeId ?? ''} — ${nomPyro} / ${nomTher}`)}
+              style={{ padding: '7px 12px', border: 'none', background: '#2d3748', color: 'white', borderRadius: '4px', cursor: 'pointer' }}>
+              🖨 {t('Imprimer l\'onglet')}
             </button>
           </div>
         </div>
 
         {/* ── Base de calcul ── */}
-        <div style={sCard}>
+        <div data-carte="petite" style={sCard}>
           <h2 style={sH2}>{t('Base de calcul (par four)')}</h2>
           <p style={{ margin: '0 0 10px 0', color: '#718096', fontSize: '12px' }}>
             {t('Champ vide = valeur des autres onglets (en gris). Une saisie la remplace pour cet onglet seulement.')}
@@ -304,7 +365,7 @@ const ReacteurDesignTab = ({ innerData = {}, innerDataTick, currentLanguage = 'f
         </div>
 
         {/* ── Paramètres de dimensionnement ── */}
-        <div style={sCard}>
+        <div data-carte="petite" style={sCard}>
           <h2 style={sH2}>{t('Règles de dimensionnement')}</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'minmax(220px, 1fr) 3fr', gap: '18px' }}>
             <div>
@@ -342,7 +403,7 @@ const ReacteurDesignTab = ({ innerData = {}, innerDataTick, currentLanguage = 'f
 
         {/* ── Alertes ── */}
         {alertes.length > 0 && (
-          <div style={{ ...sCard, background: '#fffaf0', border: '1px solid #f6ad55' }}>
+          <div data-carte="petite" style={{ ...sCard, background: '#fffaf0', border: '1px solid #f6ad55' }}>
             {alertes.map(([qui, txt], i) => (
               <div key={i} style={{ fontSize: '13px', color: '#7b341e', marginBottom: '4px' }}>
                 ⚠ <strong style={{ color: qui === 'p' ? COUL_PYRO : qui === 't' ? COUL_THER : '#7b341e' }}>
@@ -354,7 +415,7 @@ const ReacteurDesignTab = ({ innerData = {}, innerDataTick, currentLanguage = 'f
         )}
 
         {/* ── Comparaison ── */}
-        <div style={sCard}>
+        <div data-carte="grande" style={sCard}>
           <h2 style={sH2}>{t('Comparaison côte à côte')} — {nomPyro} / {nomTher}</h2>
           {!pyro ? <p>{t('Taille Pyrofluid introuvable.')}</p> : (
             <div style={{ overflowX: 'auto' }}>
@@ -448,14 +509,14 @@ const ReacteurDesignTab = ({ innerData = {}, innerDataTick, currentLanguage = 'f
 
         {/* ── Schéma ── */}
         {pyro && (
-          <div style={sCard}>
+          <div data-carte="petite" style={sCard}>
             <h2 style={sH2}>{t('Schéma à l\'échelle')}</h2>
             <Schema pyro={pyro} ther={ther} labelPyro={nomPyro} labelTher={nomTher} />
           </div>
         )}
 
         {/* ── Gamme Pyrofluid ── */}
-        <div style={sCard}>
+        <div data-carte="grande" style={sCard}>
           <h2 style={sH2}>{t('Gamme standard Pyrofluid')}</h2>
           <div style={{ overflowX: 'auto' }}>
             <table style={sTable}>
@@ -500,7 +561,7 @@ const ReacteurDesignTab = ({ innerData = {}, innerDataTick, currentLanguage = 'f
         </div>
 
         {/* ── Anneaux HTFB ── */}
-        <div style={sCard}>
+        <div data-carte="petite" style={sCard}>
           <h2 style={sH2}>{t('Anneaux de distributeur HTFB')}</h2>
           <div style={{ overflowX: 'auto' }}>
             <table style={sTable}>
@@ -534,7 +595,7 @@ const ReacteurDesignTab = ({ innerData = {}, innerDataTick, currentLanguage = 'f
         </div>
 
         {/* ── Sources ── */}
-        <div style={{ ...sCard, fontSize: '12px', color: '#4a5568' }}>
+        <div data-carte="petite" style={{ ...sCard, fontSize: '12px', color: '#4a5568' }}>
           <h2 style={sH2}>{t('Sources et formules')}</h2>
           <ul style={{ margin: 0, paddingLeft: '18px', lineHeight: 1.6 }}>
             <li>{t('Pyrofluid — VWT-EM-GCG-0037 Rev C (Généralités incinération) : gamme, vitesses, lit 1,5 m, charges admissibles.')}</li>

@@ -651,6 +651,7 @@ Doit être l'**inverse cohérent** de `option_T` :
 - **HTFB** (libellé « HTFB » dans l'onglet, et non « Thermylis », demande de Cédric du 27/11/2026) = dimensions calculées, formules de la HTFB Design Sheet V1 (onglet 14) : D1 / D2 aux vitesses 2,1 / 3,0 ft/s, distributeur = plus petit anneau A–J ≥ Ø requis (air ramené à 1200 °F à 0,85 m/s ; au-delà de J : soufflante d'appoint) ou Ø calculé, H5 = tan α (D1 − Dcarneau) / 2, H6 par R2 = 1,2 (D3 + 2 (T1 + T2)) − 3,06 ft, volumes et temps de séjour de la feuille. **Validé à 10⁻⁴ près sur St. Paul** (D1–D6, R2, H5–H7, hauteur totale 42,28 ft, 6 temps de séjour). Le Ø du carneau est calculé à 18 m/s (la feuille reprend le Ø du PFD) ou imposé.
 - Base de calcul par four lue dans `innerData` (`FG_wet_Nm3_h`, `Q_air_comb_tot_Nm3_h`, `Temp_fumee_voute_C`, `TempNiveauVoute_C`, `Tair_ap_prechauffe_C`, `PressionVouteDefaut_mmCe`, `PDC_Voute_Iter2`, `MS_kg_h`, `MV_kg_h`, `MS_pourcent`, `NombreFour`, `Modele`) ; chaque champ peut être saisi pour l'onglet. Contrôle Valence (Ø 3,8 / 2,34 m) : vitesse voûte 0,90 m/s et charge 105 kg MS/m²/h, comme le rapport Pyrofluid V4.5.
 - Hypothèse : max(Da) de la formule Hbav = Ø de la gaine d'air de fluidisation.
+- Bouton « 🖨 Imprimer l'onglet » (`imprimerOnglet`) : imprime **seulement cet onglet** (iframe cachée, A4 paysage, champs remplacés par leur valeur, éléments `[data-no-print]` retirés, cartes `data-carte` « petite » non coupées). L'onglet n'est pas ajouté au rapport FB (choix de Cédric du 27/11/2026).
 
 ### Points ouverts
 
