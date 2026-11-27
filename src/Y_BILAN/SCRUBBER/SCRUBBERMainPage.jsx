@@ -144,7 +144,7 @@ const SCRUBBERMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, curr
       <div
         style={{ padding: '20px', background: '#f9f9f9', borderRadius: '8px' }}
       >
-        <ContenuOnglets tabs={tabs} actif={activeTab} />
+        <ContenuOnglets tabs={tabs} actif={tabs[activeTab]?.name} />
       </div>
     </div>
   );
