@@ -1,0 +1,7 @@
+[
+ {"nom":"cas test Pyrofluid (300 °C), Ø 0,75 m","inp":{"mCO2":1490.11,"mH2O":3608.36,"mO2":618.57,"mN2":6671.38,"mSO2":8.58,"mHCl":2.61,"tempFumees":300,"pTotal":-300,"diamQuench":0.75,"effVenturi":0.6,"diamGouttes":700,"constNusselt":2,"coefHautSat":1.5,"tempEauAp":25,"chkCone":false,"diamCone":0}},
+ {"nom":"cas test Pyrofluid (300 °C), Ø 0,9 m","inp":{"mCO2":1490.11,"mH2O":3608.36,"mO2":618.57,"mN2":6671.38,"mSO2":8.58,"mHCl":2.61,"tempFumees":300,"pTotal":-300,"diamQuench":0.9,"effVenturi":0.6,"diamGouttes":700,"constNusselt":2,"coefHautSat":1.5,"tempEauAp":25,"chkCone":false,"diamCone":0}},
+ {"nom":"200 °C, HCl 20 kg/h, Ø 0,75 m","inp":{"mCO2":1490.11,"mH2O":3608.36,"mO2":618.57,"mN2":6671.38,"mSO2":8.58,"mHCl":20,"tempFumees":200,"pTotal":-150,"diamQuench":0.75,"effVenturi":0.6,"diamGouttes":700,"constNusselt":2,"coefHautSat":1.5,"tempEauAp":25,"chkCone":false,"diamCone":0}},
+ {"nom":"débit × 3, 450 °C, Ø 1,5 m","inp":{"mCO2":4470.33,"mH2O":10825.08,"mO2":1855.71,"mN2":20014.14,"mSO2":25.74,"mHCl":7.83,"tempFumees":450,"pTotal":-400,"diamQuench":1.5,"effVenturi":0.7,"diamGouttes":800,"constNusselt":2,"coefHautSat":1.5,"tempEauAp":15,"chkCone":false,"diamCone":0}},
+ {"nom":"cône imposé 600 mm, 250 °C, Ø 0,75 m","inp":{"mCO2":1490.11,"mH2O":3608.36,"mO2":618.57,"mN2":6671.38,"mSO2":8.58,"mHCl":5,"tempFumees":250,"pTotal":-300,"diamQuench":0.75,"effVenturi":0.5,"diamGouttes":750,"constNusselt":2,"coefHautSat":1.5,"tempEauAp":25,"chkCone":true,"diamCone":600}}
+]
