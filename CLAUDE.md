@@ -657,7 +657,10 @@ Doit être l'**inverse cohérent** de `option_T` :
 
 - `calculTour` (`Y_BILAN/SCRUBBER/4_SCRUBBER_TourLavage.jsx`), mode « Calcul Pyrofluid d'origine », contrôlé contre une transcription littérale de `ClassTourLavage.Calcul` (`scripts/verif_tour_lavage/vb_port.py`, 7 cas, avec et sans sous-refroidissement, VSP et autres garnissages) : écart < 0,001 % sur toutes les sorties. Relancer après toute modification : `node scripts/verif_tour_lavage/comparer.mjs`.
 - Corrigé le 27/11 (mode d'origine seulement) : diamètre du dévésiculeur sans sous-refroidissement arrondi par `Arrondi05` de Pyrofluid (`arrondi05Pyrofluid` : décimale ≤ 0,4 → entier inférieur ; avant : 0,5 supérieur, 2,27 m donnait 2,5 au lieu de 2) ; plus de facteur (100 − PourcentH2O) / 100 sur le SO2 sortant (PourcentH2O vaut 0 dans cette branche, SO2 sortant −0,43 % avant).
-- Le calcul corrigé (défaut) garde volontairement l'arrondi au 0,5 m supérieur. Ses trois points ouverts sont dans `a_faire.md` (vitesse du dévésiculeur, chaleur latente du condenseur, fumées non saturées).
+- Calcul corrigé (défaut), corrigé le 27/11 (le mode d'origine garde les formules de Pyrofluid) :
+  - dévésiculeur : arrondi au 0,5 m supérieur (volontaire) ; vitesse retenue = vitesse réelle en m/h (flux massique / masse volumique des fumées ; Pyrofluid affiche le flux massique en kg/m²/h comme une vitesse).
+  - condenseur : chaleur latente 597 kcal/kg en sortie comme en entrée (Pyrofluid : 547) ; des fumées non saturées à la température du condenseur gardent leur eau (`min(saturation, eau entrante)`).
+  - sans sous-refroidissement : `saturationAdiabatique` — les fumées se saturent au contact du liquide recirculé (bilan enthalpique, eau liquide à la température de saturation) ; `tAbs` = température de saturation adiabatique, `eauEvaporee` ajoutée à l'appoint (`appointAbs`, OPEX). Fumées déjà saturées (quench en amont) : quasi inchangé. Eau sortante = eau des fumées à l'entrée de l'absorption (plus d'eau créée). Champs « Température de saturation adiabatique » et « Eau évaporée dans la tour » (onglet, 10 langues).
 
 ### Points ouverts
 

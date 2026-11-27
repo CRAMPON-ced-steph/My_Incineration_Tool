@@ -213,8 +213,8 @@ Bilan FB + onglet HX, P freeboard imposée à −3 mmCE (valeur du rapport), ren
 
 ## Tour de lavage (`src/Y_BILAN/SCRUBBER/4_SCRUBBER_TourLavage.jsx`) — contrôle du 27/11/2026
 
-Le mode « Calcul Pyrofluid d'origine » reproduit `ClassTourLavage.Calcul` (écart < 0,001 %, `scripts/verif_tour_lavage`). Restent trois points du **calcul corrigé** (défaut), à décider :
+Le mode « Calcul Pyrofluid d'origine » reproduit `ClassTourLavage.Calcul` (écart < 0,001 %, `scripts/verif_tour_lavage`). Points du **calcul corrigé** (défaut), corrigés le 27/11/2026 :
 
-- [ ] **Vitesse du dévésiculeur** : la « vitesse retenue » est un flux massique (kg/m²/h) affiché en m/h, repris de Pyrofluid. Vitesse réelle = flux / masse volumique des fumées. Cas test (sortie quench 84,7 °C, Ø 2,5 m) : perte de charge du dévésiculeur 16,1 → 25,7 mmCE sans sous-refroidissement, 36,3 → 29,6 mmCE avec.
-- [ ] **Chaleur latente en sortie de condenseur** : 547 kcal/kg dans l'enthalpie des fumées, 597 kcal/kg dans la chaleur sensible (Pyrofluid). Avec 597 partout : puissance du condenseur −0,55 %.
-- [ ] **Fumées non saturées en entrée** (pas de quench en amont) : l'eau en sortie = saturation à la température d'entrée, sans refroidissement ni eau évaporée au bilan. Cas test 80 °C, 2 600 kg/h d'eau en entrée → 13 595 kg/h en sortie. Hypothèse du module : quench en amont.
+- [x] **Vitesse du dévésiculeur** : vitesse réelle (flux massique / masse volumique des fumées) au lieu du flux massique de Pyrofluid.
+- [x] **Chaleur latente en sortie de condenseur** : 597 kcal/kg partout (Pyrofluid : 547 dans l'enthalpie des fumées). Puissance du condenseur −0,55 %.
+- [x] **Fumées non saturées en entrée** : saturation adiabatique au contact du liquide (température de sortie et eau évaporée, comptée dans l'appoint) ; avec sous-refroidissement, des fumées non saturées à la température du condenseur gardent leur eau. Cas test 80 °C, 2 600 kg/h d'eau : sortie 55,7 °C, 295 kg/h évaporés (avant : 13 595 kg/h d'eau en sortie à 80 °C).

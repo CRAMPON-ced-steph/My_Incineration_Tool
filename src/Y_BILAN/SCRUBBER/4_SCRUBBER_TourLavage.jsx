@@ -76,6 +76,31 @@ const volDe = (m) => ({
   O2: (m.O2 * VM) / M.O2, SO2: (m.SO2 * VM) / M.SO2, HCl: (m.HCl * VM) / M.HCl,
 });
 const somme = (o) => Object.values(o).reduce((a, b) => a + b, 0);
+
+// Eau [kg/h] portée par les fumées saturées à t [°C] sous p [mmHg] (incondensables en mol/h)
+const eauSaturation = (t, molIncond, p) => {
+  const ps = psatH2O(t);
+  return ps < p ? (ps / (p - ps)) * molIncond * (M.H2O / 1000) : Infinity;
+};
+
+// Calcul corrigé, sans sous-refroidissement : les fumées se saturent au contact du liquide
+// recirculé (saturation adiabatique). Bilan enthalpique (kcal/h, eau liquide à 0 °C) :
+// H(Tin, fumées) + m_évap × T = H(T, fumées + m_évap), avec eau = saturation à T.
+// Fumées déjà saturées (quench en amont) : T ≈ Tin et m_évap ≈ 0.
+function saturationAdiabatique(mas, entIn, Tin, p) {
+  const v = volDe(mas);
+  const molIncond = ((v.CO2 + v.N2 + v.O2) * 1000) / VM;
+  if (eauSaturation(Tin, molIncond, p) <= mas.H2O) return { T: Tin, mH2O: mas.H2O };
+  const eau = (T) => Math.max(eauSaturation(T, molIncond, p), mas.H2O);
+  const ecart = (T) => { const m = eau(T); return enthalpieFumees(T, { ...mas, H2O: m }, 597) - entIn - (m - mas.H2O) * T; };
+  let bas = 0, haut = Tin;
+  for (let i = 0; i < 80; i++) {
+    const mil = (bas + haut) / 2;
+    if (ecart(mil) > 0) haut = mil; else bas = mil;
+  }
+  const T = (bas + haut) / 2;
+  return { T, mH2O: eau(T) };
+}
 const parseValue = (v) => { const p = parseFloat(v); return isNaN(p) ? 0 : p; };
 
 // ═══════════════════════════════════════════════════════════════════
@@ -114,11 +139,14 @@ export function calculTour(inp) {
     const Tc = inp.tempSortieCond;
     const psatC = psatH2O(Tc);
     const molIncond = ((volTotIn - volIn.H2O - volIn.HCl) * 1000) / VM;
-    const mH2Oc = psatC < p ? (psatC / (p - psatC)) * molIncond * (M.H2O / 1000) : masIn.H2O;
+    const mH2OcSat = psatC < p ? (psatC / (p - psatC)) * molIncond * (M.H2O / 1000) : masIn.H2O;
+    // Calcul corrigé : des fumées non saturées à Tc gardent leur eau (pas d'eau créée)
+    const mH2Oc = ORI ? mH2OcSat : Math.min(mH2OcSat, masIn.H2O);
     // ORIGINE : condensat non borné à 0
     const condensat = ORI ? masIn.H2O - mH2Oc : Math.max(masIn.H2O - mH2Oc, 0);
     const masC = { ...masIn, H2O: mH2Oc };
-    const entOut = enthalpieFumees(Tc, masC, 547);
+    // ORIGINE : chaleur latente 547 kcal/kg en sortie de condenseur (597 en entrée et dans la chaleur sensible)
+    const entOut = enthalpieFumees(Tc, masC, ORI ? 547 : 597);
     const deltaEnt = entIn - entOut;
     const cpL = cpLiquide(inp.tempLiqRef);
     const dT = Tin - inp.tempLiqRef;
@@ -137,10 +165,16 @@ export function calculTour(inp) {
     cond = { Tc, psatC, mH2Oc, condensat, masC, entOut, deltaEnt, eauRefroid, eauEntreeCond, tSortieLiq, lmtd, cpg, deltaChalSen };
     masAbs = masC;
     tAbs = Tc;
+  } else if (!ORI) {
+    const sat = saturationAdiabatique(masIn, entIn, Tin, p);
+    masAbs = { ...masIn, H2O: sat.mH2O };
+    tAbs = sat.T;
   } else {
     masAbs = masIn;
     tAbs = Tin;
   }
+  // Eau évaporée dans la tour (calcul corrigé, fumées non saturées en entrée) : vient de l'appoint
+  const eauEvaporee = !cond && !ORI ? masAbs.H2O - masIn.H2O : 0;
 
   // ─── Gaz à l'entrée de la partie absorption ───
   const volAbs = volDe(masAbs);
@@ -250,10 +284,9 @@ export function calculTour(inp) {
     nutHCl = concHClIn > cibleHCl && cibleHCl > 0 ? Math.log(concHClIn / cibleHCl) : 0;
     hGarnSO2 = nutSO2 * hutSO2 * 1.5 + 0.49;
     hGarnHCl = nutHCl * hutHCl * 1.5 + 0.49;
-    // Fumées en sortie : boucle itérative sur %O2 sec
-    const psatOut = psatH2O(tAbs);
-    const molIncondS = ((volAbs.CO2 + volAbs.N2 + volAbs.O2) * 1000) / VM;
-    masH2Os = psatOut < p ? (psatOut / (p - psatOut)) * molIncondS * (M.H2O / 1000) : masAbs.H2O;
+    // Fumées en sortie : saturées à tAbs (condenseur ou saturation adiabatique), eau conservée ;
+    // boucle itérative sur %O2 sec
+    masH2Os = masAbs.H2O;
     for (let i = 0; i < 200; i++) {
       masSO2s = cibleSO2 * 1e-6 * ((21 - pO2s) / 10) * volSecS;
       masHCls = cibleHCl * 1e-6 * ((21 - pO2s) / 10) * volSecS;
@@ -344,13 +377,14 @@ export function calculTour(inp) {
   const diamDevesBrut = Math.sqrt((4 * secDeves) / Math.PI);
   const diamDeves = ORI ? (cond ? diamDevesBrut : arrondi05Pyrofluid(diamDevesBrut)) : arrondi05(diamDevesBrut);
   const secDevesRet = (Math.PI * diamDeves * diamDeves) / 4;
-  const vitRetenue = secDevesRet > 0 ? masTotS / secDevesRet : 0; // kg/(m2.h) ≈ m/h (legacy)
+  // ORIGINE : « vitesse » = flux massique kg/(m².h) ; calcul corrigé : vitesse réelle en m/h
+  const vitRetenue = secDevesRet > 0 ? (ORI ? masTotS / secDevesRet : masTotS / roSortie / secDevesRet) : 0;
   const dPDeves = 0.0169 * roSortie * inp.epaisDeves * Math.pow(vitRetenue / 3600, 1.85);
 
   // ─── Purge & appoint ───
   const so2Purge = masAbs.SO2 - masSO2s;
   const purgeAbs = inp.concLiqSO2 > 0 ? so2Purge / (inp.concLiqSO2 / 100) : 0;
-  const appointAbs = purgeAbs - so2Purge;
+  const appointAbs = purgeAbs - so2Purge + eauEvaporee;
   const purgeTotale = purgeAbs + (cond ? cond.condensat : 0);
 
   // ─── Consommation de soude ───
@@ -374,7 +408,7 @@ export function calculTour(inp) {
 
   return {
     masTotIn, volTotIn, volSecIn, pO2in, concSO2In, concHClIn, entIn,
-    cond, hauteurCond, tAbs,
+    cond, hauteurCond, tAbs, eauEvaporee,
     masAbs, masTotAbs, volTotAbs, roGaz, muGaz, muLiq, roLiq, sigmaLiq,
     fluxEngor, fluxReel, diamCalc, sec,
     tauxMouil, rapport, tauxEngor,
@@ -676,6 +710,8 @@ const TourLavageCalculator = ({ innerData = {}, setInnerData, currentLanguage = 
                 <OutField label="TL_o2_dry" value={r.pO2in} unit="% vol" t={t} />
                 <OutField label="TL_so2_dry_11" value={r.concSO2In} unit="mg/Nm³" d={1} t={t} />
                 <OutField label="TL_hcl_dry_11" value={r.concHClIn} unit="mg/Nm³" d={1} t={t} />
+                <OutField label="TL_adiabatic_sat_temp" value={!inp.sousRef && !inp.modeOrigine ? r.tAbs : 0} unit="°C" disabled={inp.sousRef || inp.modeOrigine} t={t} />
+                <OutField label="TL_evaporated_water" value={r.eauEvaporee} unit="kg/h" disabled={inp.sousRef || inp.modeOrigine} t={t} />
               </div>
             )}
           </TLSection>
