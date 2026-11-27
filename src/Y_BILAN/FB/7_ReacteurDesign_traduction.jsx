@@ -1,6 +1,6 @@
 // Traductions de l'onglet « Design réacteur » (7_ReacteurDesignTab.jsx).
 // Les clés sont le texte français : en français, makeT renvoie la clé elle-même (dictionnaire fr vide).
-// Les autres langues reprennent l'anglais (public de l'équipe Thermylis).
+// Les autres langues reprennent l'anglais (public de l'équipe HTFB).
 
 const en = {
   "calculé": "calculated",
@@ -23,16 +23,18 @@ const en = {
   "Couche de sable plus haute que H2 : limitée à H2.": "Sand layer higher than H2: limited to H2.",
   "Temps de séjour au-dessus du lit inférieur à 2 s.": "Residence time above the bed below 2 s.",
   "Débit de fumées nul : calculez l'onglet Combustion ou saisissez la base de calcul.": "Zero flue gas flow: run the Combustion tab or enter the design basis.",
-  "Design réacteur — Pyrofluid / Thermylis": "Reactor design — Pyrofluid / Thermylis",
-  "Le Pyrofluid est défini par une gamme standard (R28 à R72) : un Ø de réacteur et une voûte par taille, les hauteurs suivent les règles de chaudronnerie. Le Thermylis n'a pas de taille standard : ses diamètres découlent des vitesses de gaz, seul le distributeur est pris sur des anneaux (A à J).": "The Pyrofluid comes in a standard range (R28 to R72): one reactor Ø and one vault per size, heights follow the boilerwork rules. The Thermylis has no standard size: its diameters follow from gas velocities, only the distributor is taken from standard rings (A to J).",
+  "Design réacteur — Pyrofluid / HTFB": "Reactor design — Pyrofluid / HTFB",
+  "Le Pyrofluid est défini par une gamme standard (R28 à R72) : un Ø de réacteur et une voûte par taille, les hauteurs suivent les règles de chaudronnerie. Le HTFB n'a pas de taille standard : ses diamètres découlent des vitesses de gaz, seul le distributeur est pris sur des anneaux (A à J).": "The Pyrofluid comes in a standard range (R28 to R72): one reactor Ø and one vault per size, heights follow the boilerwork rules. The HTFB has no standard size: its diameters follow from gas velocities, only the distributor is taken from standard rings (A to J).",
   "Taille Pyrofluid": "Pyrofluid size",
   "Selon l'onglet Voûte": "As in the Vault tab",
   "extension outil": "tool extension",
-  "Distributeur Thermylis": "Thermylis distributor",
+  "Distributeur HTFB": "HTFB distributor",
   "Anneau standard (plus petit ≥ Ø requis)": "Standard ring (smallest ≥ required Ø)",
   "Ø calculé (hors anneau)": "Calculated Ø (no ring)",
   "Unité des longueurs": "Length unit",
   "Réinitialiser": "Reset",
+  "Imprimer l'onglet": "Print this tab",
+  "Nœud FB": "FB node",
   "Base de calcul (par four)": "Design basis (per furnace)",
   "Champ vide = valeur des autres onglets (en gris). Une saisie la remplace pour cet onglet seulement.": "Empty field = value from the other tabs (in grey). An entry overrides it for this tab only.",
   "Nombre de fours": "Number of furnaces",
@@ -169,7 +171,7 @@ const en = {
   "Démarrage": "Start-up",
   "ext.": "ext.",
   "* Injecteurs : combustible lit / combustible réacteur (T2S) / boues / eau / ammoniac. ** Fioul domestique ou gaz naturel pour la première montée en température. Tuyères : posées / à commander (la commande inclut celles de la vidange de sable). Hauteur du réacteur : non standard, fixée par le temps de séjour. R80–R90 : tailles de l'onglet Voûte, hors gamme documentée.": "* Injectors: bed fuel / reactor fuel (T2S) / sludge / water / ammonia. ** Domestic fuel oil or natural gas for the first heat-up. Tuyeres: installed / to order (the order includes those at the sand drain). Reactor height: not standard, set by residence time. R80–R90: sizes from the Vault tab, outside the documented range.",
-  "Anneaux de distributeur Thermylis": "Thermylis distributor rings",
+  "Anneaux de distributeur HTFB": "HTFB distributor rings",
   "Anneau": "Ring",
   "Surface": "Area",
   "Débit FAB": "FAB flow",
@@ -180,8 +182,8 @@ const en = {
   "Pyrofluid — VWT-EM-GCG-0037 Rev C (Généralités incinération) : gamme, vitesses, lit 1,5 m, charges admissibles.": "Pyrofluid — VWT-EM-GCG-0037 Rev C (Incineration general information): range, velocities, 1.5 m bed, allowable loadings.",
   "Pyrofluid — VWT-EM-GCE-0310 Rev C (Chaudronnerie) : boîte à vent (cos w = (0,5 Dv − 135 + 70) / R ; k = R (1 − sin w) ; L' = k + 385 ; Lbav = L' + 348 ; Hbav = Lbav + max(Da) + 1200), tronçon 4 (h' = 1500 − 0,493 e ; h = 0,5 (Df + 2e − Dv − 600 − 1,842 e) ; h1 = 0,5 (Df − Dv − 600)), dôme 23° (L = 0,212 (Df + 2e − Dc − 2ec − 24)), réacteur > 4,5 s.": "Pyrofluid — VWT-EM-GCE-0310 Rev C (Boilerwork): windbox (cos w = (0.5 Dv − 135 + 70) / R; k = R (1 − sin w); L' = k + 385; Lbav = L' + 348; Hbav = Lbav + max(Da) + 1200), section 4 (h' = 1500 − 0.493 e; h = 0.5 (Df + 2e − Dv − 600 − 1.842 e); h1 = 0.5 (Df − Dv − 600)), 23° dome (L = 0.212 (Df + 2e − Dc − 2ec − 24)), reactor > 4.5 s.",
   "Pyrofluid — VWT-EM-GCE-0312 Rev C (Réfractaire) : rayon de voûte 5 m (R28–R50) / 7 m (R56–R72), épaisseurs maximales.": "Pyrofluid — VWT-EM-GCE-0312 Rev C (Refractory lining): vault arch radius 5 m (R28–R50) / 7 m (R56–R72), maximum thicknesses.",
-  "Thermylis — HTFB Design Sheet V1 (BS&P, 11/11/2026), onglets 14 et 9 : D1 = √(4Q / π v1), D2 = √(4Q / π v2), D3 = anneau ≥ Ø requis, R2 = 1,2 (D3 + 2 (T1 + T2)) − 3,06 ft, H5 = tan α (D1 − Dcarneau) / 2, H6 = R2 − √(R2² − D3² / 4), H7 = tan α (T1 + T2). Validé sur St. Paul : D1 36,65 ft, D2 30,66 ft, H5 5,15 ft, H6 2,13 ft, hauteur totale 42,28 ft.": "Thermylis — HTFB Design Sheet V1 (BS&P, 11/11/2026), tabs 14 and 9: D1 = √(4Q / π v1), D2 = √(4Q / π v2), D3 = ring ≥ required Ø, R2 = 1.2 (D3 + 2 (T1 + T2)) − 3.06 ft, H5 = tan α (D1 − Dduct) / 2, H6 = R2 − √(R2² − D3² / 4), H7 = tan α (T1 + T2). Checked against St. Paul: D1 36.65 ft, D2 30.66 ft, H5 5.15 ft, H6 2.13 ft, overall height 42.28 ft.",
-  "Hypothèse : max(Da) de la boîte à vent Pyrofluid pris égal au Ø de la gaine d'air. Thermylis : Ø carneau calculé à la vitesse saisie (la feuille reprend le Ø du PFD).": "Assumption: max(Da) of the Pyrofluid windbox taken equal to the air duct Ø. Thermylis: flue duct Ø calculated at the entered velocity (the sheet takes the PFD Ø).",
+  "HTFB — Design Sheet V1 (BS&P, 11/11/2026), onglets 14 et 9 : D1 = √(4Q / π v1), D2 = √(4Q / π v2), D3 = anneau ≥ Ø requis, R2 = 1,2 (D3 + 2 (T1 + T2)) − 3,06 ft, H5 = tan α (D1 − Dcarneau) / 2, H6 = R2 − √(R2² − D3² / 4), H7 = tan α (T1 + T2). Validé sur St. Paul : D1 36,65 ft, D2 30,66 ft, H5 5,15 ft, H6 2,13 ft, hauteur totale 42,28 ft.": "HTFB — Design Sheet V1 (BS&P, 11/11/2026), tabs 14 and 9: D1 = √(4Q / π v1), D2 = √(4Q / π v2), D3 = ring ≥ required Ø, R2 = 1.2 (D3 + 2 (T1 + T2)) − 3.06 ft, H5 = tan α (D1 − Dduct) / 2, H6 = R2 − √(R2² − D3² / 4), H7 = tan α (T1 + T2). Checked against St. Paul: D1 36.65 ft, D2 30.66 ft, H5 5.15 ft, H6 2.13 ft, overall height 42.28 ft.",
+  "Hypothèse : max(Da) de la boîte à vent Pyrofluid pris égal au Ø de la gaine d'air. HTFB : Ø carneau calculé à la vitesse saisie (la feuille reprend le Ø du PFD).": "Assumption: max(Da) of the Pyrofluid windbox taken equal to the air duct Ø. HTFB: flue duct Ø calculated at the entered velocity (the sheet takes the PFD Ø).",
   "lit": "bed",
   "jonction": "junction",
   "freeboard": "freeboard",
