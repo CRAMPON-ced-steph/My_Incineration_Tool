@@ -82,11 +82,20 @@ const parseValue = (v) => { const p = parseFloat(v); return isNaN(p) ? 0 : p; };
 // ═══════════════════════════════════════════════════════════════════
 // MOTEUR DE CALCUL (transcription de ClassQuench.Calcul) — exporté
 //
-// inp.modeOrigine = true  → calcul Pyrofluid d'origine (ClassQuench.vb à l'identique) :
+// inp.modeOrigine = true  → calcul Pyrofluid d'origine (ClassQuench.vb à l'identique, erreurs comprises) :
 //   - Ts cherchée par pas de 0,1 °C à partir de 60 °C, puis Ts / 1,0005 et Psat × 0,9954
-//   - boucle acide relancée depuis la concentration initiale à chaque élargissement de tolérance
-// inp.modeOrigine = false → calcul corrigé (défaut) : Ts résolue exactement, sans coefficients.
+//   - concentration HCl de la recirculation augmentée de 0,0001 % jusqu'à ce que la température
+//     de sortie du bilan enthalpique égale Ts (relance à chaque élargissement de la tolérance)
+//   - bilan enthalpique avec le terme EntEauAppointTs = évaporation × (Ts − T appoint)
+// inp.modeOrigine = false → calcul corrigé (défaut) :
+//   - concentration HCl de la recirculation (= purge) saisie : inp.concHClRec [% massique], 1 % par défaut
+//   - purge = HCl capté / concentration ; appoint = eau gagnée par les fumées + purge
+//   - Ts résolue par la saturation (Psat(Ts) exacte) et le bilan enthalpique global ensemble :
+//     fumées entrantes + appoint à T appoint + absorption HCl = fumées saturées à Ts + purge à Ts
+//     (l'eau d'appoint évaporée est chauffée par les fumées ; plus de terme EntEauAppointTs)
 // ═══════════════════════════════════════════════════════════════════
+export const CONC_HCL_REC_DEFAUT = 1; // % massique
+
 export function calculSaturator(inp) {
   const ORI = !!inp.modeOrigine;
   const T = inp.tempFumees;
@@ -109,154 +118,189 @@ export function calculSaturator(inp) {
 
   const entIn = enthalpieFumees(T, masIn);
 
-  // ─── Boucle 1 : Ts par bissection sur Psat(Ts) = PpH2O(Ts) ───
-  let concHClAr = 0.05;
-  const evapDe = (ts) => (entIn - enthalpieFumees(ts, masIn)) / chaleurEvac(ts, 0.05, ORI);
-  const fTs = (ts) => {
-    const evap = evapDe(ts);
-    const pp = (p * (volIn.H2O + evap / 0.804)) / (volTot + evap / 0.804);
-    return psatH2O(ts) - pp;
-  };
-  let ts, tensVapH2O;
-  if (ORI) {
-    // ORIGINE : boucle n° 1 du VB
-    let t0 = 60, deltaP1 = 1e7, comptB1 = 0, deltaP;
-    do {
-      deltaP = Math.abs(fTs(t0));
-      if (deltaP <= deltaP1) { deltaP1 = deltaP; t0 += 0.1; comptB1++; }
-    } while (!(deltaP > deltaP1 || comptB1 === 10000));
-    if (!isFinite(deltaP)) return { erreurTs: true };
-    ts = (t0 - 0.1) / 1.0005;
-    tensVapH2O = psatH2O(ts) * 0.9954;
-  } else {
-    let lo = 40, hi = Math.min(T - 1, 99.5);
-    if (fTs(lo) > 0 || fTs(hi) < 0) return { erreurTs: true };
-    for (let i = 0; i < 80; i++) {
-      const mid = (lo + hi) / 2;
-      if (fTs(mid) < 0) lo = mid; else hi = mid;
-    }
-    ts = (lo + hi) / 2;
-    tensVapH2O = psatH2O(ts);
-  }
-  const debMasEvap = evapDe(ts);
-
-  // ─── Boucle 2 : itération sur ConcHClRec (bilan enthalpique) ───
-  let concHClRec = 0.01;
-  let deltaBoucle2 = 0.5;
-  let res = null;
-  let converge = false;
-
   const fracMas = {
     CO2: masIn.CO2 / masTot, H2O: masIn.H2O / masTot, O2: masIn.O2 / masTot,
     N2: masIn.N2 / masTot, HCl: masIn.HCl / masTot, SO2: masIn.SO2 / masTot,
   };
 
+  // ─── État du quench pour Ts, tension de vapeur, eau évaporée et concentration de recirculation ───
+  // concHClArPrec : concentration à l'arrosage de l'itération précédente (pH, comme le VB)
+  const etat = (ts, tensVapH2O, debMasEvap, concHClRec, concHClArPrec) => {
+    const pHClPart = ppHCl(ts, concHClRec);
+    const pIncond = p - tensVapH2O - pHClPart;
+    if (pIncond <= 0) return null;
+
+    const fracMolHCl = pHClPart / p;
+    const fracMolEau = 1 - fracMolHCl;
+    const denomEq = fracMolHCl * M.HCl + fracMolEau * M.H2O;
+    const debMasH2Oeq = ((fracMolEau * M.H2O) / denomEq) * debMasEvap;
+    const debMasHCleq = ((fracMolHCl * M.HCl) / denomEq) * debMasEvap;
+
+    // Fumées saturées
+    const masSat = { ...masIn, H2O: masIn.H2O + debMasH2Oeq, HCl: masIn.HCl + debMasHCleq };
+    const volSat = volDe(masSat);
+    const masTotSat = somme(masSat);
+    const volTotSat = somme(volSat);
+    const roSaturee = masTotSat / (volTotSat * ((ts + 273) / 273) * (760 / p));
+    const debMolIncond = (1000 / VM) * (volTotSat - volSat.H2O - volSat.HCl);
+
+    // Fumées épurées (équilibre + efficacité venturi)
+    // Calcul corrigé : pas d'absorption négative si la concentration saisie est trop forte
+    const absBrut = masSat.HCl - (pHClPart / pIncond) * debMolIncond * (M.HCl / 1000);
+    const debMasHClAbs = ORI ? absBrut : Math.max(0, absBrut);
+    const masEp = {
+      CO2: masIn.CO2,
+      H2O: (tensVapH2O / pIncond) * debMolIncond * (M.H2O / 1000),
+      O2: masIn.O2,
+      N2: masIn.N2,
+      SO2: masIn.SO2,
+      HCl: masSat.HCl - debMasHClAbs * inp.effVenturi,
+    };
+    const volEp = volDe(masEp);
+    const masTotEp = somme(masEp);
+    const volTotEp = somme(volEp);
+    const volTotEpSec = volTotEp - volEp.H2O;
+    const pO2s = (volEp.O2 / volTotEpSec) * 100;
+    const concHClSec = ((masEp.HCl * 1e6) / volTotEpSec) * corr(pO2s);
+    const concSO2Sec = ((masEp.SO2 * 1e6) / volTotEpSec) * corr(pO2s);
+    const debVolSortieReel = volTotEp * ((ts + 273) / 273) * (760 / p);
+    const roEpuree = masTotEp / debVolSortieReel;
+
+    // Cône & venturi
+    const diamCone = inp.chkCone ? inp.diamCone : DIAM_CONE_AUTO[inp.diamQuench] || 0;
+    const sVenturi = (Math.PI * Math.pow(diamCone * 1e-3, 2)) / 4;
+    const sPassage = Squench - sVenturi;
+    const vPassage = sPassage > 0 ? debVolSortieReel / (3600 * sPassage) : 0;
+    const pVenturi = (1.5 * roSaturee * vPassage * vPassage) / (2 * 9.81); // mmCE
+
+    // Hauteur de saturation
+    const tmFumees = (T + ts) / 2;
+    const cpg = cpFumees(fracMas, tmFumees);
+    const roLiq1 = roEau(ts);
+    const kl = condLiq(tmFumees);
+    let debMasLiqAr = 11 * debMasEvap;
+    debMasLiqAr = Math.min(debMasLiqAr, LIQ_AR_MAX[inp.diamQuench] || 25000);
+    const te = (600 / inp.constNusselt) * ((Math.pow(inp.diamGouttes * 1e-6, 2) * cpg * roLiq1) / kl) * (masTot / debMasLiqAr);
+    const zsat = inp.coefHautSat * te * vitesse;
+
+    const pH = concHClArPrec > 0 ? -Math.log10(concHClArPrec * (10 / M.HCl)) : null;
+    const pHRec = concHClRec > 0 ? -Math.log10(concHClRec * (10 / M.HCl)) : null;
+
+    // Purge, appoint, recirculation
+    const debMasHClPurge = masIn.HCl - masEp.HCl;
+    const debMasTotalPurge = (100 * debMasHClPurge) / concHClRec;
+    const debMasEauAppoint = masTotEp - masTot + debMasTotalPurge;
+    const debMasTotalRecirc = debMasLiqAr + masTot - masTotEp - debMasTotalPurge;
+    const debMasHClRecirc = debMasTotalRecirc * (concHClRec / 100);
+    const concHClAr = (100 * debMasHClRecirc) / (debMasTotalRecirc + debMasEauAppoint);
+
+    // Bilan enthalpique → température de sortie
+    const chaleurAbsHCl = 0.5556 * 850;
+    const entTotalSortie =
+      entIn +
+      debMasEauAppoint * inp.tempEauAp +
+      debMasHClPurge * chaleurAbsHCl +
+      (ORI ? debMasEvap * (ts - inp.tempEauAp) : 0) - // ORIGINE : EntEauAppointTs (chaleur créée)
+      debMasTotalPurge * 0.96 * ts;
+    const a = 1e-6 * (masEp.CO2 * 46.5 + masEp.H2O * 80.5 + masEp.O2 * 24.5 + masEp.N2 * 27 + masEp.SO2 * 25.5 + masEp.HCl * 11.5);
+    const b = masEp.CO2 * 0.226 + masEp.H2O * 0.427 + masEp.N2 * 0.239 + masEp.O2 * 0.225 + masEp.SO2 * 0.164 + masEp.HCl * 0.19;
+    const c = -(entTotalSortie - masEp.H2O * 597);
+    const tempSortie = racineCarre(a, b, c);
+
+    return {
+      pO2in, concHClInSec, concSO2InSec, masTot, volTot, Squench, vitesse,
+      ts, tensVapH2O, debMasEvap,
+      concHClRec, concHClAr, pHClPart, pIncond, debMolIncond,
+      masTotSat, volTotSat, roSaturee,
+      masEp, masTotEp, volTotEp, pO2s, concHClSec, concSO2Sec, roEpuree,
+      diamCone, sPassage, vPassage, pVenturi,
+      cpg, debMasLiqAr, te, zsat,
+      pH, pHRec,
+      debMasHClPurge, debMasTotalPurge, debMasEauAppoint, debMasTotalRecirc,
+      tempSortie, entTotalSortie,
+      absorptionNulle: !ORI && debMasHClPurge <= 0, // concentration saisie trop forte : pas de captage net
+      effHCl: masIn.HCl > 0 ? ((masIn.HCl - masEp.HCl) / masIn.HCl) * 100 : 0,
+    };
+  };
+
+  if (!ORI) {
+    // ─── Calcul corrigé : concentration de recirculation saisie, Ts par saturation + bilan global ───
+    const concHClRec = Number(inp.concHClRec);
+    if (!(concHClRec > 0)) return { erreurTs: true, erreurConc: true };
+    const molIncond = (1000 / VM) * (volTot - volIn.H2O - volIn.HCl);
+    // eau (et HCl) évaporée pour que les fumées soient saturées à ts
+    const evapDe = (ts) => {
+      const tv = psatH2O(ts);
+      const pHCl = ppHCl(ts, concHClRec);
+      const pInc = p - tv - pHCl;
+      if (pInc <= 0) return Infinity;
+      const h2oSat = (tv / pInc) * molIncond * (M.H2O / 1000);
+      const fHCl = pHCl / p;
+      const fEau = 1 - fHCl;
+      return ((h2oSat - masIn.H2O) * (fHCl * M.HCl + fEau * M.H2O)) / (fEau * M.H2O);
+    };
+    // énergie disponible − enthalpie des fumées saturées à ts (décroissant avec ts)
+    const ecart = (ts) => {
+      const evap = evapDe(ts);
+      if (!isFinite(evap)) return -Infinity;
+      const e = etat(ts, psatH2O(ts), evap, concHClRec, 0);
+      if (!e) return -Infinity;
+      return e.entTotalSortie - enthalpieFumees(ts, e.masEp);
+    };
+    let lo = 1, hi = Math.min(T, 100);
+    if (!(ecart(lo) > 0) || !(ecart(hi) < 0)) return { erreurTs: true };
+    for (let i = 0; i < 80; i++) {
+      const mid = (lo + hi) / 2;
+      if (ecart(mid) > 0) lo = mid; else hi = mid;
+    }
+    const ts = lo;
+    const res = etat(ts, psatH2O(ts), evapDe(ts), concHClRec, 0);
+    if (!res) return { erreurTs: true };
+    const pH = res.concHClAr > 0 ? -Math.log10(res.concHClAr * (10 / M.HCl)) : null;
+    return { ...res, pH, converge: true, modeOrigine: false };
+  }
+
+  // ─── ORIGINE : boucle n° 1 du VB (Ts) ───
+  const evapDe = (ts) => (entIn - enthalpieFumees(ts, masIn)) / chaleurEvac(ts, 0.05, true);
+  const fTs = (ts) => {
+    const evap = evapDe(ts);
+    const pp = (p * (volIn.H2O + evap / 0.804)) / (volTot + evap / 0.804);
+    return psatH2O(ts) - pp;
+  };
+  let t0 = 60, deltaP1 = 1e7, comptB1 = 0, deltaP;
+  do {
+    deltaP = Math.abs(fTs(t0));
+    if (deltaP <= deltaP1) { deltaP1 = deltaP; t0 += 0.1; comptB1++; }
+  } while (!(deltaP > deltaP1 || comptB1 === 10000));
+  if (!isFinite(deltaP)) return { erreurTs: true };
+  const ts = (t0 - 0.1) / 1.0005;
+  const tensVapH2O = psatH2O(ts) * 0.9954;
+  const debMasEvap = evapDe(ts);
+
+  // ─── ORIGINE : boucle n° 2 du VB (ConcHClRec par le bilan enthalpique) ───
+  let concHClRec = 0.01;
+  let concHClAr = 0.05;
+  let deltaBoucle2 = 0.5;
+  let res = null;
+  let converge = false;
+
   outer: while (deltaBoucle2 <= 2) {
     let compt = 0;
     while (compt < 20000) {
-      const pHClPart = ppHCl(ts, concHClRec);
-      const pIncond = p - tensVapH2O - pHClPart;
-      if (pIncond <= 0) break;
-
-      const fracMolHCl = pHClPart / p;
-      const fracMolEau = 1 - fracMolHCl;
-      const denomEq = fracMolHCl * M.HCl + fracMolEau * M.H2O;
-      const debMasH2Oeq = ((fracMolEau * M.H2O) / denomEq) * debMasEvap;
-      const debMasHCleq = ((fracMolHCl * M.HCl) / denomEq) * debMasEvap;
-
-      // Fumées saturées
-      const masSat = { ...masIn, H2O: masIn.H2O + debMasH2Oeq, HCl: masIn.HCl + debMasHCleq };
-      const volSat = volDe(masSat);
-      const masTotSat = somme(masSat);
-      const volTotSat = somme(volSat);
-      const roSaturee = masTotSat / (volTotSat * ((ts + 273) / 273) * (760 / p));
-      const debMolIncond = (1000 / VM) * (volTotSat - volSat.H2O - volSat.HCl);
-
-      // Fumées épurées (équilibre + efficacité venturi)
-      const debMasHClAbs = masSat.HCl - (pHClPart / pIncond) * debMolIncond * (M.HCl / 1000);
-      const masEp = {
-        CO2: masIn.CO2,
-        H2O: (tensVapH2O / pIncond) * debMolIncond * (M.H2O / 1000),
-        O2: masIn.O2,
-        N2: masIn.N2,
-        SO2: masIn.SO2,
-        HCl: masSat.HCl - debMasHClAbs * inp.effVenturi,
-      };
-      const volEp = volDe(masEp);
-      const masTotEp = somme(masEp);
-      const volTotEp = somme(volEp);
-      const volTotEpSec = volTotEp - volEp.H2O;
-      const pO2s = (volEp.O2 / volTotEpSec) * 100;
-      const concHClSec = ((masEp.HCl * 1e6) / volTotEpSec) * corr(pO2s);
-      const concSO2Sec = ((masEp.SO2 * 1e6) / volTotEpSec) * corr(pO2s);
-      const debVolSortieReel = volTotEp * ((ts + 273) / 273) * (760 / p);
-      const roEpuree = masTotEp / debVolSortieReel;
-
-      // Cône & venturi
-      const diamCone = inp.chkCone ? inp.diamCone : DIAM_CONE_AUTO[inp.diamQuench] || 0;
-      const sVenturi = (Math.PI * Math.pow(diamCone * 1e-3, 2)) / 4;
-      const sPassage = Squench - sVenturi;
-      const vPassage = sPassage > 0 ? debVolSortieReel / (3600 * sPassage) : 0;
-      const pVenturi = (1.5 * roSaturee * vPassage * vPassage) / (2 * 9.81); // mmCE
-
-      // Hauteur de saturation
-      const tmFumees = (T + ts) / 2;
-      const cpg = cpFumees(fracMas, tmFumees);
-      const roLiq1 = roEau(ts);
-      const kl = condLiq(tmFumees);
-      let debMasLiqAr = 11 * debMasEvap;
-      debMasLiqAr = Math.min(debMasLiqAr, LIQ_AR_MAX[inp.diamQuench] || 25000);
-      const te = (600 / inp.constNusselt) * ((Math.pow(inp.diamGouttes * 1e-6, 2) * cpg * roLiq1) / kl) * (masTot / debMasLiqAr);
-      const zsat = inp.coefHautSat * te * vitesse;
-
-      const pH = concHClAr > 0 ? -Math.log10(concHClAr * (10 / M.HCl)) : null;
-      const pHRec = concHClRec > 0 ? -Math.log10(concHClRec * (10 / M.HCl)) : null;
-
-      // Purge, appoint, recirculation
-      const debMasHClPurge = masIn.HCl - masEp.HCl;
-      const debMasTotalPurge = (100 * debMasHClPurge) / concHClRec;
-      const debMasEauAppoint = masTotEp - masTot + debMasTotalPurge;
-      const debMasTotalRecirc = debMasLiqAr + masTot - masTotEp - debMasTotalPurge;
-      const debMasHClRecirc = debMasTotalRecirc * (concHClRec / 100);
-      concHClAr = (100 * debMasHClRecirc) / (debMasTotalRecirc + debMasEauAppoint);
-
-      // Bilan enthalpique → température de sortie
-      const chaleurAbsHCl = 0.5556 * 850;
-      const entTotalSortie =
-        entIn +
-        debMasEauAppoint * inp.tempEauAp +
-        debMasHClPurge * chaleurAbsHCl +
-        debMasEvap * (ts - inp.tempEauAp) -
-        debMasTotalPurge * 0.96 * ts;
-      const a = 1e-6 * (masEp.CO2 * 46.5 + masEp.H2O * 80.5 + masEp.O2 * 24.5 + masEp.N2 * 27 + masEp.SO2 * 25.5 + masEp.HCl * 11.5);
-      const b = masEp.CO2 * 0.226 + masEp.H2O * 0.427 + masEp.N2 * 0.239 + masEp.O2 * 0.225 + masEp.SO2 * 0.164 + masEp.HCl * 0.19;
-      const c = -(entTotalSortie - masEp.H2O * 597);
-      const tempSortie = racineCarre(a, b, c);
-
-      res = {
-        pO2in, concHClInSec, concSO2InSec, masTot, volTot, Squench, vitesse,
-        ts, tensVapH2O, debMasEvap,
-        concHClRec, concHClAr, pHClPart, pIncond, debMolIncond,
-        masTotSat, volTotSat, roSaturee,
-        masEp, masTotEp, volTotEp, pO2s, concHClSec, concSO2Sec, roEpuree,
-        diamCone, sPassage, vPassage, pVenturi,
-        cpg, debMasLiqAr, te, zsat,
-        pH, pHRec,
-        debMasHClPurge, debMasTotalPurge, debMasEauAppoint, debMasTotalRecirc,
-        tempSortie,
-        effHCl: masIn.HCl > 0 ? ((masIn.HCl - masEp.HCl) / masIn.HCl) * 100 : 0,
-      };
-
-      if (Math.abs(ts - tempSortie) < deltaBoucle2) { converge = true; break outer; }
+      const e = etat(ts, tensVapH2O, debMasEvap, concHClRec, concHClAr);
+      if (!e) break;
+      res = e;
+      concHClAr = e.concHClAr;
+      if (Math.abs(ts - e.tempSortie) < deltaBoucle2) { converge = true; break outer; }
       concHClRec += 0.0001;
       compt++;
     }
     deltaBoucle2 += 0.5;
-    // ORIGINE : le VB relance la boucle depuis les concentrations initiales
-    if (ORI) { concHClRec = 0.01; concHClAr = 0.05; }
+    // le VB relance la boucle depuis les concentrations initiales
+    concHClRec = 0.01; concHClAr = 0.05;
   }
 
-  return res ? { ...res, converge, modeOrigine: ORI } : null;
+  return res ? { ...res, converge, modeOrigine: true } : null;
 }
 
 // ═══════════════════════════════════════════════════════════════════
@@ -388,6 +432,7 @@ const SATURATORDesign = ({ innerData, setInnerData, upstreamT_IN, upstreamFG_IN,
     constNusselt: getInitialValue('QD_constNusselt', 2),
     coefHautSat: getInitialValue('QD_coefHautSat', 1.5),
     modeOrigine: getInitialValue('QD_modeOrigine', false),
+    concHClRec: getInitialValue('QD_concHClRec', CONC_HCL_REC_DEFAUT),
   });
 
   const [typeEau, setTypeEau] = useState(getInitialValue('Type_eau', 'eau potable'));
@@ -460,6 +505,7 @@ const SATURATORDesign = ({ innerData, setInnerData, upstreamT_IN, upstreamFG_IN,
       QD_constNusselt: quenchParams.constNusselt,
       QD_coefHautSat: quenchParams.coefHautSat,
       QD_modeOrigine: quenchParams.modeOrigine,
+      QD_concHClRec: quenchParams.concHClRec,
       ...(r && !r.erreurTs
         ? {
             QD: r,
@@ -493,6 +539,7 @@ const SATURATORDesign = ({ innerData, setInnerData, upstreamT_IN, upstreamFG_IN,
     if (r.debMasTotalRecirc < 0)
       warnings.push(`${t('QD_warn_recirc')} (${fmt(r.debMasTotalRecirc, 0)} kg/h)`);
     if (!r.converge) warnings.push(t('QD_warn_convergence'));
+    if (r.absorptionNulle) warnings.push(t('QD_warn_conc_trop_forte'));
   }
 
   const outEl = (label, value, unit = '', d = 2, warn = false) => ({
@@ -591,7 +638,7 @@ const SATURATORDesign = ({ innerData, setInnerData, upstreamT_IN, upstreamFG_IN,
 
       {r?.erreurTs && (
         <div style={{ padding: 12, marginBottom: 12, borderRadius: 4, backgroundColor: '#fee2e2', color: '#991b1b', border: '1px solid #fca5a5' }}>
-          ❌ {t('QD_err_ts')}
+          ❌ {t(r.erreurConc ? 'QD_err_conc' : 'QD_err_ts')}
         </div>
       )}
       {!r && (
@@ -656,6 +703,8 @@ const SATURATORDesign = ({ innerData, setInnerData, upstreamT_IN, upstreamFG_IN,
             <QInField label="QD_diam_cone" value={quenchParams.chkCone ? quenchParams.diamCone : (DIAM_CONE_AUTO[quenchParams.diamQuench] || 0)}
               onChange={setQ('diamCone')} disabled={!quenchParams.chkCone} step="5" t={t} />
             <QInField label="QD_temp_eau_appoint" value={quenchParams.tempEauAp} onChange={setQ('tempEauAp')} step="1" t={t} />
+            {/* Calcul corrigé : concentration saisie ; mode d'origine : calculée par la boucle du VB */}
+            <QInField label="QD_conc_hcl_rec_saisie" value={quenchParams.concHClRec} onChange={setQ('concHClRec')} step="0.1" disabled={quenchParams.modeOrigine} t={t} />
             <QInField label="QD_eff_venturi" value={quenchParams.effVenturi} onChange={setQ('effVenturi')} step="0.05" t={t} />
             <QInField label="QD_diam_gouttes" value={quenchParams.diamGouttes} onChange={setQ('diamGouttes')} step="10" t={t} />
             <QInField label="QD_const_nusselt" value={quenchParams.constNusselt} onChange={setQ('constNusselt')} step="1" t={t} />
