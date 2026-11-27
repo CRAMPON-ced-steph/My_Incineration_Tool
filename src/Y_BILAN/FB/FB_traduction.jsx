@@ -306,6 +306,7 @@ export const translations = {
     'OPEX': 'OPEX',
     'Rapport': 'Rapport',
     'Fluidisation': 'Fluidisation',
+    'Design réacteur': 'Design réacteur',
 
     // ────────────────────────────────────────────────────────
     // ACTION BUTTONS - CLEAR / SAVE / SEND
@@ -1045,6 +1046,7 @@ export const translations = {
     'OPEX': 'OPEX',
     'Rapport': 'Report',
     'Fluidisation': 'Fluidisation',
+    'Design réacteur': 'Reactor design',
 
     // ────────────────────────────────────────────────────────
     // ACTION BUTTONS - CLEAR / SAVE / SEND
@@ -1781,6 +1783,7 @@ export const translations = {
     'OPEX': 'OPEX',
     'Rapport': 'Informe',
     'Fluidisation': 'Fluidización',
+    'Design réacteur': 'Diseño del reactor',
     'Effacer': 'Borrar',
     'Enregistrer': 'Guardar',
     'Retour au flow': 'Volver al flujo',
@@ -2402,6 +2405,7 @@ export const translations = {
     'OPEX': 'OPEX',
     'Rapport': 'Bericht',
     'Fluidisation': 'Fluidisierung',
+    'Design réacteur': 'Reaktorauslegung',
     'Effacer': 'Löschen',
     'Enregistrer': 'Speichern',
     'Retour au flow': 'Zurück zum Ablauf',
@@ -3023,6 +3027,7 @@ export const translations = {
     'OPEX': 'OPEX',
     'Rapport': 'Rapporto',
     'Fluidisation': 'Fluidizzazione',
+    'Design réacteur': 'Progettazione del reattore',
     'Effacer': 'Cancella',
     'Enregistrer': 'Salva',
     'Retour au flow': 'Torna al flusso',
@@ -3644,6 +3649,7 @@ export const translations = {
     'OPEX': 'OPEX',
     'Rapport': 'Relatório',
     'Fluidisation': 'Fluidização',
+    'Design réacteur': 'Projeto do reator',
     'Effacer': 'Apagar',
     'Enregistrer': 'Guardar',
     'Retour au flow': 'Voltar ao fluxo',
@@ -4265,6 +4271,7 @@ export const translations = {
     'OPEX': 'OPEX',
     'Rapport': '报告',
     'Fluidisation': '流化',
+    'Design réacteur': '反应器设计',
     'Effacer': '清除',
     'Enregistrer': '保存',
     'Retour au flow': '返回流程',
@@ -4886,6 +4893,7 @@ export const translations = {
     'OPEX': 'OPEX',
     'Rapport': 'レポート',
     'Fluidisation': '流動化',
+    'Design réacteur': '反応器設計',
     'Effacer': '消去',
     'Enregistrer': '保存',
     'Retour au flow': 'フローに戻る',
@@ -5507,6 +5515,7 @@ export const translations = {
     'OPEX': 'OPEX',
     'Rapport': 'Отчёт',
     'Fluidisation': 'Псевдоожижение',
+    'Design réacteur': 'Конструкция реактора',
     'Effacer': 'Очистить',
     'Enregistrer': 'Сохранить',
     'Retour au flow': 'Вернуться к схеме',
@@ -6128,6 +6137,7 @@ export const translations = {
     'OPEX': 'OPEX',
     'Rapport': 'تقرير',
     'Fluidisation': 'التسييل',
+    'Design réacteur': 'تصميم المفاعل',
     'Effacer': 'مسح',
     'Enregistrer': 'حفظ',
     'Retour au flow': 'العودة إلى المخطط',

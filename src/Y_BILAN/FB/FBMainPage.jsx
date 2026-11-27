@@ -10,6 +10,7 @@ import { fmt } from '../../A_Transverse_fonction/formatNumber';
 import Pollutant from './3_Pollutant_Emission';
 import DimensionnementTab from './3_VouteTab';
 import FluidisationTab from './6_FluidisationTab';
+import ReacteurDesignTab from './7_ReacteurDesignTab';
 import Recuperateur from './4_Recuperator';
 import FBopex from './5_FB_Opex';
 import FBCalcOpex from './5_1_FB_calcul_Opex';
@@ -90,6 +91,7 @@ const FBMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
     { name: 'pollutant', label: t('Polluant') || 'Polluant' },
     { name: 'voute', label: t('Voûte') || 'Voûte' },
     { name: 'fluidisation', label: t('Fluidisation') || 'Fluidisation' },
+    { name: 'reacteur', label: t('Design réacteur') || 'Design réacteur' },
     { name: 'HX', label: t('HX') || 'HX' },
     { name: 'opex', label: t('OPEX') || 'OPEX' },
     { name: 'rapport', label: t('Rapport') || 'Rapport' },
@@ -432,6 +434,16 @@ const FBMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
           />
         );
 
+      case 'reacteur':
+        return (
+          <ReacteurDesignTab
+            innerData={innerDataRef.current}
+            innerDataTick={innerDataTick}
+            currentLanguage={currentLanguage}
+            nodeId={nodeId}
+          />
+        );
+
       case 'HX':
         return (
           <Recuperateur
@@ -598,7 +610,7 @@ const FBMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, currentLan
         }}
       >
         <ContenuOnglets
-          tabs={tabs.map((tab) => ({ ...tab, content: renderOnglet(tab.name), affichage: tab.name === 'opex' || tab.name === 'rapport' }))}
+          tabs={tabs.map((tab) => ({ ...tab, content: renderOnglet(tab.name), affichage: tab.name === 'opex' || tab.name === 'rapport' || tab.name === 'reacteur' }))}
           actif={activeTab}
         />
       </div>
