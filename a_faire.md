@@ -218,3 +218,14 @@ Le mode « Calcul Pyrofluid d'origine » reproduit `ClassTourLavage.Calcul` (éc
 - [x] **Vitesse du dévésiculeur** : vitesse réelle (flux massique / masse volumique des fumées) au lieu du flux massique de Pyrofluid.
 - [x] **Chaleur latente en sortie de condenseur** : 597 kcal/kg partout (Pyrofluid : 547 dans l'enthalpie des fumées). Puissance du condenseur −0,55 %.
 - [x] **Fumées non saturées en entrée** : saturation adiabatique au contact du liquide (température de sortie et eau évaporée, comptée dans l'appoint) ; avec sous-refroidissement, des fumées non saturées à la température du condenseur gardent leur eau. Cas test 80 °C, 2 600 kg/h d'eau : sortie 55,7 °C, 295 kg/h évaporés (avant : 13 595 kg/h d'eau en sortie à 80 °C).
+
+---
+
+## Quench et saturateur (`src/Y_BILAN/QUENCH`, `src/Y_BILAN/SATURATOR`) — contrôle du 27/11/2026
+
+Le mode « Calcul Pyrofluid d'origine » des deux nœuds reproduit `ClassQuench.Calcul` (écart < 0,001 %, `scripts/verif_quench`). Points de Pyrofluid repris tels quels par le **calcul corrigé** (défaut), non corrigés :
+
+- [ ] **Purge et concentration acide sans base physique** : la boucle 2 augmente la concentration HCl de la recirculation (0,01 %, pas de 0,0001) jusqu'à ce que la température de sortie du bilan enthalpique égale Ts. Ts et l'évaporation étant déjà tirées de ce bilan, la purge ne fait qu'absorber des écarts numériques. Mode d'origine : l'écart vient des coefficients (Psat × 0,9954 : 79 kg/h d'eau « perdus » sur le cas test) → purge 975 kg/h, 0,16 % HCl. Calcul corrigé : pas de point d'équilibre, la boucle s'arrête à la tolérance → purge 72 kg/h (tolérance 0,5 °C), 100 kg/h (0,3 °C) ; cas HCl 20 kg/h : pas de convergence avant 1 °C. Chaîne FB par défaut : purge 336 kg/h (corrigé) contre 2 263 kg/h (origine). Purge, appoint, HCl sortant et pH en dépendent. Piste : concentration (ou pH) de la recirculation saisie, purge par le bilan HCl, Ts par saturation + bilan enthalpique global résolus ensemble.
+- [ ] **Chaleur de l'eau d'appoint créée** : `EntEauAppointTs = évaporation × (Ts − T appoint)` est **ajouté** au bilan des fumées (≈ 84 000 kcal/h = 98 kW sur le cas test) ; l'eau d'appoint entre à T appoint et c'est le gaz qui la chauffe. Bilan global cohérent (appoint à 25 °C, recirculation à 1 % HCl) : évaporation 1 374 kg/h au lieu de 1 522 (−10 %), Ts 80,2 °C au lieu de 80,5 °C ; même ordre sur les autres cas (−11 % à 450 °C).
+- [ ] Mineur : 273,5 et 273 au lieu de 273,15 (vitesse, masses volumiques, ≤ 0,1 %).
+

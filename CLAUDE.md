@@ -662,6 +662,12 @@ Doit être l'**inverse cohérent** de `option_T` :
   - condenseur : chaleur latente 597 kcal/kg en sortie comme en entrée (Pyrofluid : 547) ; des fumées non saturées à la température du condenseur gardent leur eau (`min(saturation, eau entrante)`).
   - sans sous-refroidissement : `saturationAdiabatique` — les fumées se saturent au contact du liquide recirculé (bilan enthalpique, eau liquide à la température de saturation) ; `tAbs` = température de saturation adiabatique, `eauEvaporee` ajoutée à l'appoint (`appointAbs`, OPEX). Fumées déjà saturées (quench en amont) : quasi inchangé. Eau sortante = eau des fumées à l'entrée de l'absorption (plus d'eau créée). Champs « Température de saturation adiabatique » et « Eau évaporée dans la tour » (onglet, 10 langues).
 
+### Quench et saturateur — contrôle contre `ClassQuench.vb` (2026-11-27)
+
+- `calculQuench` (`Y_BILAN/QUENCH/4_QUENCH_Design1_ML.jsx`) et `calculSaturator` (`Y_BILAN/SATURATOR/4_SATURATOR_Design1_ML.jsx`) reprennent tous deux `ClassQuench.Calcul`. Mode « Calcul Pyrofluid d'origine » (`QD_modeOrigine`, bouton de l'onglet Design, ajouté au saturateur le 27/11) contrôlé contre une transcription littérale (`scripts/verif_quench/vb_quench.py`, 5 cas) : écart < 0,001 % sur toutes les sorties des deux nœuds. Relancer après toute modification : `node scripts/verif_quench/comparer.mjs`.
+- Mode d'origine : Ts par pas de 0,1 °C depuis 60 °C, Ts / 1,0005, Psat × 0,9954, coefficient `11 ^ -6` de la chaleur d'évacuation, relance de la boucle acide à chaque élargissement de la tolérance. Calcul corrigé (défaut) : Ts exacte, sans ces coefficients.
+- Points de Pyrofluid relevés, non corrigés (voir `a_faire.md`) : concentration acide et purge déterminées par la fermeture d'un bilan enthalpique qui ne dépend pas d'elles (résultat fixé par les coefficients 0,9954 / 1,0005 en mode d'origine, par la tolérance en calcul corrigé) ; terme `EntEauAppointTs = évaporation × (Ts − T appoint)` ajouté au bilan (≈ 98 kW sur le cas test : évaporation et appoint ≈ +10 %).
+
 ### Points ouverts
 
 Les anomalies relevées mais non corrigées (GF, RK) sont listées dans `a_faire.md` à la racine du dépôt. Cocher / retirer une ligne une fois corrigée.
