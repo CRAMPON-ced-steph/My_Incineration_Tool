@@ -63,6 +63,14 @@ function muFumees(y, tC) {
 }
 
 const arrondi05 = (x) => Math.ceil(x * 2) / 2;
+// Arrondi05 du module Global de Pyrofluid : partie décimale ≤ 0,4 → entier inférieur,
+// 0,4 < d ≤ 0,5 → n,5, d > 0,5 → entier supérieur (2,3 → 2 ; 2,45 → 2,5 ; 2,7 → 3).
+const arrondi05Pyrofluid = (x) => {
+  const dec = 0.5 - (x - Math.floor(x));
+  if (dec < 0) return Math.floor(x) + 1;
+  if (dec < 0.1) return Math.floor(x) + 0.5;
+  return Math.floor(x);
+};
 const volDe = (m) => ({
   CO2: (m.CO2 * VM) / M.CO2, H2O: (m.H2O * VM) / M.H2O, N2: (m.N2 * VM) / M.N2,
   O2: (m.O2 * VM) / M.O2, SO2: (m.SO2 * VM) / M.SO2, HCl: (m.HCl * VM) / M.HCl,
@@ -263,8 +271,9 @@ export function calculTour(inp) {
     // ORIGINE — transcription de la boucle Do … Loop de ClassTourLavage.Calcul :
     //  - cibles de dimensionnement en dur : 50 mg/Nm3 (SO2) et 10 mg/Nm3 (HCl)
     //  - sans sous-refroidissement : entrée exprimée en ppm volumiques (débit VOLUMIQUE × 1e6 / volume total),
-    //    hauteur SO2 = NUT × HUT × 1,5 + 0,049 ; facteur (100 − « PourcentH2O ») / 100 sur le SO2 sortant ;
-    //    eau sortante = saturation sous 760 mmHg
+    //    hauteur SO2 = NUT × HUT × 1,5 + 0,049 ; eau sortante = saturation sous 760 mmHg ;
+    //    facteur (100 − PourcentH2O) / 100 sur le SO2 et le HCl sortants : PourcentH2O n'est calculé que dans
+    //    la branche avec sous-refroidissement, il vaut 0 à l'ouverture de la fenêtre → facteur 1
     //  - avec sous-refroidissement : entrée en mg/Nm3 humide, + 0,49 ; eau sortante = eau en sortie de condenseur
     //  - HCl en sortie = résultat : C_entrée / exp(H_HCl / HUT_SO2)
     const molIncondS = ((volAbs.CO2 + volAbs.N2 + volAbs.O2) * 1000) / VM;
@@ -288,7 +297,7 @@ export function calculTour(inp) {
       nutHCl = numHCl > 0 && denHCl > 0 ? Math.log(numHCl / denHCl) : 0;
       hGarnSO2 = nutSO2 * hutSO2 * 1.5 + (cond ? 0.49 : 0.049);
       hGarnHCl = nutHCl * hutHCl * 1.5 + 0.49;
-      masSO2s = cibleSO2 * 1e-6 * ((21 - pO2s) / 10) * volSecS * (cond ? 1 : (100 - fracSec) / 100);
+      masSO2s = cibleSO2 * 1e-6 * ((21 - pO2s) / 10) * volSecS;
       masHCls = Math.min(concHClSortie, concHClIn) * 1e-6 * ((21 - pO2s) / 10) * volSecS;
       const vSO2 = (masSO2s * VM) / M.SO2;
       const vHCl = (masHCls * VM) / M.HCl;
@@ -330,9 +339,10 @@ export function calculTour(inp) {
   // ─── Dévésiculeur ───
   const vitDevesEng = 0.08 * 3600 * Math.sqrt(Math.max(roLiq - roSortie, 0) / roSortie);
   const secDeves = vitDevesEng > 0 ? masTotS / (roSortie * vitDevesEng) : 0;
-  // ORIGINE (avec sous-refroidissement) : diamètre du dévésiculeur non arrondi
+  // ORIGINE : diamètre du dévésiculeur non arrondi avec sous-refroidissement, arrondi par Arrondi05
+  // de Pyrofluid sans sous-refroidissement ; calcul corrigé : arrondi au 0,5 m supérieur
   const diamDevesBrut = Math.sqrt((4 * secDeves) / Math.PI);
-  const diamDeves = ORI && cond ? diamDevesBrut : arrondi05(diamDevesBrut);
+  const diamDeves = ORI ? (cond ? diamDevesBrut : arrondi05Pyrofluid(diamDevesBrut)) : arrondi05(diamDevesBrut);
   const secDevesRet = (Math.PI * diamDeves * diamDeves) / 4;
   const vitRetenue = secDevesRet > 0 ? masTotS / secDevesRet : 0; // kg/(m2.h) ≈ m/h (legacy)
   const dPDeves = 0.0169 * roSortie * inp.epaisDeves * Math.pow(vitRetenue / 3600, 1.85);

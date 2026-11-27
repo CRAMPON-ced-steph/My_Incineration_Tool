@@ -653,6 +653,12 @@ Doit être l'**inverse cohérent** de `option_T` :
 - Hypothèse : max(Da) de la formule Hbav = Ø de la gaine d'air de fluidisation.
 - Bouton « 🖨 Imprimer l'onglet » (`imprimerOnglet`) : imprime **seulement cet onglet** (iframe cachée, A4 paysage, champs remplacés par leur valeur, éléments `[data-no-print]` retirés, cartes `data-carte` « petite » non coupées). L'onglet n'est pas ajouté au rapport FB (choix de Cédric du 27/11/2026).
 
+### Tour de lavage — contrôle contre `ClassTourLavage.vb` (2026-11-27)
+
+- `calculTour` (`Y_BILAN/SCRUBBER/4_SCRUBBER_TourLavage.jsx`), mode « Calcul Pyrofluid d'origine », contrôlé contre une transcription littérale de `ClassTourLavage.Calcul` (`scripts/verif_tour_lavage/vb_port.py`, 7 cas, avec et sans sous-refroidissement, VSP et autres garnissages) : écart < 0,001 % sur toutes les sorties. Relancer après toute modification : `node scripts/verif_tour_lavage/comparer.mjs`.
+- Corrigé le 27/11 (mode d'origine seulement) : diamètre du dévésiculeur sans sous-refroidissement arrondi par `Arrondi05` de Pyrofluid (`arrondi05Pyrofluid` : décimale ≤ 0,4 → entier inférieur ; avant : 0,5 supérieur, 2,27 m donnait 2,5 au lieu de 2) ; plus de facteur (100 − PourcentH2O) / 100 sur le SO2 sortant (PourcentH2O vaut 0 dans cette branche, SO2 sortant −0,43 % avant).
+- Le calcul corrigé (défaut) garde volontairement l'arrondi au 0,5 m supérieur. Ses trois points ouverts sont dans `a_faire.md` (vitesse du dévésiculeur, chaleur latente du condenseur, fumées non saturées).
+
 ### Points ouverts
 
 Les anomalies relevées mais non corrigées (GF, RK) sont listées dans `a_faire.md` à la racine du dépôt. Cocher / retirer une ligne une fois corrigée.
