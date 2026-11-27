@@ -11,12 +11,17 @@
 // lorsqu'ils sont affichés (graphiques, calculs inutiles en arrière-plan).
 //
 // tabs : [{ name, content, affichage? }] ; actif : name de l'onglet affiché.
+// Un indice (nombre) est aussi accepté : avant, actif={activeTab} avec un indice ne
+// correspondait à aucun name et tous les onglets restaient masqués (page vide : STACK,
+// DENOX, SCRUBBER, REACTOR).
 import React from 'react';
 
-const ContenuOnglets = ({ tabs, actif }) => (
+const ContenuOnglets = ({ tabs, actif }) => {
+  const nomActif = typeof actif === 'number' ? tabs[actif]?.name : actif;
+  return (
   <>
     {tabs.map((tab) => {
-      const visible = tab.name === actif;
+      const visible = tab.name === nomActif;
       if (tab.affichage && !visible) return null;
       return (
         <div key={tab.name} style={visible ? undefined : { display: 'none' }} aria-hidden={visible ? undefined : 'true'}>
@@ -25,6 +30,7 @@ const ContenuOnglets = ({ tabs, actif }) => (
       );
     })}
   </>
-);
+  );
+};
 
 export default ContenuOnglets;
