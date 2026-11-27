@@ -111,8 +111,9 @@ const parseValue = (v) => { const p = parseFloat(v); return isNaN(p) ? 0 : p; };
 // inp.modeOrigine = true  → calcul Pyrofluid d'origine : reproduit ClassTourLavage.vb à l'identique,
 //                           y compris ses particularités (voir commentaires « ORIGINE »).
 // inp.modeOrigine = false → calcul corrigé (défaut).
-// Hypothèse commune : un quench est placé en amont, les fumées entrent saturées
-// (température d'entrée = température de saturation du quench, recup_Ts dans le VB).
+// Hypothèse commune : un saturateur (nœud SATURATOR, ClassQuench du VB) est placé en amont, les fumées
+// entrent saturées (température d'entrée = température de saturation, recup_Ts dans le VB). Un quench
+// (QUENCH, QUENCHsimple) refroidit sans saturer : il ne remplace pas le saturateur.
 export function calculTour(inp) {
   const ORI = !!inp.modeOrigine;
   const Tin = inp.tempFumees;
@@ -527,9 +528,9 @@ const TourLavageCalculator = ({ innerData = {}, setInnerData, currentLanguage = 
     key,
   [languageCode]);
 
-  // Valeurs initiales tirées du flux amont (node quench → onglets 2 & 3)
+  // Valeurs initiales tirées du flux amont (saturateur → onglets 2 & 3)
   const defaultsFromNode = useCallback(() => {
-    // Priorité à la sortie du quench amont calculée par le moteur Pyrofluid (fumées saturées et épurées) ;
+    // Priorité à la sortie du saturateur amont (fumées saturées et épurées, FG_quench_out_kg_h) ;
     // à défaut, flux générique du nœud amont.
     const Q = innerData?.FG_quench_out_kg_h;
     const FG = Q || innerData?.FG_out_kg_h || innerData?.FG_OUT_kg_h || {};
@@ -597,7 +598,7 @@ const TourLavageCalculator = ({ innerData = {}, setInnerData, currentLanguage = 
   const pressionEntree = parseFloat(innerData?.P_OUT) || 0;
   const pressionSortie = pressionEntree - pdcTour;
 
-  // ─── État de la liaison avec le quench amont ───
+  // ─── État de la liaison avec le saturateur amont ───
   const liaisonQuench = useMemo(() => {
     const Q = innerData?.FG_quench_out_kg_h;
     if (!Q) return { present: false };
