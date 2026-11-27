@@ -147,7 +147,8 @@ const QUENCHsimpleDesign = ({ innerData, setInnerData, upstreamT_IN, currentLang
   const T_IN = upstreamT_IN ?? 200;
   const T_sortie = innerData?.T_sortie || 80;
   const Debit_fumees_humide_Nm3_h = innerData?.FG_humide_EAU_tot || 28000;
-  const Eau_add = innerData?.Q_eau_kg_h || 5000;
+  // Eau injectée calculée dans l'onglet Fumées (0 si pas de refroidissement : plus de 5 000 kg/h par défaut)
+  const Eau_add = Math.max(0, innerData?.Q_eau_kg_h ?? 0);
 
   const DiameterQuench = Design_parameters['Quench diameter [m]'];
   const P_pulverisation = Design_parameters['Pression pulverisation [bar]'];

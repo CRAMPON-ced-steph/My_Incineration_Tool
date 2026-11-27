@@ -40,8 +40,14 @@ const SATURATORFlueGasParameters = ({ innerData, upstreamT_IN, upstreamFG_IN, cu
   const T_IN = upstreamT_IN ?? 200;
   const FG_IN = upstreamFG_IN || { CO2: 1, H2O: 1, O2: 1, N2: 1 };
 
+  // Saturateur : sortie = fumées saturées calculées dans l'onglet Design (calcul de saturation).
+  // Tant que ce calcul n'est pas disponible, on garde le refroidissement à la température visée.
+  const Q_sat = innerData?.FG_quench_out_kg_h;
+  const T_sat = innerData?.T_quench_out;
+  const sature = !!Q_sat && Number.isFinite(T_sat);
+
   // Extract parameters from state
-  const T_out = emissions_QUENCH['Flue gas temperature outlet [°C]'];
+  const T_out = sature ? T_sat : emissions_QUENCH['Flue gas temperature outlet [°C]'];
   const T_air = emissions_QUENCH['Ambient air temperature [°C]'];
   const V_air_ingress = emissions_QUENCH['Volume of air ingress [Nm3/h]'];
   const Pth = emissions_QUENCH['Thermal losses [%]'];
@@ -74,7 +80,13 @@ const SATURATORFlueGasParameters = ({ innerData, upstreamT_IN, upstreamFG_IN, cu
   let T_with_air_ingress_out = T_out;
 
   // Calculate with or without air ingress
-  if (V_air_ingress !== 0) {
+  if (sature) {
+    // eau évaporée = eau des fumées saturées − eau entrante (pas d'entrée d'air, pas de pertes)
+    H_in_quench = h_fumee(T_IN, FG_IN.CO2, FG_IN.H2O, FG_IN.N2, FG_IN.O2);
+    H_out_quench = h_fumee(T_out, FG_IN.CO2, FG_IN.H2O, FG_IN.N2, FG_IN.O2);
+    Delta_H = H_in_quench - H_out_quench;
+    Q_eau_kg_h = Math.max(0, (Q_sat.H2O || 0) - FG_H2O_kg_h);
+  } else if (V_air_ingress !== 0) {
     FG_air_O2_kg_h = 0.21 * V_air_ingress;
     FG_air_N2_kg_h = 0.79 * V_air_ingress;
 
@@ -99,7 +111,12 @@ const SATURATORFlueGasParameters = ({ innerData, upstreamT_IN, upstreamFG_IN, cu
     N2: FG_N2_kg_h
   };
 
-  const masses_FG_out_QUENCH = {
+  const masses_FG_out_QUENCH = sature ? {
+    CO2: Q_sat.CO2 || 0,
+    O2: Q_sat.O2 || 0,
+    H2O: Q_sat.H2O || 0,
+    N2: Q_sat.N2 || 0,
+  } : {
     CO2: FG_CO2_kg_h + FG_air_CO2_kg_h,
     O2: FG_O2_kg_h + FG_air_O2_kg_h,
     H2O: FG_H2O_kg_h + Q_eau_kg_h + FG_air_H2O_kg_h,
@@ -176,8 +193,14 @@ const SATURATORFlueGasParameters = ({ innerData, upstreamT_IN, upstreamFG_IN, cu
           {t('Clear memory')}
         </button>
 
-        {/* Inline parameters form */}
-        <div style={{ display: 'grid', gap: '12px' }}>
+        {sature && (
+          <div style={{ padding: 10, marginBottom: 12, borderRadius: 4, backgroundColor: '#e0f2fe', color: '#075985', border: '1px solid #7dd3fc' }}>
+            ℹ️ {t('SAT_info_sortie_saturee')}
+          </div>
+        )}
+
+        {/* Inline parameters form (non utilisé quand la sortie saturée est disponible) */}
+        {!sature && <div style={{ display: 'grid', gap: '12px' }}>
           {Object.entries(emissions_QUENCH).map(([key, value]) => (
             <div
               key={key}
@@ -212,7 +235,7 @@ const SATURATORFlueGasParameters = ({ innerData, upstreamT_IN, upstreamFG_IN, cu
               />
             </div>
           ))}
-        </div>
+        </div>}
       </div>
 
       <h3>{t('Calculated parameters')}</h3>
@@ -222,10 +245,12 @@ const SATURATORFlueGasParameters = ({ innerData, upstreamT_IN, upstreamFG_IN, cu
       <h4>{t('Flue gas inlet at inlet temperature')} ({T_IN}°C)</h4>
       <MassCalculator masses={masses_FG_in_QUENCH} TemperatureImposee={T_IN} />
 
-      <h4>{t('Air ingress at ambient temperature')} ({T_air}°C)</h4>
-      <MassCalculator masses={masses_Air_ingress} TemperatureImposee={T_air} />
+      {!sature && <>
+        <h4>{t('Air ingress at ambient temperature')} ({T_air}°C)</h4>
+        <MassCalculator masses={masses_Air_ingress} TemperatureImposee={T_air} />
+      </>}
 
-      <h4>{t('Flue gas outlet at outlet temperature')} ({T_out}°C)</h4>
+      <h4>{t('Flue gas outlet at outlet temperature')} ({fmt(T_out, 1)}°C)</h4>
       <MassCalculator masses={masses_FG_out_QUENCH} TemperatureImposee={T_out} />
     </div>
   );

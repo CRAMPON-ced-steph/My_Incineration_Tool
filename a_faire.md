@@ -223,9 +223,11 @@ Le mode « Calcul Pyrofluid d'origine » reproduit `ClassTourLavage.Calcul` (éc
 
 ## Quench et saturateur (`src/Y_BILAN/QUENCH`, `src/Y_BILAN/SATURATOR`) — contrôle du 27/11/2026
 
-Le mode « Calcul Pyrofluid d'origine » des deux nœuds reproduit `ClassQuench.Calcul` (écart < 0,001 %, `scripts/verif_quench`) et garde ces erreurs. **Saturateur : les deux premiers points sont corrigés dans le calcul par défaut le 27/11/2026** (concentration de recirculation saisie, 1 % par défaut ; bilan global sans `EntEauAppointTs`). **Quench : non corrigés** (même calcul que le saturateur avant correction) :
+Le mode « Calcul Pyrofluid d'origine » du saturateur reproduit `ClassQuench.Calcul` (écart < 0,001 %, `scripts/verif_quench`) et garde ses erreurs. Corrigé le 27/11/2026 :
 
-- [ ] **Purge et concentration acide sans base physique** : la boucle 2 augmente la concentration HCl de la recirculation (0,01 %, pas de 0,0001) jusqu'à ce que la température de sortie du bilan enthalpique égale Ts. Ts et l'évaporation étant déjà tirées de ce bilan, la purge ne fait qu'absorber des écarts numériques. Mode d'origine : l'écart vient des coefficients (Psat × 0,9954 : 79 kg/h d'eau « perdus » sur le cas test) → purge 975 kg/h, 0,16 % HCl. Calcul corrigé : pas de point d'équilibre, la boucle s'arrête à la tolérance → purge 72 kg/h (tolérance 0,5 °C), 100 kg/h (0,3 °C) ; cas HCl 20 kg/h : pas de convergence avant 1 °C. Chaîne FB par défaut : purge 336 kg/h (corrigé) contre 2 263 kg/h (origine). Purge, appoint, HCl sortant et pH en dépendent. Piste : concentration (ou pH) de la recirculation saisie, purge par le bilan HCl, Ts par saturation + bilan enthalpique global résolus ensemble.
-- [ ] **Chaleur de l'eau d'appoint créée** : `EntEauAppointTs = évaporation × (Ts − T appoint)` est **ajouté** au bilan des fumées (≈ 84 000 kcal/h = 98 kW sur le cas test) ; l'eau d'appoint entre à T appoint et c'est le gaz qui la chauffe. Bilan global cohérent (appoint à 25 °C, recirculation à 1 % HCl) : évaporation 1 374 kg/h au lieu de 1 522 (−10 %), Ts 80,2 °C au lieu de 80,5 °C ; même ordre sur les autres cas (−11 % à 450 °C).
-- [ ] Mineur : 273,5 et 273 au lieu de 273,15 (vitesse, masses volumiques, ≤ 0,1 %).
-
+- [x] **Saturateur, purge et concentration acide sans base physique** : concentration HCl de recirculation saisie (1 % par défaut), purge par le bilan HCl.
+- [x] **Saturateur, chaleur de l'eau d'appoint créée** (`EntEauAppointTs`) : bilan enthalpique global, l'eau d'appoint est chauffée par les fumées (évaporation −10 % sur le cas test).
+- [x] **Saturateur, sortie** : l'aval reçoit les fumées saturées (avant : température visée de l'onglet Fumées, par défaut la température d'entrée).
+- [x] **Quench, calcul de saturation dans l'onglet Design** alors que le quench ne va pas à la saturation : retiré ; OPEX eau = eau injectée ; la tour de lavage en aval reçoit la vraie sortie du quench (avant : fumées saturées à 70 °C au lieu de 200 °C).
+- [x] **Quench simple** : 5 000 kg/h d'eau comptés par défaut sans refroidissement → 0.
+- [ ] Mineur (saturateur) : 273,5 et 273 au lieu de 273,15 (vitesse, masses volumiques, ≤ 0,1 %).

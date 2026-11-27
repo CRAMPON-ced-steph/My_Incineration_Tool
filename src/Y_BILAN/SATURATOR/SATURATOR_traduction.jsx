@@ -68,6 +68,7 @@
 
     // ========== BOUTONS ==========
     'Clear memory': 'Effacer la mémoire',
+    SAT_info_sortie_saturee: 'Saturateur : les fumées sortent saturées. Température, composition et eau évaporée viennent de l\'onglet Design (calcul de saturation) ; la température visée, les entrées d\'air et les pertes thermiques ne sont pas utilisées.',
     'Reset to Default Values': 'Réinitialiser aux valeurs par défaut',
     'Export': 'Exporter',
 
@@ -294,6 +295,7 @@
 
     // ========== BUTTONS ==========
     'Clear memory': 'Clear memory',
+    SAT_info_sortie_saturee: 'Saturator: the flue gas leaves saturated. Temperature, composition and evaporated water come from the Design tab (saturation calculation); target temperature, air ingress and thermal losses are not used.',
     'Reset to Default Values': 'Reset to Default Values',
     'Export': 'Export',
 
@@ -521,6 +523,7 @@
 
     // ========== SCHALTFLÄCHEN ==========
     'Clear memory': 'Speicher löschen',
+    SAT_info_sortie_saturee: 'Sättiger: das Rauchgas tritt gesättigt aus. Temperatur, Zusammensetzung und verdampftes Wasser stammen aus dem Reiter Design (Sättigungsberechnung); Zieltemperatur, Falschluft und Wärmeverluste werden nicht verwendet.',
     'Reset to Default Values': 'Auf Standardwerte zurücksetzen',
     'Export': 'Exportieren',
 
@@ -747,6 +750,7 @@
 
     // ========== PULSANTI ==========
     'Clear memory': 'Cancella memoria',
+    SAT_info_sortie_saturee: 'Saturatore: i fumi escono saturi. Temperatura, composizione e acqua evaporata provengono dalla scheda Design (calcolo di saturazione); temperatura obiettivo, ingressi d\'aria e perdite termiche non sono utilizzati.',
     'Reset to Default Values': 'Ripristina valori predefiniti',
     'Export': 'Esporta',
 
@@ -973,6 +977,7 @@
 
     // ========== BOTÕES ==========
     'Clear memory': 'Limpar memória',
+    SAT_info_sortie_saturee: 'Saturador: os gases saem saturados. Temperatura, composição e água evaporada vêm do separador Design (cálculo de saturação); a temperatura alvo, as entradas de ar e as perdas térmicas não são usadas.',
     'Reset to Default Values': 'Restaurar valores padrão',
     'Export': 'Exportar',
 
@@ -1199,6 +1204,7 @@
 
     // ========== BOTONES ==========
     'Clear memory': 'Borrar memoria',
+    SAT_info_sortie_saturee: 'Saturador: los gases salen saturados. Temperatura, composición y agua evaporada provienen de la pestaña Diseño (cálculo de saturación); la temperatura objetivo, las entradas de aire y las pérdidas térmicas no se utilizan.',
     'Reset to Default Values': 'Restaurar valores predeterminados',
     'Export': 'Exportar',
 
@@ -1425,6 +1431,7 @@
 
     // ========== 按钮 ==========
     'Clear memory': '清除内存',
+    SAT_info_sortie_saturee: '饱和器：烟气以饱和状态离开。温度、组成和蒸发水量来自设计选项卡（饱和计算）；不使用目标温度、漏风和热损失。',
     'Reset to Default Values': '恢复默认值',
     'Export': '导出',
 
@@ -1651,6 +1658,7 @@
 
     // ========== ボタン ==========
     'Clear memory': 'メモリをクリア',
+    SAT_info_sortie_saturee: 'サチュレーター：排ガスは飽和状態で出ます。温度、組成、蒸発水量はデザインタブ（飽和計算）から取得します。目標温度、空気の漏れ込み、熱損失は使用しません。',
     'Reset to Default Values': 'デフォルト値にリセット',
     'Export': 'エクスポート',
 
@@ -1877,6 +1885,7 @@
 
     // ========== КНОПКИ ==========
     'Clear memory': 'Очистить память',
+    SAT_info_sortie_saturee: 'Сатуратор: дымовые газы выходят насыщенными. Температура, состав и испарённая вода берутся из вкладки «Дизайн» (расчёт насыщения); целевая температура, подсосы воздуха и тепловые потери не используются.',
     'Reset to Default Values': 'Восстановить значения по умолчанию',
     'Export': 'Экспортировать',
 
@@ -2103,6 +2112,7 @@
 
     // ========== الأزرار ==========
     'Clear memory': 'مسح الذاكرة',
+    SAT_info_sortie_saturee: 'المُشبِّع: تخرج الغازات مشبَّعة. درجة الحرارة والتركيب والماء المتبخّر مأخوذة من تبويب التصميم (حساب التشبّع)؛ لا تُستخدم درجة الحرارة المستهدفة ولا تسرّبات الهواء ولا الفواقد الحرارية.',
     'Reset to Default Values': 'إعادة تعيين القيم الافتراضية',
     'Export': 'تصدير',
 

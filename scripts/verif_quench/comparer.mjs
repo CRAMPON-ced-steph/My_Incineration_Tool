@@ -1,6 +1,6 @@
-// Contrôle croisé : calculQuench (nœud QUENCH) et calculSaturator (nœud SATURATOR), mode
-// « Calcul Pyrofluid d'origine », contre la transcription littérale de ClassQuench.Calcul
-// (vb_quench.py), sur les cas de cas.json.
+// Contrôle croisé : calculSaturator (nœud SATURATOR), mode « Calcul Pyrofluid d'origine »,
+// contre la transcription littérale de ClassQuench.Calcul (vb_quench.py), sur les cas de cas.json.
+// (Le nœud QUENCH ne va pas à la saturation depuis le 27/11/2026 : plus de calcul ClassQuench.)
 // Usage, depuis la racine du dépôt : node scripts/verif_quench/comparer.mjs
 import * as esbuild from 'esbuild';
 import { execFileSync } from 'node:child_process';
@@ -14,13 +14,12 @@ const tmp = mkdtempSync(join(tmpdir(), 'qu-'));
 const bundle = join(tmp, 'qu.mjs');
 await esbuild.build({
   stdin: {
-    contents: "export { calculQuench } from './src/Y_BILAN/QUENCH/4_QUENCH_Design1_ML.jsx';\n"
-      + "export { calculSaturator } from './src/Y_BILAN/SATURATOR/4_SATURATOR_Design1_ML.jsx';",
+    contents: "export { calculSaturator } from './src/Y_BILAN/SATURATOR/4_SATURATOR_Design1_ML.jsx';",
     resolveDir: join(ici, '../..'), loader: 'js',
   },
   bundle: true, format: 'esm', platform: 'node', outfile: bundle, loader: { '.js': 'jsx', '.jsx': 'jsx' }, jsx: 'automatic', logLevel: 'error',
 });
-const { calculQuench, calculSaturator } = await import(pathToFileURL(bundle).href);
+const { calculSaturator } = await import(pathToFileURL(bundle).href);
 const cas = JSON.parse(readFileSync(join(ici, 'cas.json'), 'utf8'));
 const extrait = (r) => (r && !r.erreurTs ? {
   ts: r.ts, tensVapH2O: r.tensVapH2O, debMasEvap: r.debMasEvap, vitesse: r.vitesse, roSaturee: r.roSaturee, roEpuree: r.roEpuree,
@@ -29,7 +28,6 @@ const extrait = (r) => (r && !r.erreurTs ? {
   debMasTotalRecirc: r.debMasTotalRecirc, concHClAr: r.concHClAr, concHClRec: r.concHClRec, tempSortie: r.tempSortie, debMasLiqAr: r.debMasLiqAr,
 } : null);
 const js = {
-  QUENCH: cas.map((c) => extrait(calculQuench({ ...c.inp, modeOrigine: true }))),
   SATURATOR: cas.map((c) => extrait(calculSaturator({ ...c.inp, modeOrigine: true }))),
 };
 writeFileSync(join(tmp, 'js.json'), JSON.stringify(js));
