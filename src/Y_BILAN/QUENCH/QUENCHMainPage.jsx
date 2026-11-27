@@ -67,12 +67,14 @@ const QUENCHMainPage = ({ nodeData, title, onSendData, onClose, onGoBack, curren
         ResidusOutput: innerData['Residus'] || innerData['ResidusOutput'] || {},
         MasseDechet: innerData['masse'] || 0,
         P_OUT: innerData['P_out_mmCE'] || 0,
-        // Sortie quench calculée (moteur Pyrofluid) — entrée de la tour de lavage aval
-        FG_quench_out_kg_h: innerData['FG_quench_out_kg_h'],
-        T_quench_out: innerData['T_quench_out'],
-        recup_Ts: innerData['recup_Ts'],
-        RoEpuree: innerData['RoEpuree'],
-        P_quench_out_mmCE: innerData['P_quench_out_mmCE'],
+        // Quench sans saturation : pas de sortie « saturée » (réservée au nœud SATURATOR) ;
+        // la tour de lavage aval reprend T_OUT / FG_OUT_kg_h (onglet Fumées)
+        FG_quench_out_kg_h: null,
+        T_quench_out: null,
+        recup_Ts: null,
+        RoEpuree: null,
+        P_quench_out_mmCE: null,
+        QD: null,
         activeNodes_Elec: innerData['activeNodes_Elec'] || [],
         activeNodes_Eau: innerData['activeNodes_Eau'] || [],
         activeNodes_Reactifs: innerData['activeNodes_Reactifs'] || [],

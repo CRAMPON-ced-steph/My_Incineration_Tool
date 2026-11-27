@@ -68,9 +68,8 @@ const QUENCH_Report = ({ innerData = {}, currentLanguage = 'fr', nodeId }) => {
     { label: t('CAP [kg/h]'), value: innerData.Conso_CAP_kg },
   ].filter(r => parseFloat(r.value) > 0);
 
-  // Résultats du calcul Pyrofluid (nouvel onglet Design)
-  const QD = innerData.QD || null;
-  const QDin = innerData.QD_inputs || {};
+  // Dimensionnement de l'onglet Design (quench sans saturation)
+  const QDd = innerData.QUENCH_design || null;
 
   return (
     <div style={styles.container}>
@@ -104,49 +103,23 @@ const QUENCH_Report = ({ innerData = {}, currentLanguage = 'fr', nodeId }) => {
       </Section>
 
       <Section title={t('3. Design')}>
-        {QD && (
-          <>
-            <div style={styles.twoCol}>
-              <SubSection title={t('QD_report_saturation')}>
-                <KV label={t('QD_ts')} value={fmt(QD.ts, 2)} unit="°C" />
-                <KV label={t('QD_eau_evaporee')} value={fmt(QD.debMasEvap, 0)} unit="kg/h" />
-                <KV label={t('QD_zsat')} value={fmt(QD.zsat, 2)} unit="m" />
-                <KV label={t('QD_vitesse_colonne')} value={fmt(QD.vitesse, 2)} unit="m/s" />
-                <KV label={t('QD_vitesse_cone')} value={fmt(QD.vPassage, 2)} unit="m/s" />
-                <KV label={t('QD_diam_cone_retenu')} value={fmt(QD.diamCone, 0)} unit="mm" />
-                <KV label={t('QD_pventuri')} value={fmt(QD.pVenturi, 1)} unit="mmCE" />
-                <KV label={t('Quench diameter [m]')} value={fmt(QDin.diamQuench, 2)} unit="m" />
-              </SubSection>
-              <SubSection title={t('QD_report_sortie')}>
-                <KV label={t('QD_temp_sortie')} value={fmt(QD.tempSortie, 2)} unit="°C" />
-                <KV label={t('QD_eff_hcl')} value={fmt(QD.effHCl, 1)} unit="%" />
-                <KV label={t('QD_hcl_sec')} value={fmt(QD.concHClSec, 1)} unit="mg/Nm³" />
-                <KV label={t('QD_so2_sec')} value={fmt(QD.concSO2Sec, 1)} unit="mg/Nm³" />
-                <KV label={t('QD_ro_epuree')} value={fmt(QD.roEpuree, 3)} unit="kg/m³" />
-                <GasTable
-                  data={{ 'kg/h': QD.masEp }}
-                  t={tr}
-                  gases={['CO2', 'H2O', 'O2', 'N2', 'SO2', 'HCl']}
-                />
-              </SubSection>
-            </div>
-            <SubSection title={t('QD_report_bilans')}>
-              <div style={styles.twoCol}>
-                <div>
-                  <KV label={t('QD_appoint')} value={fmt(QD.debMasEauAppoint, 0)} unit="kg/h" />
-                  <KV label={t('QD_arrosage')} value={fmt(QD.debMasLiqAr, 0)} unit="kg/h" />
-                  <KV label={t('QD_recirc')} value={fmt(QD.debMasTotalRecirc, 0)} unit="kg/h" />
-                  <KV label={t('QD_purge')} value={fmt(QD.debMasTotalPurge, 0)} unit="kg/h" />
-                </div>
-                <div>
-                  <KV label={t('QD_conc_hcl_rec')} value={fmt(QD.concHClRec, 4)} unit="%" />
-                  <KV label={t('QD_conc_hcl_ar')} value={fmt(QD.concHClAr, 4)} unit="%" />
-                  <KV label={t('QD_ph_arrosage')} value={QD.pH !== null && QD.concHClAr > 0 ? fmt(QD.pH, 2) : '!!!!!'} />
-                  <KV label={t('QD_ph_recirc')} value={QD.pHRec !== null ? fmt(QD.pHRec, 2) : '!!!!!'} />
-                </div>
-              </div>
+        {QDd && (
+          <div style={styles.twoCol}>
+            <SubSection title={t('Dimensionnement du Quench')}>
+              <KV label={t('Quench diameter [m]')} value={fmt(innerData.Quench_diameter_std, 2)} unit="m" />
+              <KV label={t('QD_vitesse_colonne')} value={fmt(QDd.vitesse, 2)} unit="m/s" />
+              <KV label={t('QD_vitesse_cone')} value={fmt(QDd.vPassage, 2)} unit="m/s" />
+              <KV label={t('QD_diam_cone_retenu')} value={fmt(QDd.diamCone, 0)} unit="mm" />
+              <KV label={t('QD_pventuri')} value={fmt(QDd.pVenturi, 1)} unit="mmCE" />
             </SubSection>
-          </>
+            <SubSection title={t('QD_section_eau')}>
+              <KV label={t('Temperature inlet QUENCH [°C]')} value={fmt(QDd.T_IN, 1)} />
+              <KV label={t('QD_temp_sortie')} value={fmt(QDd.T_OUT, 1)} unit="°C" />
+              <KV label={t('Sprayed/cooling water [kg/h]')} value={fmt(QDd.Q_eau_kg_h, 0)} />
+              <KV label={t('QD_debit_reel_sortie')} value={fmt(QDd.debReelOut, 0)} unit="m³/h" />
+              <KV label={t('QD_ro_sortie')} value={fmt(QDd.roSortie, 3)} unit="kg/m³" />
+            </SubSection>
+          </div>
         )}
         <div style={styles.twoCol}>
           <SubSection title={t('Consommations électriques')}>
