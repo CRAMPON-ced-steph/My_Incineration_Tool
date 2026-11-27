@@ -223,13 +223,17 @@ const lignesCoutCo2 = (d, details, prix, t, config = {}) => {
   const air = lireNombre(d.conso_air_co_N_m3);
   const residusCout = lireNombre(d.cout_transport_incineratino_ash) + lireNombre(d.cout_transport_boiler_ash) + lireNombre(d.cout_transport_fly_ash);
   const residusCo2 = lireNombre(d.CO2_transport_incineratino_ash) + lireNombre(d.CO2_transport_boiler_ash) + lireNombre(d.CO2_transport_fly_ash);
+  // Lit fluidisé : le sable d'appoint (ligne row10 des réactifs) a sa propre ligne de coût ;
+  // il est retiré de « Consommation de réactifs » pour ne pas être compté deux fois.
+  const sable = config.appointSable ? details.reactifs.find((r) => r.key === 'row10') : null;
+  const coutReactifs = somme(details.reactifs, 'cout') - (sable?.cout || 0);
 
   const cout = [
     { key: 'row1', label: t('consumptionElec'), value: somme(details.elec, 'cout') },
     { key: 'row2', label: t('consumptionGasFuel'), value: somme(details.energie, 'cout') },
     { key: 'row3', label: t('consumptionCompressedAir'), value: (air / 1000) * prix.air },
     { key: 'row4', label: t('consumptionWater'), value: somme(details.eau, 'cout') },
-    { key: 'row5', label: t('consumptionReagents'), value: somme(details.reactifs, 'cout') },
+    { key: 'row5', label: t('consumptionReagents'), value: coutReactifs },
     { key: 'row6', label: t('transportReagents'), value: lireNombre(d.cout_transport_reactifs) },
     { key: 'row7', label: t('transportResiduesAsh'), value: residusCout },
   ];
@@ -242,11 +246,15 @@ const lignesCoutCo2 = (d, details, prix, t, config = {}) => {
     { key: 'row4', label: t('transportReagents'), value: somme(details.reactifs, 'co2kg') },
     { key: 'row5', label: t('transportResiduesAsh'), value: residusCo2 },
   ];
-  // Lit fluidisé : purge du lit (part de la fraction grossière, onglet Caractéristiques des Boues)
-  // évacuée au tarif « Incineration ash » [devise/t] ; CO2 du transport aller-retour [kg/t].
+  // Lit fluidisé (onglet Caractéristiques des Boues) :
+  //   - appoint de sable : consommation [kg/h] dans le libellé, coût = achat au prix €/kg ;
+  //   - purge du lit (fraction grossière évacuée) au tarif « Incineration ash » [devise/t],
+  //     CO2 du transport aller-retour [kg/t].
   if (config.appointSable) {
-    const purge_t_h = lireNombre(d.Conso_purge_lit_kg) / 1000;
-    cout.push({ key: 'row8', label: t('bedPurgeDisposal'), value: purge_t_h * lireNombre(prix.cendres.cost) });
+    const purge_kg_h = lireNombre(d.Conso_purge_lit_kg);
+    const purge_t_h = purge_kg_h / 1000;
+    cout.push({ key: 'row9', label: `${t('sandMakeup')} (${fmt(sable?.nombre || 0, 1)} kg/h)`, value: sable?.cout || 0 });
+    cout.push({ key: 'row8', label: `${t('bedPurgeDisposal')} (${fmt(purge_kg_h, 1)} kg/h)`, value: purge_t_h * lireNombre(prix.cendres.cost) });
     co2.push({ key: 'row6', label: t('bedPurgeDisposal'), value: purge_t_h * co2TransportReactif_kg_t(prix.cendres) });
   }
   return { cout, co2, air };
