@@ -1,5 +1,5 @@
 // Onglet « Design réacteur » (FB, mode Bilan) : dimensions du Pyrofluid (gamme standard R28–R72)
-// et du Thermylis HTFB (dimensions calculées, distributeur sur anneaux A–J) côte à côte, pour le
+// et du HTFB (dimensions calculées, distributeur sur anneaux A–J) côte à côte, pour le
 // même débit par four. Affichage seul : n'écrit rien dans innerData.
 // Calculs : 7_reacteur_design_calculs.js (sources et formules en tête du fichier).
 import React, { useState, useMemo, useEffect, useCallback, createContext, useContext } from 'react';
@@ -217,7 +217,7 @@ const ReacteurDesignTab = ({ innerData = {}, innerDataTick, currentLanguage = 'f
   const ctx = { etat, majBase, majTh, base, t, L, uniteL };
 
   const nomPyro = taille?.id ? `Pyrofluid ${taille.id}` : `Pyrofluid ${t('hors standard')}`;
-  const nomTher = `Thermylis ${t('anneau')} ${ther.anneau}${ther.modeDistributeur === 'calcule' ? ` (${t('Ø calculé')})` : ''}`;
+  const nomTher = `HTFB ${t('anneau')} ${ther.anneau}${ther.modeDistributeur === 'calcule' ? ` (${t('Ø calculé')})` : ''}`;
 
   // Alertes
   const alertes = [];
@@ -245,9 +245,9 @@ const ReacteurDesignTab = ({ innerData = {}, innerDataTick, currentLanguage = 'f
       <div style={{ fontFamily: 'Arial, sans-serif' }}>
         {/* ── En-tête ── */}
         <div style={sCard}>
-          <h2 style={{ ...sH2, fontSize: '20px' }}>{t('Design réacteur — Pyrofluid / Thermylis')}</h2>
+          <h2 style={{ ...sH2, fontSize: '20px' }}>{t('Design réacteur — Pyrofluid / HTFB')}</h2>
           <p style={{ margin: '0 0 6px 0', color: '#4a5568', fontSize: '13px' }}>
-            {t('Le Pyrofluid est défini par une gamme standard (R28 à R72) : un Ø de réacteur et une voûte par taille, les hauteurs suivent les règles de chaudronnerie. Le Thermylis n\'a pas de taille standard : ses diamètres découlent des vitesses de gaz, seul le distributeur est pris sur des anneaux (A à J).')}
+            {t('Le Pyrofluid est défini par une gamme standard (R28 à R72) : un Ø de réacteur et une voûte par taille, les hauteurs suivent les règles de chaudronnerie. Le HTFB n\'a pas de taille standard : ses diamètres découlent des vitesses de gaz, seul le distributeur est pris sur des anneaux (A à J).')}
           </p>
           <div style={{ display: 'flex', gap: '18px', flexWrap: 'wrap', alignItems: 'flex-end', marginTop: '10px' }}>
             <div style={{ minWidth: '230px' }}>
@@ -259,7 +259,7 @@ const ReacteurDesignTab = ({ innerData = {}, innerDataTick, currentLanguage = 'f
               </select>
             </div>
             <div style={{ minWidth: '230px' }}>
-              <label style={sLabel}>{t('Distributeur Thermylis')}</label>
+              <label style={sLabel}>{t('Distributeur HTFB')}</label>
               <select style={sInput} value={etat.thermylis.modeDistributeur} onChange={(e) => majTh('modeDistributeur', e.target.value)}>
                 <option value="anneau">{t('Anneau standard (plus petit ≥ Ø requis)')}</option>
                 <option value="calcule">{t('Ø calculé (hors anneau)')}</option>
@@ -316,7 +316,7 @@ const ReacteurDesignTab = ({ innerData = {}, innerDataTick, currentLanguage = 'f
               </p>
             </div>
             <div>
-              <h3 style={{ color: COUL_THER, fontSize: '14px', margin: '0 0 8px 0' }}>Thermylis (HTFB Design Sheet)</h3>
+              <h3 style={{ color: COUL_THER, fontSize: '14px', margin: '0 0 8px 0' }}>HTFB (Design Sheet)</h3>
               <div style={sGrid}>
                 <ChampTh cle="vDome_ms" label={t('Vitesse air au-dessus du dôme (1200 °F)')} unite="m/s" />
                 <ChampTh cle="vFreeboardHaut_ms" label={t('Vitesse haut du freeboard (D1)')} unite="m/s" />
@@ -346,7 +346,7 @@ const ReacteurDesignTab = ({ innerData = {}, innerDataTick, currentLanguage = 'f
             {alertes.map(([qui, txt], i) => (
               <div key={i} style={{ fontSize: '13px', color: '#7b341e', marginBottom: '4px' }}>
                 ⚠ <strong style={{ color: qui === 'p' ? COUL_PYRO : qui === 't' ? COUL_THER : '#7b341e' }}>
-                  {qui === 'p' ? 'Pyrofluid' : qui === 't' ? 'Thermylis' : ''}
+                  {qui === 'p' ? 'Pyrofluid' : qui === 't' ? 'HTFB' : ''}
                 </strong>{qui !== 'g' ? ' : ' : ''}{txt}
               </div>
             ))}
@@ -363,7 +363,7 @@ const ReacteurDesignTab = ({ innerData = {}, innerDataTick, currentLanguage = 'f
                   <tr>
                     <th style={sTh}>{t('Grandeur')}</th>
                     <th style={{ ...sTh, textAlign: 'right' }}>Pyrofluid</th>
-                    <th style={{ ...sTh, textAlign: 'right' }}>Thermylis</th>
+                    <th style={{ ...sTh, textAlign: 'right' }}>HTFB</th>
                     <th style={sTh}>{t('Unité')}</th>
                     <th style={{ ...sTh, textAlign: 'right' }}>{t('Écart T − P')}</th>
                     <th style={sTh}>{t('Règle / remarque')}</th>
@@ -499,9 +499,9 @@ const ReacteurDesignTab = ({ innerData = {}, innerDataTick, currentLanguage = 'f
           </p>
         </div>
 
-        {/* ── Anneaux Thermylis ── */}
+        {/* ── Anneaux HTFB ── */}
         <div style={sCard}>
-          <h2 style={sH2}>{t('Anneaux de distributeur Thermylis')}</h2>
+          <h2 style={sH2}>{t('Anneaux de distributeur HTFB')}</h2>
           <div style={{ overflowX: 'auto' }}>
             <table style={sTable}>
               <thead>
@@ -540,8 +540,8 @@ const ReacteurDesignTab = ({ innerData = {}, innerDataTick, currentLanguage = 'f
             <li>{t('Pyrofluid — VWT-EM-GCG-0037 Rev C (Généralités incinération) : gamme, vitesses, lit 1,5 m, charges admissibles.')}</li>
             <li>{t('Pyrofluid — VWT-EM-GCE-0310 Rev C (Chaudronnerie) : boîte à vent (cos w = (0,5 Dv − 135 + 70) / R ; k = R (1 − sin w) ; L\' = k + 385 ; Lbav = L\' + 348 ; Hbav = Lbav + max(Da) + 1200), tronçon 4 (h\' = 1500 − 0,493 e ; h = 0,5 (Df + 2e − Dv − 600 − 1,842 e) ; h1 = 0,5 (Df − Dv − 600)), dôme 23° (L = 0,212 (Df + 2e − Dc − 2ec − 24)), réacteur > 4,5 s.')}</li>
             <li>{t('Pyrofluid — VWT-EM-GCE-0312 Rev C (Réfractaire) : rayon de voûte 5 m (R28–R50) / 7 m (R56–R72), épaisseurs maximales.')}</li>
-            <li>{t('Thermylis — HTFB Design Sheet V1 (BS&P, 11/11/2026), onglets 14 et 9 : D1 = √(4Q / π v1), D2 = √(4Q / π v2), D3 = anneau ≥ Ø requis, R2 = 1,2 (D3 + 2 (T1 + T2)) − 3,06 ft, H5 = tan α (D1 − Dcarneau) / 2, H6 = R2 − √(R2² − D3² / 4), H7 = tan α (T1 + T2). Validé sur St. Paul : D1 36,65 ft, D2 30,66 ft, H5 5,15 ft, H6 2,13 ft, hauteur totale 42,28 ft.')}</li>
-            <li>{t('Hypothèse : max(Da) de la boîte à vent Pyrofluid pris égal au Ø de la gaine d\'air. Thermylis : Ø carneau calculé à la vitesse saisie (la feuille reprend le Ø du PFD).')}</li>
+            <li>{t('HTFB — Design Sheet V1 (BS&P, 11/11/2026), onglets 14 et 9 : D1 = √(4Q / π v1), D2 = √(4Q / π v2), D3 = anneau ≥ Ø requis, R2 = 1,2 (D3 + 2 (T1 + T2)) − 3,06 ft, H5 = tan α (D1 − Dcarneau) / 2, H6 = R2 − √(R2² − D3² / 4), H7 = tan α (T1 + T2). Validé sur St. Paul : D1 36,65 ft, D2 30,66 ft, H5 5,15 ft, H6 2,13 ft, hauteur totale 42,28 ft.')}</li>
+            <li>{t('Hypothèse : max(Da) de la boîte à vent Pyrofluid pris égal au Ø de la gaine d\'air. HTFB : Ø carneau calculé à la vitesse saisie (la feuille reprend le Ø du PFD).')}</li>
           </ul>
         </div>
       </div>

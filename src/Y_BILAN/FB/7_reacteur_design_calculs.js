@@ -1,5 +1,5 @@
 // ============================================================================
-// Design réacteur — comparaison Pyrofluid (gamme standard) / Thermylis HTFB (dimensions calculées)
+// Design réacteur — comparaison Pyrofluid (gamme standard) / HTFB (dimensions calculées)
 // Fonctions pures, sans React. Longueurs internes en mètres, débits réels en m³/h PAR FOUR.
 //
 // Sources Pyrofluid (dossier PDP Pyrofluid) :
@@ -8,7 +8,7 @@
 //   - VWT-EM-GCE-0310 Rev C « Chaudronnerie » §2 (fig. 3, 4, 5) : hauteur boîte à vent, tronçon 4,
 //     dôme 23°, temps de séjour > 4,5 s au réacteur, épaisseurs 308 / 388 / 438 mm.
 //   - VWT-EM-GCE-0312 Rev C « Réfractaire » §1.7 : rayon de voûte 5 m (R28–R50), 7 m (R56–R72).
-// Source Thermylis : « HTFB Design Sheet V1 » (BS&P, 11/11/2026), onglets
+// Source HTFB : « HTFB Design Sheet V1 » (BS&P, 11/11/2026), onglets
 //   « 14. Reactor Design » (D1–D6, H1–H7, R2, volumes) et « 9. Equipment Standards » (anneaux A–J,
 //   vitesses par défaut, piquages par anneau, débit FAB, pertes thermiques).
 // ============================================================================
@@ -87,7 +87,7 @@ export const chargeMSAdmissible = (siccite) => {
 
 export const rayonVoutePyrofluid_mm = (Df_mm) => (Df_mm <= 5000 ? 5000 : 7000);
 
-// ── Thermylis : anneaux de distributeur (HTFB Design Sheet, onglet 14 §9 et onglet 9 tables 8–10)
+// ── HTFB : anneaux de distributeur (HTFB Design Sheet, onglet 14 §9 et onglet 9 tables 8–10)
 // diam_ft : Ø distributeur (dôme) ; fab_scfm : plage de débit du FAB ; pertes : pertes thermiques.
 // Piquages (table 8) : boues, pulvérisation au toit, ammoniac / urée, hublots du freeboard.
 export const THERMYLIS_ANNEAUX = [
@@ -103,7 +103,7 @@ export const THERMYLIS_ANNEAUX = [
   { id: 'J', diam_ft: 19.185, fab_scfm: [14351, 17710],  pertes: 0.021, inj: [4, 6, 2, '2–3'] },
 ];
 
-// Valeurs par défaut Thermylis (onglet 14 « Manual Inputs », listées pour l'anneau J de St. Paul,
+// Valeurs par défaut HTFB (onglet 14 « Manual Inputs », listées pour l'anneau J de St. Paul,
 // et onglet 9 « Reactor Defaults »). Longueurs en m.
 export const THERMYLIS_DEFAUTS = {
   modeDistributeur: 'anneau', // 'anneau' = plus petit anneau standard ≥ Ø requis ; 'calcule' = Ø requis
@@ -254,7 +254,7 @@ export function calculPyrofluid(taille, base, opts = {}) {
   };
 }
 
-// ── Thermylis : géométrie calculée (formules de l'onglet 14 de la HTFB Design Sheet) ──
+// ── HTFB : géométrie calculée (formules de l'onglet 14 de la HTFB Design Sheet) ──
 export function calculThermylis(base, p = THERMYLIS_DEFAUTS) {
   const P = { ...THERMYLIS_DEFAUTS, ...p };
   const num = (v, d) => (Number.isFinite(Number(v)) && v !== '' && v !== null ? Number(v) : d);
