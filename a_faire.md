@@ -208,3 +208,13 @@ Bilan FB + onglet HX, P freeboard imposée à −3 mmCE (valeur du rapport), ren
 - [x] **SCRUBBER (Bilan) et WHB** : aucune perte de charge côté fumées — **corrigé le 18/11/2026** : tour de lavage (calculée garnissage + dévésiculeur ou imposée), chaudière 100 mmCE par défaut, conservée ; WHB Retro : P amont = P aval + PDC.
 - [ ] **FB, valeurs par défaut** : avec les valeurs par défaut (22 trous imposés), vitesse tuyères ≈ 322 m/s et pression freeboard ≈ −4 250 mmCE, maintenant transmise à l'aval via `P_OUT`.
 - [ ] **Retro, signe de la perte de charge** : en remontant, la pression amont devrait être P aval **+** PDC (DENOX, QUENCH, WATER_INJECTION, économiseurs) ; IACT (`IACT_calculations.js`) et SCRUBBER (`SCRUBBER_calculations3.js`) font P aval **−** PDC.
+
+---
+
+## Tour de lavage (`src/Y_BILAN/SCRUBBER/4_SCRUBBER_TourLavage.jsx`) — contrôle du 27/11/2026
+
+Le mode « Calcul Pyrofluid d'origine » reproduit `ClassTourLavage.Calcul` (écart < 0,001 %, `scripts/verif_tour_lavage`). Points du **calcul corrigé** (défaut), corrigés le 27/11/2026 :
+
+- [x] **Vitesse du dévésiculeur** : vitesse réelle (flux massique / masse volumique des fumées) au lieu du flux massique de Pyrofluid.
+- [x] **Chaleur latente en sortie de condenseur** : 597 kcal/kg partout (Pyrofluid : 547 dans l'enthalpie des fumées). Puissance du condenseur −0,55 %.
+- [x] **Fumées non saturées en entrée** : saturation adiabatique au contact du liquide (température de sortie et eau évaporée, comptée dans l'appoint) ; avec sous-refroidissement, des fumées non saturées à la température du condenseur gardent leur eau. Cas test 80 °C, 2 600 kg/h d'eau : sortie 55,7 °C, 295 kg/h évaporés (avant : 13 595 kg/h d'eau en sortie à 80 °C).
